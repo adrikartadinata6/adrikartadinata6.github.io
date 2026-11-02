@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Underwater Object Detection Sonar System | Adri Kartadinata</title>
+<meta name="description" content="Underwater Object Detection Sonar System — Embedded Systems Research project by Adri Kartadinata. Final year thesis (Politeknik Manufaktur Bandung, 2025): a static six-transducer DYP-L04 piezoelectric sonar array in a sealed ABS housing, covering 175° horizontally with Arduino Uno UART acquisition and a Python real-time 2D radar GUI. GPA 3.28/4.00, predicate Sangat Memuaskan.">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../fonts/manrope-latin-wght-normal.woff2">
+<link rel="stylesheet" href="../css/fonts.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/modern.css">
+<link rel="icon" type="image/webp" href="../images/logos/mark-gear-circuit.webp">
+</head>
+<body>
+
+<div id="page-loader"><div class="loader-mark"><div class="loader-bar"></div><span>Loading…</span></div></div>
+
+<header class="navbar">
+  <div class="container">
+    <nav class="nav-links" id="nav-links">
+      <a href="../index.html" data-i18n="nav_home">Home</a>
+      <a href="../about.html" data-i18n="nav_about">About</a>
+      <a href="../skills.html" data-i18n="nav_skills">Skills</a>
+      <a href="../education.html" data-i18n="nav_education">Education</a>
+      <a href="../projects.html" class="active" data-i18n="nav_projects">Projects</a>
+      <a href="../experience.html" data-i18n="nav_experience">Experience</a>
+      <a href="../certificates.html" data-i18n="nav_certificates">Certificates</a>
+      <a href="../contact.html" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <div class="nav-tools">
+      <div class="nav-controls">
+        <div class="lang-toggle" role="group" aria-label="Language switch"><button type="button" data-lang="id">ID</button><button type="button" data-lang="en">EN</button></div>
+        <button type="button" id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode"></button>
+      </div>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main class="page-enter">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="../projects.html" data-i18n="nav_projects">Projects</a> / <span>Underwater Object Detection Sonar System</span></div>
+      <a href="../projects.html" class="btn btn-outline btn-sm back-btn reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        <span>Back to Projects</span>
+      </a>
+      <span class="eyebrow">Embedded Systems Research</span>
+      <h1>Underwater Object Detection Sonar System</h1>
+      <div class="report-meta-row">
+        <span class="tag">Embedded Systems Research</span>
+        <span class="tag">Jan 2025 s.d. Sep 2025</span>
+        <span class="tag">Final Year Thesis (Individual)</span>
+      </div>
+      <p class="lede report-summary">Final year thesis project: designed and built a six-transducer piezoelectric sonar array with Arduino Uno-based control and real-time signal acquisition logic, paired with a Python-based real-time data visualization interface.</p>
+
+      <div class="report-thumb reveal" style="aspect-ratio:16/10; overflow:hidden;">
+        <img src="../images/sonar/sonar-field-test-deployment.jpg" alt="Adri Kartadinata field-testing the six-transducer piezoelectric sonar prototype in an open water pond" class="zoomable" style="width:100%; height:100%; object-fit:cover;" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECT OVERVIEW ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Overview</span>
+        <h2>Project Overview</h2>
+      </div>
+      <div class="grid overview-grid">
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg></span>Background / Problem Statement</h3>
+          <p>Underwater visibility drops sharply once suspended sediment scatters or absorbs light, so optical and infrared sensing routinely fails to give a stable spatial picture in turbid water. A prior lab setup addressed this with two DYP-L04 ultrasonic sensors mounted crosswise on a motorized rig, but motor vibration and cross-signal interference left average measurement deviations of 4–7% (7.75% on height, 4.1% on length, 6.6% on width). This thesis removes the moving parts entirely, replacing them with a static, sectoral six-sensor array to see whether a fixed piezoelectric layout can hold accuracy while widening angular coverage.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></span>Project Objectives</h3>
+          <p>Design and realize a static six-transducer DYP-L04 sonar prototype as an underwater object-mapping tool — covering mechanical housing, electrical power/signal routing and interface programming — then evaluate its real-world performance: angular detection coverage, distance accuracy under varying turbidity, and object-visualization capability, all tested in still-water (non-flowing) conditions.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.4 10.9c.5.4.9 1 .9 1.6V16h5v-.5c0-.6.4-1.2.9-1.6A6 6 0 0 0 12 3z"/></svg></span>Main Idea / System Concept</h3>
+          <p>Six DYP-L04 piezoelectric transducers are bolted at fixed angles (17.05° to 162.95°, ≈29° apart) into a sealed ABS housing, giving 175° of non-overlapping sectoral coverage with no scanning motor. Arduino Uno triggers each sensor in turn over a shared TX line and reads its 4-byte UART reply (50 ms per sensor, 300 ms pause per full cycle), then streams distance data to a Python interface that plots every detection live on a 2D polar/Cartesian radar.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>Application / Use Case</h3>
+          <p>Underwater object detection and proximity sensing in low-visibility water — demonstrated as a final year thesis at Politeknik Manufaktur Bandung, with the prototype field-tested in an open sediment pond and validated against live fish and transparent-acrylic targets out to 300 cm.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TECHNICAL DETAILS ============ -->
+  <section class="report-section section-alt">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Technical Details</span>
+        <h2>Technical Details</h2>
+      </div>
+
+      <p class="lede reveal">Six piezoelectric transducers acquire underwater signal data through the Arduino Uno's real-time acquisition logic, which is streamed to a Python interface for live visualization and interpretation.</p>
+
+      <div class="grid spec-columns" style="margin-top: var(--s-4);">
+        <div class="card overview-card reveal">
+          <h3>Hardware Used</h3>
+          <ul class="spec-list">
+            <li><strong>Sensors</strong> 6× DYP-L04 piezoelectric ultrasonic transducers, ±7.5° beam angle, 24 V DC, 2–300 cm range</li>
+            <li><strong>MCU</strong> Arduino Uno — 1 shared TX trigger line, 6 RX lines via SoftwareSerial, 1 kΩ series resistors on every data line</li>
+            <li><strong>Housing</strong> Custom elliptical ABS casing (250×135×105 mm), silicone O-ring seal, 6× Ø20 mm sensor ports</li>
+            <li><strong>Power</strong> 4×18650 Li-ion pack (14.8 V, 500 mAh) → 1 A fuse → XL6009 DC-DC boost converter → 24 V sensor rail</li>
+            <li><strong>Wiring</strong> Battery switch, common ground bus, USB-powered 5 V rail for the Arduino</li>
+          </ul>
+        </div>
+        <div class="card overview-card reveal">
+          <h3>Software Used</h3>
+          <ul class="spec-list">
+            <li><strong>Firmware</strong> Arduino IDE (C/C++) — round-robin sensor polling, 4-byte UART packet parsing, 50 ms/sensor + 300 ms cycle delay</li>
+            <li><strong>Interface</strong> Python (real-time data visualization) — serial ingestion at up to 115200 bps, live 2D radar rendering</li>
+            <li><strong>CAD</strong> SolidWorks — 3D casing modeling and mechanical drawings for fabrication</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--s-4);">
+        <h3 style="font-size:15px;">Programming Language(s) / Tools</h3>
+        <div class="tag-list" style="margin-top:10px;">
+          <span class="tag">C/C++ (Embedded)</span><span class="tag">Python</span><span class="tag">Arduino IDE</span><span class="tag">SolidWorks</span><span class="tag">UART / SoftwareSerial</span>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--s-5);">
+        <h3 style="font-size:15px; margin-bottom: var(--s-2);">Workflow Explanation</h3>
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">1</div>
+            <h3 style="font-size:15px;">Mechanical housing design</h3>
+            <p>Modeled a sealed elliptical ABS casing in SolidWorks with six Ø20 mm sensor ports set at fixed angles (17.05°–162.95°, ~29° apart) for 175° sectoral coverage, sealed with a silicone O-ring to keep electronics dry.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">2</div>
+            <h3 style="font-size:15px;">Transducer array &amp; power design</h3>
+            <p>Wired six DYP-L04 transducers to a 24 V rail (boosted from a 14.8 V 4×18650 battery pack via an XL6009 converter) and installed 1 kΩ series resistors on every TX/RX line to stabilize data pulses.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">3</div>
+            <h3 style="font-size:15px;">Arduino-based control</h3>
+            <p>Implemented round-robin firmware on the Arduino Uno: each sensor is triggered in turn over a shared TX line, its 4-byte reply is validated and converted to distance, with 50 ms between sensors and a 300 ms pause per full six-sensor cycle to avoid signal collisions.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">4</div>
+            <h3 style="font-size:15px;">Real-time visualization</h3>
+            <p>Built a Python GUI with Demo/Connected modes, a live polar radar (Start/Pause/Reset, adjustable radius), a colour-coded SAFE/WARNING/DANGER status legend, a timestamped sensor log panel and a serial-port configuration tab.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">5</div>
+            <h3 style="font-size:15px;">Testing &amp; validation</h3>
+            <p>Field-tested the assembled prototype in an open sediment pond: angular-coverage mapping, multi-angle spatial-response characterization, turbidity-deviation testing, and object detection against live fish and transparent acrylic targets.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SYSTEM ARCHITECTURE ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">System Architecture</span>
+        <h2>Sensor Array, Power Chain &amp; GUI</h2>
+        <p>Four integrated domains — mechanical, electrical, control and informatics — combine into an Input → Process → Output pipeline: six static transducers feed an Arduino Uno, which streams parsed distance data to a Python radar interface.</p>
+      </div>
+
+      <div class="report-thumb reveal" style="aspect-ratio:1190/507; margin-top:0;">
+        <img src="../images/sonar/sonar-system-block-diagram.png" alt="System block diagram: six DYP-L04 transducers to Arduino Uno to Python to PC" class="zoomable" style="width:100%; height:100%; object-fit:contain; background:#fff;" loading="lazy" decoding="async">
+      </div>
+
+      <div class="grid spec-columns" style="margin-top: var(--s-4);">
+        <div class="card overview-card reveal">
+          <h3>Sensor Array Configuration</h3>
+          <ul class="spec-list">
+            <li><strong>Layout</strong> 6 sensors, sector centers at 162.95° / 133.85° / 104.75° / 75.65° / 46.55° / 17.05°</li>
+            <li><strong>Beam</strong> ±7.5° per sensor (15° total), non-overlapping sectoral coverage</li>
+            <li><strong>Coverage</strong> ~175° horizontal field, no scanning motor required</li>
+            <li><strong>Port height</strong> 52.5 mm from casing base to minimise sediment fouling and wall resonance</li>
+            <li><strong>Range</strong> 5–300 cm rated distance, tested to ~1 m water depth</li>
+          </ul>
+        </div>
+        <div class="card overview-card reveal">
+          <h3>Power &amp; Signal Chain</h3>
+          <ul class="spec-list">
+            <li><strong>Battery</strong> 4×18650 Li-ion, series-wired to 14.8 V, 500 mAh (7.4 Wh)</li>
+            <li><strong>Boost</strong> XL6009 DC-DC converter steps 14.8 V up to the sensors' 24 V rail (~90% conversion efficiency)</li>
+            <li><strong>Draw</strong> ~7 mA per sensor at 24 V → ~42 mA / 1.008 W for all six</li>
+            <li><strong>Runtime</strong> ≈6.6 hours of continuous operation on a full charge</li>
+            <li><strong>Comms</strong> 1 shared TX trigger + 6 RX lines, UART, 4-byte packet per reading, resistor-buffered against reflection noise</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--s-5);">
+        <h3 style="font-size:15px; margin-bottom: var(--s-2);">Python Radar GUI</h3>
+        <div class="grid spec-columns">
+          <div class="report-thumb reveal" style="aspect-ratio:1213/635; margin-top:0;">
+            <img src="../images/sonar/sonar-gui-radar-running.jpg" alt="Python radar GUI live view showing all six sensors plotted on a 2D polar chart out to 300 cm" class="zoomable" style="width:100%; height:100%; object-fit:contain; background:#fff;" loading="lazy" decoding="async">
+          </div>
+          <div class="card overview-card reveal">
+            <ul class="spec-list">
+              <li><strong>Modes</strong> Demo (simulated) and Connected (live Arduino serial data)</li>
+              <li><strong>Radar view</strong> Polar plot from 2.5°–177.5°, adjustable radius, live sweep line, multi-dot line linking the latest reading per sensor</li>
+              <li><strong>Status legend</strong> SAFE (&gt;150 cm), WARNING (50–150 cm), DANGER (&lt;50 cm)</li>
+              <li><strong>Log panel</strong> Chronological record of timestamp, sensor ID, distance (cm) and angle (°)</li>
+              <li><strong>Connection tab</strong> Serial-port selector, baud-rate dropdown (9600 / 115200 bps), connect/disconnect toggle with auto-reconnect</li>
+              <li><strong>Controls</strong> Start / Pause–Resume / Reset, zoom viewer with mouse-scroll and reset-zoom</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECT DOCUMENTATION ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Documentation</span>
+        <h2>Project Documentation</h2>
+        <p>The full thesis report, Arduino firmware and Python visualization code are available on request.</p>
+      </div>
+      <div class="grid doc-grid">
+        <a href="../contact.html" class="doc-btn reveal">
+          <span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></span>
+          <span><span>Thesis Report</span><small>Request via contact</small></span>
+        </a>
+        <a href="https://github.com/adrikartadinata" target="_blank" rel="noopener" class="doc-btn reveal">
+          <span class="icon-plate"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.4 9.4 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.35 4.68-4.58 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg></span>
+          <span><span>GitHub Profile</span><small>github.com/adrikartadinata</small></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="report-section section-alt">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Gallery</span>
+        <h2>Project Gallery</h2>
+        <p>From mechanical design through to field validation — the casing, electronics, and the prototype under test.</p>
+      </div>
+      <div class="grid gallery-grid">
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-casing-3d-cad.jpg" alt="3D CAD render of the elliptical ABS transducer casing, SolidWorks" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">3D CAD render of the sealed ABS casing (SolidWorks)</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-casing-technical-drawing.jpg" alt="Mechanical technical drawing of the sensor casing with dimensions" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Mechanical drawing — 250×135×105 mm casing, 6× Ø20 mm sensor ports</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-electronics-integration.jpg" alt="Arduino Uno, boost converter and 4x18650 battery pack wired inside the casing" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Arduino Uno, boost converter and 4×18650 battery pack, wired and integrated</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-gui-radar-running.jpg" alt="Python radar GUI in Connected mode showing live readings from all six sensors" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Python radar GUI, Connected mode, live 300 cm-range sweep</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-field-test-closeup.jpg" alt="Close-up of the assembled sonar prototype partially submerged during field testing" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Assembled prototype partially submerged during pond testing</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/sonar/sonar-field-test-deployment.jpg" alt="Adri Kartadinata deploying and adjusting the sonar prototype in the test pond" class="zoomable" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Deploying and adjusting the rig for a live detection run</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Results</span>
+        <h2>Results &amp; Outcomes</h2>
+        <p>Quantitative findings from four rounds of pond testing: angular coverage, multi-angle spatial response, turbidity sensitivity and object-type detection.</p>
+      </div>
+
+      <div class="grid spec-columns" style="margin-bottom: var(--s-4);">
+        <div class="card overview-card reveal">
+          <h3>Measured Performance</h3>
+          <ul class="spec-list">
+            <li><strong>Coverage</strong> Effective detection arc of 10°–170° (design target ~175°)</li>
+            <li><strong>Precision</strong> Reading deviation of just 0.03–0.05 cm within the effective arc</li>
+            <li><strong>Turbidity</strong> Worst-case deviation 1.13 cm at 100 cm range under 86–87% turbidity</li>
+            <li><strong>Solid targets</strong> Live fish detected accurately out to 300 cm (0.97% error at 300 cm)</li>
+            <li><strong>Transparent targets</strong> Acrylic/mica accuracy degrades with distance — up to 9.67 cm error at 300 cm</li>
+            <li><strong>Blind spots</strong> Identified at 0°–5°, 65°, 95°, 125°–130°, 175° and 180° — transition zones between sensor sectors</li>
+          </ul>
+        </div>
+        <div class="card overview-card reveal">
+          <h3>Recommendations for Future Work</h3>
+          <ul class="spec-list">
+            <li><strong>Electrical</strong> Add higher-output transducers at 65°, 95° and 125°–130° to close the identified blind spots</li>
+            <li><strong>Electrical</strong> Add an analogue-output sensor variant to better resolve amplitude for transparent/low-reflectivity targets</li>
+            <li><strong>Software</strong> Add automatic data logging (0.1 s interval) for post-run analysis</li>
+            <li><strong>Software</strong> Add moving-average / median filtering to smooth readings in turbid water</li>
+            <li><strong>Mechanical</strong> Explore alternative transducer placements to extend coverage beyond 175°</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid results-grid">
+        <div class="card result-card reveal">
+          <h3>Achievements</h3>
+          <p>Successfully designed and built a working six-transducer piezoelectric sonar array with real-time signal acquisition for object detection.</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Visualization Interface</h3>
+          <p>Delivered an integrated Python-based interface for real-time monitoring and interpretation of sensor output.</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Academic Outcome</h3>
+          <p>Completed as final year thesis project (Jan – Sep 2025), contributing to graduation with a GPA of 3.28/4.00 and predicate "Sangat Memuaskan."</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Foundation Built</h3>
+          <p>Established hands-on embedded systems and real-time data visualization skills later applied professionally at PT Aldzama.</p>
+        </div>
+      </div>
+
+      <div class="report-nav reveal">
+        <a href="project4.html" class="prev-link"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Refractory Lining, Launder Cover, PTFI</span></a>
+        <a href="../projects.html" class="btn btn-outline btn-sm" style="align-self:center;">All Projects</a>
+        <a href="project6.html" class="next-link"><span class="nav-dir">Next &rarr;</span><span class="nav-title">Automation Prototype Control Panels</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand" style="color:#fff;"><img src="../images/logos/mark-gear-circuit.webp" alt="" class="brand-mark" width="34" height="34"><span>Adri Kartadinata</span></div>
+        <p data-i18n="footer_tagline">Mechatronics Engineer building dependable control systems for industrial and mining operations.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_quicklinks">Quick Links</h4>
+        <ul>
+          <li><a href="../about.html" data-i18n="nav_about">About</a></li>
+          <li><a href="../skills.html" data-i18n="nav_skills">Skills</a></li>
+          <li><a href="../projects.html" data-i18n="nav_projects">Projects</a></li>
+          <li><a href="../contact.html" data-i18n="nav_contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_connect">Connect</h4>
+        <ul>
+          <li><a href="https://linkedin.com/in/adri-kartadinata" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/adrikartadinata" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="mailto:adrikartadinata6@gmail.com">Email</a></li>
+          <li><span data-i18n="footer_location">Gresik, East Java, Indonesia</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span data-year></span> Adri Kartadinata. <span data-i18n="footer_rights">All rights reserved.</span></p>
+      <a href="#top" id="back-to-top" class="back-to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/modern.js"></script>
+<script src="../js/scroll-fx.js"></script>
+<script src="../js/pro.js"></script>
+</body>
+</html>
