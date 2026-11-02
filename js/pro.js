@@ -23,10 +23,7 @@
     { n: "Call +62 851-6860-0278", t: "Contact", run: () => (location.href = "tel:+6285168600278") },
     { n: "Toggle effects (Lite / Full)", t: "Performance", run: () => { try { localStorage.setItem("fx-mode", document.documentElement.classList.contains("lite") ? "full" : "lite"); } catch (_) {} location.reload(); } },
     { n: "Open LinkedIn", t: "Link", run: () => window.open("https://linkedin.com/in/adri-kartadinata", "_blank", "noopener") },
-<<<<<<< HEAD
     { n: "Performance mode: " + (lite ? "Lite (switch to Full)" : "Full (switch to Lite)"), t: "Action", run: () => { try { localStorage.setItem("fx-mode", lite ? "full" : "lite"); } catch (_) {} location.reload(); } },
-=======
->>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
     { n: "Open GitHub", t: "Link", run: () => window.open("https://github.com/adrikartadinata", "_blank", "noopener") },
   ];
   const ov = mk("div", "cmdk", '<div class="cmdk-box" role="dialog" aria-modal="true" aria-label="Command menu"><input class="cmdk-in" placeholder="Type a command or search…" aria-label="Search commands" autocomplete="off"><ul class="cmdk-list" role="listbox"></ul><div class="cmdk-foot"><span>↑↓ navigate</span><span>↵ select</span><span>esc close</span></div></div>');
@@ -121,32 +118,19 @@
   if (secs.length > 1) {
     const hud = mk("div", "hud", "<b></b><span></span><i></i>"); document.body.append(hud);
     const [b, s, i] = hud.children;
-<<<<<<< HEAD
     let hq = false; const upd0 = () => { hq = false; let c = 0; secs.forEach((x, k) => { if (x.getBoundingClientRect().top < innerHeight * 0.4) c = k; }); const mxs = document.documentElement.scrollHeight - innerHeight; b.textContent = String(c + 1).padStart(2, "0") + "/" + String(secs.length).padStart(2, "0"); s.textContent = ($("h1,h2", secs[c]).textContent || "").trim().slice(0, 28); i.textContent = (mxs > 0 ? Math.round((scrollY / mxs) * 100) : 0) + "%"; };
     const upd = () => { if (!hq) { hq = true; requestAnimationFrame(upd0); } }; addEventListener("scroll", upd, { passive: true }); upd0();
-=======
-    const upd = () => { let c = 0; secs.forEach((x, k) => { if (x.getBoundingClientRect().top < innerHeight * 0.4) c = k; }); const mxs = document.documentElement.scrollHeight - innerHeight; b.textContent = String(c + 1).padStart(2, "0") + "/" + String(secs.length).padStart(2, "0"); s.textContent = ($("h1,h2", secs[c]).textContent || "").trim().slice(0, 28); i.textContent = (mxs > 0 ? Math.round((scrollY / mxs) * 100) : 0) + "%"; };
-    let hq = false; addEventListener("scroll", () => { if (!hq) { hq = true; requestAnimationFrame(() => { upd(); hq = false; }); } }, { passive: true }); upd();
->>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
   }
 
   /* Quick-contact dock for recruiters */
   if (!/contact\.html/.test(location.pathname)) {
     const dock = mk("div", "dock", '<a href="mailto:' + EMAIL + '">Email</a><a href="https://linkedin.com/in/adri-kartadinata" target="_blank" rel="noopener">LinkedIn</a><a href="' + CV + '" download>Download CV</a>');
     dock.setAttribute("aria-label", "Quick contact"); document.body.append(dock);
-<<<<<<< HEAD
     let on = false, ly = scrollY; const f = () => { const y = scrollY, small = innerWidth <= 560; let n = on; if (y <= 520) n = false; else if (!small) n = true; else if (y < ly - 6) n = true; else if (y > ly + 6) n = false; ly = y; if (n !== on) { on = n; dock.classList.toggle("on", n); } }; addEventListener("scroll", f, { passive: true }); f();
   }
 
   /* Text decode on mono labels */
   if (!calm && !lite) {
-=======
-    const f = () => dock.classList.toggle("on", scrollY > 520); addEventListener("scroll", f, { passive: true }); f();
-  }
-
-  /* Text decode on mono labels */
-  if (!calm) {
->>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
     const CH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/<>_";
     const run = (e) => { const t = e.textContent; if (!t.trim() || e.children.length) return; let f = 0; const id = setInterval(() => { f++; e.textContent = Array.from(t).map((c, k) => (c === " " || k < (f * t.length) / 16 ? c : CH[(Math.random() * CH.length) | 0])).join(""); if (f >= 16) { clearInterval(id); e.textContent = t; } }, 34); };
     const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { io.unobserve(x.target); run(x.target); } }), { threshold: 0.7 });

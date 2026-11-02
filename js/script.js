@@ -31,8 +31,8 @@
       btn_send: "Send Message",
 
       hero_eyebrow: "Available for opportunities",
-      hero_role: "PLC · SCADA · Instrumentation · IoT",
-      hero_lede: "I design, build and commission industrial control systems, from PLC-driven furnace automation to instrumentation and IoT, for high-value projects in mining and energy.",
+      hero_role: "Mechanics · Electronics · Control",
+      hero_lede: "I design, build and commission mechatronic systems that bring mechanics, electronics and control together.",
 
       snapshot_eyebrow: "Snapshot",
       snapshot_title: "Engineering discipline, applied on real sites",
@@ -95,6 +95,11 @@
       experience_title: "Experience",
       experience_lede: "Professional roles, internships and organizational leadership across mechatronics engineering and industrial operations.",
       exp_org_title: "Organizational Experience",
+      flt_all: "All", flt_industry: "Industry", flt_research: "Research", flt_internship: "Internship",
+      pj_all: "All", pj_automation: "Automation & Control", pj_industrial: "Industrial Projects", pj_embedded: "Embedded & IoT",
+      pj_search_ph: "Search projects, tools or skills…",
+      edu_lab_label: "Laboratory practice at Polman Bandung",
+      skip_link: "Skip to content",
 
       contact_eyebrow: "Get In Touch",
       contact_title: "Let's talk about your next project",
@@ -122,8 +127,8 @@
       btn_send: "Kirim Pesan",
 
       hero_eyebrow: "Terbuka untuk peluang kerja",
-      hero_role: "PLC · SCADA · Instrumentation · IoT",
-      hero_lede: "Saya merancang, membangun, dan mengomisioning sistem kontrol industri, mulai dari otomasi furnace berbasis PLC hingga instrumentasi dan IoT, untuk proyek bernilai tinggi di sektor pertambangan dan energi.",
+      hero_role: "Mechanics · Electronics · Control",
+      hero_lede: "Saya merancang, membangun, dan mengomisioning sistem mekatronika yang memadukan mekanik, elektronik, dan kontrol.",
 
       snapshot_eyebrow: "Ringkasan",
       snapshot_title: "Disiplin teknik, diterapkan di lapangan nyata",
@@ -186,6 +191,11 @@
       experience_title: "Pengalaman",
       experience_lede: "Peran profesional, magang, dan kepemimpinan organisasi di bidang rekayasa otomasi dan operasi industri.",
       exp_org_title: "Pengalaman Organisasi",
+      flt_all: "Semua", flt_industry: "Industri", flt_research: "Riset", flt_internship: "Magang",
+      pj_all: "Semua", pj_automation: "Otomasi & Kontrol", pj_industrial: "Proyek Industri", pj_embedded: "Embedded & IoT",
+      pj_search_ph: "Cari proyek, tools, atau keahlian…",
+      edu_lab_label: "Praktikum laboratorium di Polman Bandung",
+      skip_link: "Lewati ke konten",
 
       contact_eyebrow: "Hubungi Saya",
       contact_title: "Mari bicarakan proyek Anda selanjutnya",
@@ -465,18 +475,29 @@
   function initHeroTyping() {
     const el = document.querySelector(".hero .hero-role");
     if (!el) return;
-    const text = el.textContent.trim();
-    el.textContent = "";
+    /* "Mechanics · Electronics · Control" -> types each word, erases it, moves to the next, forever */
+    const full = el.textContent.trim();
+    const words = full.split("·").map((w) => w.trim()).filter(Boolean);
+    el.setAttribute("aria-label", full);
+    if (words.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     el.classList.add("typing-cursor");
-    let i = 0;
-    function type() {
-      el.textContent = text.slice(0, i);
-      if (i <= text.length) {
+    el.style.minHeight = "1.6em";
+    let w = 0, i = 0, erasing = false;
+    function tick() {
+      const word = words[w];
+      if (!erasing) {
         i++;
-        setTimeout(type, 30);
+        el.textContent = word.slice(0, i);
+        if (i === word.length) { erasing = true; return setTimeout(tick, 1400); }
+        return setTimeout(tick, 70);
       }
+      i--;
+      el.textContent = word.slice(0, i);
+      if (i === 0) { erasing = false; w = (w + 1) % words.length; return setTimeout(tick, 350); }
+      setTimeout(tick, 38);
     }
-    setTimeout(type, 650);
+    el.textContent = "";
+    setTimeout(tick, 650);
   }
 
   /* ------------------------------------------------------------------
@@ -586,7 +607,7 @@
     initReveal();
     initSkillBars();
     initSkillTabs();
-    initLightbox();
+    /* lightbox now lives in js/ux.js (gallery mode) */
     initBackToTop();
     initFooterYear();
     initContactForm();

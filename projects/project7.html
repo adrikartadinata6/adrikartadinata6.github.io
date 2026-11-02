@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IoT Lamp Control with MIT App Inventor &amp; Firebase | Adri Kartadinata</title>
+<meta name="description" content="IoT practicum project by Adri Kartadinata: an Android app built in MIT App Inventor sends ON/OFF commands to a Firebase Realtime Database to switch a lamp remotely.">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../fonts/manrope-latin-wght-normal.woff2">
+<link rel="stylesheet" href="../css/fonts.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/modern.css">
+<link rel="stylesheet" href="../css/ux.css">
+<link rel="icon" type="image/webp" href="../images/logos/mark-gear-circuit.webp">
+</head>
+<body>
+
+<div id="page-loader"><div class="loader-mark"><div class="loader-bar"></div><span>Loading…</span></div></div>
+
+<header class="navbar">
+  <div class="container">
+    <nav class="nav-links" id="nav-links">
+      <a href="../index.html" data-i18n="nav_home">Home</a>
+      <a href="../about.html" data-i18n="nav_about">About</a>
+      <a href="../skills.html" data-i18n="nav_skills">Skills</a>
+      <a href="../education.html" data-i18n="nav_education">Education</a>
+      <a href="../projects.html" class="active" data-i18n="nav_projects">Projects</a>
+      <a href="../experience.html" data-i18n="nav_experience">Experience</a>
+      <a href="../certificates.html" data-i18n="nav_certificates">Certificates</a>
+      <a href="../contact.html" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <div class="nav-tools">
+      <div class="nav-controls">
+        <div class="lang-toggle" role="group" aria-label="Language switch"><button type="button" data-lang="id">ID</button><button type="button" data-lang="en">EN</button></div>
+        <button type="button" id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode"></button>
+      </div>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main class="page-enter">
+
+  <!-- ============ PROJECT HEADER ============ -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Home</a> / <a href="../projects.html" data-i18n="nav_projects">Projects</a> / <span>IoT Lamp Control with MIT App Inventor &amp; Firebase</span></div>
+      <a href="../projects.html" class="btn btn-outline btn-sm back-btn reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        <span>Back to Projects</span>
+      </a>
+      <span class="eyebrow">IoT / Practicum</span>
+      <h1>IoT Lamp Control with MIT App Inventor &amp; Firebase</h1>
+      <div class="report-meta-row">
+        <span class="tag">IoT / Practicum</span>
+        <span class="tag">MIT App Inventor</span>
+        <span class="tag">Firebase Realtime Database</span>
+      </div>
+      <p class="lede report-summary">IoT practicum project: an Android app built in MIT App Inventor sends ON/OFF commands to a Firebase Realtime Database, which stores the lamp state as a simple value (1 or 0) for the IoT hardware to act on.</p>
+
+      <div class="report-thumb reveal" style="aspect-ratio:4/1; overflow:hidden; padding:0;">
+        <img src="../images/iot/iot-trainer-board.webp" alt="IoT trainer board running next to a laptop during the practicum session" class="zoomable" style="width:100%; height:100%; object-fit:cover;" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROJECT OVERVIEW ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Overview</span>
+        <h2>Project Overview</h2>
+      </div>
+      <div class="grid overview-grid">
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg></span>Background / Problem Statement</h3>
+          <p>Switching a load from a phone needs three parts to agree on one command: a mobile interface, a cloud service and the hardware that acts on it. This practicum built that chain end to end on a small scale.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></span>Project Objectives</h3>
+          <p>Build a mobile controller without text-based code, store the lamp command in a cloud database, show the commanded state inside the app, and confirm every change in the Firebase console.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.4 10.9c.5.4.9 1 .9 1.6V16h5v-.5c0-.6.4-1.2.9-1.6A6 6 0 0 0 12 3z"/></svg></span>Main Idea / System Concept</h3>
+          <p>Two buttons write a value to the tag <strong>/Lampu1</strong> in Firebase: <strong>1</strong> for ON and <strong>0</strong> for OFF. The database holds the single current state, so the app and the hardware never need to talk to each other directly.</p>
+        </div>
+        <div class="card overview-card reveal">
+          <h3><span class="icon-plate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>Application / Use Case</h3>
+          <p>The same pattern scales to remote switching of lighting, pumps and relays, and is a starting point for monitoring dashboards that read sensor values back from the cloud.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TECHNICAL DETAILS ============ -->
+  <section class="report-section section-alt">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Technical Details</span>
+        <h2>Technical Details</h2>
+      </div>
+
+      <p class="lede reveal">The app is built entirely from visual blocks. Each button stores a value in Firebase and updates a label, so the person using the app sees the state they just commanded.</p>
+
+      <div class="grid spec-columns" style="margin-top: var(--s-4);">
+        <div class="card overview-card reveal">
+          <h3>Hardware Used</h3>
+          <ul class="spec-list">
+            <li><strong>Item</strong> IoT trainer board</li>
+            <li><strong>Item</strong> Laptop for development and monitoring</li>
+            <li><strong>Item</strong> Android phone / emulator for the app</li>
+          </ul>
+        </div>
+        <div class="card overview-card reveal">
+          <h3>Software Used</h3>
+          <ul class="spec-list">
+            <li><strong>Item</strong> MIT App Inventor (Designer + Blocks)</li>
+            <li><strong>Item</strong> FirebaseDB component</li>
+            <li><strong>Item</strong> Firebase Realtime Database console</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--s-4);">
+        <h3 style="font-size:15px;">Programming Language(s) / Tools</h3>
+        <div class="tag-list" style="margin-top:10px;">
+          <span class="tag">Block programming</span><span class="tag">MIT App Inventor</span><span class="tag">Firebase RTDB</span><span class="tag">IoT</span>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <h3 style="font-size:15px; margin-top: var(--s-4);">Architecture / System Diagram</h3>
+        <div class="iot-flow" role="img" aria-label="Command flow: phone app writes to Firebase, Firebase holds the state, IoT board reads it and switches the lamp">
+          <div class="iot-node"><b>Android app</b><span>MIT App Inventor<br>ON / OFF buttons</span></div>
+          <div class="iot-link" aria-hidden="true"><i>StoreValue</i></div>
+          <div class="iot-node is-hub"><b>Firebase</b><span>Realtime Database<br>/Lampu1 = 1 or 0</span></div>
+          <div class="iot-link" aria-hidden="true"><i>Read state</i></div>
+          <div class="iot-node"><b>IoT board</b><span>Switches the lamp<br>from the stored value</span></div>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top: var(--s-5);">
+        <h3 style="font-size:15px; margin-bottom: var(--s-2);">Workflow Explanation</h3>
+        <div class="timeline">
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">1</div>
+            <h3 style="font-size:15px;">Design the interface</h3>
+            <p>Laid out a single screen in the App Inventor Designer with two buttons, ON and OFF, and a label that reports the current command.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">2</div>
+            <h3 style="font-size:15px;">Write the blocks</h3>
+            <p>On Button1 click, FirebaseDB1 stores the value 1 under the tag /Lampu1 and the label shows "Lamp=1". On Button2 click, it stores 0 and the label shows "Lamp=0".</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">3</div>
+            <h3 style="font-size:15px;">Sync through Firebase</h3>
+            <p>Each press writes to the Realtime Database, which keeps the latest command as the shared state for the lamp.</p>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot">4</div>
+            <h3 style="font-size:15px;">Verify in the console</h3>
+            <p>Checked the database tree after every press: Lampu1 reads "1" after ON and "0" after OFF, confirming the app and the cloud stay in step.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="report-section">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Gallery</span>
+        <h2>Project Gallery</h2>
+        <p>The app interface, its logic blocks and the database proof for both states.</p>
+      </div>
+      <div class="grid gallery-grid">
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/iot/appinventor-interface.webp" alt="App Inventor Designer view of the Firebase screen with ON and OFF buttons" class="zoomable contain" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">App interface: ON and OFF buttons in the Designer</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/iot/appinventor-blocks.webp" alt="App Inventor blocks: Button1 and Button2 click events storing 1 or 0 to the Lampu1 tag in FirebaseDB1" class="zoomable contain" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Logic blocks: each button stores a value and updates the label</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/iot/iot-trainer-board.webp" alt="IoT trainer board beside a laptop during the practicum" class="zoomable" style="object-position:38% 50%;" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">IoT trainer board during the practicum session</figcaption>
+        </figure>
+      </div>
+      <div class="gallery-pair">
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/iot/firebase-lamp-on.webp" alt="Firebase Realtime Database tree showing Lampu1 equal to 1" class="zoomable contain" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Firebase after ON: Lampu1 = "1"</figcaption>
+        </figure>
+        <figure class="reveal" style="margin:0;">
+          <div class="project-thumb"><img src="../images/iot/firebase-lamp-off.webp" alt="Firebase Realtime Database tree showing Lampu1 equal to 0" class="zoomable contain" loading="lazy" decoding="async"></div>
+          <figcaption class="text-soft" style="font-size:13px; margin-top:8px;">Firebase after OFF: Lampu1 = "0"</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="report-section section-alt">
+    <div class="container">
+      <div class="report-section-head reveal">
+        <span class="eyebrow">Results</span>
+        <h2>Results &amp; Outcomes</h2>
+      </div>
+      <div class="grid results-grid">
+        <div class="card result-card reveal">
+          <h3>Achievements</h3>
+          <p>Built a working phone-to-cloud controller in App Inventor and confirmed both states, ON and OFF, in the Firebase Realtime Database.</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Testing Data</h3>
+          <p>Every press was checked in the console: Lampu1 changed to "1" for ON and "0" for OFF, matching the label shown in the app.</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Skills Gained</h3>
+          <p>Event-driven block programming, cloud data modelling with tags and values, and the practice of verifying each link of an IoT chain separately.</p>
+        </div>
+        <div class="card result-card reveal">
+          <h3>Improvements &amp; Future Development</h3>
+          <p>Read the state back so the app shows the lamp's real status, add more channels (Lampu2, Lampu3), and add sensor readings and authentication to the database rules.</p>
+        </div>
+      </div>
+
+      <div class="report-nav reveal">
+        <a href="project6.html" class="prev-link"><span class="nav-dir">&larr; Previous</span><span class="nav-title">Automation Prototype Control Panels</span></a>
+        <a href="../projects.html" class="btn btn-outline btn-sm" style="align-self:center;">All Projects</a>
+        <span></span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand" style="color:#fff;"><img src="../images/logos/mark-gear-circuit.webp" alt="" class="brand-mark" width="34" height="34"><span>Adri Kartadinata</span></div>
+        <p data-i18n="footer_tagline">Mechatronics Engineer building dependable control systems for industrial and mining operations.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_quicklinks">Quick Links</h4>
+        <ul>
+          <li><a href="../about.html" data-i18n="nav_about">About</a></li>
+          <li><a href="../skills.html" data-i18n="nav_skills">Skills</a></li>
+          <li><a href="../projects.html" data-i18n="nav_projects">Projects</a></li>
+          <li><a href="../contact.html" data-i18n="nav_contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_connect">Connect</h4>
+        <ul>
+          <li><a href="https://linkedin.com/in/adri-kartadinata" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://github.com/adrikartadinata" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="mailto:adrikartadinata6@gmail.com">Email</a></li>
+          <li><span data-i18n="footer_location">Gresik, East Java, Indonesia</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span data-year></span> Adri Kartadinata. <span data-i18n="footer_rights">All rights reserved.</span></p>
+      <a href="#top" id="back-to-top" class="back-to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/modern.js"></script>
+<script src="../js/scroll-fx.js"></script>
+<script src="../js/pro.js"></script>
+<script src="../js/ux.js"></script>
+</body>
+</html>
