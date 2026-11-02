@@ -2,7 +2,11 @@
 (function () {
   "use strict";
   /* Performance tier: weak devices (or user choice) get "lite" before anything heavy starts */
+<<<<<<< HEAD
   try { const f = localStorage.getItem("fx-mode"), nv = navigator; if (f === "lite" || (f !== "full" && ((nv.hardwareConcurrency || 4) < 8 || (nv.deviceMemory || 8) < 8 || !matchMedia("(hover:hover) and (pointer:fine)").matches || (nv.connection && nv.connection.saveData)))) document.documentElement.classList.add("lite"); } catch (_) {}
+=======
+  try { const f = localStorage.getItem("fx-mode"), nv = navigator; if (f === "lite" || (f !== "full" && ((nv.hardwareConcurrency || 8) <= 4 || (nv.deviceMemory || 8) <= 4 || (nv.connection && nv.connection.saveData)))) document.documentElement.classList.add("lite"); } catch (_) {}
+>>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
   const lite = document.documentElement.classList.contains("lite");
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -53,12 +57,19 @@
   addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(() => { onScroll(); tick = false; }); } }, { passive: true });
   onScroll();
 
+<<<<<<< HEAD
   if (fine && !calm && !lite) {
+=======
+  if (fine && !calm) {
+>>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
     /* Cursor spotlight + gentle 3D tilt (axis-angle `rotate` composes with existing transforms) */
     const lit = ".card, .panel-card, .overview-card, .result-card, .doc-btn";
     const tilt = ".project-card, .feature-card, .cert-card, .hw-card, .skill-chip-card, .hero-portrait-frame";
     let lastT = null;
+<<<<<<< HEAD
     let cur = null;
+=======
+>>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
     document.addEventListener("pointermove", (e) => {
       const c = e.target.closest && e.target.closest(lit);
       if (c) { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px"); }
@@ -68,7 +79,10 @@
         const r = t.getBoundingClientRect();
         const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
         const deg = Math.hypot(nx, ny) * (t.matches(".hero-portrait-frame") ? 16 : 9);
+<<<<<<< HEAD
         cur = t;
+=======
+>>>>>>> 385d5a071321b1345fd912d32489bc3858cc0312
         t.style.rotate = ny.toFixed(3) + " " + (-nx).toFixed(3) + " 0 " + deg.toFixed(2) + "deg";
       }
     });
