@@ -26,6 +26,7 @@
     { n: "Performance mode: " + (lite ? "Lite (switch to Full)" : "Full (switch to Lite)"), t: "Action", run: () => { try { localStorage.setItem("fx-mode", lite ? "full" : "lite"); } catch (_) {} location.reload(); } },
     { n: "Open GitHub", t: "Link", run: () => window.open("https://github.com/adrikartadinata", "_blank", "noopener") },
   ];
+  window.PORTFOLIO_CMDS = cmds;
   const ov = mk("div", "cmdk", '<div class="cmdk-box" role="dialog" aria-modal="true" aria-label="Command menu"><input class="cmdk-in" placeholder="Type a command or search…" aria-label="Search commands" autocomplete="off"><ul class="cmdk-list" role="listbox"></ul><div class="cmdk-foot"><span>↑↓ navigate</span><span>↵ select</span><span>esc close</span></div></div>');
   document.body.append(ov);
   const inp = $(".cmdk-in", ov), list = $(".cmdk-list", ov); let sel = 0, shown = [], last = null;
@@ -118,7 +119,7 @@
   if (secs.length > 1) {
     const hud = mk("div", "hud", "<b></b><span></span><i></i>"); document.body.append(hud);
     const [b, s, i] = hud.children;
-    let hq = false; const upd0 = () => { hq = false; let c = 0; secs.forEach((x, k) => { if (x.getBoundingClientRect().top < innerHeight * 0.4) c = k; }); const mxs = document.documentElement.scrollHeight - innerHeight; b.textContent = String(c + 1).padStart(2, "0") + "/" + String(secs.length).padStart(2, "0"); s.textContent = ($("h1,h2", secs[c]).textContent || "").trim().slice(0, 28); i.textContent = (mxs > 0 ? Math.round((scrollY / mxs) * 100) : 0) + "%"; };
+    let hq = false; const upd0 = () => { hq = false; hud.classList.toggle("off", scrollY < 320); let c = 0; secs.forEach((x, k) => { if (x.getBoundingClientRect().top < innerHeight * 0.4) c = k; }); const mxs = document.documentElement.scrollHeight - innerHeight; b.textContent = String(c + 1).padStart(2, "0") + "/" + String(secs.length).padStart(2, "0"); s.textContent = ($("h1,h2", secs[c]).textContent || "").trim().slice(0, 28); i.textContent = (mxs > 0 ? Math.round((scrollY / mxs) * 100) : 0) + "%"; };
     const upd = () => { if (!hq) { hq = true; requestAnimationFrame(upd0); } }; addEventListener("scroll", upd, { passive: true }); upd0();
   }
 
