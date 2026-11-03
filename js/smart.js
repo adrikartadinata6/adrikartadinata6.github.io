@@ -91,11 +91,8 @@
   }
   if (hero) {
     greeting();
-    const last = $(".hero-social, .social-row", hero) || hero.lastElementChild;
-    const row = h("div", "hero-smart", btn("sm-pill", T({ en: "TL;DR in 3 seconds", id: "TL;DR 3 detik" }), openTldr), btn("sm-pill", T({ en: "Copy summary for HR", id: "Salin ringkasan untuk HR" }), copySummary));
-    last.after(row);
   }
-  if (/contact\.html/.test(location.pathname)) { const l = $("main .lede"); if (l) l.after(h("div", "hero-smart sm-contact", btn("btn btn-primary", T({ en: "Book a call", id: "Jadwalkan panggilan" }), openBook), btn("sm-pill", T({ en: "Copy summary for HR", id: "Salin ringkasan untuk HR" }), copySummary))); }
+  if (/contact\.html/.test(location.pathname)) { const l = $("main .lede"); if (l) l.after(h("div", "hero-smart sm-contact", btn("btn btn-primary", T({ en: "Book a call", id: "Jadwalkan panggilan" }), openBook))); }
 
   /* ---------- projects: search, filters, "view as" ---------- */
   const cards = $$(".project-card");
@@ -179,7 +176,6 @@
 
   /* palette integration */
   if (window.PORTFOLIO_CMDS) window.PORTFOLIO_CMDS.push(
-    { n: "TL;DR summary (3 seconds)", t: "Smart", run: openTldr }, { n: "Copy summary for HR", t: "Smart", run: copySummary },
     { n: "Book a call", t: "Smart", run: openBook }, { n: "Ask a question about Adri", t: "Smart", run: () => togglePanel(true) }, { n: "Create a tailored link for a company", t: "Smart", run: openLinkGen });
 
   /* re-render on language switch */
