@@ -7,31 +7,59 @@
   const STOP = new Set(("yang dan di ke dari untuk dengan itu ini nya atau pada ada saja aja dong deh sih kah lah ya kok tuh nih mau ingin tau tahu mengenai tentang soal pernah bisa sudah si sang para kepada oleh agar supaya karena jika kalau bila seperti sebagai juga lagi banget sangat lebih tolong mohon boleh apa apakah adalah the a an is are was were do does did you your he his him she her they i me my we our of in on at to for with about and or can could would should will have has had any some tell please there this that it be been as by from kamu anda saya aku dia beliau ia").split(" "));
   const IDW = new Set("yang dan apa apakah siapa bagaimana berapa dimana kapan kenapa mengapa kamu anda saya dia beliau punya bisa untuk dengan tidak pengalaman sudah belum sekarang tentang itu ini nya dong deh sih aja saja mau gimana udah lulusan kuliah kerja dimana tinggal".split(" "));
   const ENW = new Set("what who how when where why do does did you your he his have has can could would the is are was were about tell experience with for and of in any please".split(" "));
+  Object.assign(ABBR, { ttg: "tentang", tntg: "tentang", sm: "sama", tmn: "teman", bkn: "bukan", emg: "memang", emang: "memang", msh: "masih", lg: "lagi", bgt: "banget", bnr: "benar", krj: "kerja", kerj: "kerja", gmana: "bagaimana", gimn: "bagaimana", kmn: "kemana", dmana: "dimana", dmn: "dimana", ndak: "tidak", nda: "tidak", enggak: "tidak", engga: "tidak", gax: "tidak", gada: "tidak ada", sy: "saya", aq: "saya", ak: "aku", sdg: "sedang", sdh: "sudah", dlm: "dalam", spt: "seperti", tsb: "tersebut", dll: "dan lain lain", dsb: "dan seterusnya", yg: "yang", jd: "jadi", jgn: "jangan", bkh: "apakah", apkh: "apakah", apaan: "apa", ap: "apa", knp: "kenapa", ngapain: "mengapa", gmn: "bagaimana", kpn: "kapan", sbg: "sebagai", blh: "boleh", bole: "boleh", adry: "adri", adrie: "adri", adrii: "adri", ardi: "adri", andri: "adri", andry: "adri", kartadinta: "kartadinata", kartadinatta: "kartadinata", kartadnata: "kartadinata", elektro: "elektronika", elektronik: "elektronika", vlt: "volt", amp: "ampere", ampr: "ampere", amper: "ampere", wat: "watt", resistr: "resistor", resitor: "resistor", kapasitr: "kapasitor", capasitor: "kapasitor", capacitr: "capacitor", sensr: "sensor", senzor: "sensor", transistr: "transistor", tranzistor: "transistor", mikrokontroller: "mikrokontroler", microcontroler: "microcontroller", arduinoo: "arduino", ardiuno: "arduino", arduinio: "arduino", rlay: "relay", rele: "relay" });
   const strip = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const norm = (s) => strip(String(s).toLowerCase()).replace(/(.)\1{2,}/g, "$1$1").replace(/[^a-z0-9\s/+&.-]/g, " ").replace(/\s+/g, " ").trim().split(" ").map((w) => ABBR[w] || w).join(" ");
+  const norm = (s) => {
+    let t = strip(String(s).toLowerCase()).replace(/[’‘`´]/g, "'").replace(/(.)\1{2,}/g, "$1$1").replace(/[^a-z0-9\s/+&.\-]/g, " ").replace(/(\d)\s*\.\s*(\d)/g, "$1.$2").replace(/\s+/g, " ").trim();
+    t = t.replace(/\bdi mana\b/g, "dimana").replace(/\bke mana\b/g, "kemana").replace(/\bdari mana\b/g, "darimana").replace(/\bsiapa sih\b/g, "siapa").replace(/\bapa sih\b/g, "apa");
+    return t.split(" ").map((w) => { w = w.replace(/^[.\-/]+|[.\-/]+$/g, ""); if (w.length > 5 && /nya$/.test(w) && !ABBR[w]) w = w.slice(0, -3); return ABBR[w] || w; }).filter(Boolean).join(" ");
+  };
   const toks = (n) => n.split(" ").filter((w) => w && !STOP.has(w));
-  function lev(a, b, max) { if (Math.abs(a.length - b.length) > max) return max + 1; let p = Array.from({ length: b.length + 1 }, (_, i) => i); for (let i = 1; i <= a.length; i++) { const c = [i]; let min = i; for (let j = 1; j <= b.length; j++) { const v = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); c.push(v); if (v < min) min = v; } if (min > max) return max + 1; p = c; } return p[b.length]; }
+  /* Damerau-Levenshtein (optimal string alignment) with early exit */
+  function lev(a, b, max) {
+    const al = a.length, bl = b.length; if (Math.abs(al - bl) > max) return max + 1;
+    let pp = null, p = Array.from({ length: bl + 1 }, (_, i) => i), pmin = 0;
+    for (let i = 1; i <= al; i++) {
+      const c = [i]; let min = i;
+      for (let j = 1; j <= bl; j++) {
+        let v = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, pp[j - 2] + 1);
+        c.push(v); if (v < min) min = v;
+      }
+      if (min > max && pmin > max) return max + 1;
+      pp = p; p = c; pmin = min;
+    }
+    return p[bl];
+  }
+  const sortedLetters = (w) => w.split("").sort().join("");
   function tm(t, k) { // token vs keyword similarity 0..1
-    if (t === k) return 1; const n = Math.min(t.length, k.length);
-    if (n >= 4 && (t.startsWith(k) || k.startsWith(t))) return 0.85;
-    if (n >= 4) { const d = lev(t, k, n >= 8 ? 2 : 1); if (d <= (n >= 8 ? 2 : 1)) return d === 1 ? 0.78 : 0.65; }
+    if (t === k) return 1; const n = Math.min(t.length, k.length), m = Math.max(t.length, k.length);
+    if (n >= 4 && (t.startsWith(k) || k.startsWith(t)) && m - n <= 5) return m - n <= 2 ? 0.85 : 0.6;
+    if (n >= 4) { const mx = m >= 10 ? 3 : m >= 7 ? 2 : 1; const d = lev(t, k, mx); if (d <= mx) return d === 1 ? 0.78 : d === 2 ? 0.65 : 0.5; }
+    if (n === 3 && m === 3 && sortedLetters(t) === sortedLetters(k) && t[0] === k[0]) return 0.7;
     return 0;
   }
-  function dice(qt, et) { if (!qt.length || !et.length) return 0; let hit = 0; et.forEach((e) => { if (qt.some((q) => tm(q, e) >= 0.65)) hit++; }); let back = 0; qt.forEach((q) => { if (et.some((e) => tm(q, e) >= 0.65)) back++; }); return (hit / et.length + back / qt.length) / 2; }
-  function detect(n, dflt) { const t = n.split(" "); let i = 0, e = 0; t.forEach((w) => { if (IDW.has(w)) i++; if (ENW.has(w)) e++; }); return i > e ? "id" : e > i ? "en" : dflt; }
-
+  function dice(qt, et) { if (!qt.length || !et.length) return 0; let hit = 0; et.forEach((e) => { let b = 0; qt.forEach((q) => { const m = tm(q, e); if (m > b) b = m; }); if (b >= 0.65) hit += b; }); let back = 0; qt.forEach((q) => { let b = 0; et.forEach((e) => { const m = tm(q, e); if (m > b) b = m; }); if (b >= 0.65) back += b; }); return (hit / et.length + back / qt.length) / 2; }
+  const grams = (s) => { const t = "  " + s + " ", o = new Set(); for (let i = 0; i < t.length - 2; i++) o.add(t.slice(i, i + 3)); return o; };
+  function jac(a, b) { if (!a.size || !b.size) return 0; let x = 0; a.forEach((g) => { if (b.has(g)) x++; }); return x / (a.size + b.size - x); }
+  const IDW2 = new Set("hitung hitungkan hitungin jelaskan jelasin tentang cara kerja fungsi rumus beda perbedaan contoh kalau jadi bagaimana berapa kenapa mengapa saya aku apa itu adalah dengan untuk yang di ke dari pada ini bisa tidak sama banget dong deh sih tuh nih lah kok punya ada gimana kapan siapa dimana tolong carikan bantu bantuin lebih kurang antara atau tapi karena supaya agar jika bila sudah belum sedang akan masih juga lagi".split(" "));
+  const ENW2 = new Set("calculate compute explain difference between function formula example how what why when which if then using use used value does did is are was were can could would should the a an of for to in on with without about tell me please give show find what's whats works work working mean means".split(" "));
+  function detect(n, dflt) { const t = n.split(" "); let i = 0, e = 0; t.forEach((w) => { if (IDW.has(w) || IDW2.has(w)) i++; if (ENW.has(w) || ENW2.has(w)) e++; }); return i > e ? "id" : e > i ? "en" : dflt; }
   /* ---------- knowledge base ---------- */
-  const KB = []; const P = (n) => "projects/project" + n + ".html";
-  function E(id, topic, kw, ex, en, idn, links, o) { KB.push(Object.assign({ id, topic, kw: kw.map((s) => { const [w, x] = s.split("|"); return [norm(w), +x || 2]; }), ex: ex.map((q) => toks(norm(q))), a: { en, id: idn }, l: links || [] }, o)); }
+  const KB = []; const BYID = new Map(); const P = (n) => "projects/project" + n + ".html";
+  function E(id, topic, kw, ex, en, idn, links, o) {
+    const ent = Object.assign({ id, topic, kw: kw.map((s) => { const [w, x] = s.split("|"); return [norm(w), +x || 2]; }), ex: ex.map((q) => toks(norm(q))), a: { en, id: idn }, l: links || [] }, o);
+    ent.exg = ent.ex.map((t) => grams(t.join(" "))); ent.exn = ex.map((q) => norm(q)); KB.push(ent); BYID.set(id, ent); return ent;
+  }
   const L = (u, en, id) => [u, { en, id: id || en }];
 
-  E("profile", { en: "Who is Adri?", id: "Siapa Adri?" }, ["siapa|2", "who|2", "adri|3", "kartadinata|3", "profil|3", "profile|3", "perkenalan|3", "kenalkan|3", "introduce|3", "about|2", "tentang adri|3", "overview|2", "summary|2", "ringkasan|2", "rangkuman|2", "biodata|3"],
+  E("profile", { en: "Who is Adri?", id: "Siapa Adri?" }, ["siapa|2", "who|2", "adri|1", "kartadinata|2", "profil|3", "profile|3", "perkenalan|3", "kenalkan|3", "introduce|3", "about|2", "tentang adri|3", "overview|2", "summary|2", "ringkasan|2", "rangkuman|2", "biodata|3"],
     ["siapa adri", "who is adri", "tell me about adri", "perkenalkan diri", "siapa dia", "ceritakan tentang adri", "adri itu siapa", "who is this", "profil adri"],
     "Adri Kartadinata is a Mechatronics Engineer, a Mechatronics Engineering Technology graduate from Politeknik Manufaktur Bandung (GPA 3.28/4.00). He currently works as a Junior Engineer at PT Aldzama in Gresik, across instrumentation, robotics and furnace automation for PT Freeport Indonesia projects. His work sits between PLC-driven control, electrical panel design and on-site project execution.",
     "Adri Kartadinata adalah Mechatronics Engineer, lulusan Teknologi Rekayasa Mekatronika Politeknik Manufaktur Bandung (IPK 3,28/4,00). Saat ini ia bekerja sebagai Junior Engineer di PT Aldzama, Gresik, di bidang instrumentasi, robotika, dan otomasi furnace untuk proyek PT Freeport Indonesia. Pekerjaannya ada di antara kontrol berbasis PLC, desain panel listrik, dan eksekusi proyek di lapangan.",
     [L("about.html", "About Adri", "Tentang Adri"), L("experience.html", "Experience", "Pengalaman")], { f: ["why", "job", "edu"] });
   E("bot", { en: "Who are you?", id: "Kamu siapa?" }, ["kamu siapa|4", "who are you|4", "are you ai|4", "bot|3", "robot|2", "chatgpt|3", "gpt|3", "manusia|3", "human|3", "real person|3", "asisten|3", "assistant|3", "kamu ai|4", "artificial|3", "dibuat|2", "trained|2", "dilatih|2"],
-    ["kamu siapa", "are you a bot", "kamu ai ya", "are you human", "kamu manusia atau bot", "who made you", "apakah kamu chatgpt"],
+    ["kamu siapa", "siapa kamu", "who are you", "are you a bot", "kamu ai ya", "are you human", "kamu manusia atau bot", "who made you", "apakah kamu chatgpt"],
     "I'm the FAQ assistant on Adri's portfolio. I'm not a person and not a live AI model: I search the facts published on this site and answer from them, with links to the proof. For anything beyond that, email Adri directly at " + EMAIL + ".",
     "Saya asisten FAQ di portofolio Adri. Saya bukan manusia dan bukan model AI langsung: saya mencari fakta yang dipublikasikan di situs ini lalu menjawab dari sana, lengkap dengan tautan buktinya. Untuk hal di luar itu, email Adri langsung di " + EMAIL + ".", [], { f: ["profile", "why"] });
   E("job", { en: "Current job", id: "Pekerjaan saat ini" }, ["sekarang|3", "now|3", "current|3", "currently|3", "saat ini|3", "bekerja|3", "kerja|2", "working|3", "work|2", "company|3", "perusahaan|3", "kantor|3", "employer|3", "posisi|2", "position|2", "jabatan|3", "job|3", "title|2", "aldzama|3", "pekerjaan|3"],
@@ -195,7 +223,7 @@
     ["download cv", "minta cv", "ada resume", "unduh cv adri", "where can i get his cv"],
     "Use the Download CV button in the hero section or the quick-contact bar that appears as you scroll, or press Ctrl+K and choose Download CV.",
     "Gunakan tombol Unduh CV di bagian hero atau bilah kontak cepat yang muncul saat scroll, atau tekan Ctrl+K lalu pilih Download CV.", [L("index.html", "Go to home", "Ke beranda")], { f: ["contact"] });
-  E("why", { en: "Why hire Adri?", id: "Kenapa Adri?" }, ["kenapa|3", "mengapa|3", "why|3", "alasan|3", "reason|3", "kelebihan|4", "strength|4", "strengths|4", "keunggulan|4", "plus|2", "advantage|3", "unggul|3", "pilih|3", "choose|3", "hire|2", "cocok|3", "fit|2", "nilai jual|3", "value|2", "special|2", "istimewa|2", "tldr|4", "singkat|3", "rangkum|3", "different|2", "beda|2", "kekurangan|3", "weakness|4", "kelemahan|4", "lemah|3"],
+  E("why", { en: "Why hire Adri?", id: "Kenapa Adri?" }, ["kenapa|1.5", "mengapa|1.5", "why|1.5", "alasan|3", "reason|3", "kelebihan|4", "strength|4", "strengths|4", "keunggulan|4", "plus|2", "advantage|3", "unggul|3", "pilih|3", "choose|3", "hire|2", "cocok|3", "fit|2", "nilai jual|3", "value|2", "special|2", "istimewa|2", "tldr|4", "singkat|3", "rangkum|3", "different|2", "beda|2", "kekurangan|3", "weakness|4", "kelemahan|4", "lemah|3"],
     ["kenapa harus adri", "why should we hire adri", "apa kelebihannya", "strengths", "kenapa memilih adri", "apa kelemahan"],
     "Short version: a Polman Bandung mechatronics graduate (GPA 3.28) who already works on real PTFI projects, with hands-on PLC (Omron, Mitsubishi, Siemens), panel design, tender engineering and on-site supervision, plus Ahli K3 Umum and BNSP Senior Mechatronics Technician certifications and a zero-LTI record. Weaknesses and salary aren't covered here; those are best discussed in a call.",
     "Singkatnya: lulusan mekatronika Polman Bandung (IPK 3,28) yang sudah mengerjakan proyek nyata PTFI, dengan pengalaman langsung PLC (Omron, Mitsubishi, Siemens), desain panel, tender engineering, dan supervisi lapangan, plus sertifikasi Ahli K3 Umum dan BNSP Senior Mechatronics Technician serta rekor zero-LTI. Kelemahan dan gaji tidak dibahas di sini; sebaiknya dibicarakan lewat panggilan.",
@@ -226,42 +254,132 @@
     "Tujuh proyek: PTFI Copper Chip Milling System, Furnace Burner Control System, Kiln Demolition (PT Hensheng New Energy), Refractory Lining dan Launder Cover (PTFI), skripsi Sonar Bawah Air, Automation Prototype Control Panels, dan IoT Lamp Control dengan MIT App Inventor & Firebase. Halaman Proyek memungkinkan pencarian dan filter berdasarkan kategori: Otomasi & Kontrol, Proyek Industri, atau Embedded & IoT.",
     [L("projects.html", "Open Projects", "Buka Proyek")], { f: ["copper", "thesis"] });
 
-  const SMALL = {
-    hi: { kw: ["halo", "hai", "hi", "hello", "hey", "pagi", "siang", "sore", "malam", "assalamualaikum", "permisi", "selamat", "p", "test", "tes"], en: "Hi! Ask me anything about Adri's experience, skills, projects, certificates or how to contact him.", id: "Halo! Tanyakan apa saja tentang pengalaman, skill, proyek, sertifikat Adri, atau cara menghubunginya.", f: ["profile", "why", "plc"] },
-    thanks: { kw: ["makasih", "terima kasih", "thanks", "thank", "thx", "tengkyu", "mantap", "oke", "ok", "sip", "good", "great", "nice", "keren", "bagus"], en: "You're welcome. Anything else you'd like to know, or shall I help you book a call?", id: "Sama-sama. Ada lagi yang ingin ditanyakan, atau mau saya bantu jadwalkan panggilan?", f: ["book", "why"] },
-    bye: { kw: ["bye", "dadah", "sampai jumpa", "goodbye", "see you", "cukup"], en: "Thanks for stopping by. You can always reach Adri at " + EMAIL + ".", id: "Terima kasih sudah mampir. Anda bisa menghubungi Adri kapan saja di " + EMAIL + ".", f: [] },
-  };
-  const byId = Object.fromEntries(KB.map((e) => [e.id, e]));
-  const chipFor = (id, lg) => (byId[id] ? { id, text: byId[id].topic[lg] } : null);
-
-  function score(e, qn, qt) {
-    let s = 0;
+  /* ======================================================================
+     Engine v2: vocabulary-aware typo correction, intent detection, follow-up
+     memory, and plug-in modules (people / electronics / parts / calculators / chat).
+     ====================================================================== */
+  const CALCS = [], RES = [], RULES = [], CFG = { rand: Math.random, threshold: 2.4 };
+  const ctx = { last: null, seen: new Set(), more: new Set(), calc: null, n: 0, lastText: "" };
+  const EXTRA = new Set();
+  let VOC = new Set(), VF = Object.create(null), VOCL = [], DF = Object.create(null), SK = Object.create(null);
+  const skel = (w) => w[0] + w.slice(1).replace(/[aeiou]/g, "").replace(/(.)\1+/g, "$1");
+  function addVocab(words) { words.forEach((w) => norm(w).split(" ").forEach((x) => { if (x.length > 1) EXTRA.add(x); })); }
+  function rebuild() {
+    VOC = new Set(); VF = Object.create(null); DF = Object.create(null); SK = Object.create(null);
+    const bump = (w) => { VOC.add(w); VF[w] = (VF[w] || 0) + 1; };
+    KB.forEach((e) => {
+      const seen = new Set();
+      e.kw.forEach(([k]) => k.split(" ").forEach((x) => { if (x.length > 1) { bump(x); seen.add(x); } }));
+      seen.forEach((x) => { DF[x] = (DF[x] || 0) + 1; });
+      e.ex.forEach((t) => t.forEach((x) => bump(x)));
+    });
+    EXTRA.forEach((w) => bump(w)); STOP.forEach((w) => VOC.add(w));
+    KB.forEach((e) => [e.a.en, e.a.id].forEach((txt) => norm(txt || "").split(" ").forEach((w) => { if (w.length >= 4 && !/\d/.test(w) && !VOC.has(w)) { VOC.add(w); VF[w] = 0; } })));
+    VOCL = Array.from(VOC);
+    VOCL.forEach((w) => { if (w.length >= 5 && !/\d/.test(w)) { const k = skel(w); (SK[k] = SK[k] || []).push(w); } });
+  }
+  const idf = (t) => { const d = DF[t]; if (!d) return 1; return Math.max(0.65, Math.min(1.15, 1.2 - 0.16 * Math.log(d))); };
+  function correctOne(t) {
+    if (VOC.has(t) || t.length < 4 || /\d/.test(t) || ABBR[t]) return [t];
+    let best = null, bd = 9, bf = -1, ties = 0; const mx = t.length >= 9 ? 2 : 1;
+    for (const v of VOCL) {
+      if (v.length < 4 || Math.abs(v.length - t.length) > mx) continue;
+      const d = lev(t, v, mx); if (d > mx) continue;
+      if (d < bd || (d === bd && VF[v] > bf)) { if (d < bd) ties = 0; bd = d; best = v; bf = VF[v]; ties++; } else if (d === bd && VF[v] === bf) ties++;
+    }
+    if (best && ties === 1) return [best];
+    if (t.length >= 6) { for (let i = 3; i <= t.length - 3; i++) { const a = t.slice(0, i), b = t.slice(i); if (VOC.has(a) && VOC.has(b) && a.length >= 3 && b.length >= 3) return [a, b]; } }
+    if (!best && t.length >= 5) { const c = SK[skel(t)]; if (c && c.length === 1) return [c[0]]; }
+    return [t];
+  }
+  const correct = (tk) => tk.reduce((o, t) => o.concat(correctOne(t)), []);
+  function prep(query) {
+    const raw = String(query == null ? "" : query), n0 = norm(raw), t = correct(n0 ? n0.split(" ") : []), qn = t.join(" ");
+    const qt = t.filter((w) => w && !STOP.has(w));
+    return { raw, qn, tk: t, qt, g: grams(qt.join(" ")) };
+  }
+  const SELF = /(^| )(adri|dia|beliau|he|his|him|kartadinata|orang ini|this guy|this person|pak adri|mas adri)( |$)/;
+  const TECHQ = /(^| )(apa itu|apakah itu|what is|what are|what's|whats|jelaskan|jelasin|explain|cara kerja|how does|how do|how is|fungsi|function of|rumus|formula|datasheet|spesifikasi|specs?|pinout|beda|perbedaan|difference|vs|versus|contoh|example|how to|bagaimana cara|cara pakai|cara menghitung|how to calculate|kelebihan|kekurangan|pros and cons|jenis|types of|macam|principle|prinsip|pengertian|definisi|definition)( |$)/;
+  function score(e, P, fl) {
+    const { qn, qt } = P; let s = 0;
     for (const [kw, w] of e.kw) {
       if (kw.includes(" ")) { if (qn.includes(kw)) s += w * 1.3; else { const kt = toks(kw); if (kt.length > 1 && kt.every((k) => qt.some((q) => tm(q, k) >= 0.78))) s += w * 0.9; } }
-      else { let best = 0; for (const q of qt) { const m = tm(q, kw); if (m > best) best = m; } s += w * best; }
+      else { let best = 0; for (const q of qt) { const m = tm(q, kw); if (m > best) best = m; } if (best) s += w * best * idf(kw); }
     }
-    let bd = 0; for (const x of e.ex) { const d = dice(qt, x); if (d > bd) bd = d; }
-    return s + bd * 7;
+    let bd = 0, bt = 0; for (const x of e.ex) { const d = dice(qt, x); if (d > bd) bd = d; }
+    if (e.exg) for (const g of e.exg) { const j = jac(P.g, g); if (j > bt) bt = j; }
+    s += bd * 7 + bt * 3;
+    if (e.exn && e.exn.indexOf(qn) > -1) s += 9;
+    if (s > 0) {
+      if (fl.self && !fl.tech) s += e.tech ? -1.5 : 1.5;
+      else if (fl.tech && !fl.self) s += e.tech ? 2.5 : -1;
+      else if (!fl.self && !fl.tech && !e.tech) s += 0.4;
+      if (ctx.last && ctx.last.f && ctx.last.f.indexOf(e.id) > -1) s += 0.5;
+    }
+    return s;
   }
-  function ask(query, dflt) {
-    const qn = norm(query), qt = toks(qn), lg = detect(qn, dflt || "en");
-    if (!qn) return { lang: lg, kind: "empty", text: lg === "id" ? "Silakan tulis pertanyaan Anda." : "Please type a question.", links: [], chips: [] };
-    const raw = qn.split(" ");
-    for (const [k, v] of Object.entries(SMALL)) { if (raw.length <= 4 && raw.some((w) => v.kw.some((s) => (s.length > 3 ? tm(w, s) >= 0.78 : w === s)))) { const strong = KB.some((e) => score(e, qn, qt) >= 4); if (!strong) return { lang: lg, kind: k, text: v[lg], links: [], chips: v.f.map((i) => chipFor(i, lg)).filter(Boolean) }; } }
-    const ranked = KB.map((e) => [e, score(e, qn, qt)]).sort((a, b) => b[1] - a[1]);
-    const [top, s1] = ranked[0], s2 = ranked[1][1];
-    if (s1 < 2.2) {
-      return { lang: lg, kind: "miss", text: lg === "id" ? "Saya belum menemukan jawaban pasti untuk itu di situs ini. Mungkin salah satu topik ini yang Anda maksud, atau email Adri langsung di " + EMAIL + "." : "I couldn't find a firm answer for that on this site. Maybe one of these topics is what you mean, or email Adri directly at " + EMAIL + ".", links: [], mail: true, chips: ranked.slice(0, 3).map(([e]) => chipFor(e.id, lg)) };
+  const chipFor = (id, lg) => { const e = BYID.get(id); return e ? { id, text: e.topic[lg] } : null; };
+  const mkChips = (ids, lg, n) => (ids || []).map((i) => chipFor(i, lg)).filter(Boolean).slice(0, n || 3);
+  const linksOf = (e, lg) => e.l.map(([u, t]) => [u, t[lg]]);
+  function answerOf(e, lg, extra) {
+    const out = { lang: lg, kind: "answer", id: e.id, text: e.a[lg] || e.a.en, links: linksOf(e, lg), act: e.act, chips: mkChips(e.f, lg) };
+    ctx.last = e; ctx.seen.add(e.id); ctx.lastText = out.text;
+    return Object.assign(out, extra || {});
+  }
+  function byIdAnswer(id, lg) { const e = BYID.get(id); if (!e) return null; return answerOf(e, lg); }
+  const T = (lg, en, id) => (lg === "id" ? id : en);
+  const MORE_RE = /^(?:dan |terus |lalu |and |then |ok |oke |ya )?(?:detail|detailnya|lebih detail|lebih lengkap|lengkapnya|selengkapnya|rinci|lebih rinci|jelaskan lagi|jelasin lagi|lagi|lanjut|lanjutkan|terus|lalu|selanjutnya|next|more|tell me more|more detail|more details|elaborate|go on|continue|and|then|dan|contoh|contohnya|example|examples|misalnya|for example|apa maksud|maksud|what do you mean|kok bisa|kenapa begitu|why is that|tambahan|anything else|ada lagi|yang lain|lainnya|others|what else|apa lagi)\??$/;
+  const EXAMPLE_RE = /(contoh|example|misalnya|for example)/;
+  function followUp(P, lg) {
+    if (!ctx.last || P.tk.length > 5 || !MORE_RE.test(P.qn)) return null;
+    const e = ctx.last;
+    if (EXAMPLE_RE.test(P.qn) && e.try) { const r = ask(e.try[lg] || e.try.en, lg, true); r.text = T(lg, "Example: ", "Contoh: ") + (e.try[lg] || e.try.en) + "\n\n" + r.text; return r; }
+    if (e.more && !ctx.more.has(e.id)) { ctx.more.add(e.id); return { lang: lg, kind: "answer", id: e.id, text: e.more[lg] || e.more.en, links: linksOf(e, lg), act: e.act, chips: mkChips(e.f, lg) }; }
+    const nxt = (e.f || []).find((i) => !ctx.seen.has(i) && BYID.get(i));
+    if (nxt) { const r = byIdAnswer(nxt, lg); r.text = T(lg, "Related: ", "Terkait: ") + BYID.get(nxt).topic[lg] + "\n" + r.text; return r; }
+    return { lang: lg, kind: "answer", id: e.id, text: T(lg, "That's everything I have on this topic. Try another question, or email Adri at " + EMAIL + " for specifics.", "Itu semua yang saya punya untuk topik ini. Coba pertanyaan lain, atau email Adri di " + EMAIL + " untuk hal yang lebih spesifik."), links: [], mail: true, chips: mkChips(e.f, lg) };
+  }
+  function ask(query, dflt, internal) {
+    ctx.n++;
+    const P = prep(query), lg = detect(P.qn, dflt || "en");
+    if (!P.qn && !/\d/.test(P.raw)) return { lang: lg, kind: "empty", text: lg === "id" ? "Silakan tulis pertanyaan Anda." : "Please type a question.", links: [], chips: [] };
+    if (!internal) { const f = followUp(P, lg); if (f) return f; }
+    for (const fn of CALCS) { let r = null; try { r = fn(P, lg, ctx, CFG); } catch (_) { r = null; } if (r) { r.lang = r.lang || lg; r.kind = r.kind || "calc"; r.links = r.links || []; r.chips = r.chips || []; ctx.lastText = r.text; return r; } }
+    const fl = { self: SELF.test(P.qn), tech: TECHQ.test(P.qn) };
+    for (const fn of RES) { let r = null; try { r = fn(P, lg, fl, ctx, CFG); } catch (_) { r = null; } if (r) { r.lang = r.lang || lg; r.links = r.links || []; r.chips = r.chips || []; return r; } }
+    const ranked = KB.map((e) => [e, score(e, P, fl)]).sort((a, b) => b[1] - a[1]);
+    const [top, s1] = ranked[0] || [null, 0], s2 = ranked[1] ? ranked[1][1] : 0;
+    for (const r of RULES) { if (r.pre || s1 < CFG.threshold + 1.6) { let o = null; try { o = r.run(P, lg, ctx, CFG, s1); } catch (_) { o = null; } if (o) { o.lang = o.lang || lg; o.kind = o.kind || "chat"; o.links = o.links || []; o.chips = o.chips || []; return o; } } }
+    if (!top || s1 < CFG.threshold) {
+      const guess = ranked.slice(0, 3).filter((x) => x[1] > 0.6).map(([e]) => chipFor(e.id, lg));
+      return { lang: lg, kind: "miss", text: lg === "id" ? "Saya belum menemukan jawaban pasti untuk itu. Coba sebut nama komponen atau sensornya (mis. \"DHT22\", \"load cell\"), minta hitungan (mis. \"hitung resistor LED 5V 20mA\"), atau tanya soal Adri (pengalaman, proyek, sertifikat). Atau email Adri langsung di " + EMAIL + "." : "I couldn't find a firm answer for that. Try naming the component or sensor (e.g. \"DHT22\", \"load cell\"), ask for a calculation (e.g. \"LED resistor 5V 20mA\"), or ask about Adri (experience, projects, certificates). Or email Adri directly at " + EMAIL + ".", links: [], mail: true, chips: guess.length ? guess : mkChips(["profile", "plc", "instr"], lg) };
     }
-    const chips = (top.f || []).map((i) => chipFor(i, lg)).filter(Boolean).slice(0, 3);
-    const out = { lang: lg, kind: "answer", id: top.id, text: top.a[lg], links: top.l.map(([u, t]) => [u, t[lg]]), act: top.act, chips, conf: s1 };
-    if (s1 < 4.5 && s2 > s1 * 0.8) { out.text = (lg === "id" ? "Mungkin maksud Anda: " : "Maybe you mean: ") + top.topic[lg] + "\n" + out.text; out.chips = [ranked[1][0].id].map((i) => chipFor(i, lg)).concat(out.chips).slice(0, 3); }
+    const out = answerOf(top, lg, { conf: s1 });
+    if (s1 < 4.5 && s2 > s1 * 0.8 && ranked[1][0].id !== top.id) { out.text = (lg === "id" ? "Mungkin maksud Anda: " : "Maybe you mean: ") + top.topic[lg] + "\n" + out.text; out.chips = [chipFor(ranked[1][0].id, lg)].concat(out.chips).filter(Boolean).slice(0, 3); }
     return out;
   }
-  function byIdAnswer(id, lg) {
-    const e = byId[id]; if (!e) return null;
-    return { lang: lg, kind: "answer", id, text: e.a[lg], links: e.l.map(([u, t]) => [u, t[lg]]), act: e.act, chips: (e.f || []).map((i) => chipFor(i, lg)).filter(Boolean).slice(0, 3) };
-  }
-  const api = { ask, byId: byIdAnswer, KB, norm, toks, detect };
+
+  /* ---------- plug-in API (used by brain-*.js modules) ---------- */
+  const api = {
+    ask, byId: byIdAnswer, KB, norm, toks, detect, prep, ctx, CFG, EMAIL, PHONE, E, L, P, T, chipFor, mkChips, tm, lev, rebuild, addVocab,
+    get: (id) => BYID.get(id),
+    addCalc: (fn, first) => { first ? CALCS.unshift(fn) : CALCS.push(fn); },
+    addResolver: (fn) => { RES.push(fn); },
+    addRule: (run, pre) => { RULES.push({ run, pre: !!pre }); },
+    reset: () => { ctx.last = null; ctx.seen.clear(); ctx.more.clear(); ctx.calc = null; ctx.n = 0; },
+    pick: (arr, key) => { const used = ctx["u_" + key] || (ctx["u_" + key] = []); let i, g = 0; do { i = Math.floor(CFG.rand() * arr.length); g++; } while (arr.length > 1 && used.indexOf(i) > -1 && g < 20); used.push(i); if (used.length > Math.min(arr.length - 1, 12)) used.shift(); return arr[i]; },
+    rank: (q) => { const P = prep(q), fl = { self: SELF.test(P.qn), tech: TECHQ.test(P.qn) }; return KB.map((e) => [e.id, +score(e, P, fl).toFixed(2)]).sort((a, b) => b[1] - a[1]).slice(0, 5); },
+    modules: [],
+  };
+  rebuild();
+  api.finish = () => { rebuild(); };
   root.AdriBrain = api; if (typeof module !== "undefined") module.exports = api;
+
+  /* ---------- lazy-load the extra knowledge modules (no HTML change needed) ---------- */
+  if (typeof document !== "undefined") {
+    try {
+      const cs = document.currentScript, src = cs && cs.src ? cs.src : "", dir = src.replace(/[^/]*(\?.*)?(#.*)?$/, ""), q = (src.match(/\?.*$/) || [""])[0];
+      ["brain-people.js", "brain-elec.js", "brain-parts.js", "brain-calc.js", "brain-chat.js"].forEach((f) => { const s = document.createElement("script"); s.src = dir + f + q; s.async = false; s.onload = () => api.modules.push(f); (document.head || document.documentElement).appendChild(s); });
+    } catch (_) { /* base knowledge still works */ }
+  }
 })(typeof window !== "undefined" ? window : globalThis);
