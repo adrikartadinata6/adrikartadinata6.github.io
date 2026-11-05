@@ -18,6 +18,8 @@
      ------------------------------------------------------------------ */
   const translations = {
     en: {
+      hw_sensors_title: "Sensors", hw_sensors_note: "Sensor modules on the bench: proximity, ultrasonic, environment and motion sensing. Tap a card for specs.",
+      onsite_eyebrow: "On site", onsite_title: "Where the work happens", onsite_cap1: "In PT Aldzama coveralls and full PPE.", onsite_cap2: "Safety-first on every site visit.", site_photos_label: "Site photos",
       fnd_eyebrow: "Foundations", fnd_title: "The field I work in", fnd_text: "Mechatronics joins mechanical, electronic and control systems. Automation puts that combination to work on the production floor.",
       aff_eyebrow: "Affiliations", aff_title: "Teams and communities",
       polman_eyebrow: "Polman Bandung", polman_title: "Trained on the factory floor", polman_text: "Four years of workshop and automation-lab practice shaped how I work: build it, wire it, test it, then document it.",
@@ -158,6 +160,8 @@
       error_back: "Back to Home"
     },
     id: {
+      hw_sensors_title: "Sensor", hw_sensors_note: "Modul sensor di meja kerja: proximity, ultrasonik, lingkungan, dan gerak. Ketuk kartu untuk spesifikasi.",
+      onsite_eyebrow: "Di lapangan", onsite_title: "Tempat pekerjaan berlangsung", onsite_cap1: "Dengan coverall PT Aldzama dan APD lengkap.", onsite_cap2: "Utamakan keselamatan di setiap kunjungan lapangan.", site_photos_label: "Foto lapangan",
       fnd_eyebrow: "Dasar Keilmuan", fnd_title: "Bidang yang saya geluti", fnd_text: "Mekatronika menggabungkan sistem mekanik, elektronik, dan kontrol. Otomasi menerapkan gabungan itu di lantai produksi.",
       aff_eyebrow: "Afiliasi", aff_title: "Tim dan komunitas",
       polman_eyebrow: "Polman Bandung", polman_title: "Dibentuk di lantai pabrik", polman_text: "Empat tahun praktik di bengkel dan laboratorium otomasi membentuk cara kerja saya: rakit, kabel, uji, lalu dokumentasikan.",
