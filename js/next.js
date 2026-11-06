@@ -297,36 +297,19 @@
     try { await navigator.clipboard.writeText(url); say(t("copied")); } catch (_) { say(t("copyFail")); }
   }
 
-  /* ---------- tools menu in the navbar ---------- */
+  /* ---------- actions live in the site's existing command palette (Ctrl/Cmd+K), no extra navbar button ---------- */
   let deferred = null;
-  const wrap = el("div", "nx-tools"), btn = el("button", "nx-tools-btn"), menu = el("div", "nx-menu");
-  btn.type = "button"; btn.setAttribute("aria-haspopup", "menu"); btn.setAttribute("aria-expanded", "false"); btn.append(icon("tools", 18));
-  menu.setAttribute("role", "menu"); wrap.append(btn, menu);
-  const anchor = $("#theme-toggle");
-  if (anchor && anchor.parentElement) anchor.parentElement.insertBefore(wrap, anchor);
-  const ACTIONS = { search: () => openSearch(), display: openSettings, save: saveContact, share: sharePage, keys: openKeys, install: installApp };
-  const KEYHINT = { search: "S", display: "D", keys: "?" };
-  function renderMenu() {
-    btn.setAttribute("aria-label", t("tools")); btn.title = t("tools");
-    const order = ["search", "display", "-", "save", "share", ...(deferred ? ["install"] : []), "-", "keys"];
-    menu.replaceChildren(...order.map((k) => {
-      if (k === "-") return el("hr");
-      const b = el("button", "", icon(k), el("span", "", t(k)), KEYHINT[k] ? el("kbd", "nx-k", KEYHINT[k]) : null);
-      b.type = "button"; b.setAttribute("role", "menuitem"); b.onclick = () => { closeMenu(false); ACTIONS[k](); };
-      return b;
-    }));
-  }
-  function openMenu() { menu.classList.add("on"); btn.setAttribute("aria-expanded", "true"); const f = $("button", menu); f && f.focus({ preventScroll: true }); }
-  function closeMenu(refocus = true) { if (!menu.classList.contains("on")) return; menu.classList.remove("on"); btn.setAttribute("aria-expanded", "false"); refocus && btn.focus({ preventScroll: true }); }
-  btn.onclick = () => (menu.classList.contains("on") ? closeMenu() : openMenu());
-  document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) closeMenu(false); });
-  menu.addEventListener("keydown", (e) => {
-    const items = $$("button", menu), i = items.indexOf(document.activeElement);
-    if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
-    else if (e.key === "Home") { e.preventDefault(); items[0].focus(); }
-    else if (e.key === "End") { e.preventDefault(); items[items.length - 1].focus(); }
-  });
+  const ACTIONS = { search: () => openSearch(), display: openSettings, save: saveContact, share: sharePage, keys: openKeys };
+  const cmdList = window.PORTFOLIO_CMDS;
+  const addCmd = (key, tag, fn) => {
+    if (!cmdList) return null;
+    const c = { n: "", t: tag, run: fn, nx: key }; cmdList.push(c); return c;
+  };
+  const NAMES = { search: ["Search the site", "Cari di situs"], display: ["Display settings", "Pengaturan tampilan"], save: ["Save contact (vCard)", "Simpan kontak (vCard)"], share: ["Share this page", "Bagikan halaman ini"], keys: ["Keyboard shortcuts", "Pintasan keyboard"], install: ["Install as app", "Pasang sebagai aplikasi"] };
+  const mine = [];
+  ["search", "display", "save", "share", "keys"].forEach((k) => { const c = addCmd(k, "Tools", ACTIONS[k]); c && mine.push(c); });
+  function renderMenu() { mine.forEach((c) => (c.n = NAMES[c.nx][L() === "id" ? 1 : 0])); }
+  const closeMenu = () => {};
   onLang(renderMenu);
 
   /* ---------- section rail + scroll spy ---------- */
@@ -392,9 +375,10 @@
   });
 
   /* ---------- offline, install, service worker ---------- */
-  function installApp() { if (!deferred) return; deferred.prompt(); deferred.userChoice.finally(() => { deferred = null; renderMenu(); }); }
+  function dropInstall() { const i = mine.findIndex((c) => c.nx === "install"); if (i > -1 && cmdList) { const j = cmdList.indexOf(mine[i]); if (j > -1) cmdList.splice(j, 1); mine.splice(i, 1); } }
+  function installApp() { if (!deferred) return; deferred.prompt(); deferred.userChoice.finally(() => { deferred = null; dropInstall(); }); }
   addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); deferred = e; renderMenu();
+    e.preventDefault(); deferred = e; if (!mine.some((c) => c.nx === "install")) { const c = addCmd("install", "Tools", installApp); c && mine.push(c); } renderMenu();
     let dismissed = false; try { dismissed = !!localStorage.getItem("nx-install-no"); } catch (_) {}
     if (dismissed) return;
     setTimeout(() => {
@@ -405,7 +389,7 @@
       document.body.append(bar);
     }, 25000);
   });
-  addEventListener("appinstalled", () => { deferred = null; renderMenu(); const b = $(".nx-install"); b && b.remove(); });
+  addEventListener("appinstalled", () => { deferred = null; dropInstall(); const b = $(".nx-install"); b && b.remove(); });
   addEventListener("offline", () => say(t("off")));
   addEventListener("online", () => say(t("on")));
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
