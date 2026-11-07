@@ -1,0 +1,66 @@
+/* ==========================================================================
+   JOURNAL LIBRARY: additive stylesheet for jurnal.html. Uses the site's own tokens.
+   ========================================================================== */
+
+/* ---------- hero stats ---------- */
+.jr-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.jr-stats > div { display: flex; align-items: baseline; gap: 10px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-panel); }
+.jr-stats b { font-size: 22px; color: var(--accent-ink); letter-spacing: -0.02em; }
+.jr-stats span { font-size: 13px; color: var(--ink-soft); }
+
+/* ---------- list + cards ---------- */
+.jr-list { display: grid; gap: 14px; margin-top: 8px; }
+.jr-card { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 18px; padding: 22px 24px; }
+.jr-card[hidden] { display: none !important; }
+.jr-num { padding-top: 2px; font-size: 13px; letter-spacing: .08em; color: var(--ink-faint); }
+.jr-body { min-width: 0; }
+.jr-tags { margin-bottom: 10px; }
+.jr-lic { border-color: color-mix(in srgb, var(--cu-2) 55%, var(--line)); color: var(--accent-ink); }
+.jr-ref { color: var(--ink-faint); }
+.jr-card h3 { font-size: 17px; line-height: 1.4; letter-spacing: -0.01em; text-wrap: balance; }
+.jr-meta, .jr-note { text-align: left; hyphens: none; -webkit-hyphens: none; }
+.jr-meta { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); }
+.jr-note { margin-top: 12px; font-size: 12.5px; line-height: 1.55; color: var(--ink-faint); }
+.jr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.jr-actions .btn { white-space: nowrap; }
+@media (max-width: 640px) { .jr-card { grid-template-columns: 1fr; gap: 8px; padding: 18px; } .jr-num { display: none; } }
+
+/* ---------- reader ---------- */
+.jr-reader { position: fixed; inset: 0; z-index: 10010; display: flex; flex-direction: column; background: var(--bg-alt); color: var(--ink); opacity: 0; visibility: hidden; transition: opacity .2s, visibility 0s .2s; }
+.jr-reader.on { opacity: 1; visibility: visible; transition: opacity .2s, visibility 0s; }
+.jr-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); border-bottom: 1px solid var(--line); background: var(--bg-panel); }
+.jr-title { flex: 1; min-width: 0; margin: 0; font: 700 14px var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; hyphens: none; }
+.jr-group { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.jr-ib { display: inline-grid; place-items: center; min-width: 36px; height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-panel); color: var(--ink); font: 700 13px var(--font-body); cursor: pointer; text-decoration: none; transition: border-color .2s, background .2s; }
+.jr-ib:hover, .jr-ib:focus-visible { border-color: var(--cu-2); }
+.jr-ib[aria-pressed="true"] { background: var(--grad); border-color: transparent; color: #fff; }
+.jr-ib:disabled { opacity: .4; cursor: default; }
+.jr-pg { width: 52px; height: 36px; padding: 0 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-alt); color: var(--ink); font: 700 13px var(--font-mono); text-align: center; }
+.jr-of { font: 12px var(--font-mono); color: var(--ink-faint); white-space: nowrap; }
+.jr-zoom { min-width: 48px; font: 12px var(--font-mono); color: var(--ink-soft); text-align: center; }
+.jr-prog { height: 3px; background: transparent; }
+.jr-prog i { display: block; height: 100%; width: 0; background: var(--grad); transition: width .2s; }
+.jr-scroll { position: relative; flex: 1; overflow: auto; padding: 18px 12px 60px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.jr-pages { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.jr-page { position: relative; flex: none; background: #fff; box-shadow: 0 10px 30px -14px rgba(0,0,0,.55); border-radius: 2px; overflow: hidden; }
+.jr-page canvas { display: block; }
+.jr-night .jr-page canvas { filter: invert(.9) hue-rotate(180deg); }
+.jr-night .jr-page { background: #1b1b1b; }
+.jr-msg { margin: 18vh auto 0; max-width: 420px; padding: 0 20px; text-align: center; color: var(--ink-soft); font-size: 14px; }
+.jr-msg a { color: var(--accent-ink); text-decoration: underline; }
+.jr-spin { width: 28px; height: 28px; margin: 0 auto 14px; border: 3px solid var(--line); border-top-color: var(--cu-2); border-radius: 50%; animation: jr-spin .8s linear infinite; }
+@keyframes jr-spin { to { transform: rotate(360deg); } }
+@media (max-width: 720px) { .jr-zoom, .jr-of, .jr-hide-s { display: none; } .jr-pg { width: 44px; } .jr-bar { gap: 6px; padding: 6px 8px; } .jr-scroll { padding: 10px 6px 60px; } }
+@media (prefers-reduced-motion: reduce) { .jr-spin { animation-duration: 2.4s; } }
+
+/* ---------- PDF text layer (flattened from pdf.js so older browsers work too) ---------- */
+.jr-text { position: absolute; inset: 0; overflow: clip; opacity: 1; line-height: 1; text-align: initial; letter-spacing: normal; word-spacing: normal; text-size-adjust: none; -webkit-text-size-adjust: none; forced-color-adjust: none; transform-origin: 0 0; caret-color: CanvasText; z-index: 0; color-scheme: only light;
+  --min-font-size: 1; --text-scale-factor: calc(var(--total-scale-factor, 1) * var(--min-font-size)); --min-font-size-inv: calc(1 / var(--min-font-size)); }
+.jr-text :is(span, br) { color: transparent; position: absolute; white-space: pre; cursor: text; transform-origin: 0 0; -webkit-user-select: text; user-select: text; }
+.jr-text > :not(.markedContent), .jr-text .markedContent span:not(.markedContent) { z-index: 1; --font-height: 0; font-size: calc(var(--text-scale-factor) * var(--font-height)); --scale-x: 1; --rotate: 0deg; transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv)); }
+.jr-text .markedContent { display: contents; }
+.jr-text span[role="img"] { -webkit-user-select: none; user-select: none; cursor: default; }
+.jr-text ::selection { background: rgba(0, 100, 255, .3); color: transparent; }
+.jr-text .endOfContent { display: block; position: absolute; inset: 100% 0 0; z-index: 0; cursor: default; -webkit-user-select: none; user-select: none; }
+
+@media print { .jr-reader { display: none !important; } }

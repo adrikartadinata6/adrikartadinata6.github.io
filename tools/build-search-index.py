@@ -29,11 +29,14 @@ PAGE_TITLES = {
     "index.html": ("Home", "Beranda"), "about.html": ("About", "Tentang"), "skills.html": ("Skills", "Keahlian"),
     "education.html": ("Education", "Pendidikan"), "education-polman.html": ("Education: Polman Bandung", "Pendidikan: Polman Bandung"),
     "projects.html": ("Projects", "Proyek"), "experience.html": ("Experience", "Pengalaman"),
-    "certificates.html": ("Certificates", "Sertifikat"), "contact.html": ("Contact", "Kontak"),
+    "certificates.html": ("Certificates", "Sertifikat"), "jurnal.html": ("Journal Library", "Pustaka Jurnal"), "contact.html": ("Contact", "Kontak"),
 }
 
 
 def localise(soup, lang):
+    if lang == "id":  # blocks with their own Indonesian text (data-nx-id)
+        for el in soup.select("[data-nx-id]"):
+            el.string = el["data-nx-id"]
     for el in soup.select("[data-i18n]"):
         v = TR[lang].get(el.get("data-i18n"))
         if isinstance(v, str) and not el.find(True):

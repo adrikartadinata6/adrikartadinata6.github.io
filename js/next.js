@@ -38,8 +38,8 @@
       space: "Roomier text spacing", spaceH: "More space between lines, letters and words.", contrast: "Higher contrast", contrastH: "Stronger text and border colours, links underlined.",
       calm: "Reduce motion", calmH: "Stops animations, the network background and the cursor ring.", reset: "Reset to default",
       kTitle: "Keyboard shortcuts",
-      k: [[["S"], "Search the site"], [["Ctrl", "K"], "Command menu"], [["G"], "then a letter to go to a page (H A S E P X T C)"], [["["], "Previous project (on project pages)"], [["]"], "Next project (on project pages)"], [["J"], "Next section"], [["K"], "Previous section"], [["D"], "Display settings"], [["?"], "This list"]],
-      pages: { h: "Home", a: "About", s: "Skills", e: "Education", p: "Projects", x: "Experience", t: "Certificates", c: "Contact" },
+      k: [[["S"], "Search the site"], [["Ctrl", "K"], "Command menu"], [["G"], "then a letter to go to a page (H A S E P X T C J)"], [["["], "Previous project (on project pages)"], [["]"], "Next project (on project pages)"], [["J"], "Next section"], [["K"], "Previous section"], [["D"], "Display settings"], [["?"], "This list"]],
+      pages: { h: "Home", a: "About", s: "Skills", e: "Education", p: "Projects", x: "Experience", t: "Certificates", c: "Contact", j: "Journals" },
       first: "This is the first project", last: "This is the last project", saved: "Contact file downloaded", copied: "Link copied", copyFail: "Copy failed. Copy the address bar instead.",
       off: "You are offline. Pages you opened before still work.", on: "Back online", sec: "Sections", inst: "Install this portfolio to open it like an app, even offline.", instGo: "Install", instNo: "Not now",
       sugg: ["PLC", "Furnace", "Sonar", "K3", "Certificate"], note: "Mechatronics Engineer. Portfolio website.",
@@ -53,8 +53,8 @@
       space: "Jarak teks lebih lega", spaceH: "Lebih banyak ruang antar baris, huruf, dan kata.", contrast: "Kontras lebih tinggi", contrastH: "Warna teks dan garis lebih tegas, tautan bergaris bawah.",
       calm: "Kurangi gerakan", calmH: "Menghentikan animasi, latar jaringan, dan cincin kursor.", reset: "Kembalikan ke bawaan",
       kTitle: "Pintasan keyboard",
-      k: [[["S"], "Cari di situs"], [["Ctrl", "K"], "Menu perintah"], [["G"], "lalu huruf untuk pindah halaman (H A S E P X T C)"], [["["], "Proyek sebelumnya (di halaman proyek)"], [["]"], "Proyek berikutnya (di halaman proyek)"], [["J"], "Bagian berikutnya"], [["K"], "Bagian sebelumnya"], [["D"], "Pengaturan tampilan"], [["?"], "Daftar ini"]],
-      pages: { h: "Beranda", a: "Tentang", s: "Keahlian", e: "Pendidikan", p: "Proyek", x: "Pengalaman", t: "Sertifikat", c: "Kontak" },
+      k: [[["S"], "Cari di situs"], [["Ctrl", "K"], "Menu perintah"], [["G"], "lalu huruf untuk pindah halaman (H A S E P X T C J)"], [["["], "Proyek sebelumnya (di halaman proyek)"], [["]"], "Proyek berikutnya (di halaman proyek)"], [["J"], "Bagian berikutnya"], [["K"], "Bagian sebelumnya"], [["D"], "Pengaturan tampilan"], [["?"], "Daftar ini"]],
+      pages: { h: "Beranda", a: "Tentang", s: "Keahlian", e: "Pendidikan", p: "Proyek", x: "Pengalaman", t: "Sertifikat", c: "Kontak", j: "Jurnal" },
       first: "Ini proyek pertama", last: "Ini proyek terakhir", saved: "File kontak diunduh", copied: "Tautan disalin", copyFail: "Gagal menyalin. Salin dari bilah alamat.",
       off: "Anda sedang offline. Halaman yang pernah dibuka tetap bisa diakses.", on: "Kembali online", sec: "Bagian", inst: "Pasang portofolio ini agar terbuka seperti aplikasi, bahkan saat offline.", instGo: "Pasang", instNo: "Nanti saja",
       sugg: ["PLC", "Tungku", "Sonar", "K3", "Sertifikat"], note: "Mechatronics Engineer. Situs portofolio.",
@@ -73,7 +73,7 @@
 
   /* ---------- where am I ---------- */
   const here = (() => { const p = location.pathname.replace(/\/+$/, ""); const f = p.split("/").pop() || "index.html"; return (base ? "projects/" : "") + (/\.html$/.test(f) ? f : "index.html"); })();
-  const PAGE_KEYS = { h: "index.html", a: "about.html", s: "skills.html", e: "education.html", p: "projects.html", x: "experience.html", t: "certificates.html", c: "contact.html" };
+  const PAGE_KEYS = { h: "index.html", a: "about.html", s: "skills.html", e: "education.html", p: "projects.html", x: "experience.html", t: "certificates.html", c: "contact.html", j: "jurnal.html" };
   const visit = (rel) => { try { sessionStorage.setItem("curtain", "1"); } catch (_) {} location.href = base + rel; };
 
   /* ---------- display preferences ---------- */
@@ -138,6 +138,7 @@
     pelatihan: ["training"], penghargaan: ["award", "kaizen"], organisasi: ["organization", "himamo"], kabel: ["cable", "wiring"], pengkabelan: ["wiring"], tembaga: ["copper"],
     pabrik: ["plant", "factory"], lulusan: ["graduate", "degree"], ijazah: ["degree", "certificate"], lamar: ["contact", "cv"], resume: ["cv"],
     ultrasonik: ["ultrasonic"], suhu: ["temperature"], tegangan: ["voltage"], arus: ["current"], mesin: ["machine"], bengkel: ["workshop"],
+    praktikum: ["practicum", "laboratory"], kerja: ["work", "experience", "industry"], pekerjaan: ["work", "experience"], skripsi: ["thesis"],
   };
   let idx = null, loading = null;
   function loadIndex() {
@@ -305,9 +306,10 @@
     if (!cmdList) return null;
     const c = { n: "", t: tag, run: fn, nx: key }; cmdList.push(c); return c;
   };
-  const NAMES = { search: ["Search the site", "Cari di situs"], display: ["Display settings", "Pengaturan tampilan"], save: ["Save contact (vCard)", "Simpan kontak (vCard)"], share: ["Share this page", "Bagikan halaman ini"], keys: ["Keyboard shortcuts", "Pintasan keyboard"], install: ["Install as app", "Pasang sebagai aplikasi"] };
+  const NAMES = { search: ["Search the site", "Cari di situs"], display: ["Display settings", "Pengaturan tampilan"], save: ["Save contact (vCard)", "Simpan kontak (vCard)"], share: ["Share this page", "Bagikan halaman ini"], keys: ["Keyboard shortcuts", "Pintasan keyboard"], install: ["Install as app", "Pasang sebagai aplikasi"], journals: ["Go to Journal Library", "Buka Pustaka Jurnal"] };
   const mine = [];
   ["search", "display", "save", "share", "keys"].forEach((k) => { const c = addCmd(k, "Tools", ACTIONS[k]); c && mine.push(c); });
+  { const cj = addCmd("journals", "Page", () => visit("jurnal.html")); cj && mine.push(cj); }
   function renderMenu() { mine.forEach((c) => (c.n = NAMES[c.nx][L() === "id" ? 1 : 0])); }
   const closeMenu = () => {};
   onLang(renderMenu);
@@ -373,6 +375,25 @@
       if (n < 1) say(t("first")); else if (n > N_PROJECTS) say(t("last")); else visit("projects/project" + n + ".html");
     }
   });
+
+  /* ---------- bilingual text for blocks added after the dictionary was built: data-nx-id holds the Indonesian text ---------- */
+  const nxEls = $$("[data-nx-id]");
+  if (nxEls.length) onLang(() => nxEls.forEach((e) => {
+    if (!e.hasAttribute("data-nx-en")) e.setAttribute("data-nx-en", e.textContent);
+    e.textContent = L() === "id" ? e.getAttribute("data-nx-id") : e.getAttribute("data-nx-en");
+  }));
+
+  /* ---------- grouped timelines: hide a group heading when the filter leaves it empty ---------- */
+  const grps = $$("[data-nx-grp]");
+  if (grps.length) {
+    const syncGroups = () => grps.forEach((g) => {
+      const tl = g.nextElementSibling, any = !!tl && $$(".timeline-item", tl).some((i) => !i.hidden);
+      if (g.hidden === any) g.hidden = !any; /* only write on change: writing the same value still fires the observer */
+      if (tl && tl.hidden === any) tl.hidden = !any;
+    });
+    new MutationObserver(syncGroups).observe(document.querySelector("main"), { attributes: true, attributeFilter: ["hidden"], subtree: true });
+    syncGroups();
+  }
 
   /* ---------- offline, install, service worker ---------- */
   function dropInstall() { const i = mine.findIndex((c) => c.nx === "install"); if (i > -1 && cmdList) { const j = cmdList.indexOf(mine[i]); if (j > -1) cmdList.splice(j, 1); mine.splice(i, 1); } }
