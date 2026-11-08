@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpiozero.pins.pigpio &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../pins.html">gpiozero.pins</a></li>
+      <li class="breadcrumb-item active">gpiozero.pins.pigpio</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpiozero.pins.pigpio</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: set fileencoding=utf-8:</span>
+<span class="c1">#</span>
+<span class="c1"># GPIO Zero: a library for controlling the Raspberry Pi&#39;s GPIO pins</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2016-2023 Dave Jones &lt;dave@waveform.org.uk&gt;</span>
+<span class="c1"># Copyright (c) 2021 Kyle Morgan &lt;kyle@knmorgan.net&gt;</span>
+<span class="c1"># Copyright (c) 2020 Ben Nuttall &lt;ben@bennuttall.com&gt;</span>
+<span class="c1"># Copyright (c) 2019 Maksim Levental &lt;maksim.levental@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2019 Aaron Rogers &lt;aaron.kyle.rogers@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2016 BuildTools &lt;david.glaude@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2016 Andrew Scheller &lt;github@loowis.durge.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pigpio</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SPI</span>
+<span class="kn">from</span> <span class="nn">.pi</span> <span class="kn">import</span> <span class="n">PiPin</span><span class="p">,</span> <span class="n">PiFactory</span><span class="p">,</span> <span class="n">spi_port_device</span>
+<span class="kn">from</span> <span class="nn">..mixins</span> <span class="kn">import</span> <span class="n">SharedMixin</span>
+<span class="kn">from</span> <span class="nn">..exc</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PinInvalidFunction</span><span class="p">,</span>
+    <span class="n">PinSetInput</span><span class="p">,</span>
+    <span class="n">PinFixedPull</span><span class="p">,</span>
+    <span class="n">PinInvalidPull</span><span class="p">,</span>
+    <span class="n">PinInvalidBounce</span><span class="p">,</span>
+    <span class="n">PinInvalidState</span><span class="p">,</span>
+    <span class="n">SPIBadArgs</span><span class="p">,</span>
+    <span class="n">SPIInvalidClockMode</span><span class="p">,</span>
+    <span class="n">PinPWMFixedValue</span><span class="p">,</span>
+    <span class="n">DeviceClosed</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="PiGPIOFactory">
+<a class="viewcode-back" href="../../../api_pins.html#gpiozero.pins.pigpio.PiGPIOFactory">[docs]</a>
+<span class="k">class</span> <span class="nc">PiGPIOFactory</span><span class="p">(</span><span class="n">PiFactory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`~gpiozero.pins.pi.PiFactory`. Uses the `pigpio`_ library to</span>
+<span class="sd">    interface to the Pi&#39;s GPIO pins. The pigpio library relies on a daemon</span>
+<span class="sd">    (:command:`pigpiod`) to be running as root to provide access to the GPIO</span>
+<span class="sd">    pins, and communicates with this daemon over a network socket.</span>
+
+<span class="sd">    While this does mean only the daemon itself should control the pins, the</span>
+<span class="sd">    architecture does have several advantages:</span>
+
+<span class="sd">    * Pins can be remote controlled from another machine (the other</span>
+<span class="sd">      machine doesn&#39;t even have to be a Raspberry Pi; it simply needs the</span>
+<span class="sd">      `pigpio`_ client library installed on it)</span>
+<span class="sd">    * The daemon supports hardware PWM via the DMA controller</span>
+<span class="sd">    * Your script itself doesn&#39;t require root privileges; it just needs to</span>
+<span class="sd">      be able to communicate with the daemon</span>
+
+<span class="sd">    You can construct pigpio pins manually like so::</span>
+
+<span class="sd">        from gpiozero.pins.pigpio import PiGPIOFactory</span>
+<span class="sd">        from gpiozero import LED</span>
+
+<span class="sd">        factory = PiGPIOFactory()</span>
+<span class="sd">        led = LED(12, pin_factory=factory)</span>
+
+<span class="sd">    This is particularly useful for controlling pins on a remote machine. To</span>
+<span class="sd">    accomplish this simply specify the host (and optionally port) when</span>
+<span class="sd">    constructing the pin::</span>
+
+<span class="sd">        from gpiozero.pins.pigpio import PiGPIOFactory</span>
+<span class="sd">        from gpiozero import LED</span>
+
+<span class="sd">        factory = PiGPIOFactory(host=&#39;192.168.0.2&#39;)</span>
+<span class="sd">        led = LED(12, pin_factory=factory)</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        In some circumstances, especially when playing with PWM, it does appear</span>
+<span class="sd">        to be possible to get the daemon into &quot;unusual&quot; states. We would be</span>
+<span class="sd">        most interested to hear any bug reports relating to this (it may be a</span>
+<span class="sd">        bug in our pin implementation). A workaround for now is simply to</span>
+<span class="sd">        restart the :command:`pigpiod` daemon.</span>
+
+<span class="sd">    .. _pigpio: http://abyz.me.uk/rpi/pigpio/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">host</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PIGPIO_ADDR&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># XXX Use getservbyname</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PIGPIO_PORT&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_class</span> <span class="o">=</span> <span class="n">PiGPIOPin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">pi</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="c1"># Annoyingly, pigpio doesn&#39;t raise an exception when it fails to make a</span>
+        <span class="c1"># connection; it returns a valid (but disconnected) pi object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;failed to connect to </span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spis</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># We *have* to keep track of SPI interfaces constructed with pigpio;</span>
+        <span class="c1"># if we fail to close them they prevent future interfaces from using</span>
+        <span class="c1"># the same pins</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spis</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># If we&#39;re shutting down, the connection may have disconnected itself</span>
+        <span class="c1"># already. Unfortunately, the connection&#39;s &quot;connected&quot; property is</span>
+        <span class="c1"># rather buggy - disconnecting doesn&#39;t set it to False! So we&#39;re</span>
+        <span class="c1"># naughty and check an internal variable instead...</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">sl</span><span class="o">.</span><span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span>
+
+    <span class="k">def</span> <span class="nf">_get_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_hardware_revision</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_spi_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">,</span> <span class="n">hardware</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>  <span class="n">PiGPIOHardwareSPI</span><span class="p">,</span>
+            <span class="p">(</span><span class="kc">True</span><span class="p">,</span>  <span class="kc">True</span><span class="p">):</span>  <span class="n">PiGPIOHardwareSPIShared</span><span class="p">,</span>
+            <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span> <span class="n">PiGPIOSoftwareSPI</span><span class="p">,</span>
+            <span class="p">(</span><span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">):</span> <span class="n">PiGPIOSoftwareSPIShared</span><span class="p">,</span>
+            <span class="p">}[</span><span class="n">shared</span><span class="p">,</span> <span class="n">hardware</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">spi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="n">intf</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">spi</span><span class="p">(</span><span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">intf</span>
+
+    <span class="k">def</span> <span class="nf">ticks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">get_current_tick</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ticks_diff</span><span class="p">(</span><span class="n">later</span><span class="p">,</span> <span class="n">earlier</span><span class="p">):</span>
+        <span class="c1"># NOTE: pigpio ticks are unsigned 32-bit quantities that wrap every</span>
+        <span class="c1"># 71.6 minutes. The modulo below (oh the joys of having an *actual*</span>
+        <span class="c1"># modulo operator, unlike C&#39;s remainder) ensures the result is valid</span>
+        <span class="c1"># even when later &lt; earlier due to wrap-around (assuming the duration</span>
+        <span class="c1"># measured is not longer than the period)</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">later</span> <span class="o">-</span> <span class="n">earlier</span><span class="p">)</span> <span class="o">%</span> <span class="mh">0x100000000</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000000</span></div>
+
+
+
+<div class="viewcode-block" id="PiGPIOPin">
+<a class="viewcode-back" href="../../../api_pins.html#gpiozero.pins.pigpio.PiGPIOPin">[docs]</a>
+<span class="k">class</span> <span class="nc">PiGPIOPin</span><span class="p">(</span><span class="n">PiPin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`~gpiozero.pins.pi.PiPin`. Pin implementation for the</span>
+<span class="sd">    `pigpio`_ library. See :class:`PiGPIOFactory` for more information.</span>
+
+<span class="sd">    .. _pigpio: http://abyz.me.uk/rpi/pigpio/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GPIO_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;input&#39;</span><span class="p">:</span>   <span class="n">pigpio</span><span class="o">.</span><span class="n">INPUT</span><span class="p">,</span>
+        <span class="s1">&#39;output&#39;</span><span class="p">:</span>  <span class="n">pigpio</span><span class="o">.</span><span class="n">OUTPUT</span><span class="p">,</span>
+        <span class="s1">&#39;alt0&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT0</span><span class="p">,</span>
+        <span class="s1">&#39;alt1&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT1</span><span class="p">,</span>
+        <span class="s1">&#39;alt2&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT2</span><span class="p">,</span>
+        <span class="s1">&#39;alt3&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT3</span><span class="p">,</span>
+        <span class="s1">&#39;alt4&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT4</span><span class="p">,</span>
+        <span class="s1">&#39;alt5&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">ALT5</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">GPIO_PULL_UPS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;up&#39;</span><span class="p">:</span>       <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">,</span>
+        <span class="s1">&#39;down&#39;</span><span class="p">:</span>     <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">,</span>
+        <span class="s1">&#39;floating&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">PUD_OFF</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">GPIO_EDGES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;both&#39;</span><span class="p">:</span>    <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;rising&#39;</span><span class="p">:</span>  <span class="n">pigpio</span><span class="o">.</span><span class="n">RISING_EDGE</span><span class="p">,</span>
+        <span class="s1">&#39;falling&#39;</span><span class="p">:</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">FALLING_EDGE</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">GPIO_FUNCTION_NAMES</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GPIO_FUNCTIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">GPIO_PULL_UP_NAMES</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GPIO_PULL_UPS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">GPIO_EDGES_NAMES</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GPIO_EDGES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">pull</span> <span class="ow">or</span> <span class="s1">&#39;floating&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bounce</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">=</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">EITHER_EDGE</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">INPUT</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_PULL_UPS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pull</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_glitch_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">pull</span> <span class="ow">or</span> <span class="s1">&#39;floating&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_get_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_FUNCTION_NAMES</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">_set_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="s1">&#39;floating&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_FUNCTIONS</span><span class="p">[</span><span class="n">value</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinInvalidFunction</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;invalid function &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; for pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">)</span> <span class="o">/</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">pigpio</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PinInvalidState</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;invalid state &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; for pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinSetInput</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cannot set state of pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># write forces pin to OUTPUT, hence the check above</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span>
+
+    <span class="k">def</span> <span class="nf">_set_pull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">!=</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinFixedPull</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cannot set pull on non-input pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">pull</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">pull</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinFixedPull</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> has a fixed pull resistor&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_pull_up_down</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_PULL_UPS</span><span class="p">[</span><span class="n">value</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pull</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinInvalidPull</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;invalid pull &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; for pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_frequency</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_set_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">!=</span> <span class="s1">&#39;output&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PinPWMFixedValue</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cannot start PWM on pin </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># NOTE: the pin&#39;s state *must* be set to zero; if it&#39;s currently</span>
+            <span class="c1"># high, starting PWM and setting a 0 duty-cycle *doesn&#39;t* bring</span>
+            <span class="c1"># the pin low; it stays high!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_frequency</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_dutycycle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">get_PWM_frequency</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_frequency</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_PWM_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pwm</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_get_bounce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounce</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounce</span> <span class="o">/</span> <span class="mi">1000000</span>
+
+    <span class="k">def</span> <span class="nf">_set_bounce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PinInvalidBounce</span><span class="p">(</span><span class="s1">&#39;bounce must be between 0 and 0.3&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">set_glitch_filter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_EDGES_NAMES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GPIO_EDGES</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">_call_when_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpio</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">ticks</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_call_when_changed</span><span class="p">(</span><span class="n">ticks</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_enable_event_detect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_when_changed</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_disable_event_detect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">PiGPIOHardwareSPI</span><span class="p">(</span><span class="n">SPI</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hardware SPI implementation for the `pigpio`_ library. Uses the ``spi_*``</span>
+<span class="sd">    functions from the pigpio API.</span>
+
+<span class="sd">    .. _pigpio: http://abyz.me.uk/rpi/pigpio/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="p">):</span>
+        <span class="n">port</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="n">spi_port_device</span><span class="p">(</span>
+            <span class="n">clock_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="n">to_reserve</span> <span class="o">=</span> <span class="p">{</span><span class="n">clock_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">mosi_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">to_reserve</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mosi_pin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">miso_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">to_reserve</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">miso_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">reserve_pins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">to_reserve</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">port</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span> <span class="o">=</span> <span class="mi">500000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_conflicts_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">PiGPIOHardwareSPI</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span> <span class="o">!=</span>
+            <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">_spis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ReferenceError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="c1"># If the factory has died already or we&#39;re not present in its</span>
+            <span class="c1"># internal list, ignore the error</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">release_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;SPI(port=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">, device=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;SPI(closed)&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_get_clock_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="mh">0x3</span>
+
+    <span class="k">def</span> <span class="nf">_set_clock_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIInvalidClockMode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid SPI clock mode&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0x3</span><span class="p">)</span> <span class="o">|</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_select_high</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_select_high</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0x1c</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_bits_per_word</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x3f</span>
+
+    <span class="k">def</span> <span class="nf">_set_bits_per_word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0x3f0000</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x3f</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span>
+
+    <span class="k">def</span> <span class="nf">_set_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_lsb_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&gt;&gt;</span> <span class="mi">14</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_set_lsb_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0xc000</span><span class="p">)</span>
+                <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">14</span><span class="p">)</span>
+                <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">15</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_open</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_lsb_first</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="n">count</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">spi_xfer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SPI transfer error </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># Convert returned bytearray to list of ints.</span>
+        <span class="c1"># XXX Not sure how non-byte sized words (aux intf only) are returned</span>
+        <span class="c1"># ... padded to 16/32-bits?</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">PiGPIOSoftwareSPI</span><span class="p">(</span><span class="n">SPI</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Software SPI implementation for the `pigpio`_ library. Uses the ``bb_spi_*``</span>
+<span class="sd">    functions from the pigpio API.</span>
+
+<span class="sd">    .. _pigpio: http://abyz.me.uk/rpi/pigpio/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span> <span class="o">=</span> <span class="n">select_pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span> <span class="o">=</span> <span class="n">clock_pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span> <span class="o">=</span> <span class="n">mosi_pin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span> <span class="o">=</span> <span class="n">miso_pin</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="c1"># Can&#39;t &quot;unreserve&quot; MOSI/MISO on this implementation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">reserve_pins</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">clock_pin</span><span class="p">,</span>
+            <span class="n">mosi_pin</span><span class="p">,</span>
+            <span class="n">miso_pin</span><span class="p">,</span>
+            <span class="n">select_pin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span> <span class="o">=</span> <span class="mi">100000</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_open</span><span class="p">(</span>
+                <span class="n">select_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+            <span class="c1"># Only set after opening bb_spi; if that fails then close() will</span>
+            <span class="c1"># also fail if bb_spi_close is attempted on an un-open interface</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">_conflicts_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">PiGPIOSoftwareSPI</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">_spis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ReferenceError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="c1"># If the factory has died already or we&#39;re not present in its</span>
+            <span class="c1"># internal list, ignore the error</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">release_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;SPI(clock_pin=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span><span class="si">}</span><span class="s1">, mosi_pin=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span><span class="si">}</span><span class="s1">, &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;miso_pin=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span><span class="si">}</span><span class="s1">, select_pin=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;SPI(closed)&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_spi_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>          <span class="o">&lt;&lt;</span> <span class="mi">0</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_high</span>   <span class="o">&lt;&lt;</span> <span class="mi">2</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lsb_first</span>     <span class="o">&lt;&lt;</span> <span class="mi">14</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lsb_first</span>     <span class="o">&lt;&lt;</span> <span class="mi">15</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_clock_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="mh">0x3</span>
+
+    <span class="k">def</span> <span class="nf">_set_clock_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIInvalidClockMode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid SPI clock mode&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0x3</span><span class="p">)</span> <span class="o">|</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_select_high</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="mh">0x4</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_select_high</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0x4</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_lsb_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="mh">0xc000</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_lsb_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mh">0xc000</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">14</span><span class="p">)</span>
+            <span class="o">|</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">15</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span>
+
+    <span class="k">def</span> <span class="nf">_set_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_open</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_miso_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mosi_pin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_pin</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi_flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="n">count</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">bb_spi_xfer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_select_pin</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SPI transfer error </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># Convert returned bytearray to list of ints. bb_spi only supports</span>
+        <span class="c1"># byte-sized words so no issues here</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">PiGPIOHardwareSPIShared</span><span class="p">(</span><span class="n">SharedMixin</span><span class="p">,</span> <span class="n">PiGPIOHardwareSPI</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_shared_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PiGPIOSoftwareSPIShared</span><span class="p">(</span><span class="n">SharedMixin</span><span class="p">,</span> <span class="n">PiGPIOSoftwareSPI</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_shared_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">mosi_pin</span><span class="p">,</span> <span class="n">miso_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">clock_pin</span><span class="p">,</span> <span class="n">select_pin</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

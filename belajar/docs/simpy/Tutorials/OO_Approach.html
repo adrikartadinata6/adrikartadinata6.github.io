@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial: An Object Oriented Approach to Using SimPy &#8212; SimPy 2.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Bank (Object Oriented version)" href="TheBankOO.html" />
+    <link rel="prev" title="The Bank Tutorial part 2: More examples of SimPy Simulation" href="TheBank2.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="TheBankOO.html" title="The Bank (Object Oriented version)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="TheBank2.html" title="The Bank Tutorial part 2: More examples of SimPy Simulation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../SimPy_Tutorials.html" accesskey="U">SimPy Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial: An Object Oriented Approach to Using SimPy</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tutorial-an-object-oriented-approach-to-using-simpy">
+<h1>Tutorial: An Object Oriented Approach to Using SimPy<a class="headerlink" href="#tutorial-an-object-oriented-approach-to-using-simpy" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>K G Muller</p>
+</dd>
+<dt class="field-even">Date</dt>
+<dd class="field-even"><p>2010 April</p>
+</dd>
+<dt class="field-odd">SimPy release</dt>
+<dd class="field-odd"><p>2.3.1</p>
+</dd>
+<dt class="field-even">Python-Version</dt>
+<dd class="field-even"><p>2.6 and later</p>
+</dd>
+</dl>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Many simulation languages support a procedural modelling style. Using them,
+problems are decomposed into procedures (functions, subroutines) and either
+represented by general components, such as queues, or represented in code
+with data structures.</p>
+<p>There are fundamental problems with using the procedural style of
+modelling and simulation. Procedures do not correspond to real world
+components. Instead, they correspond to methods and algorithms.
+Mapping from the real (problem) world to the model and back is difficult
+and not obvious, particularly for users expert in the problem domain, but
+not in computer science. Perhaps the greatest limitation of the procedural
+style is the lack of model extensibility. The only way in this style
+to change simulation models is through functional extension. One can
+add structural functionality but not alter any of its basic processes.</p>
+<p>SimPy, on the other hand, supports an <strong>object oriented approach</strong>
+to simulation modelling.
+In SimPy, models can be implemented as collections of autonomous,
+cooperating objects.
+These objects are self-sufficient and independent. The actions on these
+objects are tied to the objects and their attributes. The object-oriented
+capabilities of Python strongly support this encapsulation.</p>
+<p>Why does this matter for simulation models? It helps with the mapping from
+real-world objects and their activities to modelled objects and activities,
+and back. This not only reduces the complexity of the models, it also
+makes for easier validation of models and interpretation of simulation
+results in real world terms.</p>
+<p>Object-oriented model implementation allows the development of libraries
+of model components for specific real world domains. It also supports
+the re-use and extension of models when model specifications change.</p>
+<p>The most effective use of the object-oriented approach is an iteration
+over Object Oriented Analysis, Object Oriented Design, and Object Oriented
+Programming.</p>
+<p>Simulation studies are typically performed to study systems to understand
+the relationships between its components or to predict how the system
+will perform in a changed environment. They are accomplished by building
+a <em>model</em> of a system and experimenting with it.</p>
+<p>In modelling, it is only necessary to consider aspects of the system
+that affect the problems being investigated.</p>
+<p>Identifying those aspects is rarely trivial and often requires trials with
+a model and subsequent model refinement.</p>
+<p>This short tutorial will attempt to show how this can be done for simulation
+modelling with SimPy. It is no comprehensive course on the object oriented
+approach, though. There are many publications on the web and also books
+teaching OO in general.</p>
+<section id="object-oriented-analysis">
+<h3>Object Oriented Analysis<a class="headerlink" href="#object-oriented-analysis" title="Permalink to this headline">¶</a></h3>
+<p>The goal of OO analysis is to identify the scenary in which the system
+to be modelled operates and the system components in terms of objects,
+their attributes, actions and interactions.</p>
+<p>A good start is to write a concise scenario description in natural
+language and to look for terms which identify objects, attributes, etc.</p>
+<p>Unfortunately, there is no algorithm for this, only heuristics. For english
+language analysis, the article <a class="reference external" href="http://www.educery.com/papers/rhetoric/analysis/">Natural Language Analysis for Domain and Usage Models</a>
+gives a good introduction.</p>
+<p>Here is a useful set of heuristics for mapping parts of speech to model
+components:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Part of speech</p></th>
+<th class="head"><p>Model component</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Proper noun</p></td>
+<td><p>Object</p></td>
+<td><p>Cashier</p></td>
+</tr>
+<tr class="row-odd"><td><p>Common noun</p></td>
+<td><p>Class</p></td>
+<td><p>Bank customer; clerk</p></td>
+</tr>
+<tr class="row-even"><td><p>Doing verb</p></td>
+<td><p>Operation</p></td>
+<td><p>visit; withdraw money</p></td>
+</tr>
+<tr class="row-odd"><td><p>Being verb</p></td>
+<td><p>Inheritance</p></td>
+<td><p>Is a clerk</p></td>
+</tr>
+<tr class="row-even"><td><p>Having verb</p></td>
+<td><p>Aggregation</p></td>
+<td><p>Has an account</p></td>
+</tr>
+<tr class="row-odd"><td><p>Modal verb</p></td>
+<td><p>Constraints</p></td>
+<td><p>Clerk must be at counter</p></td>
+</tr>
+<tr class="row-even"><td><p>Adjective</p></td>
+<td><p>Attribute</p></td>
+<td><p>Number of clerks</p></td>
+</tr>
+</tbody>
+</table>
+<p>It is essential that the scenario description be done in the terms of the
+user and/or the system domain.</p>
+<p>Here are further useful heuristics for identifying objects:</p>
+<ul class="simple">
+<li><p>recurring nouns (e.g. <em>transaction</em>)</p></li>
+<li><p>real-world entities the model should include (e.g. <em>a customer</em>, <em>cashier</em>,
+<em>bank account</em>)</p></li>
+</ul>
+<p>Model developers name and briefly describe the objects, their attributes, and their
+responsibilities as they are identified. Describing objetcs, even briefly,
+allows simulation modellers to clarify the concepts they use and avoid misunderstandings.
+Initially, modellers need not, however, spend a lot of time detailing objects or
+attributes. They will be refined during the unavoidable iterations and
+revisions. At the end of the analysis process, this should result in a stable
+and sufficiently detailed statement on objects and attributes. Such a statement
+is esential for gathering simulation inputs from users and mapping simulation
+results into real world terms.</p>
+<p>Here is a very simple scenario description:</p>
+<blockquote>
+<div><p>A <strong>bank</strong> has a number of <strong>counters</strong> <strong>staffed</strong> by <strong>clerks</strong>. It also has
+a number of <strong>Automatic Teller Machines</strong> (ATMs). During the bank’s
+<strong>opening hours</strong>, <strong>customers</strong> <strong>visit</strong> the bank at different <strong>times</strong>
+to <strong>perform</strong> one or more <strong>transactions</strong> requiring <strong>service</strong> by a bank clerk
+at a counter or <strong>use</strong> of an <strong>ATM</strong>. All service by clerks is provided at counters.
+Counters can be <strong>closed</strong> and <strong>unstaffed</strong>. If the clerk or ATM they need is <strong>busy</strong>, they
+<strong>wait</strong> for him/her/it
+to become <strong>available</strong>. <strong>After having performed all their transactions</strong>, they <strong>leave</strong>
+the bank. The <strong>waiting times</strong> of the customers and the <strong>load</strong> on
+clerks and the ATMs should be estimated by using a simulation model.</p>
+</div></blockquote>
+<p>The highlighted words and the scenario text suggest objects, attributes,
+operations and constraints:</p>
+<p><strong>Objects</strong>: bank, counters, clerks, customers, ATM, transactions, service</p>
+<p><strong>Attributes</strong>:</p>
+<dl class="simple">
+<dt>Of <em>bank</em>:</dt><dd><p>counters, clerks, ATMs, opening hours</p>
+</dd>
+<dt>Of <em>customers</em>:</dt><dd><p>arrival times, transactions, waiting times, departure times</p>
+</dd>
+<dt>Of <em>counters</em>:</dt><dd><p>status(staffed, closed)</p>
+</dd>
+</dl>
+<p>Of <em>clerks</em>: availability, load</p>
+<dl class="simple">
+<dt>Of <em>ATMs</em>:</dt><dd><p>availability, load</p>
+</dd>
+</dl>
+<p><strong>Operations</strong>:</p>
+<dl class="simple">
+<dt>By <em>customers</em>:</dt><dd><p>arrive, perform transaction, wait, leave</p>
+</dd>
+<dt>By <em>clerks</em>:</dt><dd><p>staff counter, provide service</p>
+</dd>
+<dt>By <em>ATM</em>:</dt><dd><p>provide service</p>
+</dd>
+</dl>
+<p><strong>Constraints</strong>:</p>
+<dl class="simple">
+<dt>Counter service:</dt><dd><p>if clerk available</p>
+</dd>
+<dt>ATM service:</dt><dd><p>if ATM available</p>
+</dd>
+<dt>Customer departure:</dt><dd><p>after having performed all transactions</p>
+</dd>
+<dt>Customer arrival:</dt><dd><p>if bank open</p>
+</dd>
+</dl>
+<p>It is highly unlikely that these initially identified objects, attributes etc.
+are either sufficient or all necessary for the intended simulation model. They
+do provide a starting point, though, for seeking further details (e.g.
+by interviews of staff with domain knowledge) and building a first rough
+object design.</p>
+</section>
+<section id="object-oriented-design">
+<h3>Object Oriented Design<a class="headerlink" href="#object-oriented-design" title="Permalink to this headline">¶</a></h3>
+<p>The next step is to develop an initial high-level object design from
+the results from the OO analysis. This means that for each object identified,
+a class must be defined to which the object belongs, i.e. a generalization
+of the object. The class encloses all the properties of an object, i.e.
+attributes and operations. The attributes define all the data members
+of an object. The behaviors define how the object interacts with
+other objects and changes its own attributes.</p>
+<p>This class modelling should be done even if there is only one object of this
+class in the scenario being modelled. It should be noted that the term <em>class</em>
+here is not to be confused with the <code class="docutils literal notranslate"><span class="pre">class</span></code> construct in Python (and
+therefore SimPy). The class here is just the description of one or more
+similar objects. It will
+become obvious in the following sections that the
+availability of <code class="docutils literal notranslate"><span class="pre">class</span></code> in Python, the implementation language being used
+for SimPy models, is a great benefit. It allows clear, relatively simple
+mapping from the OO design to a SimPy program.</p>
+<p>Class <strong>Bank</strong>:</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>counters, clerks, ATMs, opening hours</p>
+</dd>
+<dt>Operations:</dt><dd><p>open, close</p>
+</dd>
+</dl>
+<p>Class <strong>Customer</strong>:</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>arrival time, transactions, waiting time, departure time</p>
+</dd>
+<dt>Operations:</dt><dd><p>arrive, get service for a transaction, leave</p>
+</dd>
+</dl>
+<p>Class <strong>Counter</strong>:</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>staffing(staffed, closed)</p>
+</dd>
+<dt>Operations:</dt><dd><p>open</p>
+</dd>
+</dl>
+<p>Class <strong>Clerk</strong>:</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>availability (available, busy, absent)</p>
+</dd>
+<dt>Operations:</dt><dd><p>provide service, staff counter</p>
+</dd>
+</dl>
+<p>Class <strong>ATM</strong></p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>availability(available, busy)</p>
+</dd>
+<dt>Operations:</dt><dd><p>provide service</p>
+</dd>
+</dl>
+<p>Control object needed to set up simulation experiment:</p>
+<p>Class <strong>Model</strong>:</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>model components, experiment data</p>
+</dd>
+<dt>Operations:</dt><dd><dl class="simple">
+<dt>get experiment data, generate component objects,</dt><dd><p>run model, report results</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="object-oriented-programming">
+<h3>Object Oriented Programming<a class="headerlink" href="#object-oriented-programming" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="object-oriented-building-of-simpy-simulation-models">
+<h2>Object Oriented Building of SimPy Simulation Models<a class="headerlink" href="#object-oriented-building-of-simpy-simulation-models" title="Permalink to this headline">¶</a></h2>
+<section id="basic-recipe">
+<h3>Basic Recipe<a class="headerlink" href="#basic-recipe" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Describe the situation to be modelled in natural language.</p></li>
+<li><p>Identify the nouns and verbs as candidates for classes, objects
+and actions, respectively.</p></li>
+</ul>
+</section>
+<section id="model-components-provided-by-simpy">
+<h3>Model Components Provided By SimPy<a class="headerlink" href="#model-components-provided-by-simpy" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="user-developed-components">
+<h3>User-Developed Components<a class="headerlink" href="#user-developed-components" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="simpy-model-structure">
+<h3>SimPy Model Structure<a class="headerlink" href="#simpy-model-structure" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="re-use-of-components-and-models">
+<h3>Re-use of Components and Models<a class="headerlink" href="#re-use-of-components-and-models" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="examples-the-bank-world">
+<h3>Examples: The Bank World<a class="headerlink" href="#examples-the-bank-world" title="Permalink to this headline">¶</a></h3>
+<section id="objects-and-activities">
+<h4>Objects and Activities<a class="headerlink" href="#objects-and-activities" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="bank-model-components">
+<h4>Bank Model Components<a class="headerlink" href="#bank-model-components" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="model-1">
+<h4>Model 1: ….<a class="headerlink" href="#model-1" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="model-2">
+<h4>Model 2: ……<a class="headerlink" href="#model-2" title="Permalink to this headline">¶</a></h4>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sm_SimPy_Logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Tutorial: An Object Oriented Approach to Using SimPy</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#object-oriented-analysis">Object Oriented Analysis</a></li>
+<li><a class="reference internal" href="#object-oriented-design">Object Oriented Design</a></li>
+<li><a class="reference internal" href="#object-oriented-programming">Object Oriented Programming</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#object-oriented-building-of-simpy-simulation-models">Object Oriented Building of SimPy Simulation Models</a><ul>
+<li><a class="reference internal" href="#basic-recipe">Basic Recipe</a></li>
+<li><a class="reference internal" href="#model-components-provided-by-simpy">Model Components Provided By SimPy</a></li>
+<li><a class="reference internal" href="#user-developed-components">User-Developed Components</a></li>
+<li><a class="reference internal" href="#simpy-model-structure">SimPy Model Structure</a></li>
+<li><a class="reference internal" href="#re-use-of-components-and-models">Re-use of Components and Models</a></li>
+<li><a class="reference internal" href="#examples-the-bank-world">Examples: The Bank World</a><ul>
+<li><a class="reference internal" href="#objects-and-activities">Objects and Activities</a></li>
+<li><a class="reference internal" href="#bank-model-components">Bank Model Components</a></li>
+<li><a class="reference internal" href="#model-1">Model 1: ….</a></li>
+<li><a class="reference internal" href="#model-2">Model 2: ……</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="TheBank2.html"
+                          title="previous chapter">The Bank Tutorial part 2: More  examples of SimPy Simulation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="TheBankOO.html"
+                          title="next chapter">The Bank (Object Oriented version)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tutorials/OO_Approach.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="TheBankOO.html" title="The Bank (Object Oriented version)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="TheBank2.html" title="The Bank Tutorial part 2: More examples of SimPy Simulation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../SimPy_Tutorials.html" >SimPy Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial: An Object Oriented Approach to Using SimPy</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2002-2022, Klaus Müller, Tony Vignaux, Ontje Lünsdorf, Stefan Scherfke.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.registry_helpers &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.registry_helpers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.registry_helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.registry_helpers</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">    Miscellaneous methods of the registry written as separate functions.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details..</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">._typing</span> <span class="kn">import</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">DimensionalityError</span>
+<span class="kn">from</span> <span class="nn">.quantity</span> <span class="kn">import</span> <span class="n">Quantity</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">UnitsContainer</span><span class="p">,</span> <span class="n">to_units_container</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.registry</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+    <span class="kn">from</span> <span class="nn">.unit</span> <span class="kn">import</span> <span class="n">Unit</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_replace_units</span><span class="p">(</span><span class="n">original_units</span><span class="p">,</span> <span class="n">values_by_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a unit compatible type to a UnitsContainer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    original_units :</span>
+<span class="sd">        a UnitsContainer instance.</span>
+<span class="sd">    values_by_name :</span>
+<span class="sd">        a map between original names and the new values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">exponent</span> <span class="ow">in</span> <span class="n">original_units</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">values_by_name</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="o">**</span> <span class="n">exponent</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="s2">&quot;_units&quot;</span><span class="p">,</span> <span class="n">UnitsContainer</span><span class="p">({}))</span>
+
+
+<span class="k">def</span> <span class="nf">_to_units_container</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a unit compatible type to a UnitsContainer,</span>
+<span class="sd">    checking if it is string field prefixed with an equal</span>
+<span class="sd">    (which is considered a reference)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a :</span>
+
+<span class="sd">    registry :</span>
+<span class="sd">         (Default value = None)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    UnitsContainer, bool</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]),</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">registry</span><span class="p">),</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_wrap_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="c1"># Arguments which contain definitions</span>
+    <span class="c1"># (i.e. names that appear alone and for the first time)</span>
+    <span class="n">defs_args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">defs_args_ndx</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1"># Arguments which depend on others</span>
+    <span class="n">dependent_args_ndx</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1"># Arguments which have units.</span>
+    <span class="n">unit_args_ndx</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1"># _to_units_container</span>
+    <span class="n">args_as_uc</span> <span class="o">=</span> <span class="p">[</span><span class="n">_to_units_container</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">registry</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+
+    <span class="c1"># Check for references in args, remove None values</span>
+    <span class="k">for</span> <span class="n">ndx</span><span class="p">,</span> <span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">is_ref</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args_as_uc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">is_ref</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)]</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">defs_args</span><span class="p">:</span>
+                    <span class="c1"># This is the first time that</span>
+                    <span class="c1"># a variable is used =&gt; it is a definition.</span>
+                    <span class="n">defs_args</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">defs_args_ndx</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ndx</span><span class="p">)</span>
+                    <span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># The variable was already found elsewhere,</span>
+                    <span class="c1"># we consider it a dependent variable.</span>
+                    <span class="n">dependent_args_ndx</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ndx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dependent_args_ndx</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ndx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unit_args_ndx</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ndx</span><span class="p">)</span>
+
+    <span class="c1"># Check that all valid dependent variables</span>
+    <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="n">dependent_args_ndx</span><span class="p">:</span>
+        <span class="n">arg</span><span class="p">,</span> <span class="n">is_ref</span> <span class="o">=</span> <span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="n">defs_args</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Found a missing token while wrapping a function: &quot;</span>
+                <span class="s2">&quot;Not all variable referenced in </span><span class="si">%s</span><span class="s2"> are defined using !&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="n">ureg</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">strict</span><span class="p">):</span>
+        <span class="n">new_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span>
+
+        <span class="n">values_by_name</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># first pass: Grab named values</span>
+        <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="n">defs_args_ndx</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span>
+            <span class="n">values_by_name</span><span class="p">[</span><span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">new_values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;_magnitude&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># second pass: calculate derived values based on named values</span>
+        <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="n">dependent_args_ndx</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">_replace_units</span><span class="p">(</span><span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">values_by_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">new_values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;_magnitude&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;_units&quot;</span><span class="p">,</span> <span class="n">UnitsContainer</span><span class="p">({})),</span>
+                <span class="n">_replace_units</span><span class="p">(</span><span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">values_by_name</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="c1"># third pass: convert other arguments</span>
+        <span class="k">for</span> <span class="n">ndx</span> <span class="ow">in</span> <span class="n">unit_args_ndx</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">],</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
+                <span class="n">new_values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span><span class="o">.</span><span class="n">_magnitude</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span><span class="o">.</span><span class="n">_units</span><span class="p">,</span> <span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="c1"># if the value is a string, we try to parse it</span>
+                        <span class="n">tmp_value</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">ndx</span><span class="p">])</span>
+                        <span class="n">new_values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">_convert</span><span class="p">(</span>
+                            <span class="n">tmp_value</span><span class="o">.</span><span class="n">_magnitude</span><span class="p">,</span> <span class="n">tmp_value</span><span class="o">.</span><span class="n">_units</span><span class="p">,</span> <span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;A wrapped function using strict=True requires &quot;</span>
+                            <span class="s2">&quot;quantity or a string for all arguments with not None units. &quot;</span>
+                            <span class="s2">&quot;(error found for </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">args_as_uc</span><span class="p">[</span><span class="n">ndx</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_values</span><span class="p">[</span><span class="n">ndx</span><span class="p">]</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_values</span><span class="p">,</span> <span class="n">values_by_name</span>
+
+    <span class="k">return</span> <span class="n">_converter</span>
+
+
+<span class="k">def</span> <span class="nf">_apply_defaults</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply default keyword arguments.</span>
+
+<span class="sd">    Named keywords may have been left blank. This function applies the default</span>
+<span class="sd">    values so that every argument is defined.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">bound_arguments</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bound_arguments</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span>
+            <span class="n">bound_arguments</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">bound_arguments</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="wraps"><a class="viewcode-back" href="../../developers_reference.html#pint.wraps">[docs]</a><span class="k">def</span> <span class="nf">wraps</span><span class="p">(</span>
+    <span class="n">ureg</span><span class="p">:</span> <span class="s2">&quot;UnitRegistry&quot;</span><span class="p">,</span>
+    <span class="n">ret</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Unit&quot;</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Unit&quot;</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps a function to become pint-aware.</span>
+
+<span class="sd">    Use it when a function requires a numerical value but in some specific</span>
+<span class="sd">    units. The wrapper function will take a pint quantity, convert to the units</span>
+<span class="sd">    specified in `args` and then call the wrapped function with the resulting</span>
+<span class="sd">    magnitude.</span>
+
+<span class="sd">    The value returned by the wrapped function will be converted to the units</span>
+<span class="sd">    specified in `ret`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ureg : pint.UnitRegistry</span>
+<span class="sd">        a UnitRegistry instance.</span>
+<span class="sd">    ret : str, pint.Unit, or iterable of str or pint.Unit</span>
+<span class="sd">        Units of each of the return values. Use `None` to skip argument conversion.</span>
+<span class="sd">    args : str, pint.Unit, or iterable of str or pint.Unit</span>
+<span class="sd">        Units of each of the input arguments. Use `None` to skip argument conversion.</span>
+<span class="sd">    strict : bool</span>
+<span class="sd">        Indicates that only quantities are accepted. (Default value = True)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    callable</span>
+<span class="sd">        the wrapper function.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        if the number of given arguments does not match the number of function parameters.</span>
+<span class="sd">        if any of the provided arguments is not a unit a string or Quantity</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,)</span>
+
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">Unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;wraps arguments must by of type str or Unit, not </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="n">arg</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="n">converter</span> <span class="o">=</span> <span class="n">_parse_wrap_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">is_ret_container</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">is_ret_container</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">Unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;wraps &#39;ret&#39; argument must by of type str or Unit, not </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="n">arg</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="vm">__class__</span><span class="p">([</span><span class="n">_to_units_container</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">ureg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">Unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;wraps &#39;ret&#39; argument must by of type str or Unit, not </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">),</span> <span class="n">ret</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_to_units_container</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">ureg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
+
+        <span class="n">count_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="n">count_params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> takes </span><span class="si">%i</span><span class="s2"> parameters, but </span><span class="si">%i</span><span class="s2"> units were passed&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">count_params</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="n">assigned</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">functools</span><span class="o">.</span><span class="n">WRAPPER_ASSIGNMENTS</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">functools</span><span class="o">.</span><span class="n">WRAPPER_UPDATES</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">assigned</span><span class="o">=</span><span class="n">assigned</span><span class="p">,</span> <span class="n">updated</span><span class="o">=</span><span class="n">updated</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+
+            <span class="n">values</span><span class="p">,</span> <span class="n">kw</span> <span class="o">=</span> <span class="n">_apply_defaults</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>
+
+            <span class="c1"># In principle, the values are used as is</span>
+            <span class="c1"># When then extract the magnitudes when needed.</span>
+            <span class="n">new_values</span><span class="p">,</span> <span class="n">values_by_name</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">ureg</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">strict</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">new_values</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_ret_container</span><span class="p">:</span>
+                <span class="n">out_units</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">_replace_units</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">values_by_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_ref</span> <span class="k">else</span> <span class="n">r</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">is_ref</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ret</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">ret</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+                    <span class="n">res</span> <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">zip_longest</span><span class="p">(</span><span class="n">out_units</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span> <span class="n">_replace_units</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values_by_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="check"><a class="viewcode-back" href="../../developers_reference.html#pint.check">[docs]</a><span class="k">def</span> <span class="nf">check</span><span class="p">(</span>
+    <span class="n">ureg</span><span class="p">:</span> <span class="s2">&quot;UnitRegistry&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UnitsContainer</span><span class="p">,</span> <span class="s2">&quot;Unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">F</span><span class="p">],</span> <span class="n">F</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to for quantity type checking for function inputs.</span>
+
+<span class="sd">    Use it to ensure that the decorated function input parameters match</span>
+<span class="sd">    the expected dimension of pint quantity.</span>
+
+<span class="sd">    The wrapper function raises:</span>
+<span class="sd">      - `pint.DimensionalityError` if an argument doesn&#39;t match the required dimensions.</span>
+
+<span class="sd">    ureg : UnitRegistry</span>
+<span class="sd">        a UnitRegistry instance.</span>
+<span class="sd">    args : str or UnitContainer or None</span>
+<span class="sd">        Dimensions of each of the input arguments.</span>
+<span class="sd">        Use `None` to skip argument conversion.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    callable</span>
+<span class="sd">        the wrapped function.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If the number of given dimensions does not match the number of function</span>
+<span class="sd">        parameters.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the any of the provided dimensions cannot be parsed as a dimension.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dimensions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ureg</span><span class="o">.</span><span class="n">get_dimensionality</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">args</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+
+        <span class="n">count_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">!=</span> <span class="n">count_params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> takes </span><span class="si">%i</span><span class="s2"> parameters, but </span><span class="si">%i</span><span class="s2"> dimensions were passed&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">count_params</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="n">assigned</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">functools</span><span class="o">.</span><span class="n">WRAPPER_ASSIGNMENTS</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">functools</span><span class="o">.</span><span class="n">WRAPPER_UPDATES</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">assigned</span><span class="o">=</span><span class="n">assigned</span><span class="p">,</span> <span class="n">updated</span><span class="o">=</span><span class="n">updated</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">list_args</span><span class="p">,</span> <span class="n">empty</span> <span class="o">=</span> <span class="n">_apply_defaults</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">list_args</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+                    <span class="n">val_dim</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_dimensionality</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">DimensionalityError</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;a quantity of&quot;</span><span class="p">,</span> <span class="n">val_dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

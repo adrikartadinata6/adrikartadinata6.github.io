@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpiozero.spi_devices &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpiozero.spi_devices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpiozero.spi_devices</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: set fileencoding=utf-8:</span>
+<span class="c1">#</span>
+<span class="c1"># GPIO Zero: a library for controlling the Raspberry Pi&#39;s GPIO pins</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2016-2023 Dave Jones &lt;dave@waveform.org.uk&gt;</span>
+<span class="c1"># Copyright (c) 2020 Grzegorz Szymaszek &lt;gszymaszek@short.pl&gt;</span>
+<span class="c1"># Copyright (c) 2020 Fangchen Li &lt;fangchen.li@outlook.com&gt;</span>
+<span class="c1"># Copyright (c) 2016-2019 Andrew Scheller &lt;github@loowis.durge.org&gt;</span>
+<span class="c1"># Copyright (c) 2016-2018 Ben Nuttall &lt;ben@bennuttall.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">ceil</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">or_</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+
+<span class="kn">from</span> <span class="nn">.exc</span> <span class="kn">import</span> <span class="n">DeviceClosed</span><span class="p">,</span> <span class="n">SPIBadChannel</span><span class="p">,</span> <span class="n">InputDeviceError</span>
+<span class="kn">from</span> <span class="nn">.devices</span> <span class="kn">import</span> <span class="n">Device</span>
+
+
+<div class="viewcode-block" id="SPIDevice">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.SPIDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">SPIDevice</span><span class="p">(</span><span class="n">Device</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`Device`. Represents a device that communicates via the SPI</span>
+<span class="sd">    protocol.</span>
+
+<span class="sd">    See :ref:`spi_args` for information on the keyword arguments that can be</span>
+<span class="sd">    specified with the constructor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin_factory</span><span class="o">=</span><span class="n">spi_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;pin_factory&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">spi</span><span class="p">(</span><span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SPIDevice.close">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.SPIDevice.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_spi&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_int_to_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a bit-pattern expressed an integer number, return a sequence of</span>
+<span class="sd">        the individual words that make up the pattern. The number of bits per</span>
+<span class="sd">        word will be obtained from the internal SPI interface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bits_required</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># pattern == 0 (technically speaking, no bits are required to</span>
+            <span class="c1"># transmit the value zero ;)</span>
+            <span class="n">bits_required</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">shifts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">bits_required</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">bits_per_word</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">bits_per_word</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">pattern</span> <span class="o">&gt;&gt;</span> <span class="n">shift</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span> <span class="k">for</span> <span class="n">shift</span> <span class="ow">in</span> <span class="n">shifts</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_words_to_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">expected_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a sequence of words which each fit in the internal SPI</span>
+<span class="sd">        interface&#39;s number of bits per word, returns the value obtained by</span>
+<span class="sd">        concatenating each word into a single bit-string.</span>
+
+<span class="sd">        If *expected_bits* is specified, it limits the size of the output to</span>
+<span class="sd">        the specified number of bits (by masking off bits above the expected</span>
+<span class="sd">        number). If unspecified, no limit will be applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">expected_bits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expected_bits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">bits_per_word</span>
+        <span class="n">shifts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">expected_bits</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">bits_per_word</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">expected_bits</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">or_</span><span class="p">,</span> <span class="p">(</span><span class="n">word</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">shifts</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object using &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object closed&gt;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="AnalogInputDevice">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.AnalogInputDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">AnalogInputDevice</span><span class="p">(</span><span class="n">SPIDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents an analog input device connected to SPI (serial interface).</span>
+
+<span class="sd">    Typical analog input devices are `analog to digital converters`_ (ADCs).</span>
+<span class="sd">    Several classes are provided for specific ADC chips, including</span>
+<span class="sd">    :class:`MCP3004`, :class:`MCP3008`, :class:`MCP3204`, and :class:`MCP3208`.</span>
+
+<span class="sd">    The following code demonstrates reading the first channel of an MCP3008</span>
+<span class="sd">    chip attached to the Pi&#39;s SPI pins::</span>
+
+<span class="sd">        from gpiozero import MCP3008</span>
+
+<span class="sd">        pot = MCP3008(0)</span>
+<span class="sd">        print(pot.value)</span>
+
+<span class="sd">    The :attr:`value` attribute is normalized such that its value is always</span>
+<span class="sd">    between 0.0 and 1.0 (or in special cases, such as differential sampling,</span>
+<span class="sd">    -1 to +1). Hence, you can use an analog input to control the brightness of</span>
+<span class="sd">    a :class:`PWMLED` like so::</span>
+
+<span class="sd">        from gpiozero import MCP3008, PWMLED</span>
+
+<span class="sd">        pot = MCP3008(0)</span>
+<span class="sd">        led = PWMLED(17)</span>
+<span class="sd">        led.source = pot</span>
+
+<span class="sd">    The :attr:`voltage` attribute reports values between 0.0 and *max_voltage*</span>
+<span class="sd">    (which defaults to 3.3, the logic level of the GPIO pins).</span>
+
+<span class="sd">    .. _analog to digital converters: https://en.wikipedia.org/wiki/Analog-to-digital_converter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputDeviceError</span><span class="p">(</span>
+                <span class="s1">&#39;you must specify the bit resolution of the device&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bits</span> <span class="o">=</span> <span class="n">bits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_value</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">bits</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">bits</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">max_voltage</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputDeviceError</span><span class="p">(</span><span class="s1">&#39;max_voltage must be positive&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_voltage</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">max_voltage</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The bit-resolution of the device/channel.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bits</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The current value read from the device, scaled to a value between 0 and</span>
+<span class="sd">        1 (or -1 to +1 for certain devices operating in differential mode).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raw_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The raw value as read from the device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The voltage required to set the device&#39;s value to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_voltage</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The current voltage read from the device. This will be a value between</span>
+<span class="sd">        0 and the *max_voltage* parameter specified in the constructor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_voltage</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">MCP3xxx</span><span class="p">(</span><span class="n">AnalogInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`AnalogInputDevice` to implement an interface for all ADC</span>
+<span class="sd">    chips with a protocol similar to the Microchip MCP3xxx series of devices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_differential</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">differential</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">bits</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The channel to read data from. The MCP3008/3208/3304 have 8 channels</span>
+<span class="sd">        (0-7), while the MCP3004/3204/3302 have 4 channels (0-3), the</span>
+<span class="sd">        MCP3002/3202 have 2 channels (0-1), and the MCP3001/3201/3301 only</span>
+<span class="sd">        have 1 channel.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">differential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If ``True``, the device is operated in differential mode. In this mode</span>
+<span class="sd">        one channel (specified by the channel attribute) is read relative to</span>
+<span class="sd">        the value of a second channel (implied by the chip&#39;s design).</span>
+
+<span class="sd">        Please refer to the device data-sheet to determine which channel is</span>
+<span class="sd">        used as the relative base value (for example, when using an</span>
+<span class="sd">        :class:`MCP3008` in differential mode, channel 0 is read relative to</span>
+<span class="sd">        channel 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_differential</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_words_to_int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">())[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3004/08 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1        2</span>
+        <span class="c1">#     ==== ======== ======== ========</span>
+        <span class="c1">#     Tx   00000001 MCCCxxxx xxxxxxxx</span>
+        <span class="c1">#     Rx   xxxxxxxx xxxxx0RR RRRRRRRR</span>
+        <span class="c1">#</span>
+        <span class="c1"># MCP3204/08 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1        2</span>
+        <span class="c1">#     ==== ======== ======== ========</span>
+        <span class="c1">#     Tx   000001MC CCxxxxxx xxxxxxxx</span>
+        <span class="c1">#     Rx   xxxxxxxx xxx0RRRR RRRRRRRR</span>
+        <span class="c1">#</span>
+        <span class="c1"># The transmit bits start with several preamble &quot;0&quot; bits, the number</span>
+        <span class="c1"># of which is determined by the amount required to align the last byte</span>
+        <span class="c1"># of the result with the final byte of output. A start &quot;1&quot; bit is then</span>
+        <span class="c1"># transmitted, followed by the single/differential bit (M); 1 for</span>
+        <span class="c1"># single-ended read, 0 for differential read. Next comes three bits for</span>
+        <span class="c1"># channel (C).</span>
+        <span class="c1">#</span>
+        <span class="c1"># Read-out begins with a don&#39;t care bit (x), then a null bit (0)</span>
+        <span class="c1"># followed by the result bits (R). All other bits are don&#39;t care (x).</span>
+        <span class="c1">#</span>
+        <span class="c1"># The 3x01 variant of the chips always operates in differential mode</span>
+        <span class="c1"># and effectively only has one channel (composed of an IN+ and IN-). As</span>
+        <span class="c1"># such it requires no input, just output.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_words</span><span class="p">(</span>
+            <span class="p">(</span><span class="mb">0b10000</span> <span class="o">|</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MCP3xx2</span><span class="p">(</span><span class="n">MCP3xxx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3002 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1</span>
+        <span class="c1">#     ==== ======== ========</span>
+        <span class="c1">#     Tx   01MCLxxx xxxxxxxx</span>
+        <span class="c1">#     Rx   xxxxx0RR RRRRRRRR for the 3002</span>
+        <span class="c1">#</span>
+        <span class="c1"># MCP3202 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1        2</span>
+        <span class="c1">#     ==== ======== ======== ========</span>
+        <span class="c1">#     Tx   00000001 MCLxxxxx xxxxxxxx</span>
+        <span class="c1">#     Rx   xxxxxxxx xxx0RRRR RRRRRRRR</span>
+        <span class="c1">#</span>
+        <span class="c1"># The transmit bits start with several preamble &quot;0&quot; bits, the number of</span>
+        <span class="c1"># which is determined by the amount required to align the last byte of</span>
+        <span class="c1"># the result with the final byte of output. A start &quot;1&quot; bit is then</span>
+        <span class="c1"># transmitted, followed by the single/differential bit (M); 1 for</span>
+        <span class="c1"># single-ended read, 0 for differential read. Next comes a single bit</span>
+        <span class="c1"># for channel (C) then the MSBF bit (L) which selects whether the data</span>
+        <span class="c1"># will be read out in MSB form only (1) or whether LSB read-out will</span>
+        <span class="c1"># occur after MSB read-out (0).</span>
+        <span class="c1">#</span>
+        <span class="c1"># Read-out begins with a null bit (0) followed by the result bits (R).</span>
+        <span class="c1"># All other bits are don&#39;t care (x).</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_words</span><span class="p">(</span>
+            <span class="p">(</span><span class="mb">0b1001</span> <span class="o">|</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MCP30xx</span><span class="p">(</span><span class="n">MCP3xxx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`MCP3xxx` to implement an interface for all ADC</span>
+<span class="sd">    chips with a protocol similar to the Microchip MCP30xx series of devices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MCP32xx</span><span class="p">(</span><span class="n">MCP3xxx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`MCP3xxx` to implement an interface for all ADC</span>
+<span class="sd">    chips with a protocol similar to the Microchip MCP32xx series of devices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MCP33xx</span><span class="p">(</span><span class="n">MCP3xxx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`MCP3xxx` with functionality specific to the MCP33xx family</span>
+<span class="sd">    of ADCs; specifically this handles the full differential capability of</span>
+<span class="sd">    these chips supporting the full 13-bit signed range of output values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_words_to_int</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">())[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Account for the sign bit</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="mi">4095</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">8192</span> <span class="o">-</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3302/04 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1        2</span>
+        <span class="c1">#     ==== ======== ======== ========</span>
+        <span class="c1">#     Tx   00001MCC Cxxxxxxx xxxxxxxx</span>
+        <span class="c1">#     Rx   xxxxxxxx xx0SRRRR RRRRRRRR</span>
+        <span class="c1">#</span>
+        <span class="c1"># The transmit bits start with 4 preamble bits &quot;0000&quot;, a start bit &quot;1&quot;</span>
+        <span class="c1"># followed by the single/differential bit (M) which is 1 for</span>
+        <span class="c1"># single-ended read, and 0 for differential read, followed by 3-bits</span>
+        <span class="c1"># for the channel (C). The remainder of the transmission are &quot;don&#39;t</span>
+        <span class="c1"># care&quot; bits (x).</span>
+        <span class="c1">#</span>
+        <span class="c1"># The first byte received and the top 2 bits of the second byte are</span>
+        <span class="c1"># don&#39;t care bits (x). These are followed by a null bit (0), then the</span>
+        <span class="c1"># sign bit (S), and then the 12 result bits (R).</span>
+        <span class="c1">#</span>
+        <span class="c1"># In single read mode (the default) the sign bit is always zero and the</span>
+        <span class="c1"># result is effectively 12-bits. In differential mode, the sign bit is</span>
+        <span class="c1"># significant and the result is a two&#39;s-complement 13-bit value.</span>
+        <span class="c1">#</span>
+        <span class="c1"># The MCP3301 variant operates similarly to the other MCP3x01 variants;</span>
+        <span class="c1"># no input, just output and always differential.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_to_words</span><span class="p">(</span>
+            <span class="p">(</span><span class="mb">0b10000</span> <span class="o">|</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">differential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If ``True``, the device is operated in differential mode. In this mode</span>
+<span class="sd">        one channel (specified by the channel attribute) is read relative to</span>
+<span class="sd">        the value of a second channel (implied by the chip&#39;s design).</span>
+
+<span class="sd">        Please refer to the device data-sheet to determine which channel is</span>
+<span class="sd">        used as the relative base value (for example, when using an</span>
+<span class="sd">        :class:`MCP3304` in differential mode, channel 0 is read relative to</span>
+<span class="sd">        channel 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">differential</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The current value read from the device, scaled to a value between 0 and</span>
+<span class="sd">        1 (or -1 to +1 for devices operating in differential mode).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+
+
+<div class="viewcode-block" id="MCP3001">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3001">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3001</span><span class="p">(</span><span class="n">MCP30xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3001`_ is a 10-bit analog to digital converter with 1 channel.</span>
+<span class="sd">    Please note that the MCP3001 always operates in differential mode,</span>
+<span class="sd">    measuring the value of IN+ relative to IN-.</span>
+
+<span class="sd">    .. _MCP3001: http://www.farnell.com/datasheets/630400.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3001 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1</span>
+        <span class="c1">#     ==== ======== ========</span>
+        <span class="c1">#     Rx   xx0RRRRR RRRRRxxx</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_words_to_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">13</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3002">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3002">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3002</span><span class="p">(</span><span class="n">MCP30xx</span><span class="p">,</span> <span class="n">MCP3xx2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3002`_ is a 10-bit analog to digital converter with 2 channels</span>
+<span class="sd">    (0-1).</span>
+
+<span class="sd">    .. _MCP3002: http://www.farnell.com/datasheets/1599363.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be 0 or 1&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3004">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3004">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3004</span><span class="p">(</span><span class="n">MCP30xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3004`_ is a 10-bit analog to digital converter with 4 channels</span>
+<span class="sd">    (0-3).</span>
+
+<span class="sd">    .. _MCP3004: http://www.farnell.com/datasheets/808965.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 3&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3008">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3008">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3008</span><span class="p">(</span><span class="n">MCP30xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3008`_ is a 10-bit analog to digital converter with 8 channels</span>
+<span class="sd">    (0-7).</span>
+
+<span class="sd">    .. _MCP3008: http://www.farnell.com/datasheets/808965.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 7&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3201">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3201">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3201</span><span class="p">(</span><span class="n">MCP32xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3201`_ is a 12-bit analog to digital converter with 1 channel.</span>
+<span class="sd">    Please note that the MCP3201 always operates in differential mode,</span>
+<span class="sd">    measuring the value of IN+ relative to IN-.</span>
+
+<span class="sd">    .. _MCP3201: http://www.farnell.com/datasheets/1669366.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3201 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1</span>
+        <span class="c1">#     ==== ======== ========</span>
+        <span class="c1">#     Rx   xx0RRRRR RRRRRRRx</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_words_to_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">13</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3202">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3202">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3202</span><span class="p">(</span><span class="n">MCP32xx</span><span class="p">,</span> <span class="n">MCP3xx2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3202`_ is a 12-bit analog to digital converter with 2 channels</span>
+<span class="sd">    (0-1).</span>
+
+<span class="sd">    .. _MCP3202: http://www.farnell.com/datasheets/1669376.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be 0 or 1&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3204">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3204">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3204</span><span class="p">(</span><span class="n">MCP32xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3204`_ is a 12-bit analog to digital converter with 4 channels</span>
+<span class="sd">    (0-3).</span>
+
+<span class="sd">    .. _MCP3204: http://www.farnell.com/datasheets/808967.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 3&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3208">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3208">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3208</span><span class="p">(</span><span class="n">MCP32xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3208`_ is a 12-bit analog to digital converter with 8 channels</span>
+<span class="sd">    (0-7).</span>
+
+<span class="sd">    .. _MCP3208: http://www.farnell.com/datasheets/808967.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 7&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3301">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3301">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3301</span><span class="p">(</span><span class="n">MCP33xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3301`_ is a signed 13-bit analog to digital converter.  Please note</span>
+<span class="sd">    that the MCP3301 always operates in differential mode measuring the</span>
+<span class="sd">    difference between IN+ and IN-. Its output value is scaled from -1 to +1.</span>
+
+<span class="sd">    .. _MCP3301: http://www.farnell.com/datasheets/1669397.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># MCP3301 protocol looks like the following:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     Byte        0        1</span>
+        <span class="c1">#     ==== ======== ========</span>
+        <span class="c1">#     Rx   xx0SRRRR RRRRRRRR</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_words_to_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">13</span><span class="p">)</span>
+        <span class="c1"># Account for the sign bit</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="mi">4095</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="mi">8192</span> <span class="o">-</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3302">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3302">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3302</span><span class="p">(</span><span class="n">MCP33xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3302`_ is a 12/13-bit analog to digital converter with 4 channels</span>
+<span class="sd">    (0-3). When operated in differential mode, the device outputs a signed</span>
+<span class="sd">    13-bit value which is scaled from -1 to +1. When operated in single-ended</span>
+<span class="sd">    mode (the default), the device outputs an unsigned 12-bit value scaled from</span>
+<span class="sd">    0 to 1.</span>
+
+<span class="sd">    .. _MCP3302: http://www.farnell.com/datasheets/1486116.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 4&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MCP3304">
+<a class="viewcode-back" href="../../api_spi.html#gpiozero.MCP3304">[docs]</a>
+<span class="k">class</span> <span class="nc">MCP3304</span><span class="p">(</span><span class="n">MCP33xx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `MCP3304`_ is a 12/13-bit analog to digital converter with 8 channels</span>
+<span class="sd">    (0-7). When operated in differential mode, the device outputs a signed</span>
+<span class="sd">    13-bit value which is scaled from -1 to +1. When operated in single-ended</span>
+<span class="sd">    mode (the default), the device outputs an unsigned 12-bit value scaled from</span>
+<span class="sd">    0 to 1.</span>
+
+<span class="sd">    .. _MCP3304: http://www.farnell.com/datasheets/1486116.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">differential</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_voltage</span><span class="o">=</span><span class="mf">3.3</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SPIBadChannel</span><span class="p">(</span><span class="s1">&#39;channel must be between 0 and 7&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">differential</span><span class="p">,</span> <span class="n">max_voltage</span><span class="p">,</span> <span class="o">**</span><span class="n">spi_args</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

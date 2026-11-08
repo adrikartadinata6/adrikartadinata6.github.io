@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.ImageFont &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageFont</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.ImageFont</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># PIL raster font management</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1"># 1996-08-07 fl   created (experimental)</span>
+<span class="c1"># 1997-08-25 fl   minor adjustments to handle fonts from pilfont 0.3</span>
+<span class="c1"># 1999-02-06 fl   rewrote most font management stuff in C</span>
+<span class="c1"># 1999-03-17 fl   take pth files into account in load_path (from Richard Jones)</span>
+<span class="c1"># 2001-02-17 fl   added freetype support</span>
+<span class="c1"># 2001-05-09 fl   added TransposedFont wrapper class</span>
+<span class="c1"># 2002-03-04 fl   make sure we have a &quot;L&quot; or &quot;1&quot; font</span>
+<span class="c1"># 2002-12-04 fl   skip non-directory entries in the system path</span>
+<span class="c1"># 2003-04-29 fl   add embedded default font</span>
+<span class="c1"># 2003-09-27 fl   added support for truetype charmap encodings</span>
+<span class="c1">#</span>
+<span class="c1"># Todo:</span>
+<span class="c1"># Adapt to PILFONT2 format (16-bit fonts, compressed, single file)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 1997-2003 by Secret Labs AB</span>
+<span class="c1"># Copyright (c) 1996-2003 by Fredrik Lundh</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">BinaryIO</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">is_directory</span><span class="p">,</span> <span class="n">is_path</span>
+
+
+<div class="viewcode-block" id="Layout">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.Layout">[docs]</a>
+<span class="k">class</span> <span class="nc">Layout</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">BASIC</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">RAQM</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+
+<span class="n">MAX_STRING_LENGTH</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_imagingft</span> <span class="k">as</span> <span class="n">core</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">DeferredError</span>
+
+    <span class="n">core</span> <span class="o">=</span> <span class="n">DeferredError</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">MAX_STRING_LENGTH</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_STRING_LENGTH</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;too many characters in string&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="c1"># FIXME: add support for pilfont2 format (see FontFile.py)</span>
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># Font metrics format:</span>
+<span class="c1">#       &quot;PILfont&quot; LF</span>
+<span class="c1">#       fontdescriptor LF</span>
+<span class="c1">#       (optional) key=value... LF</span>
+<span class="c1">#       &quot;DATA&quot; LF</span>
+<span class="c1">#       binary data: 256*10*2 bytes (dx, dy, dstbox, srcbox)</span>
+<span class="c1">#</span>
+<span class="c1"># To place a character, cut out srcbox and paste at dstbox,</span>
+<span class="c1"># relative to the character position.  Then move the character</span>
+<span class="c1"># position according to dx, dy.</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="ImageFont">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.ImageFont">[docs]</a>
+<span class="k">class</span> <span class="nc">ImageFont</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PIL font wrapper&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_load_pilfont</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;.pbm&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                    <span class="n">image</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">fullname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">ext</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fullname</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">image</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">):</span>
+                        <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                    <span class="n">image</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot find glyph data file&quot;</span>
+                <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">fullname</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_pilfont_data</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_pilfont_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="c1"># read PILfont header</span>
+        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;PILfont</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Not a PILfont file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># FIXME: should be a dictionary</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;DATA</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># read PILfont metrics</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># check image</span>
+        <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;invalid font image mode&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">font</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ImageFont.getmask">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.ImageFont.getmask">[docs]</a>
+    <span class="k">def</span> <span class="nf">getmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a bitmap for the text.</span>
+
+<span class="sd">        If the font uses antialiasing, the bitmap should have mode ``L`` and use a</span>
+<span class="sd">        maximum value of 255. Otherwise, it should have mode ``1``.</span>
+
+<span class="sd">        :param text: Text to render.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">                     .. versionadded:: 1.1.5</span>
+
+<span class="sd">        :return: An internal PIL storage memory instance as defined by the</span>
+<span class="sd">                 :py:mod:`PIL.Image.core` interface module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">Image</span><span class="o">.</span><span class="n">_decompression_bomb_check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImageFont.getbbox">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.ImageFont.getbbox">[docs]</a>
+    <span class="k">def</span> <span class="nf">getbbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns bounding box (in pixels) of given text.</span>
+
+<span class="sd">        .. versionadded:: 9.2.0</span>
+
+<span class="sd">        :param text: Text to render.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">        :return: ``(left, top, right, bottom)`` bounding box</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span></div>
+
+
+<div class="viewcode-block" id="ImageFont.getlength">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.ImageFont.getlength">[docs]</a>
+    <span class="k">def</span> <span class="nf">getlength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns length (in pixels) of given text.</span>
+<span class="sd">        This is the amount by which following text should be offset.</span>
+
+<span class="sd">        .. versionadded:: 9.2.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">width</span></div>
+</div>
+
+
+
+<span class="c1">##</span>
+<span class="c1"># Wrapper for FreeType fonts.  Application code should use the</span>
+<span class="c1"># &lt;b&gt;truetype&lt;/b&gt; factory function to create font objects.</span>
+
+
+<div class="viewcode-block" id="FreeTypeFont">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont">[docs]</a>
+<span class="k">class</span> <span class="nc">FreeTypeFont</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;FreeType font wrapper (requires _imagingft service)&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">font</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">BinaryIO</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">layout_engine</span><span class="p">:</span> <span class="n">Layout</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># FIXME: use service provider instead</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;font size must be greater than 0&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">encoding</span>
+
+        <span class="k">if</span> <span class="n">layout_engine</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Layout</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span> <span class="n">Layout</span><span class="o">.</span><span class="n">RAQM</span><span class="p">):</span>
+            <span class="n">layout_engine</span> <span class="o">=</span> <span class="n">Layout</span><span class="o">.</span><span class="n">BASIC</span>
+            <span class="k">if</span> <span class="n">core</span><span class="o">.</span><span class="n">HAVE_RAQM</span><span class="p">:</span>
+                <span class="n">layout_engine</span> <span class="o">=</span> <span class="n">Layout</span><span class="o">.</span><span class="n">RAQM</span>
+        <span class="k">elif</span> <span class="n">layout_engine</span> <span class="o">==</span> <span class="n">Layout</span><span class="o">.</span><span class="n">RAQM</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">core</span><span class="o">.</span><span class="n">HAVE_RAQM</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Raqm layout was requested, but Raqm is not available. &quot;</span>
+                <span class="s2">&quot;Falling back to basic layout.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">layout_engine</span> <span class="o">=</span> <span class="n">Layout</span><span class="o">.</span><span class="n">BASIC</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_engine</span> <span class="o">=</span> <span class="n">layout_engine</span>
+
+        <span class="k">def</span> <span class="nf">load_from_bytes</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font_bytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">getfont</span><span class="p">(</span>
+                <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">font_bytes</span><span class="p">,</span> <span class="n">layout_engine</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_path</span><span class="p">(</span><span class="n">font</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+                <span class="n">font_bytes_path</span> <span class="o">=</span> <span class="n">font</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">font</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">font_bytes_path</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+                    <span class="c1"># FreeType cannot load fonts with non-ASCII characters on Windows</span>
+                    <span class="c1"># So load it into memory first</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">load_from_bytes</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">getfont</span><span class="p">(</span>
+                <span class="n">font</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">layout_engine</span><span class="o">=</span><span class="n">layout_engine</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">load_from_bytes</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_engine</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">layout_engine</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">layout_engine</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FreeTypeFont.getname">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getname">[docs]</a>
+    <span class="k">def</span> <span class="nf">getname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: A tuple of the font family (e.g. Helvetica) and the font style</span>
+<span class="sd">            (e.g. Bold)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">family</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">style</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.getmetrics">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getmetrics">[docs]</a>
+    <span class="k">def</span> <span class="nf">getmetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: A tuple of the font ascent (the distance from the baseline to</span>
+<span class="sd">            the highest outline point) and descent (the distance from the</span>
+<span class="sd">            baseline to the lowest outline point, a negative value)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">ascent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">descent</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.getlength">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getlength">[docs]</a>
+    <span class="k">def</span> <span class="nf">getlength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns length (in pixels with 1/64 precision) of given text when rendered</span>
+<span class="sd">        in font with provided direction, features, and language.</span>
+
+<span class="sd">        This is the amount by which following text should be offset.</span>
+<span class="sd">        Text bounding box may extend past the length in some fonts,</span>
+<span class="sd">        e.g. when using italics or accents.</span>
+
+<span class="sd">        The result is returned as a float; it is a whole number if using basic layout.</span>
+
+<span class="sd">        Note that the sum of two lengths may not equal the length of a concatenated</span>
+<span class="sd">        string due to kerning. If you need to adjust for kerning, include the following</span>
+<span class="sd">        character and subtract its length.</span>
+
+<span class="sd">        For example, instead of ::</span>
+
+<span class="sd">          hello = font.getlength(&quot;Hello&quot;)</span>
+<span class="sd">          world = font.getlength(&quot;World&quot;)</span>
+<span class="sd">          hello_world = hello + world  # not adjusted for kerning</span>
+<span class="sd">          assert hello_world == font.getlength(&quot;HelloWorld&quot;)  # may fail</span>
+
+<span class="sd">        use ::</span>
+
+<span class="sd">          hello = font.getlength(&quot;HelloW&quot;) - font.getlength(&quot;W&quot;)  # adjusted for kerning</span>
+<span class="sd">          world = font.getlength(&quot;World&quot;)</span>
+<span class="sd">          hello_world = hello + world  # adjusted for kerning</span>
+<span class="sd">          assert hello_world == font.getlength(&quot;HelloWorld&quot;)  # True</span>
+
+<span class="sd">        or disable kerning with (requires libraqm) ::</span>
+
+<span class="sd">          hello = draw.textlength(&quot;Hello&quot;, font, features=[&quot;-kern&quot;])</span>
+<span class="sd">          world = draw.textlength(&quot;World&quot;, font, features=[&quot;-kern&quot;])</span>
+<span class="sd">          hello_world = hello + world  # kerning is disabled, no need to adjust</span>
+<span class="sd">          assert hello_world == draw.textlength(&quot;HelloWorld&quot;, font, features=[&quot;-kern&quot;])</span>
+
+<span class="sd">        .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param text: Text to measure.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">        :param direction: Direction of the text. It can be &#39;rtl&#39; (right to</span>
+<span class="sd">                          left), &#39;ltr&#39; (left to right) or &#39;ttb&#39; (top to bottom).</span>
+<span class="sd">                          Requires libraqm.</span>
+
+<span class="sd">        :param features: A list of OpenType font features to be used during text</span>
+<span class="sd">                         layout. This is usually used to turn on optional</span>
+<span class="sd">                         font features that are not enabled by default,</span>
+<span class="sd">                         for example &#39;dlig&#39; or &#39;ss01&#39;, but can be also</span>
+<span class="sd">                         used to turn off default font features for</span>
+<span class="sd">                         example &#39;-liga&#39; to disable ligatures or &#39;-kern&#39;</span>
+<span class="sd">                         to disable kerning.  To get all supported</span>
+<span class="sd">                         features, see</span>
+<span class="sd">                         https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">        :param language: Language of the text. Different languages may use</span>
+<span class="sd">                         different glyph shapes or ligatures. This parameter tells</span>
+<span class="sd">                         the font which language the text is in, and to apply the</span>
+<span class="sd">                         correct substitutions as appropriate, if available.</span>
+<span class="sd">                         It should be a `BCP 47 language code</span>
+<span class="sd">                         &lt;https://www.w3.org/International/articles/language-tags/&gt;`_</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">        :return: Either width for horizontal text, or height for vertical text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span> <span class="o">/</span> <span class="mi">64</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.getbbox">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getbbox">[docs]</a>
+    <span class="k">def</span> <span class="nf">getbbox</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">stroke_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns bounding box (in pixels) of given text relative to given anchor</span>
+<span class="sd">        when rendered in font with provided direction, features, and language.</span>
+
+<span class="sd">        Use :py:meth:`getlength()` to get the offset of following text with</span>
+<span class="sd">        1/64 pixel precision. The bounding box includes extra margins for</span>
+<span class="sd">        some fonts, e.g. italics or accents.</span>
+
+<span class="sd">        .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param text: Text to render.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">        :param direction: Direction of the text. It can be &#39;rtl&#39; (right to</span>
+<span class="sd">                          left), &#39;ltr&#39; (left to right) or &#39;ttb&#39; (top to bottom).</span>
+<span class="sd">                          Requires libraqm.</span>
+
+<span class="sd">        :param features: A list of OpenType font features to be used during text</span>
+<span class="sd">                         layout. This is usually used to turn on optional</span>
+<span class="sd">                         font features that are not enabled by default,</span>
+<span class="sd">                         for example &#39;dlig&#39; or &#39;ss01&#39;, but can be also</span>
+<span class="sd">                         used to turn off default font features for</span>
+<span class="sd">                         example &#39;-liga&#39; to disable ligatures or &#39;-kern&#39;</span>
+<span class="sd">                         to disable kerning.  To get all supported</span>
+<span class="sd">                         features, see</span>
+<span class="sd">                         https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">        :param language: Language of the text. Different languages may use</span>
+<span class="sd">                         different glyph shapes or ligatures. This parameter tells</span>
+<span class="sd">                         the font which language the text is in, and to apply the</span>
+<span class="sd">                         correct substitutions as appropriate, if available.</span>
+<span class="sd">                         It should be a `BCP 47 language code</span>
+<span class="sd">                         &lt;https://www.w3.org/International/articles/language-tags/&gt;`_</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">        :param stroke_width: The width of the text stroke.</span>
+
+<span class="sd">        :param anchor:  The text anchor alignment. Determines the relative location of</span>
+<span class="sd">                        the anchor to the text. The default alignment is top left,</span>
+<span class="sd">                        specifically ``la`` for horizontal text and ``lt`` for</span>
+<span class="sd">                        vertical text. See :ref:`text-anchors` for details.</span>
+
+<span class="sd">        :return: ``(left, top, right, bottom)`` bounding box</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">anchor</span>
+        <span class="p">)</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">stroke_width</span><span class="p">,</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">stroke_width</span>
+        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">stroke_width</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">stroke_width</span>
+        <span class="k">return</span> <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">left</span> <span class="o">+</span> <span class="n">width</span><span class="p">,</span> <span class="n">top</span> <span class="o">+</span> <span class="n">height</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.getmask">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getmask">[docs]</a>
+    <span class="k">def</span> <span class="nf">getmask</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">stroke_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ink</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a bitmap for the text.</span>
+
+<span class="sd">        If the font uses antialiasing, the bitmap should have mode ``L`` and use a</span>
+<span class="sd">        maximum value of 255. If the font has embedded color data, the bitmap</span>
+<span class="sd">        should have mode ``RGBA``. Otherwise, it should have mode ``1``.</span>
+
+<span class="sd">        :param text: Text to render.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">                     .. versionadded:: 1.1.5</span>
+
+<span class="sd">        :param direction: Direction of the text. It can be &#39;rtl&#39; (right to</span>
+<span class="sd">                          left), &#39;ltr&#39; (left to right) or &#39;ttb&#39; (top to bottom).</span>
+<span class="sd">                          Requires libraqm.</span>
+
+<span class="sd">                          .. versionadded:: 4.2.0</span>
+
+<span class="sd">        :param features: A list of OpenType font features to be used during text</span>
+<span class="sd">                         layout. This is usually used to turn on optional</span>
+<span class="sd">                         font features that are not enabled by default,</span>
+<span class="sd">                         for example &#39;dlig&#39; or &#39;ss01&#39;, but can be also</span>
+<span class="sd">                         used to turn off default font features for</span>
+<span class="sd">                         example &#39;-liga&#39; to disable ligatures or &#39;-kern&#39;</span>
+<span class="sd">                         to disable kerning.  To get all supported</span>
+<span class="sd">                         features, see</span>
+<span class="sd">                         https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">                         .. versionadded:: 4.2.0</span>
+
+<span class="sd">        :param language: Language of the text. Different languages may use</span>
+<span class="sd">                         different glyph shapes or ligatures. This parameter tells</span>
+<span class="sd">                         the font which language the text is in, and to apply the</span>
+<span class="sd">                         correct substitutions as appropriate, if available.</span>
+<span class="sd">                         It should be a `BCP 47 language code</span>
+<span class="sd">                         &lt;https://www.w3.org/International/articles/language-tags/&gt;`_</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">                         .. versionadded:: 6.0.0</span>
+
+<span class="sd">        :param stroke_width: The width of the text stroke.</span>
+
+<span class="sd">                         .. versionadded:: 6.2.0</span>
+
+<span class="sd">        :param anchor:  The text anchor alignment. Determines the relative location of</span>
+<span class="sd">                        the anchor to the text. The default alignment is top left,</span>
+<span class="sd">                        specifically ``la`` for horizontal text and ``lt`` for</span>
+<span class="sd">                        vertical text. See :ref:`text-anchors` for details.</span>
+
+<span class="sd">                         .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param ink: Foreground ink for rendering in RGBA mode.</span>
+
+<span class="sd">                         .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param start: Tuple of horizontal and vertical offset, as text may render</span>
+<span class="sd">                      differently when starting at fractional coordinates.</span>
+
+<span class="sd">                         .. versionadded:: 9.4.0</span>
+
+<span class="sd">        :return: An internal PIL storage memory instance as defined by the</span>
+<span class="sd">                 :py:mod:`PIL.Image.core` interface module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getmask2</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span>
+            <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+            <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
+            <span class="n">stroke_width</span><span class="o">=</span><span class="n">stroke_width</span><span class="p">,</span>
+            <span class="n">anchor</span><span class="o">=</span><span class="n">anchor</span><span class="p">,</span>
+            <span class="n">ink</span><span class="o">=</span><span class="n">ink</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.getmask2">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.getmask2">[docs]</a>
+    <span class="k">def</span> <span class="nf">getmask2</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">stroke_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ink</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a bitmap for the text.</span>
+
+<span class="sd">        If the font uses antialiasing, the bitmap should have mode ``L`` and use a</span>
+<span class="sd">        maximum value of 255. If the font has embedded color data, the bitmap</span>
+<span class="sd">        should have mode ``RGBA``. Otherwise, it should have mode ``1``.</span>
+
+<span class="sd">        :param text: Text to render.</span>
+<span class="sd">        :param mode: Used by some graphics drivers to indicate what mode the</span>
+<span class="sd">                     driver prefers; if empty, the renderer may return either</span>
+<span class="sd">                     mode. Note that the mode is always a string, to simplify</span>
+<span class="sd">                     C-level implementations.</span>
+
+<span class="sd">                     .. versionadded:: 1.1.5</span>
+
+<span class="sd">        :param direction: Direction of the text. It can be &#39;rtl&#39; (right to</span>
+<span class="sd">                          left), &#39;ltr&#39; (left to right) or &#39;ttb&#39; (top to bottom).</span>
+<span class="sd">                          Requires libraqm.</span>
+
+<span class="sd">                          .. versionadded:: 4.2.0</span>
+
+<span class="sd">        :param features: A list of OpenType font features to be used during text</span>
+<span class="sd">                         layout. This is usually used to turn on optional</span>
+<span class="sd">                         font features that are not enabled by default,</span>
+<span class="sd">                         for example &#39;dlig&#39; or &#39;ss01&#39;, but can be also</span>
+<span class="sd">                         used to turn off default font features for</span>
+<span class="sd">                         example &#39;-liga&#39; to disable ligatures or &#39;-kern&#39;</span>
+<span class="sd">                         to disable kerning.  To get all supported</span>
+<span class="sd">                         features, see</span>
+<span class="sd">                         https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">                         .. versionadded:: 4.2.0</span>
+
+<span class="sd">        :param language: Language of the text. Different languages may use</span>
+<span class="sd">                         different glyph shapes or ligatures. This parameter tells</span>
+<span class="sd">                         the font which language the text is in, and to apply the</span>
+<span class="sd">                         correct substitutions as appropriate, if available.</span>
+<span class="sd">                         It should be a `BCP 47 language code</span>
+<span class="sd">                         &lt;https://www.w3.org/International/articles/language-tags/&gt;`_</span>
+<span class="sd">                         Requires libraqm.</span>
+
+<span class="sd">                         .. versionadded:: 6.0.0</span>
+
+<span class="sd">        :param stroke_width: The width of the text stroke.</span>
+
+<span class="sd">                         .. versionadded:: 6.2.0</span>
+
+<span class="sd">        :param anchor:  The text anchor alignment. Determines the relative location of</span>
+<span class="sd">                        the anchor to the text. The default alignment is top left,</span>
+<span class="sd">                        specifically ``la`` for horizontal text and ``lt`` for</span>
+<span class="sd">                        vertical text. See :ref:`text-anchors` for details.</span>
+
+<span class="sd">                         .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param ink: Foreground ink for rendering in RGBA mode.</span>
+
+<span class="sd">                         .. versionadded:: 8.0.0</span>
+
+<span class="sd">        :param start: Tuple of horizontal and vertical offset, as text may render</span>
+<span class="sd">                      differently when starting at fractional coordinates.</span>
+
+<span class="sd">                         .. versionadded:: 9.4.0</span>
+
+<span class="sd">        :return: A tuple of an internal PIL storage memory instance as defined by the</span>
+<span class="sd">                 :py:mod:`PIL.Image.core` interface module, and the text offset, the</span>
+<span class="sd">                 gap between the starting coordinate and the first marking</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_string_length_check</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">im</span><span class="p">,</span> <span class="n">size</span>
+
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Image</span><span class="o">.</span><span class="n">MAX_IMAGE_PIXELS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pixels</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pixels</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">Image</span><span class="o">.</span><span class="n">MAX_IMAGE_PIXELS</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGBA&quot;</span> <span class="k">else</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">im</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span>
+            <span class="n">fill</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">,</span>
+            <span class="n">features</span><span class="p">,</span>
+            <span class="n">language</span><span class="p">,</span>
+            <span class="n">stroke_width</span><span class="p">,</span>
+            <span class="n">anchor</span><span class="p">,</span>
+            <span class="n">ink</span><span class="p">,</span>
+            <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">Image</span><span class="o">.</span><span class="n">_decompression_bomb_check</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span><span class="p">,</span> <span class="n">offset</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.font_variant">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.font_variant">[docs]</a>
+    <span class="k">def</span> <span class="nf">font_variant</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">layout_engine</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a copy of this FreeTypeFont object,</span>
+<span class="sd">        using any specified arguments to override the settings.</span>
+
+<span class="sd">        Parameters are identical to the parameters used to initialize this</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        :return: A FreeTypeFont object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">font</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font_bytes</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">return</span> <span class="n">FreeTypeFont</span><span class="p">(</span>
+            <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">size</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">index</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding</span> <span class="k">if</span> <span class="n">encoding</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">encoding</span><span class="p">,</span>
+            <span class="n">layout_engine</span><span class="o">=</span><span class="n">layout_engine</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_engine</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.get_variation_names">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.get_variation_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variation_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: A list of the named styles in a variation font.</span>
+<span class="sd">        :exception OSError: If the font is not a variation font.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getvarnames</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;FreeType 2.9.1 or greater is required&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.set_variation_by_name">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.set_variation_by_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_variation_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param name: The name of the style.</span>
+<span class="sd">        :exception OSError: If the font is not a variation font.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_variation_names</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_last_variation_index&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># When the same name is set twice in a row,</span>
+            <span class="c1"># there is an &#39;unknown freetype error&#39;</span>
+            <span class="c1"># https://savannah.nongnu.org/bugs/?56186</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_variation_index</span> <span class="o">=</span> <span class="n">index</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">setvarname</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.get_variation_axes">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.get_variation_axes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variation_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: A list of the axes in a variation font.</span>
+<span class="sd">        :exception OSError: If the font is not a variation font.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getvaraxes</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;FreeType 2.9.1 or greater is required&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="n">axis</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">axes</span></div>
+
+
+<div class="viewcode-block" id="FreeTypeFont.set_variation_by_axes">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.set_variation_by_axes">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_variation_by_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param axes: A list of values for each axis.</span>
+<span class="sd">        :exception OSError: If the font is not a variation font.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">setvaraxes</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;FreeType 2.9.1 or greater is required&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TransposedFont">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.TransposedFont">[docs]</a>
+<span class="k">class</span> <span class="nc">TransposedFont</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for writing rotated or mirrored text&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wrapper that creates a transposed font from any existing font</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        :param font: A font object.</span>
+<span class="sd">        :param orientation: An optional orientation.  If given, this should</span>
+<span class="sd">            be one of Image.Transpose.FLIP_LEFT_RIGHT, Image.Transpose.FLIP_TOP_BOTTOM,</span>
+<span class="sd">            Image.Transpose.ROTATE_90, Image.Transpose.ROTATE_180, or</span>
+<span class="sd">            Image.Transpose.ROTATE_270.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">orientation</span>  <span class="c1"># any &#39;transpose&#39; argument, or None</span>
+
+<div class="viewcode-block" id="TransposedFont.getmask">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.TransposedFont.getmask">[docs]</a>
+    <span class="k">def</span> <span class="nf">getmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">im</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientation</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span></div>
+
+
+<div class="viewcode-block" id="TransposedFont.getbbox">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.TransposedFont.getbbox">[docs]</a>
+    <span class="k">def</span> <span class="nf">getbbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># TransposedFont doesn&#39;t support getmask2, move top-left point to (0, 0)</span>
+        <span class="c1"># this has no effect on ImageFont and simulates anchor=&quot;lt&quot; for FreeTypeFont</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getbbox</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">bottom</span> <span class="o">-</span> <span class="n">top</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">ROTATE_90</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">ROTATE_270</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span></div>
+
+
+<div class="viewcode-block" id="TransposedFont.getlength">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.TransposedFont.getlength">[docs]</a>
+    <span class="k">def</span> <span class="nf">getlength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">ROTATE_90</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Transpose</span><span class="o">.</span><span class="n">ROTATE_270</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;text length is undefined for text rotated by 90 or 270 degrees&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="load">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.load">[docs]</a>
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a font file.  This function loads a font object from the given</span>
+<span class="sd">    bitmap font file, and returns the corresponding font object.</span>
+
+<span class="sd">    :param filename: Name of font file.</span>
+<span class="sd">    :return: A font object.</span>
+<span class="sd">    :exception OSError: If the file could not be read.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">_load_pilfont</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span></div>
+
+
+
+<div class="viewcode-block" id="truetype">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.truetype">[docs]</a>
+<span class="k">def</span> <span class="nf">truetype</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">layout_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a TrueType or OpenType font from a file or file-like object,</span>
+<span class="sd">    and create a font object.</span>
+<span class="sd">    This function loads a font object from the given file or file-like</span>
+<span class="sd">    object, and creates a font object for a font of the given size.</span>
+
+<span class="sd">    Pillow uses FreeType to open font files. On Windows, be aware that FreeType</span>
+<span class="sd">    will keep the file open as long as the FreeTypeFont object exists. Windows</span>
+<span class="sd">    limits the number of files that can be open in C at once to 512, so if many</span>
+<span class="sd">    fonts are opened simultaneously and that limit is approached, an</span>
+<span class="sd">    ``OSError`` may be thrown, reporting that FreeType &quot;cannot open resource&quot;.</span>
+<span class="sd">    A workaround would be to copy the file(s) into memory, and open that instead.</span>
+
+<span class="sd">    This function requires the _imagingft service.</span>
+
+<span class="sd">    :param font: A filename or file-like object containing a TrueType font.</span>
+<span class="sd">                 If the file is not found in this filename, the loader may also</span>
+<span class="sd">                 search in other directories, such as the :file:`fonts/`</span>
+<span class="sd">                 directory on Windows or :file:`/Library/Fonts/`,</span>
+<span class="sd">                 :file:`/System/Library/Fonts/` and :file:`~/Library/Fonts/` on</span>
+<span class="sd">                 macOS.</span>
+
+<span class="sd">    :param size: The requested size, in pixels.</span>
+<span class="sd">    :param index: Which font face to load (default is first available face).</span>
+<span class="sd">    :param encoding: Which font encoding to use (default is Unicode). Possible</span>
+<span class="sd">                     encodings include (see the FreeType documentation for more</span>
+<span class="sd">                     information):</span>
+
+<span class="sd">                     * &quot;unic&quot; (Unicode)</span>
+<span class="sd">                     * &quot;symb&quot; (Microsoft Symbol)</span>
+<span class="sd">                     * &quot;ADOB&quot; (Adobe Standard)</span>
+<span class="sd">                     * &quot;ADBE&quot; (Adobe Expert)</span>
+<span class="sd">                     * &quot;ADBC&quot; (Adobe Custom)</span>
+<span class="sd">                     * &quot;armn&quot; (Apple Roman)</span>
+<span class="sd">                     * &quot;sjis&quot; (Shift JIS)</span>
+<span class="sd">                     * &quot;gb  &quot; (PRC)</span>
+<span class="sd">                     * &quot;big5&quot;</span>
+<span class="sd">                     * &quot;wans&quot; (Extended Wansung)</span>
+<span class="sd">                     * &quot;joha&quot; (Johab)</span>
+<span class="sd">                     * &quot;lat1&quot; (Latin-1)</span>
+
+<span class="sd">                     This specifies the character set to use. It does not alter the</span>
+<span class="sd">                     encoding of any text provided in subsequent operations.</span>
+<span class="sd">    :param layout_engine: Which layout engine to use, if available:</span>
+<span class="sd">                     :attr:`.ImageFont.Layout.BASIC` or :attr:`.ImageFont.Layout.RAQM`.</span>
+<span class="sd">                     If it is available, Raqm layout will be used by default.</span>
+<span class="sd">                     Otherwise, basic layout will be used.</span>
+
+<span class="sd">                     Raqm layout is recommended for all non-English text. If Raqm layout</span>
+<span class="sd">                     is not required, basic layout will have better performance.</span>
+
+<span class="sd">                     You can check support for Raqm layout using</span>
+<span class="sd">                     :py:func:`PIL.features.check_feature` with ``feature=&quot;raqm&quot;``.</span>
+
+<span class="sd">                     .. versionadded:: 4.2.0</span>
+<span class="sd">    :return: A font object.</span>
+<span class="sd">    :exception OSError: If the file could not be read.</span>
+<span class="sd">    :exception ValueError: If the font size is not greater than zero.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">freetype</span><span class="p">(</span><span class="n">font</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">FreeTypeFont</span><span class="p">(</span><span class="n">font</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">layout_engine</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">freetype</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_path</span><span class="p">(</span><span class="n">font</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="n">ttf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+
+        <span class="n">dirs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="c1"># check the windows font repository</span>
+            <span class="c1"># NOTE: must use uppercase WINDIR, to work around bugs in</span>
+            <span class="c1"># 1.5.2&#39;s os.environ.get()</span>
+            <span class="n">windir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;WINDIR&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">windir</span><span class="p">:</span>
+                <span class="n">dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">windir</span><span class="p">,</span> <span class="s2">&quot;fonts&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;linux&quot;</span><span class="p">,</span> <span class="s2">&quot;linux2&quot;</span><span class="p">):</span>
+            <span class="n">lindirs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;XDG_DATA_DIRS&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">lindirs</span><span class="p">:</span>
+                <span class="c1"># According to the freedesktop spec, XDG_DATA_DIRS should</span>
+                <span class="c1"># default to /usr/share</span>
+                <span class="n">lindirs</span> <span class="o">=</span> <span class="s2">&quot;/usr/share&quot;</span>
+            <span class="n">dirs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lindir</span><span class="p">,</span> <span class="s2">&quot;fonts&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lindir</span> <span class="ow">in</span> <span class="n">lindirs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="n">dirs</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="s2">&quot;/Library/Fonts&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/System/Library/Fonts&quot;</span><span class="p">,</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/Library/Fonts&quot;</span><span class="p">),</span>
+            <span class="p">]</span>
+
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">ttf_filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">first_font_with_a_different_extension</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">walkroot</span><span class="p">,</span> <span class="n">walkdir</span><span class="p">,</span> <span class="n">walkfilenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">walkfilename</span> <span class="ow">in</span> <span class="n">walkfilenames</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ext</span> <span class="ow">and</span> <span class="n">walkfilename</span> <span class="o">==</span> <span class="n">ttf_filename</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">freetype</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">walkroot</span><span class="p">,</span> <span class="n">walkfilename</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">ext</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">walkfilename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ttf_filename</span><span class="p">:</span>
+                        <span class="n">fontpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">walkroot</span><span class="p">,</span> <span class="n">walkfilename</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fontpath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;.ttf&quot;</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">freetype</span><span class="p">(</span><span class="n">fontpath</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">ext</span> <span class="ow">and</span> <span class="n">first_font_with_a_different_extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">first_font_with_a_different_extension</span> <span class="o">=</span> <span class="n">fontpath</span>
+        <span class="k">if</span> <span class="n">first_font_with_a_different_extension</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">freetype</span><span class="p">(</span><span class="n">first_font_with_a_different_extension</span><span class="p">)</span>
+        <span class="k">raise</span></div>
+
+
+
+<div class="viewcode-block" id="load_path">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.load_path">[docs]</a>
+<span class="k">def</span> <span class="nf">load_path</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load font file. Same as :py:func:`~PIL.ImageFont.load`, but searches for a</span>
+<span class="sd">    bitmap font along the Python path.</span>
+
+<span class="sd">    :param filename: Name of font file.</span>
+<span class="sd">    :return: A font object.</span>
+<span class="sd">    :exception OSError: If the file could not be read.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_directory</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot find font file&quot;</span>
+    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_default">
+<a class="viewcode-back" href="../../reference/ImageFont.html#PIL.ImageFont.load_default">[docs]</a>
+<span class="k">def</span> <span class="nf">load_default</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If FreeType support is available, load a version of Aileron Regular,</span>
+<span class="sd">    https://dotcolon.net/font/aileron, with a more limited character set.</span>
+
+<span class="sd">    Otherwise, load a &quot;better than nothing&quot; font.</span>
+
+<span class="sd">    .. versionadded:: 1.1.4</span>
+
+<span class="sd">    :param size: The font size of Aileron Regular.</span>
+
+<span class="sd">        .. versionadded:: 10.1.0</span>
+
+<span class="sd">    :return: A font object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">core</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span> <span class="ow">or</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">truetype</span><span class="p">(</span>
+            <span class="n">BytesIO</span><span class="p">(</span>
+                <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span>
+<span class="w">                    </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">AAEAAAAPAIAAAwBwRkZUTYwDlUAAADFoAAAAHEdERUYAqADnAAAo8AAAACRHUE9ThhmITwAAKfgAA</span>
+<span class="sd">AduR1NVQnHxefoAACkUAAAA4k9TLzJovoHLAAABeAAAAGBjbWFw5lFQMQAAA6gAAAGqZ2FzcP//AA</span>
+<span class="sd">MAACjoAAAACGdseWYmRXoPAAAGQAAAHfhoZWFkE18ayQAAAPwAAAA2aGhlYQboArEAAAE0AAAAJGh</span>
+<span class="sd">tdHjjERZ8AAAB2AAAAdBsb2NhuOexrgAABVQAAADqbWF4cAC7AEYAAAFYAAAAIG5hbWUr+h5lAAAk</span>
+<span class="sd">OAAAA6Jwb3N0D3oPTQAAJ9wAAAEKAAEAAAABGhxJDqIhXw889QALA+gAAAAA0Bqf2QAAAADhCh2h/</span>
+<span class="sd">2r/LgOxAyAAAAAIAAIAAAAAAAAAAQAAA8r/GgAAA7j/av9qA7EAAQAAAAAAAAAAAAAAAAAAAHQAAQ</span>
+<span class="sd">AAAHQAQwAFAAAAAAACAAAAAQABAAAAQAAAAAAAAAADAfoBkAAFAAgCigJYAAAASwKKAlgAAAFeADI</span>
+<span class="sd">BPgAAAAAFAAAAAAAAAAAAAAcAAAAAAAAAAAAAAABVS1dOAEAAIPsCAwL/GgDIA8oA5iAAAJMAAAAA</span>
+<span class="sd">AhICsgAAACAAAwH0AAAAAAAAAU0AAADYAAAA8gA5AVMAVgJEAEYCRAA1AuQAKQKOAEAAsAArATsAZ</span>
+<span class="sd">AE7AB4CMABVAkQAUADc/+EBEgAgANwAJQEv//sCRAApAkQAggJEADwCRAAtAkQAIQJEADkCRAArAk</span>
+<span class="sd">QAMgJEACwCRAAxANwAJQDc/+ECRABnAkQAUAJEAEQB8wAjA1QANgJ/AB0CcwBkArsALwLFAGQCSwB</span>
+<span class="sd">kAjcAZALGAC8C2gBkAQgAZAIgADcCYQBkAj8AZANiAGQCzgBkAuEALwJWAGQC3QAvAmsAZAJJADQC</span>
+<span class="sd">ZAAiAqoAXgJuACADuAAaAnEAGQJFABMCTwAuATMAYgEv//sBJwAiAkQAUAH0ADIBLAApAhMAJAJjA</span>
+<span class="sd">EoCEQAeAmcAHgIlAB4BIgAVAmcAHgJRAEoA7gA+AOn/8wIKAEoA9wBGA1cASgJRAEoCSgAeAmMASg</span>
+<span class="sd">JnAB4BSgBKAcsAGAE5ABQCUABCAgIAAQMRAAEB4v/6AgEAAQHOABQBLwBAAPoAYAEvACECRABNA0Y</span>
+<span class="sd">AJAItAHgBKgAcAkQAUAEsAHQAygAgAi0AOQD3ADYA9wAWAaEANgGhABYCbAAlAYMAeAGDADkA6/9q</span>
+<span class="sd">AhsAFAIKABUB/QAVAAAAAwAAAAMAAAAcAAEAAAAAAKQAAwABAAAAHAAEAIgAAAAeABAAAwAOAH4Aq</span>
+<span class="sd">QCrALEAtAC3ALsgGSAdICYgOiBEISL7Av//AAAAIACpAKsAsAC0ALcAuyAYIBwgJiA5IEQhIvsB//</span>
+<span class="sd">//4/+5/7j/tP+y/7D/reBR4E/gR+A14CzfTwVxAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAEGAAABAAAAAAAAAAECAAAAAgAAAAAAAAAAAAAAAAAAAAEAAAMEBQYHCAkKCwwNDg8QERIT</span>
+<span class="sd">FBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMT</span>
+<span class="sd">U5PUFFSU1RVVldYWVpbXF1eX2BhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGQAAA</span>
+<span class="sd">AAAAAAYnFmAAAAAABlAAAAAAAAAAAAAAAAAAAAAAAAAAAAY2htAAAAAAAAAABrbGlqAAAAAHAAbm9</span>
+<span class="sd">ycwBnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmACYAJgAmAD4AUgCCAMoBCgFO</span>
+<span class="sd">AVwBcgGIAaYBvAHKAdYB6AH2AgwCIAJKAogCpgLWAw4DIgNkA5wDugPUA+gD/AQQBEYEogS8BPoFJ</span>
+<span class="sd">gVSBWoFgAWwBcoF1gX6BhQGJAZMBmgGiga0BuIHGgdUB2YHkAeiB8AH3AfyCAoIHAgqCDoITghcCG</span>
+<span class="sd">oIogjSCPoJKglYCXwJwgnqCgIKKApACl4Klgq8CtwLDAs8C1YLjAuyC9oL7gwMDCYMSAxgDKAMrAz</span>
+<span class="sd">qDQoNTA1mDYQNoA2uDcAN2g3oDfYODA4iDkoOXA5sDnoOnA7EDvwAAAAFAAAAAAH0ArwAAwAGAAkA</span>
+<span class="sd">DAAPAAAxESERAxMhExcRASELARETAfT6qv6syKr+jgFUqsiqArz9RAGLAP/+1P8B/v3VAP8BLP4CA</span>
+<span class="sd">P8AAgA5//IAuQKyAAMACwAANyMDMwIyFhQGIiY0oE4MZk84JCQ4JLQB/v3AJDgkJDgAAgBWAeUBPA</span>
+<span class="sd">LfAAMABwAAEyMnMxcjJzOmRgpagkYKWgHl+vr6AAAAAAIARgAAAf4CsgAbAB8AAAEHMxUjByM3Iwc</span>
+<span class="sd">jNyM1MzcjNTM3MwczNzMHMxUrAQczAZgdZXEvOi9bLzovWmYdZXEvOi9bLzovWp9bHlsBn4w429vb</span>
+<span class="sd">2ziMONvb29s4jAAAAAMANf+mAg4DDAAfACYALAAAJRQGBxUjNS4BJzMeARcRLgE0Njc1MxUeARcjJ</span>
+<span class="sd">icVHgEBFBYXNQ4BExU+ATU0Ag5xWDpgcgRcBz41Xl9oVTpVYwpcC1ttXP6cLTQuM5szOrVRZwlOTQ</span>
+<span class="sd">ZqVzZECAEAGlukZAlOTQdrUG8O7iNlAQgxNhDlCDj+8/YGOjReAAAAAAUAKf/yArsCvAAHAAsAFQA</span>
+<span class="sd">dACcAABIyFhQGIiY0EyMBMwQiBhUUFjI2NTQSMhYUBiImNDYiBhUUFjI2NTR5iFBQiFCVVwHAV/5c</span>
+<span class="sd">OiMjOiPmiFBQiFCxOiMjOiMCvFaSVlaS/ZoCsjIzMC80NC8w/uNWklZWkhozMC80NC8wAAAAAgBA/</span>
+<span class="sd">/ICbgLAACIALgAAARUjEQYjIiY1NDY3LgE1NDYzMhcVJiMiBhUUFhcWOwE1MxUFFBYzMjc1IyIHDg</span>
+<span class="sd">ECbmBcYYOOVkg7R4hsQjY4Q0RNRD4SLDxW/pJUXzksPCkUUk0BgUb+zBVUZ0BkDw5RO1huCkULQzp</span>
+<span class="sd">COAMBcHDHRz0J/AIHRQAAAAEAKwHlAIUC3wADAAATIycze0YKWgHl+gAAAAABAGT/sAEXAwwACQAA</span>
+<span class="sd">EzMGEBcjLgE0Nt06dXU6OUBAAwzG/jDGVePs4wAAAAEAHv+wANEDDAAJAAATMx4BFAYHIzYQHjo5Q</span>
+<span class="sd">EA5OnUDDFXj7ONVxgHQAAAAAQBVAFIB2wHbAA4AAAE3FwcXBycHJzcnNxcnMwEtmxOfcTJjYzJxnx</span>
+<span class="sd">ObCj4BKD07KYolmZkliik7PbMAAQBQAFUB9AIlAAsAAAEjFSM1IzUzNTMVMwH0tTq1tTq1AR/Kyjj</span>
+<span class="sd">OzgAAAAAB/+H/iACMAGQABAAANwcjNzOMWlFOXVrS3AAAAQAgAP8A8gE3AAMAABMjNTPy0tIA/zgA</span>
+<span class="sd">AQAl//IApQByAAcAADYyFhQGIiY0STgkJDgkciQ4JCQ4AAAAAf/7/+IBNALQAAMAABcjEzM5Pvs+H</span>
+<span class="sd">gLuAAAAAAIAKf/yAhsCwAADAAcAABIgECA2IBAgKQHy/g5gATL+zgLA/TJEAkYAAAAAAQCCAAABlg</span>
+<span class="sd">KyAAgAAAERIxEHNTc2MwGWVr6SIygCsv1OAldxW1sWAAEAPAAAAg4CwAAZAAA3IRUhNRM+ATU0JiM</span>
+<span class="sd">iDwEjNz4BMzIWFRQGB7kBUv4x+kI2QTt+EAFWAQp8aGVtSl5GRjEA/0RVLzlLmAoKa3FsUkNxXQAA</span>
+<span class="sd">AAEALf/yAhYCwAAqAAABHgEVFAYjIi8BMxceATMyNjU0KwE1MzI2NTQmIyIGDwEjNz4BMzIWFRQGA</span>
+<span class="sd">YxBSZJo2RUBVgEHV0JBUaQREUBUQzc5TQcBVgEKfGhfcEMBbxJbQl1x0AoKRkZHPn9GSD80QUVCCg</span>
+<span class="sd">pfbGBPOlgAAAACACEAAAIkArIACgAPAAAlIxUjNSE1ATMRMyMRBg8BAiRXVv6qAVZWV60dHLCurq4</span>
+<span class="sd">rAdn+QgFLMibzAAABADn/8gIZArIAHQAAATIWFRQGIyIvATMXFjMyNjU0JiMiByMTIRUhBzc2ATNv</span>
+<span class="sd">d5Fl1RQBVgIad0VSTkVhL1IwAYj+vh8rMAHHgGdtgcUKCoFXTU5bYgGRRvAuHQAAAAACACv/8gITA</span>
+<span class="sd">sAAFwAjAAABMhYVFAYjIhE0NjMyFh8BIycmIyIDNzYTMjY1NCYjIgYVFBYBLmp7imr0l3RZdAgBXA</span>
+<span class="sd">IYZ5wKJzU6QVNJSz5SUAHSgWltiQFGxcNlVQoKdv7sPiz+ZF1LTmJbU0lhAAAAAQAyAAACGgKyAAY</span>
+<span class="sd">AAAEVASMBITUCGv6oXAFL/oECsij9dgJsRgAAAAMALP/xAhgCwAAWACAALAAAAR4BFRQGIyImNTQ2</span>
+<span class="sd">Ny4BNTQ2MhYVFAYmIgYVFBYyNjU0AzI2NTQmIyIGFRQWAZQ5S5BmbIpPOjA7ecp5P2F8Q0J8RIVJS</span>
+<span class="sd">0pLTEtOAW0TXTxpZ2ZqPF0SE1A3VWVlVTdQ/UU0N0RENzT9/ko+Ok1NOj1LAAIAMf/yAhkCwAAXAC</span>
+<span class="sd">MAAAEyERQGIyImLwEzFxYzMhMHBiMiJjU0NhMyNjU0JiMiBhUUFgEl9Jd0WXQIAVwCGGecCic1SWp</span>
+<span class="sd">7imo+UlBAQVNJAsD+usXDZVUKCnYBFD4sgWltif5kW1NJYV1LTmIAAAACACX/8gClAiAABwAPAAAS</span>
+<span class="sd">MhYUBiImNBIyFhQGIiY0STgkJDgkJDgkJDgkAiAkOCQkOP52JDgkJDgAAAAC/+H/iAClAiAABwAMA</span>
+<span class="sd">AASMhYUBiImNBMHIzczSTgkJDgkaFpSTl4CICQ4JCQ4/mba5gAAAQBnAB4B+AH0AAYAAAENARUlNS</span>
+<span class="sd">UB+P6qAVb+bwGRAbCmpkbJRMkAAAIAUAC7AfQBuwADAAcAAAEhNSERITUhAfT+XAGk/lwBpAGDOP8</span>
+<span class="sd">AOAABAEQAHgHVAfQABgAAARUFNS0BNQHV/m8BVv6qAStEyUSmpkYAAAAAAgAj//IB1ALAABgAIAAA</span>
+<span class="sd">ATIWFRQHDgEHIz4BNz4BNTQmIyIGByM+ARIyFhQGIiY0AQRibmktIAJWBSEqNig+NTlHBFoDezQ4J</span>
+<span class="sd">CQ4JALAZ1BjaS03JS1DMD5LLDQ/SUVgcv2yJDgkJDgAAAAAAgA2/5gDFgKYADYAQgAAAQMGFRQzMj</span>
+<span class="sd">Y1NCYjIg4CFRQWMzI2NxcGIyImNTQ+AjMyFhUUBiMiJwcGIyImNTQ2MzIfATcHNzYmIyIGFRQzMjY</span>
+<span class="sd">Cej8EJjJJlnBAfGQ+oHtAhjUYg5OPx0h2k06Os3xRWQsVLjY5VHtdPBwJETcJDyUoOkZEJz8B0f74</span>
+<span class="sd">EQ8kZl6EkTFZjVOLlyknMVm1pmCiaTq4lX6CSCknTVRmmR8wPdYnQzxuSWVGAAIAHQAAAncCsgAHA</span>
+<span class="sd">AoAACUjByMTMxMjATMDAcj+UVz4dO5d/sjPZPT0ArL9TgE6ATQAAAADAGQAAAJMArIAEAAbACcAAA</span>
+<span class="sd">EeARUUBgcGKwERMzIXFhUUJRUzMjc2NTQnJiMTPgE1NCcmKwEVMzIBvkdHZkwiNt7LOSGq/oeFHBt</span>
+<span class="sd">hahIlSTM+cB8Yj5UWAW8QT0VYYgwFArIEF5Fv1eMED2NfDAL93AU+N24PBP0AAAAAAQAv//ICjwLA</span>
+<span class="sd">ABsAAAEyFh8BIycmIyIGFRQWMzI/ATMHDgEjIiY1NDYBdX+PCwFWAiKiaHx5ZaIiAlYBCpWBk6a0A</span>
+<span class="sd">sCAagoKpqN/gaOmCgplhcicn8sAAAIAZAAAAp8CsgAMABkAAAEeARUUBgcGKwERMzITPgE1NCYnJi</span>
+<span class="sd">sBETMyAY59lJp8IzXN0jUVWmdjWRs5d3I4Aq4QqJWUug8EArL9mQ+PeHGHDgX92gAAAAABAGQAAAI</span>
+<span class="sd">vArIACwAAJRUhESEVIRUhFSEVAi/+NQHB/pUBTf6zRkYCskbwRvAAAAABAGQAAAIlArIACQAAExUh</span>
+<span class="sd">FSERIxEhFboBQ/69VgHBAmzwRv7KArJGAAAAAAEAL//yAo8CwAAfAAABMxEjNQcGIyImNTQ2MzIWH</span>
+<span class="sd">wEjJyYjIgYVFBYzMjY1IwGP90wfPnWTprSSf48LAVYCIqJofHllVG+hAU3+s3hARsicn8uAagoKpq</span>
+<span class="sd">N/gaN1XAAAAAEAZAAAAowCsgALAAABESMRIREjETMRIRECjFb+hFZWAXwCsv1OAS7+0gKy/sQBPAA</span>
+<span class="sd">AAAABAGQAAAC6ArIAAwAAMyMRM7pWVgKyAAABADf/8gHoArIAEwAAAREUBw4BIyImLwEzFxYzMjc2</span>
+<span class="sd">NREB6AIFcGpgbQIBVgIHfXQKAQKy/lYxIltob2EpKYyEFD0BpwAAAAABAGQAAAJ0ArIACwAACQEjA</span>
+<span class="sd">wcVIxEzEQEzATsBJ3ntQlZWAVVlAWH+nwEnR+ACsv6RAW8AAQBkAAACLwKyAAUAACUVIREzEQIv/j</span>
+<span class="sd">VWRkYCsv2UAAABAGQAAAMUArIAFAAAAREjETQ3BgcDIwMmJxYVESMRMxsBAxRWAiMxemx8NxsCVo7</span>
+<span class="sd">MywKy/U4BY7ZLco7+nAFmoFxLtP6dArL9lwJpAAAAAAEAZAAAAoACsgANAAAhIwEWFREjETMBJjUR</span>
+<span class="sd">MwKAhP67A1aEAUUDVAJeeov+pwKy/aJ5jAFZAAAAAgAv//ICuwLAAAkAEwAAEiAWFRQGICY1NBIyN</span>
+<span class="sd">jU0JiIGFRTbATSsrP7MrNrYenrYegLAxaKhxsahov47nIeIm5uIhwACAGQAAAJHArIADgAYAAABHg</span>
+<span class="sd">EVFAYHBisBESMRMzITNjQnJisBETMyAZRUX2VOHzuAVtY7GlxcGDWIiDUCrgtnVlVpCgT+5gKy/rU</span>
+<span class="sd">V1BUF/vgAAAACAC//zAK9AsAAEgAcAAAlFhcHJiMiBwYjIiY1NDYgFhUUJRQWMjY1NCYiBgI9PUMx</span>
+<span class="sd">UDcfKh8omqysATSs/dR62Hp62HpICTg7NgkHxqGixcWitbWHnJyHiJubAAIAZAAAAlgCsgAXACMAA</span>
+<span class="sd">CUWFyMmJyYnJisBESMRMzIXHgEVFAYHFiUzMjc+ATU0JyYrAQIqDCJfGQwNWhAhglbiOx9QXEY1Tv</span>
+<span class="sd">6bhDATMj1lGSyMtYgtOXR0BwH+1wKyBApbU0BSESRAAgVAOGoQBAABADT/8gIoAsAAJQAAATIWFyM</span>
+<span class="sd">uASMiBhUUFhceARUUBiMiJiczHgEzMjY1NCYnLgE1NDYBOmd2ClwGS0E6SUNRdW+HZnKKC1wPWkQ9</span>
+<span class="sd">Uk1cZGuEAsBwXUJHNjQ3OhIbZVZZbm5kREo+NT5DFRdYUFdrAAAAAAEAIgAAAmQCsgAHAAABIxEjE</span>
+<span class="sd">SM1IQJk9lb2AkICbP2UAmxGAAEAXv/yAmQCsgAXAAABERQHDgEiJicmNREzERQXHgEyNjc2NRECZA</span>
+<span class="sd">IIgfCBCAJWAgZYmlgGAgKy/k0qFFxzc1wUKgGz/lUrEkRQUEQSKwGrAAAAAAEAIAAAAnoCsgAGAAA</span>
+<span class="sd">hIwMzGwEzAYJ07l3N1FwCsv2PAnEAAAEAGgAAA7ECsgAMAAABAyMLASMDMxsBMxsBA7HAcZyicrZi</span>
+<span class="sd">kaB0nJkCsv1OAlP9rQKy/ZsCW/2kAmYAAAEAGQAAAm8CsgALAAAhCwEjEwMzGwEzAxMCCsrEY/bkY</span>
+<span class="sd">re+Y/D6AST+3AFcAVb+5gEa/q3+oQAAAQATAAACUQKyAAgAAAERIxEDMxsBMwFdVvRjwLphARD+8A</span>
+<span class="sd">EQAaL+sQFPAAABAC4AAAI5ArIACQAAJRUhNQEhNSEVAQI5/fUBof57Aen+YUZGQgIqRkX92QAAAAA</span>
+<span class="sd">BAGL/sAEFAwwABwAAARUjETMVIxEBBWlpowMMOP0UOANcAAAB//v/4gE0AtAAAwAABSMDMwE0Pvs+</span>
+<span class="sd">HgLuAAAAAQAi/7AAxQMMAAcAABcjNTMRIzUzxaNpaaNQOALsOAABAFAA1wH0AmgABgAAJQsBIxMzE</span>
+<span class="sd">wGwjY1GsESw1wFZ/qcBkf5vAAAAAQAy/6oBwv/iAAMAAAUhNSEBwv5wAZBWOAAAAAEAKQJEALYCsg</span>
+<span class="sd">ADAAATIycztjhVUAJEbgAAAAACACT/8gHQAiAAHQAlAAAhJwcGIyImNTQ2OwE1NCcmIyIHIz4BMzI</span>
+<span class="sd">XFh0BFBcnMjY9ASYVFAF6CR0wVUtgkJoiAgdgaQlaBm1Zrg4DCuQ9R+5MOSFQR1tbDiwUUXBUXowf</span>
+<span class="sd">J8c9SjRORzYSgVwAAAAAAgBK//ICRQLfABEAHgAAATIWFRQGIyImLwEVIxEzETc2EzI2NTQmIyIGH</span>
+<span class="sd">QEUFgFUcYCVbiNJEyNWVigySElcU01JXmECIJd4i5QTEDRJAt/+3jkq/hRuZV55ZWsdX14AAQAe//</span>
+<span class="sd">IB9wIgABgAAAEyFhcjJiMiBhUUFjMyNjczDgEjIiY1NDYBF152DFocbEJXU0A1Rw1aE3pbaoKQAiB</span>
+<span class="sd">oWH5qZm1tPDlaXYuLgZcAAAACAB7/8gIZAt8AEQAeAAABESM1BwYjIiY1NDYzMhYfAREDMjY9ATQm</span>
+<span class="sd">IyIGFRQWAhlWKDJacYCVbiNJEyOnSV5hQUlcUwLf/SFVOSqXeIuUExA0ARb9VWVrHV9ebmVeeQACA</span>
+<span class="sd">B7/8gH9AiAAFQAbAAABFAchHgEzMjY3Mw4BIyImNTQ2MzIWJyIGByEmAf0C/oAGUkA1SwlaD4FXbI</span>
+<span class="sd">WObmt45UBVBwEqDQEYFhNjWD84W16Oh3+akU9aU60AAAEAFQAAARoC8gAWAAATBh0BMxUjESMRIzU</span>
+<span class="sd">zNTQ3PgEzMhcVJqcDbW1WOTkDB0k8Hx5oAngVITRC/jQBzEIsJRs5PwVHEwAAAAIAHv8uAhkCIAAi</span>
+<span class="sd">AC8AAAERFAcOASMiLwEzFx4BMzI2NzY9AQcGIyImNTQ2MzIWHwE1AzI2PQE0JiMiBhUUFgIZAQSEd</span>
+<span class="sd">NwRAVcBBU5DTlUDASgyWnGAlW4jSRMjp0leYUFJXFMCEv5wSh1zeq8KCTI8VU0ZIQk5Kpd4i5QTED</span>
+<span class="sd">RJ/iJlax1fXm5lXnkAAQBKAAACCgLkABcAAAEWFREjETQnLgEHDgEdASMRMxE3NjMyFgIIAlYCBDs</span>
+<span class="sd">6RVRWViE5UVViAYUbQP7WASQxGzI7AQJyf+kC5P7TPSxUAAACAD4AAACsAsAABwALAAASMhYUBiIm</span>
+<span class="sd">NBMjETNeLiAgLiBiVlYCwCAuICAu/WACEgAC//P/LgCnAsAABwAVAAASMhYUBiImNBcRFAcGIyInN</span>
+<span class="sd">RY3NjURWS4gIC4gYgMLcRwNSgYCAsAgLiAgLo79wCUbZAJGBzMOHgJEAAAAAQBKAAACCALfAAsAAC</span>
+<span class="sd">EnBxUjETMREzMHEwGTwTJWVvdu9/rgN6kC3/4oAQv6/ugAAQBG//wA3gLfAA8AABMRFBceATcVBiM</span>
+<span class="sd">iJicmNRGcAQIcIxkkKi4CAQLf/bkhERoSBD4EJC8SNAJKAAAAAQBKAAADEAIgACQAAAEWFREjETQn</span>
+<span class="sd">JiMiFREjETQnJiMiFREjETMVNzYzMhYXNzYzMhYDCwVWBAxedFYEDF50VlYiJko7ThAvJkpEVAGfI</span>
+<span class="sd">jn+vAEcQyRZ1v76ARxDJFnW/voCEk08HzYtRB9HAAAAAAEASgAAAgoCIAAWAAABFhURIxE0JyYjIg</span>
+<span class="sd">YdASMRMxU3NjMyFgIIAlYCCXBEVVZWITlRVWIBhRtA/tYBJDEbbHR/6QISWz0sVAAAAAACAB7/8gI</span>
+<span class="sd">sAiAABwARAAASIBYUBiAmNBIyNjU0JiIGFRSlAQCHh/8Ah7ieWlqeWgIgn/Cfn/D+s3ZfYHV1YF8A</span>
+<span class="sd">AgBK/zwCRQIgABEAHgAAATIWFRQGIyImLwERIxEzFTc2EzI2NTQmIyIGHQEUFgFUcYCVbiNJEyNWV</span>
+<span class="sd">igySElcU01JXmECIJd4i5QTEDT+8wLWVTkq/hRuZV55ZWsdX14AAgAe/zwCGQIgABEAHgAAAREjEQ</span>
+<span class="sd">cGIyImNTQ2MzIWHwE1AzI2PQE0JiMiBhUUFgIZVigyWnGAlW4jSRMjp0leYUFJXFMCEv0qARk5Kpd</span>
+<span class="sd">4i5QTEDRJ/iJlax1fXm5lXnkAAQBKAAABPgIeAA0AAAEyFxUmBhURIxEzFTc2ARoWDkdXVlYwIwIe</span>
+<span class="sd">B0EFVlf+0gISU0cYAAEAGP/yAa0CIAAjAAATMhYXIyYjIgYVFBYXHgEVFAYjIiYnMxYzMjY1NCYnL</span>
+<span class="sd">gE1NDbkV2MJWhNdKy04PF1XbVhWbgxaE2ktOjlEUllkAiBaS2MrJCUoEBlPQkhOVFZoKCUmLhIWSE</span>
+<span class="sd">BIUwAAAAEAFP/4ARQCiQAXAAATERQXHgE3FQYjIiYnJjURIzUzNTMVMxWxAQMmMx8qMjMEAUdHVmM</span>
+<span class="sd">BzP7PGw4mFgY/BSwxDjQBNUJ7e0IAAAABAEL/8gICAhIAFwAAAREjNQcGIyImJyY1ETMRFBceATMy</span>
+<span class="sd">Nj0BAgJWITlRT2EKBVYEBkA1RFECEv3uWj4qTToiOQE+/tIlJC43c4DpAAAAAAEAAQAAAfwCEgAGA</span>
+<span class="sd">AABAyMDMxsBAfzJaclfop8CEv3uAhL+LQHTAAABAAEAAAMLAhIADAAAAQMjCwEjAzMbATMbAQMLqW</span>
+<span class="sd">Z2dmapY3t0a3Z7AhL97gG+/kICEv5AAcD+QwG9AAAB//oAAAHWAhIACwAAARMjJwcjEwMzFzczARq</span>
+<span class="sd">8ZIuKY763ZoWFYwEO/vLV1QEMAQbNzQAAAQAB/y4B+wISABEAAAEDDgEjIic1FjMyNj8BAzMbAQH7</span>
+<span class="sd">2iFZQB8NDRIpNhQH02GenQIS/cFVUAJGASozEwIt/i4B0gABABQAAAGxAg4ACQAAJRUhNQEhNSEVA</span>
+<span class="sd">QGx/mMBNP7iAYL+zkREQgGIREX+ewAAAAABAED/sAEOAwwALAAAASMiBhUUFxYVFAYHHgEVFAcGFR</span>
+<span class="sd">QWOwEVIyImNTQ3NjU0JzU2NTQnJjU0NjsBAQ4MKiMLDS4pKS4NCyMqDAtERAwLUlILDERECwLUGBk</span>
+<span class="sd">WTlsgKzUFBTcrIFtOFhkYOC87GFVMIkUIOAhFIkxVGDsvAAAAAAEAYP84AJoDIAADAAAXIxEzmjo6</span>
+<span class="sd">yAPoAAEAIf+wAO8DDAAsAAATFQYVFBcWFRQGKwE1MzI2NTQnJjU0NjcuATU0NzY1NCYrATUzMhYVF</span>
+<span class="sd">AcGFRTvUgsMREQLDCojCw0uKSkuDQsjKgwLREQMCwF6OAhFIkxVGDsvOBgZFk5bICs1BQU3KyBbTh</span>
+<span class="sd">YZGDgvOxhVTCJFAAABAE0A3wH2AWQAEwAAATMUIyImJyYjIhUjNDMyFhcWMzIBvjhuGywtQR0xOG4</span>
+<span class="sd">bLC1BHTEBZIURGCNMhREYIwAAAwAk/94DIgLoAAcAEQApAAAAIBYQBiAmECQgBhUUFiA2NTQlMhYX</span>
+<span class="sd">IyYjIgYUFjMyNjczDgEjIiY1NDYBAQFE3d3+vN0CB/7wubkBELn+xVBnD1wSWDo+QTcqOQZcEmZWX</span>
+<span class="sd">HN2Aujg/rbg4AFKpr+Mjb6+jYxbWEldV5ZZNShLVn5na34AAgB4AFIB9AGeAAUACwAAAQcXIyc3Mw</span>
+<span class="sd">cXIyc3AUqJiUmJifOJiUmJiQGepqampqampqYAAAIAHAHSAQ4CwAAHAA8AABIyFhQGIiY0NiIGFBY</span>
+<span class="sd">yNjRgakREakSTNCEhNCECwEJqQkJqCiM4IyM4AAAAAAIAUAAAAfQCCwALAA8AAAEzFSMVIzUjNTM1</span>
+<span class="sd">MxMhNSEBP7W1OrW1OrX+XAGkAVs4tLQ4sP31OAAAAQB0AkQBAQKyAAMAABMjNzOsOD1QAkRuAAAAA</span>
+<span class="sd">AEAIADsAKoBdgAHAAASMhYUBiImNEg6KCg6KAF2KDooKDoAAAIAOQBSAbUBngAFAAsAACUHIzcnMw</span>
+<span class="sd">UHIzcnMwELiUmJiUkBM4lJiYlJ+KampqampqYAAAABADYB5QDhAt8ABAAAEzczByM2Xk1OXQHv8Po</span>
+<span class="sd">AAQAWAeUAwQLfAAQAABMHIzczwV5NTl0C1fD6AAIANgHlAYsC3wAEAAkAABM3MwcjPwEzByM2Xk1O</span>
+<span class="sd">XapeTU5dAe/w+grw+gAAAgAWAeUBawLfAAQACQAAEwcjNzMXByM3M8FeTU5dql5NTl0C1fD6CvD6A</span>
+<span class="sd">AADACX/8gI1AHIABwAPABcAADYyFhQGIiY0NjIWFAYiJjQ2MhYUBiImNEk4JCQ4JOw4JCQ4JOw4JC</span>
+<span class="sd">Q4JHIkOCQkOCQkOCQkOCQkOCQkOAAAAAEAeABSAUoBngAFAAABBxcjJzcBSomJSYmJAZ6mpqamAAA</span>
+<span class="sd">AAAEAOQBSAQsBngAFAAAlByM3JzMBC4lJiYlJ+KampgAAAf9qAAABgQKyAAMAACsBATM/VwHAVwKy</span>
+<span class="sd">AAAAAAIAFAHIAdwClAAHABQAABMVIxUjNSM1BRUjNwcjJxcjNTMXN9pKMkoByDICKzQqATJLKysCl</span>
+<span class="sd">CmjoykBy46KiY3Lm5sAAQAVAAABvALyABgAAAERIxEjESMRIzUzNTQ3NjMyFxUmBgcGHQEBvFbCVj</span>
+<span class="sd">k5AxHHHx5iVgcDAg798gHM/jQBzEIOJRuWBUcIJDAVIRYAAAABABX//AHkAvIAJQAAJR4BNxUGIyI</span>
+<span class="sd">mJyY1ESYjIgcGHQEzFSMRIxEjNTM1NDc2MzIXERQBowIcIxkkKi4CAR4nXgwDbW1WLy8DEbNdOmYa</span>
+<span class="sd">EQQ/BCQvEjQCFQZWFSEWQv40AcxCDiUblhP9uSEAAAAAAAAWAQ4AAQAAAAAAAAATACgAAQAAAAAAA</span>
+<span class="sd">QAHAEwAAQAAAAAAAgAHAGQAAQAAAAAAAwAaAKIAAQAAAAAABAAHAM0AAQAAAAAABQA8AU8AAQAAAA</span>
+<span class="sd">AABgAPAawAAQAAAAAACAALAdQAAQAAAAAACQALAfgAAQAAAAAACwAXAjQAAQAAAAAADAAXAnwAAwA</span>
+<span class="sd">BBAkAAAAmAAAAAwABBAkAAQAOADwAAwABBAkAAgAOAFQAAwABBAkAAwA0AGwAAwABBAkABAAOAL0A</span>
+<span class="sd">AwABBAkABQB4ANUAAwABBAkABgAeAYwAAwABBAkACAAWAbwAAwABBAkACQAWAeAAAwABBAkACwAuA</span>
+<span class="sd">gQAAwABBAkADAAuAkwATgBvACAAUgBpAGcAaAB0AHMAIABSAGUAcwBlAHIAdgBlAGQALgAATm8gUm</span>
+<span class="sd">lnaHRzIFJlc2VydmVkLgAAQQBpAGwAZQByAG8AbgAAQWlsZXJvbgAAUgBlAGcAdQBsAGEAcgAAUmV</span>
+<span class="sd">ndWxhcgAAMQAuADEAMAAyADsAVQBLAFcATgA7AEEAaQBsAGUAcgBvAG4ALQBSAGUAZwB1AGwAYQBy</span>
+<span class="sd">AAAxLjEwMjtVS1dOO0FpbGVyb24tUmVndWxhcgAAQQBpAGwAZQByAG8AbgAAQWlsZXJvbgAAVgBlA</span>
+<span class="sd">HIAcwBpAG8AbgAgADEALgAxADAAMgA7AFAAUwAgADAAMAAxAC4AMQAwADIAOwBoAG8AdABjAG8Abg</span>
+<span class="sd">B2ACAAMQAuADAALgA3ADAAOwBtAGEAawBlAG8AdABmAC4AbABpAGIAMgAuADUALgA1ADgAMwAyADk</span>
+<span class="sd">AAFZlcnNpb24gMS4xMDI7UFMgMDAxLjEwMjtob3Rjb252IDEuMC43MDttYWtlb3RmLmxpYjIuNS41</span>
+<span class="sd">ODMyOQAAQQBpAGwAZQByAG8AbgAtAFIAZQBnAHUAbABhAHIAAEFpbGVyb24tUmVndWxhcgAAUwBvA</span>
+<span class="sd">HIAYQAgAFMAYQBnAGEAbgBvAABTb3JhIFNhZ2FubwAAUwBvAHIAYQAgAFMAYQBnAGEAbgBvAABTb3</span>
+<span class="sd">JhIFNhZ2FubwAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGQAbwB0AGMAbwBsAG8AbgAuAG4AZQB0AAB</span>
+<span class="sd">odHRwOi8vd3d3LmRvdGNvbG9uLm5ldAAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAGQAbwB0AGMAbwBs</span>
+<span class="sd">AG8AbgAuAG4AZQB0AABodHRwOi8vd3d3LmRvdGNvbG9uLm5ldAAAAAACAAAAAAAA/4MAMgAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAHQAAAABAAIAAwAEAAUABgAHAAgACQAKAAsADAANAA4ADwAQABEAEgATAB</span>
+<span class="sd">QAFQAWABcAGAAZABoAGwAcAB0AHgAfACAAIQAiACMAJAAlACYAJwAoACkAKgArACwALQAuAC8AMAA</span>
+<span class="sd">xADIAMwA0ADUANgA3ADgAOQA6ADsAPAA9AD4APwBAAEEAQgBDAEQARQBGAEcASABJAEoASwBMAE0A</span>
+<span class="sd">TgBPAFAAUQBSAFMAVABVAFYAVwBYAFkAWgBbAFwAXQBeAF8AYABhAIsAqQCDAJMAjQDDAKoAtgC3A</span>
+<span class="sd">LQAtQCrAL4AvwC8AIwAwADBAAAAAAAB//8AAgABAAAADAAAABwAAAACAAIAAwBxAAEAcgBzAAIABA</span>
+<span class="sd">AAAAIAAAABAAAACgBMAGYAAkRGTFQADmxhdG4AGgAEAAAAAP//AAEAAAAWAANDQVQgAB5NT0wgABZ</span>
+<span class="sd">ST00gABYAAP//AAEAAAAA//8AAgAAAAEAAmxpZ2EADmxvY2wAFAAAAAEAAQAAAAEAAAACAAYAEAAG</span>
+<span class="sd">AAAAAgASADQABAAAAAEATAADAAAAAgAQABYAAQAcAAAAAQABAE8AAQABAGcAAQABAE8AAwAAAAIAE</span>
+<span class="sd">AAWAAEAHAAAAAEAAQAvAAEAAQBnAAEAAQAvAAEAGgABAAgAAgAGAAwAcwACAE8AcgACAEwAAQABAE</span>
+<span class="sd">kAAAABAAAACgBGAGAAAkRGTFQADmxhdG4AHAAEAAAAAP//AAIAAAABABYAA0NBVCAAFk1PTCAAFlJ</span>
+<span class="sd">PTSAAFgAA//8AAgAAAAEAAmNwc3AADmtlcm4AFAAAAAEAAAAAAAEAAQACAAYADgABAAAAAQASAAIA</span>
+<span class="sd">AAACAB4ANgABAAoABQAFAAoAAgABACQAPQAAAAEAEgAEAAAAAQAMAAEAOP/nAAEAAQAkAAIGigAEA</span>
+<span class="sd">AAFJAXKABoAGQAA//gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAD/sv+4/+z/7v/MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAD/xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9T/6AAAAAD/8QAA</span>
+<span class="sd">ABD/vQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/7gAAAAAAAAAAAAAAAAAA//MAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIAAAAAAAAAAP/5AAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/gAAD/4AAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//L/9AAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAA/+gAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/zAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/mAAAAAAAAAAAAAAAAAAD</span>
+<span class="sd">/4gAA//AAAAAA//YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+AAAAAAAAP/OAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/zv/qAAAAAP/0AAAACAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/ZAAD/egAA/1kAAAAA/5D/rgAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAD/9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAD/8AAA/7b/8P+wAAD/8P/E/98AAAAA/8P/+P/0//oAAAAAAAAAAAAA//gA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+AAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/w//C/9MAAP/SAAD/9wAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAD/yAAA/+kAAAAA//QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/9wAAAAD//QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAP/2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAP/cAAAAAAAAAAAAAAAA/7YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAP/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/6AAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAkAFAAEAAAAAQACwAAABcA</span>
+<span class="sd">BgAAAAAAAAAIAA4AAAAAAAsAEgAAAAAAAAATABkAAwANAAAAAQAJAAAAAAAAAAAAAAAAAAAAGAAAA</span>
+<span class="sd">AAABwAAAAAAAAAAAAAAFQAFAAAAAAAYABgAAAAUAAAACgAAAAwAAgAPABEAFgAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAEAEQBdAAYAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAcAAAAAAAAABwAAAAAACAAAAAAAAAAAAAcAAAAHAAAAEwAJ</span>
+<span class="sd">ABUADgAPAAAACwAQAAAAAAAAAAAAAAAAAAUAGAACAAIAAgAAAAIAGAAXAAAAGAAAABYAFgACABYAA</span>
+<span class="sd">gAWAAAAEQADAAoAFAAMAA0ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASAAAAEgAGAAEAHgAkAC</span>
+<span class="sd">YAJwApACoALQAuAC8AMgAzADcAOAA5ADoAPAA9AEUASABOAE8AUgBTAFUAVwBZAFoAWwBcAF0AcwA</span>
+<span class="sd">AAAAAAQAAAADa3tfFAAAAANAan9kAAAAA4QodoQ==</span>
+<span class="sd">&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="mi">10</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">size</span><span class="p">,</span>
+            <span class="n">layout_engine</span><span class="o">=</span><span class="n">Layout</span><span class="o">.</span><span class="n">BASIC</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">_load_pilfont_data</span><span class="p">(</span>
+            <span class="c1"># courB08</span>
+            <span class="n">BytesIO</span><span class="p">(</span>
+                <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span>
+<span class="w">                    </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">UElMZm9udAo7Ozs7OzsxMDsKREFUQQoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAA//8AAQAAAAAAAAABAAEA</span>
+<span class="sd">BgAAAAH/+gADAAAAAQAAAAMABgAGAAAAAf/6AAT//QADAAAABgADAAYAAAAA//kABQABAAYAAAAL</span>
+<span class="sd">AAgABgAAAAD/+AAFAAEACwAAABAACQAGAAAAAP/5AAUAAAAQAAAAFQAHAAYAAP////oABQAAABUA</span>
+<span class="sd">AAAbAAYABgAAAAH/+QAE//wAGwAAAB4AAwAGAAAAAf/5AAQAAQAeAAAAIQAIAAYAAAAB//kABAAB</span>
+<span class="sd">ACEAAAAkAAgABgAAAAD/+QAE//0AJAAAACgABAAGAAAAAP/6AAX//wAoAAAALQAFAAYAAAAB//8A</span>
+<span class="sd">BAACAC0AAAAwAAMABgAAAAD//AAF//0AMAAAADUAAQAGAAAAAf//AAMAAAA1AAAANwABAAYAAAAB</span>
+<span class="sd">//kABQABADcAAAA7AAgABgAAAAD/+QAFAAAAOwAAAEAABwAGAAAAAP/5AAYAAABAAAAARgAHAAYA</span>
+<span class="sd">AAAA//kABQAAAEYAAABLAAcABgAAAAD/+QAFAAAASwAAAFAABwAGAAAAAP/5AAYAAABQAAAAVgAH</span>
+<span class="sd">AAYAAAAA//kABQAAAFYAAABbAAcABgAAAAD/+QAFAAAAWwAAAGAABwAGAAAAAP/5AAUAAABgAAAA</span>
+<span class="sd">ZQAHAAYAAAAA//kABQAAAGUAAABqAAcABgAAAAD/+QAFAAAAagAAAG8ABwAGAAAAAf/8AAMAAABv</span>
+<span class="sd">AAAAcQAEAAYAAAAA//wAAwACAHEAAAB0AAYABgAAAAD/+gAE//8AdAAAAHgABQAGAAAAAP/7AAT/</span>
+<span class="sd">/gB4AAAAfAADAAYAAAAB//oABf//AHwAAACAAAUABgAAAAD/+gAFAAAAgAAAAIUABgAGAAAAAP/5</span>
+<span class="sd">AAYAAQCFAAAAiwAIAAYAAP////oABgAAAIsAAACSAAYABgAA////+gAFAAAAkgAAAJgABgAGAAAA</span>
+<span class="sd">AP/6AAUAAACYAAAAnQAGAAYAAP////oABQAAAJ0AAACjAAYABgAA////+gAFAAAAowAAAKkABgAG</span>
+<span class="sd">AAD////6AAUAAACpAAAArwAGAAYAAAAA//oABQAAAK8AAAC0AAYABgAA////+gAGAAAAtAAAALsA</span>
+<span class="sd">BgAGAAAAAP/6AAQAAAC7AAAAvwAGAAYAAP////oABQAAAL8AAADFAAYABgAA////+gAGAAAAxQAA</span>
+<span class="sd">AMwABgAGAAD////6AAUAAADMAAAA0gAGAAYAAP////oABQAAANIAAADYAAYABgAA////+gAGAAAA</span>
+<span class="sd">2AAAAN8ABgAGAAAAAP/6AAUAAADfAAAA5AAGAAYAAP////oABQAAAOQAAADqAAYABgAAAAD/+gAF</span>
+<span class="sd">AAEA6gAAAO8ABwAGAAD////6AAYAAADvAAAA9gAGAAYAAAAA//oABQAAAPYAAAD7AAYABgAA////</span>
+<span class="sd">+gAFAAAA+wAAAQEABgAGAAD////6AAYAAAEBAAABCAAGAAYAAP////oABgAAAQgAAAEPAAYABgAA</span>
+<span class="sd">////+gAGAAABDwAAARYABgAGAAAAAP/6AAYAAAEWAAABHAAGAAYAAP////oABgAAARwAAAEjAAYA</span>
+<span class="sd">BgAAAAD/+gAFAAABIwAAASgABgAGAAAAAf/5AAQAAQEoAAABKwAIAAYAAAAA//kABAABASsAAAEv</span>
+<span class="sd">AAgABgAAAAH/+QAEAAEBLwAAATIACAAGAAAAAP/5AAX//AEyAAABNwADAAYAAAAAAAEABgACATcA</span>
+<span class="sd">AAE9AAEABgAAAAH/+QAE//wBPQAAAUAAAwAGAAAAAP/7AAYAAAFAAAABRgAFAAYAAP////kABQAA</span>
+<span class="sd">AUYAAAFMAAcABgAAAAD/+wAFAAABTAAAAVEABQAGAAAAAP/5AAYAAAFRAAABVwAHAAYAAAAA//sA</span>
+<span class="sd">BQAAAVcAAAFcAAUABgAAAAD/+QAFAAABXAAAAWEABwAGAAAAAP/7AAYAAgFhAAABZwAHAAYAAP//</span>
+<span class="sd">//kABQAAAWcAAAFtAAcABgAAAAD/+QAGAAABbQAAAXMABwAGAAAAAP/5AAQAAgFzAAABdwAJAAYA</span>
+<span class="sd">AP////kABgAAAXcAAAF+AAcABgAAAAD/+QAGAAABfgAAAYQABwAGAAD////7AAUAAAGEAAABigAF</span>
+<span class="sd">AAYAAP////sABQAAAYoAAAGQAAUABgAAAAD/+wAFAAABkAAAAZUABQAGAAD////7AAUAAgGVAAAB</span>
+<span class="sd">mwAHAAYAAAAA//sABgACAZsAAAGhAAcABgAAAAD/+wAGAAABoQAAAacABQAGAAAAAP/7AAYAAAGn</span>
+<span class="sd">AAABrQAFAAYAAAAA//kABgAAAa0AAAGzAAcABgAA////+wAGAAABswAAAboABQAGAAD////7AAUA</span>
+<span class="sd">AAG6AAABwAAFAAYAAP////sABgAAAcAAAAHHAAUABgAAAAD/+wAGAAABxwAAAc0ABQAGAAD////7</span>
+<span class="sd">AAYAAgHNAAAB1AAHAAYAAAAA//sABQAAAdQAAAHZAAUABgAAAAH/+QAFAAEB2QAAAd0ACAAGAAAA</span>
+<span class="sd">Av/6AAMAAQHdAAAB3gAHAAYAAAAA//kABAABAd4AAAHiAAgABgAAAAD/+wAF//0B4gAAAecAAgAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>
+<span class="sd">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAB</span>
+<span class="sd">//sAAwACAecAAAHpAAcABgAAAAD/+QAFAAEB6QAAAe4ACAAGAAAAAP/5AAYAAAHuAAAB9AAHAAYA</span>
+<span class="sd">AAAA//oABf//AfQAAAH5AAUABgAAAAD/+QAGAAAB+QAAAf8ABwAGAAAAAv/5AAMAAgH/AAACAAAJ</span>
+<span class="sd">AAYAAAAA//kABQABAgAAAAIFAAgABgAAAAH/+gAE//sCBQAAAggAAQAGAAAAAP/5AAYAAAIIAAAC</span>
+<span class="sd">DgAHAAYAAAAB//kABf/+Ag4AAAISAAUABgAA////+wAGAAACEgAAAhkABQAGAAAAAP/7AAX//gIZ</span>
+<span class="sd">AAACHgADAAYAAAAA//wABf/9Ah4AAAIjAAEABgAAAAD/+QAHAAACIwAAAioABwAGAAAAAP/6AAT/</span>
+<span class="sd">+wIqAAACLgABAAYAAAAA//kABP/8Ai4AAAIyAAMABgAAAAD/+gAFAAACMgAAAjcABgAGAAAAAf/5</span>
+<span class="sd">AAT//QI3AAACOgAEAAYAAAAB//kABP/9AjoAAAI9AAQABgAAAAL/+QAE//sCPQAAAj8AAgAGAAD/</span>
+<span class="sd">///7AAYAAgI/AAACRgAHAAYAAAAA//kABgABAkYAAAJMAAgABgAAAAH//AAD//0CTAAAAk4AAQAG</span>
+<span class="sd">AAAAAf//AAQAAgJOAAACUQADAAYAAAAB//kABP/9AlEAAAJUAAQABgAAAAH/+QAF//4CVAAAAlgA</span>
+<span class="sd">BQAGAAD////7AAYAAAJYAAACXwAFAAYAAP////kABgAAAl8AAAJmAAcABgAA////+QAGAAACZgAA</span>
+<span class="sd">Am0ABwAGAAD////5AAYAAAJtAAACdAAHAAYAAAAA//sABQACAnQAAAJ5AAcABgAA////9wAGAAAC</span>
+<span class="sd">eQAAAoAACQAGAAD////3AAYAAAKAAAAChwAJAAYAAP////cABgAAAocAAAKOAAkABgAA////9wAG</span>
+<span class="sd">AAACjgAAApUACQAGAAD////4AAYAAAKVAAACnAAIAAYAAP////cABgAAApwAAAKjAAkABgAA////</span>
+<span class="sd">+gAGAAACowAAAqoABgAGAAAAAP/6AAUAAgKqAAACrwAIAAYAAP////cABQAAAq8AAAK1AAkABgAA</span>
+<span class="sd">////9wAFAAACtQAAArsACQAGAAD////3AAUAAAK7AAACwQAJAAYAAP////gABQAAAsEAAALHAAgA</span>
+<span class="sd">BgAAAAD/9wAEAAACxwAAAssACQAGAAAAAP/3AAQAAALLAAACzwAJAAYAAAAA//cABAAAAs8AAALT</span>
+<span class="sd">AAkABgAAAAD/+AAEAAAC0wAAAtcACAAGAAD////6AAUAAALXAAAC3QAGAAYAAP////cABgAAAt0A</span>
+<span class="sd">AALkAAkABgAAAAD/9wAFAAAC5AAAAukACQAGAAAAAP/3AAUAAALpAAAC7gAJAAYAAAAA//cABQAA</span>
+<span class="sd">Au4AAALzAAkABgAAAAD/9wAFAAAC8wAAAvgACQAGAAAAAP/4AAUAAAL4AAAC/QAIAAYAAAAA//oA</span>
+<span class="sd">Bf//Av0AAAMCAAUABgAA////+gAGAAADAgAAAwkABgAGAAD////3AAYAAAMJAAADEAAJAAYAAP//</span>
+<span class="sd">//cABgAAAxAAAAMXAAkABgAA////9wAGAAADFwAAAx4ACQAGAAD////4AAYAAAAAAAoABwASAAYA</span>
+<span class="sd">AP////cABgAAAAcACgAOABMABgAA////+gAFAAAADgAKABQAEAAGAAD////6AAYAAAAUAAoAGwAQ</span>
+<span class="sd">AAYAAAAA//gABgAAABsACgAhABIABgAAAAD/+AAGAAAAIQAKACcAEgAGAAAAAP/4AAYAAAAnAAoA</span>
+<span class="sd">LQASAAYAAAAA//gABgAAAC0ACgAzABIABgAAAAD/+QAGAAAAMwAKADkAEQAGAAAAAP/3AAYAAAA5</span>
+<span class="sd">AAoAPwATAAYAAP////sABQAAAD8ACgBFAA8ABgAAAAD/+wAFAAIARQAKAEoAEQAGAAAAAP/4AAUA</span>
+<span class="sd">AABKAAoATwASAAYAAAAA//gABQAAAE8ACgBUABIABgAAAAD/+AAFAAAAVAAKAFkAEgAGAAAAAP/5</span>
+<span class="sd">AAUAAABZAAoAXgARAAYAAAAA//gABgAAAF4ACgBkABIABgAAAAD/+AAGAAAAZAAKAGoAEgAGAAAA</span>
+<span class="sd">AP/4AAYAAABqAAoAcAASAAYAAAAA//kABgAAAHAACgB2ABEABgAAAAD/+AAFAAAAdgAKAHsAEgAG</span>
+<span class="sd">AAD////4AAYAAAB7AAoAggASAAYAAAAA//gABQAAAIIACgCHABIABgAAAAD/+AAFAAAAhwAKAIwA</span>
+<span class="sd">EgAGAAAAAP/4AAUAAACMAAoAkQASAAYAAAAA//gABQAAAJEACgCWABIABgAAAAD/+QAFAAAAlgAK</span>
+<span class="sd">AJsAEQAGAAAAAP/6AAX//wCbAAoAoAAPAAYAAAAA//oABQABAKAACgClABEABgAA////+AAGAAAA</span>
+<span class="sd">pQAKAKwAEgAGAAD////4AAYAAACsAAoAswASAAYAAP////gABgAAALMACgC6ABIABgAA////+QAG</span>
+<span class="sd">AAAAugAKAMEAEQAGAAD////4AAYAAgDBAAoAyAAUAAYAAP////kABQACAMgACgDOABMABgAA////</span>
+<span class="sd">+QAGAAIAzgAKANUAEw==</span>
+<span class="sd">&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+                <span class="n">BytesIO</span><span class="p">(</span>
+                    <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span>
+<span class="w">                        </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">iVBORw0KGgoAAAANSUhEUgAAAx4AAAAUAQAAAAArMtZoAAAEwElEQVR4nABlAJr/AHVE4czCI/4u</span>
+<span class="sd">Mc4b7vuds/xzjz5/3/7u/n9vMe7vnfH/9++vPn/xyf5zhxzjt8GHw8+2d83u8x27199/nxuQ6Od9</span>
+<span class="sd">M43/5z2I+9n9ZtmDBwMQECDRQw/eQIQohJXxpBCNVE6QCCAAAAD//wBlAJr/AgALyj1t/wINwq0g</span>
+<span class="sd">LeNZUworuN1cjTPIzrTX6ofHWeo3v336qPzfEwRmBnHTtf95/fglZK5N0PDgfRTslpGBvz7LFc4F</span>
+<span class="sd">IUXBWQGjQ5MGCx34EDFPwXiY4YbYxavpnhHFrk14CDAAAAD//wBlAJr/AgKqRooH2gAgPeggvUAA</span>
+<span class="sd">Bu2WfgPoAwzRAABAAAAAAACQgLz/3Uv4Gv+gX7BJgDeeGP6AAAD1NMDzKHD7ANWr3loYbxsAD791</span>
+<span class="sd">NAADfcoIDyP44K/jv4Y63/Z+t98Ovt+ub4T48LAAAAD//wBlAJr/AuplMlADJAAAAGuAphWpqhMx</span>
+<span class="sd">in0A/fRvAYBABPgBwBUgABBQ/sYAyv9g0bCHgOLoGAAAAAAAREAAwI7nr0ArYpow7aX8//9LaP/9</span>
+<span class="sd">SjdavWA8ePHeBIKB//81/83ndznOaXx379wAAAD//wBlAJr/AqDxW+D3AABAAbUh/QMnbQag/gAY</span>
+<span class="sd">AYDAAACgtgD/gOqAAAB5IA/8AAAk+n9w0AAA8AAAmFRJuPo27ciC0cD5oeW4E7KA/wD3ECMAn2tt</span>
+<span class="sd">y8PgwH8AfAxFzC0JzeAMtratAsC/ffwAAAD//wBlAJr/BGKAyCAA4AAAAvgeYTAwHd1kmQF5chkG</span>
+<span class="sd">ABoMIHcL5xVpTfQbUqzlAAAErwAQBgAAEOClA5D9il08AEh/tUzdCBsXkbgACED+woQg8Si9VeqY</span>
+<span class="sd">lODCn7lmF6NhnAEYgAAA/NMIAAAAAAD//2JgjLZgVGBg5Pv/Tvpc8hwGBjYGJADjHDrAwPzAjv/H</span>
+<span class="sd">/Wf3PzCwtzcwHmBgYGcwbZz8wHaCAQMDOwMDQ8MCBgYOC3W7mp+f0w+wHOYxO3OG+e376hsMZjk3</span>
+<span class="sd">AAAAAP//YmCMY2A4wMAIN5e5gQETPD6AZisDAwMDgzSDAAPjByiHcQMDAwMDg1nOze1lByRu5/47</span>
+<span class="sd">c4859311AYNZzg0AAAAA//9iYGDBYihOIIMuwIjGL39/fwffA8b//xv/P2BPtzzHwCBjUQAAAAD/</span>
+<span class="sd">/yLFBrIBAAAA//9i1HhcwdhizX7u8NZNzyLbvT97bfrMf/QHI8evOwcSqGUJAAAA//9iYBB81iSw</span>
+<span class="sd">pEE170Qrg5MIYydHqwdDQRMrAwcVrQAAAAD//2J4x7j9AAMDn8Q/BgYLBoaiAwwMjPdvMDBYM1Tv</span>
+<span class="sd">oJodAAAAAP//Yqo/83+dxePWlxl3npsel9lvLfPcqlE9725C+acfVLMEAAAA//9i+s9gwCoaaGMR</span>
+<span class="sd">evta/58PTEWzr21hufPjA8N+qlnBwAAAAAD//2JiWLci5v1+HmFXDqcnULE/MxgYGBj+f6CaJQAA</span>
+<span class="sd">AAD//2Ji2FrkY3iYpYC5qDeGgeEMAwPDvwQBBoYvcTwOVLMEAAAA//9isDBgkP///0EOg9z35v//</span>
+<span class="sd">Gc/eeW7BwPj5+QGZhANUswMAAAD//2JgqGBgYGBgqEMXlvhMPUsAAAAA//8iYDd1AAAAAP//AwDR</span>
+<span class="sd">w7IkEbzhVQAAAABJRU5ErkJggg==</span>
+<span class="sd">&quot;&quot;&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageFont</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

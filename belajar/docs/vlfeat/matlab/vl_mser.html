@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > MATLAB API > MSER - vl_mser</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="matlab.html">MATLAB API</a></span><span class='separator'>></span><span class='page'><a href="vl_mser.html">MSER - vl_mser</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        <div class="mdoc">
+<ul class="breadcrumb"><li><a href="matlab.html">Index</a></li><li><a href="vl_ertr.html">Prev</a></li><li><a href="vl_vlad.html">Next</a></li></ul><div class="documentation"><p>
+R=<a href="vl_mser.html">VL_MSER</a>(I) computes the Maximally Stable Extremal Regions (MSER)
+[1] of image I with stability threshold DELTA. I is any array of
+class UINT8. R is a vector of region seeds.
+</p><p>
+A (maximally stable) extremal region is just a connected component
+of one of the level sets of the image I.  An extremal region can
+be recovered from a seed X as the connected component of the level
+set {Y: I(Y) &lt;= I(X)} which contains the pixel o index X.
+</p><p>
+The function supports images of arbitrary dimension D.
+</p><p>
+[R,F]=<a href="vl_mser.html">VL_MSER</a>(...) also returns ellipsoids F fitted to the regions.
+Each column of F describes an ellipsoid; F(1:D,i) is the center of
+the elliposid and F(D:end,i) are the independent elements of the
+co-variance matrix of the ellipsoid.
+</p><p>
+Ellipsoids are computed according to the same reference frame of I
+seen as a matrix. This means that the first coordinate spans the
+first dimension of I.
+</p><p>
+Notice that for 2-D images usually the opposite convention is used
+(i.e. the first coordinate is the x-axis, which corresponds to the
+column index). Thus, if the function <a href="vl_plotframe.html">VL_PLOTFRAME</a>() is used to plot
+the ellipses, the frames F should be `transposed' as in F = F([2
+1 5 4 3],:). <a href="vl_ertr.html">VL_ERTR</a>() exists for this purpose.
+</p><p>
+<a href="vl_mser.html">VL_MSER</a>(I,'Option'[,Value]...) accepts the following options
+</p><dl><dt>
+Delta
+<span class="defaults">[5]</span></dt><dd><p>
+Set the DELTA parameter of the VL_MSER algorithm. Roughly
+speaking, the stability of a region is the relative variation
+of the region area when the intensity is changed of +/-
+Delta/2.
+</p></dd><dt>
+MaxArea
+<span class="defaults">[0.75]</span></dt><dd><p>
+Set the maximum area (volume) of the regions relative to
+the image domain area (volume).
+</p></dd><dt>
+MinArea
+<span class="defaults">[3 / numPixels]</span></dt><dd><p>
+Set the minimum area (volume) of the regions relative to
+the image domain area (volume).
+</p></dd><dt>
+MaxVariation
+<span class="defaults">[0.25]</span></dt><dd><p>
+Set the maximum variation (absolute stability score) of the
+regions.
+</p></dd><dt>
+MinDiversity
+<span class="defaults">[0.2]</span></dt><dd><p>
+Set the minimum diversity of the region. When the relative
+area variation of two nested regions is below this threshold,
+then only the most stable one is selected.
+</p></dd><dt>
+BrightOnDark
+<span class="defaults">[1]</span></dt><dd><p>
+Detect bright-on-dark MSERs. This corresponds to MSERs of the
+inverted image.
+</p></dd><dt>
+DarkOnBright
+<span class="defaults">[1]</span></dt><dd><p>
+Detect dark-on-bright MSERs. This corresponds to MSERs of the
+original image.
+</p></dd><dt>
+Verbose
+</dt><dd><p>
+Be verbose.
+</p></dd><dt>
+REFERENCES
+</dt><dd><p>
+[1] J. Matas, O. Chum, M. Urban, and T. Pajdla, &quot;Robust wide
+baseline stereo from maximally stable extremal regions,&quot; in
+Proc. BMVC, 2002.
+</p></dd></dl><p>
+See also: <a href="vl_help.html">VL_HELP</a>().
+</p></div></div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

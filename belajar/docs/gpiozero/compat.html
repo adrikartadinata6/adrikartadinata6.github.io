@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10. Backwards Compatibility &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="11. Migrating from RPi.GPIO" href="migrating_from_rpigpio.html" />
+    <link rel="prev" title="9. Frequently Asked Questions" href="faq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">10. Backwards Compatibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#finding-and-fixing-deprecated-usage">10.1. Finding and fixing deprecated usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-2-x-support-dropped">10.2. Python 2.x support dropped</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rpio-pin-factory-removed">10.3. RPIO pin factory removed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated-pin-factory-aliases-removed">10.4. Deprecated pin-factory aliases removed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keyword-arguments">10.5. Keyword arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robots-take-motors-and-phaseenablerobot-is-deprecated">10.6. Robots take Motors, and PhaseEnableRobot is deprecated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#piboardinfo-headerinfo-pininfo">10.7. PiBoardInfo, HeaderInfo, PinInfo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">10. </span>Backwards Compatibility</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/compat.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="backwards-compatibility">
+<h1><span class="section-number">10. </span>Backwards Compatibility<a class="headerlink" href="#backwards-compatibility" title="Link to this heading"></a></h1>
+<p>GPIO Zero 2.x is a new major version and thus backwards incompatible changes
+can be expected. We have attempted to keep these as minimal as reasonably
+possible while taking advantage of the opportunity to clean up things. This
+chapter documents breaking changes from version 1.x of the library to 2.x, and
+all deprecated functionality which will still work in release 2.0 but is
+scheduled for removal in a future 2.x release.</p>
+<section id="finding-and-fixing-deprecated-usage">
+<h2><span class="section-number">10.1. </span>Finding and fixing deprecated usage<a class="headerlink" href="#finding-and-fixing-deprecated-usage" title="Link to this heading"></a></h2>
+<p>As of release 2.0, all deprecated functionality will raise
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#DeprecationWarning" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> when used. By default, the Python interpreter
+suppresses these warnings (as they’re only of interest to developers, not
+users) but you can easily configure different behaviour.</p>
+<p>The following example script uses a number of deprecated functions:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gpiozero</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">gpiozero</span><span class="o">.</span><span class="n">pi_info</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pin</span><span class="o">.</span><span class="n">pull_up</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="s1">&#39;is pulled up&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Despite using deprecated functionality the script runs happily (and silently)
+with gpiozero 2.0. To discover what deprecated functions are being used, we add
+a couple of lines to tell the warnings module that we want “default” handling
+of <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#DeprecationWarning" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a>; “default” handling means that the first time an
+attempt is made to raise this warning at a particular location, the warning’s
+details will be printed to the console. All future invocations from the same
+location will be ignored. This saves flooding the console with warning details
+from tight loops. With this change, the script looks like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gpiozero</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">gpiozero</span><span class="o">.</span><span class="n">pi_info</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pin</span><span class="o">.</span><span class="n">pull_up</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="s1">&#39;is pulled up&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And produces the following output on the console when run:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/dave/projects/home/gpiozero/gpio-zero/gpiozero/pins/__init__.py:899:
+DeprecationWarning: PinInfo.pull_up is deprecated; please use PinInfo.pull
+  warnings.warn(
+/home/dave/projects/home/gpiozero/gpio-zero/gpiozero/pins/__init__.py:889:
+DeprecationWarning: PinInfo.function is deprecated; please use PinInfo.name
+  warnings.warn(
+GPIO2 is pulled up
+GPIO3 is pulled up
+</pre></div>
+</div>
+<p>This tells us which pieces of deprecated functionality are being used in our
+script, but it doesn’t tell us where in the script they were used. For this,
+it is more useful to have warnings converted into full blown exceptions. With
+this change, each time a <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#DeprecationWarning" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> would have been printed, it
+will instead cause the script to terminate with an unhandled exception and a
+full stack trace:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gpiozero</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">gpiozero</span><span class="o">.</span><span class="n">pi_info</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pin</span><span class="o">.</span><span class="n">pull_up</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="s1">&#39;is pulled up&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now when we run the script it produces the following:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/home/dave/projects/home/gpiozero/gpio-zero/foo.py&quot;</span>, line <span class="m">9</span>, in <span class="n">&lt;module&gt;</span>
+<span class="w">    </span><span class="k">if</span> <span class="n">pin</span><span class="o">.</span><span class="n">pull_up</span><span class="p">:</span>
+  File <span class="nb">&quot;/home/dave/projects/home/gpiozero/gpio-zero/gpiozero/pins/__init__.py&quot;</span>, line <span class="m">899</span>, in <span class="n">pull_up</span>
+<span class="w">    </span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="gr">DeprecationWarning</span>: <span class="n">PinInfo.pull_up is deprecated; please use PinInfo.pull</span>
+</pre></div>
+</div>
+<p>This tells us that line 9 of our script is using deprecated functionality, and
+provides a hint of how to fix it. We change line 9 to use the “pull” attribute
+instead. Now we run again, and this time get the following:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/home/dave/projects/home/gpiozero/gpio-zero/foo.py&quot;</span>, line <span class="m">10</span>, in <span class="n">&lt;module&gt;</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="s1">&#39;is pulled up&#39;</span><span class="p">)</span>
+  File <span class="nb">&quot;/home/dave/projects/home/gpiozero/gpio-zero/gpiozero/pins/__init__.py&quot;</span>, line <span class="m">889</span>, in <span class="n">function</span>
+<span class="w">    </span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="gr">DeprecationWarning</span>: <span class="n">PinInfo.function is deprecated; please use PinInfo.name</span>
+</pre></div>
+</div>
+<p>Now we can tell line 10 has a problem, and once again the exception tells us
+how to fix it. We continue in this fashion until the script looks like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gpiozero</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">gpiozero</span><span class="o">.</span><span class="n">pi_info</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">header</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">pin</span><span class="o">.</span><span class="n">pull</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pin</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;is pulled up&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The script now runs to completion, so we can be confident it’s no longer using
+any deprecated functionality and will run happily even when this functionality
+is removed in a future 2.x release. At this point, you may wish to remove the
+<code class="docutils literal notranslate"><span class="pre">filterwarnings</span></code> line as well (or at least comment it out).</p>
+</section>
+<section id="python-2-x-support-dropped">
+<h2><span class="section-number">10.2. </span>Python 2.x support dropped<a class="headerlink" href="#python-2-x-support-dropped" title="Link to this heading"></a></h2>
+<p>By far the biggest and most important change is that the Python 2.x series is
+no longer supported (in practice, this means Python 2.7 is no longer
+supported). If your code is not compatible with Python 3, you should follow the
+<a class="reference external" href="https://docs.python.org/3/howto/pyporting.html">porting guide</a> in the <a class="reference external" href="https://docs.python.org/3/">Python documentation</a>.</p>
+<p>As of GPIO Zero 2.0, the lowest supported Python version will be 3.5. This base
+version may advance with minor releases, but we will make a reasonable best
+effort not to break compatibility with old Python 3.x versions, and to ensure
+that GPIO Zero can run on the version of Python in Debian oldstable at the
+time of its release.</p>
+</section>
+<section id="rpio-pin-factory-removed">
+<h2><span class="section-number">10.3. </span>RPIO pin factory removed<a class="headerlink" href="#rpio-pin-factory-removed" title="Link to this heading"></a></h2>
+<p>The RPIO pin implementation is unsupported on the Raspberry Pi 2 onwards and
+hence of little practical use these days. Anybody still relying on RPIO’s
+stable PWM implementation is advised to try the pigpio pin implementation
+instead (also supported by GPIO Zero).</p>
+</section>
+<section id="deprecated-pin-factory-aliases-removed">
+<h2><span class="section-number">10.4. </span>Deprecated pin-factory aliases removed<a class="headerlink" href="#deprecated-pin-factory-aliases-removed" title="Link to this heading"></a></h2>
+<p>Several deprecated aliases for pin factories, which could be specified by the
+<span class="target" id="index-0"></span><a class="reference internal" href="cli_env.html#envvar-GPIOZERO_PIN_FACTORY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">GPIOZERO_PIN_FACTORY</span></code></a> environment variable, have been removed:</p>
+<ul class="simple">
+<li><p>“PiGPIOPin” is removed in favour of “pigpio”</p></li>
+<li><p>“RPiGPIOPin” is removed in favour of “rpigpio”</p></li>
+<li><p>“NativePin” is removed in favour of “native”</p></li>
+</ul>
+<p>In other words, you can no longer use the following when invoking your
+script:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>PiGPIOPin<span class="w"> </span>python3<span class="w"> </span>my_script.py
+</pre></div>
+</div>
+<p>Instead, you should use the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>pigpio<span class="w"> </span>python3<span class="w"> </span>my_script.py
+</pre></div>
+</div>
+</section>
+<section id="keyword-arguments">
+<h2><span class="section-number">10.5. </span>Keyword arguments<a class="headerlink" href="#keyword-arguments" title="Link to this heading"></a></h2>
+<p>Many classes in GPIO Zero 1.x were documented as having keyword-only arguments
+in their constructors and methods. For example, the <a class="reference internal" href="api_boards.html#gpiozero.PiLiter" title="gpiozero.PiLiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiLiter</span></code></a> was
+documented as having the constructor: <code class="docutils literal notranslate"><span class="pre">PiLiter(*,</span> <span class="pre">pwm=False,</span>
+<span class="pre">initial_value=False,</span> <span class="pre">pin_factory=None)</span></code> implying that all its arguments were
+keyword only.</p>
+<p>However, despite being documented in this manner, this was rarely enforced as
+it was extremely difficult to do so under Python 2.x without complicating the
+code-base considerably (Python 2.x lacked the “*” syntax to declare
+keyword-only arguments; they could only be implemented via “**kwargs”
+arguments and dictionary manipulation).</p>
+<p>In GPIO Zero 2.0, all such arguments are now <em>actually</em> keyword arguments. If
+your code complied with the 1.x documentation you shouldn’t notice any
+difference. In other words, the following is still fine:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PiLiter</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="n">PiLiter</span><span class="p">(</span><span class="n">pwm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, if you had omitted the keyword you will need to modify your code:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PiLiter</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="n">PiLiter</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># this will no longer work</span>
+</pre></div>
+</div>
+</section>
+<section id="robots-take-motors-and-phaseenablerobot-is-deprecated">
+<h2><span class="section-number">10.6. </span>Robots take Motors, and PhaseEnableRobot is deprecated<a class="headerlink" href="#robots-take-motors-and-phaseenablerobot-is-deprecated" title="Link to this heading"></a></h2>
+<p>The GPIO Zero 1.x API specified that a <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> was constructed with two
+tuples that were in turn used to construct two <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a> instances. The
+2.x API replaces this with simply passing in the <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a>, or
+<a class="reference internal" href="api_output.html#gpiozero.PhaseEnableMotor" title="gpiozero.PhaseEnableMotor"><code class="xref py py-func docutils literal notranslate"><span class="pre">PhaseEnableMotor()</span></code></a> instances you wish to use as the left and right
+wheels.</p>
+<p>If your current code uses pins 4 and 14 for the left wheel, and 17 and 18 for
+the right wheel, it may look like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Robot</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">right</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This should be changed to the following:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Robot</span><span class="p">,</span> <span class="n">Motor</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">Motor</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">right</span><span class="o">=</span><span class="n">Motor</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Likewise, if you are currently using <a class="reference internal" href="api_boards.html#gpiozero.PhaseEnableRobot" title="gpiozero.PhaseEnableRobot"><code class="xref py py-func docutils literal notranslate"><span class="pre">PhaseEnableRobot()</span></code></a> your code may
+look like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PhaseEnableRobot</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">PhaseEnableRobot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">right</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This should be changed to the following:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Robot</span><span class="p">,</span> <span class="n">PhaseEnableMotor</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">PhaseEnableMotor</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span>
+          <span class="n">right</span><span class="o">=</span><span class="n">PhaseEnableMotor</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This change came about because the <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a> class was also documented as
+having two mandatory parameters (<em>forward</em> and <em>backward</em>) and several
+keyword-only parameters, including the <em>enable</em> pin. However, <em>enable</em> was
+treated as a positional argument for the sake of constructing <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a>
+which was inconsistent. Furthermore, <a class="reference internal" href="api_boards.html#gpiozero.PhaseEnableRobot" title="gpiozero.PhaseEnableRobot"><code class="xref py py-func docutils literal notranslate"><span class="pre">PhaseEnableRobot()</span></code></a> was more or less
+a redundant duplicate of <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> but was lacking a couple of features
+added to <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> later (notable “curved” turning).</p>
+<p>Although the new API requires a little more typing, it does mean that phase
+enable robot boards now inherit all the functionality of <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> because
+that’s all they use. Theoretically you could also mix and match regular motors
+and phase-enable motors although there’s little sense in doing so.</p>
+<p>The former functionality (passing tuples to the <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> constructor)
+will remain as deprecated functionality for gpiozero 2.0, but will be removed
+in a future 2.x release. <a class="reference internal" href="api_boards.html#gpiozero.PhaseEnableRobot" title="gpiozero.PhaseEnableRobot"><code class="xref py py-func docutils literal notranslate"><span class="pre">PhaseEnableRobot()</span></code></a> remains as a stub function
+which simply returns a <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> instance, but this will be removed in a
+future 2.x release.</p>
+</section>
+<section id="piboardinfo-headerinfo-pininfo">
+<h2><span class="section-number">10.7. </span>PiBoardInfo, HeaderInfo, PinInfo<a class="headerlink" href="#piboardinfo-headerinfo-pininfo" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api_info.html#gpiozero.PiBoardInfo" title="gpiozero.PiBoardInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiBoardInfo</span></code></a> class, and the associated <a class="reference internal" href="api_info.html#gpiozero.HeaderInfo" title="gpiozero.HeaderInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderInfo</span></code></a> and
+<a class="reference internal" href="api_info.html#gpiozero.PinInfo" title="gpiozero.PinInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinInfo</span></code></a> classes have undergone a major re-structuring. This is partly
+because some of the prior terminology was confusing (e.g. the meaning of
+<a class="reference internal" href="api_info.html#gpiozero.PinInfo.function" title="gpiozero.PinInfo.function"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PinInfo.function</span></code></a> and <a class="reference internal" href="api_pins.html#gpiozero.Pin.function" title="gpiozero.Pin.function"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Pin.function</span></code></a> clashed), and partly because
+with the addition of the “lgpio” factory it’s entirely possible to use gpiozero
+on non-Pi boards (although at present the <a class="reference internal" href="api_pins.html#gpiozero.pins.lgpio.LGPIOFactory" title="gpiozero.pins.lgpio.LGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">pins.lgpio.LGPIOFactory</span></code></a> is
+still written assuming it is only ever used on a Pi).</p>
+<p>As a result the following classes, methods, and attributes are deprecated
+(not yet removed, but will be in a future release within the 2.x series):</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">Factory.pi_info</span></code> is deprecated in favour of <a class="reference internal" href="api_pins.html#gpiozero.Factory.board_info" title="gpiozero.Factory.board_info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Factory.board_info</span></code></a>
+which returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">BoardInfo</span></code> instead of <a class="reference internal" href="api_info.html#gpiozero.PiBoardInfo" title="gpiozero.PiBoardInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiBoardInfo</span></code></a> (which is
+now a subclass of the former).</p></li>
+<li><p><a class="reference internal" href="api_info.html#gpiozero.PinInfo.pull_up" title="gpiozero.PinInfo.pull_up"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PinInfo.pull_up</span></code></a> is deprecated in favour of <a class="reference internal" href="api_info.html#gpiozero.PinInfo.pull" title="gpiozero.PinInfo.pull"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PinInfo.pull</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="api_info.html#gpiozero.PinInfo.function" title="gpiozero.PinInfo.function"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PinInfo.function</span></code></a> is deprecated in favour of <a class="reference internal" href="api_info.html#gpiozero.PinInfo.name" title="gpiozero.PinInfo.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PinInfo.name</span></code></a>.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">BoardInfo.physical_pins()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">BoardInfo.physical_pin()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">BoardInfo.pulled_up()</span></code>, are all deprecated in favour of a combination of
+the new <code class="xref py py-meth docutils literal notranslate"><span class="pre">BoardInfo.find_pin()</span></code> and the attributes mentioned above.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">PiPin.number</span></code> is deprecated in favour of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Pin.info.name</span></code>.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="faq.html" class="btn btn-neutral float-left" title="9. Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="migrating_from_rpigpio.html" class="btn btn-neutral float-right" title="11. Migrating from RPi.GPIO" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

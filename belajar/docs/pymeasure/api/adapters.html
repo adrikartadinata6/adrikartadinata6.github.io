@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymeasure.adapters &mdash; PyMeasure 0.9.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pymeasure.experiment" href="experiment/index.html" />
+    <link rel="prev" title="Using a graphical interface" href="../tutorial/graphical.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> PyMeasure
+          </a>
+              <div class="version">
+                0.9.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Learning PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pymeasure.adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adapter-base-class">Adapter base class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.Adapter"><code class="docutils literal notranslate"><span class="pre">Adapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.Adapter.ask"><code class="docutils literal notranslate"><span class="pre">Adapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.Adapter.binary_values"><code class="docutils literal notranslate"><span class="pre">Adapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.Adapter.read"><code class="docutils literal notranslate"><span class="pre">Adapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.Adapter.values"><code class="docutils literal notranslate"><span class="pre">Adapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.Adapter.write"><code class="docutils literal notranslate"><span class="pre">Adapter.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fake-adapter">Fake adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter"><code class="docutils literal notranslate"><span class="pre">FakeAdapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter.ask"><code class="docutils literal notranslate"><span class="pre">FakeAdapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter.binary_values"><code class="docutils literal notranslate"><span class="pre">FakeAdapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter.read"><code class="docutils literal notranslate"><span class="pre">FakeAdapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter.values"><code class="docutils literal notranslate"><span class="pre">FakeAdapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.FakeAdapter.write"><code class="docutils literal notranslate"><span class="pre">FakeAdapter.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#serial-adapter">Serial adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter"><code class="docutils literal notranslate"><span class="pre">SerialAdapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter.ask"><code class="docutils literal notranslate"><span class="pre">SerialAdapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter.binary_values"><code class="docutils literal notranslate"><span class="pre">SerialAdapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter.read"><code class="docutils literal notranslate"><span class="pre">SerialAdapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter.values"><code class="docutils literal notranslate"><span class="pre">SerialAdapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.SerialAdapter.write"><code class="docutils literal notranslate"><span class="pre">SerialAdapter.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#prologix-adapter">Prologix adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.ask"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.binary_values"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.gpib"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.gpib()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.read"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.set_defaults"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.set_defaults()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.values"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.wait_for_srq"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.wait_for_srq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.write"><code class="docutils literal notranslate"><span class="pre">PrologixAdapter.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#visa-adapter">VISA adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter"><code class="docutils literal notranslate"><span class="pre">VISAAdapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.ask"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.ask_values"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.ask_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.binary_values"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.has_supported_version"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.has_supported_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.read"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.read_bytes"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.read_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.values"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.wait_for_srq"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.wait_for_srq()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.write"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.write()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VISAAdapter.write_binary_values"><code class="docutils literal notranslate"><span class="pre">VISAAdapter.write_binary_values()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vxi-11-adapter">VXI-11 adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.ask"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.ask_raw"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.ask_raw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.binary_values"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.read"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.read_raw"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.read_raw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.values"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.write"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.write()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.VXI11Adapter.write_raw"><code class="docutils literal notranslate"><span class="pre">VXI11Adapter.write_raw()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#telnet-adapter">Telnet adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter.ask"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter.ask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter.binary_values"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter.binary_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter.read"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter.values"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.adapters.TelnetAdapter.write"><code class="docutils literal notranslate"><span class="pre">TelnetAdapter.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experiment/index.html">pymeasure.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display/index.html">pymeasure.display</a></li>
+<li class="toctree-l1"><a class="reference internal" href="instruments/index.html">pymeasure.instruments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting involved</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/reporting_errors.html">Reporting an error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/adding_instruments.html">Adding instruments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/coding_standards.html">Coding Standards</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyMeasure</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pymeasure.adapters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/adapters.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymeasure-adapters">
+<h1>pymeasure.adapters<a class="headerlink" href="#pymeasure-adapters" title="Permalink to this heading">¶</a></h1>
+<p>The adapter classes allow the instruments to be independent of the communication method used.</p>
+<p>Adapters for specific instruments should be grouped in an <code class="code docutils literal notranslate"><span class="pre">adapters.py</span></code> file in the corresponding manufacturer’s folder of <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymeasure.instruments</span></code>. For example, the adapter for communicating with LakeShore instruments over USB, <a class="reference internal" href="instruments/lakeshore/adapters.html#pymeasure.instruments.lakeshore.LakeShoreUSBAdapter" title="pymeasure.instruments.lakeshore.LakeShoreUSBAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LakeShoreUSBAdapter</span></code></a>, is found in <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymeasure.instruments.lakeshore.adapters</span></code>.</p>
+<section id="adapter-base-class">
+<h2>Adapter base class<a class="headerlink" href="#adapter-base-class" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">Adapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for Adapter child classes, which adapt between the Instrument 
+object and the connection, to allow flexible use of different connection 
+techniques.</p>
+<p>This class should only be inherited from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+<li><p><strong>kwargs</strong> – all other keyword arguments are ignored.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to the instrument and returns the resulting 
+ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads until the buffer is empty and returns the resulting
+ASCII respone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String ASCII response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.Adapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.Adapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="fake-adapter">
+<h2>Fake adapter<a class="headerlink" href="#fake-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">FakeAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.Adapter" title="pymeasure.adapters.adapter.Adapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adapter</span></code></a></p>
+<p>Provides a fake adapter for debugging purposes,
+which bounces back the command so that arbitrary values 
+testing is possible.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">FakeAdapter</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+<span class="n">a</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;5&quot;</span>
+<span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+<span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;10&quot;</span>
+<span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to the instrument and returns the resulting 
+ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the last commands given after the
+last read call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.FakeAdapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.FakeAdapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to a buffer, so that it can
+be read back.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="serial-adapter">
+<h2>Serial adapter<a class="headerlink" href="#serial-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">SerialAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.Adapter" title="pymeasure.adapters.adapter.Adapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adapter</span></code></a></p>
+<p>Adapter class for using the Python Serial package to allow
+serial communication to instrument</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Serial port</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+<li><p><strong>kwargs</strong> – Any valid key-word argument for serial.Serial</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to the instrument and returns the resulting 
+ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads until the buffer is empty and returns the resulting
+ASCII respone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String ASCII response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.SerialAdapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.SerialAdapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="prologix-adapter">
+<h2>Prologix adapter<a class="headerlink" href="#prologix-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">PrologixAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rw_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serial_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.SerialAdapter" title="pymeasure.adapters.serial.SerialAdapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerialAdapter</span></code></a></p>
+<p>Encapsulates the additional commands necessary
+to communicate over a Prologix GPIB-USB Adapter,
+using the SerialAdapter.</p>
+<p>Each PrologixAdapter is constructed based on a serial port or
+connection and the GPIB address to be communicated to.
+Serial connection sharing is achieved by using the <a class="reference internal" href="#pymeasure.adapters.PrologixAdapter.gpib" title="pymeasure.adapters.PrologixAdapter.gpib"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gpib()</span></code></a>
+method to spawn new PrologixAdapters for different GPIB addresses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – The Serial port name or a serial.Serial object</p></li>
+<li><p><strong>address</strong> – Integer GPIB address of the desired instrument</p></li>
+<li><p><strong>rw_delay</strong> – An optional delay to set between a write and read call for slow to respond instruments.</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+<li><p><strong>kwargs</strong> – Key-word arguments if constructing a new serial object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>address</strong> – Integer GPIB address of the desired instrument</p>
+</dd>
+</dl>
+<p>To allow user access to the Prologix adapter in Linux, create the file:
+<code class="code docutils literal notranslate"><span class="pre">/etc/udev/rules.d/51-prologix.rules</span></code>, with contents:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SUBSYSTEMS</span><span class="o">==</span><span class="s2">&quot;usb&quot;</span>,ATTRS<span class="o">{</span>idVendor<span class="o">}==</span><span class="s2">&quot;0403&quot;</span>,ATTRS<span class="o">{</span>idProduct<span class="o">}==</span><span class="s2">&quot;6001&quot;</span>,MODE<span class="o">=</span><span class="s2">&quot;0666&quot;</span>
+</pre></div>
+</div>
+<p>Then reload the udev rules with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules
+sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the Prologix controller, include a forced delay for some instruments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.gpib">
+<span class="sig-name descname"><span class="pre">gpib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rw_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.gpib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns and PrologixAdapter object that references the GPIB
+address specified, while sharing the Serial connection with other
+calls of this function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Integer GPIB address of the desired instrument</p></li>
+<li><p><strong>rw_delay</strong> – Set a custom Read/Write delay for the instrument</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PrologixAdapter for specific GPIB address</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the response of the instrument until timeout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.set_defaults">
+<span class="sig-name descname"><span class="pre">set_defaults</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.set_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up the default behavior of the Prologix-GPIB
+adapter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.wait_for_srq">
+<span class="sig-name descname"><span class="pre">wait_for_srq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.wait_for_srq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blocks until a SRQ, and leaves the bit high</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> – Timeout duration in seconds</p></li>
+<li><p><strong>delay</strong> – Time delay between checking SRQ in seconds</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.PrologixAdapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.PrologixAdapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to the GPIB address stored in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">address</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="visa-adapter">
+<h2>VISA adapter<a class="headerlink" href="#visa-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">VISAAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visa_library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.Adapter" title="pymeasure.adapters.adapter.Adapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adapter</span></code></a></p>
+<p>Adapter class for the VISA library using PyVISA to communicate
+with instruments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resource</strong> – VISA resource name that identifies the address</p></li>
+<li><p><strong>visa_library</strong> – VisaLibrary Instance, path of the VISA library or VisaLibrary spec string (&#64;py or &#64;ni).
+if not given, the default for the platform will be used.</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+<li><p><strong>kwargs</strong> – Any valid key-word arguments for constructing a PyVISA instrument</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the command to the instrument and returns the resulting
+ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.ask_values">
+<span class="sig-name descname"><span class="pre">ask_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.ask_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result. This leverages the <cite>query_ascii_values</cite> method
+in PyVISA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>kwargs</strong> – Key-word arguments to pass onto <cite>query_ascii_values</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.has_supported_version">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_supported_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.has_supported_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the PyVISA version is greater than 1.8</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads until the buffer is empty and returns the resulting
+ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String ASCII response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.read_bytes">
+<span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.read_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads specified number of bytes from the buffer and returns
+the resulting ASCII response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> – Number of bytes to read from the buffer</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.wait_for_srq">
+<span class="sig-name descname"><span class="pre">wait_for_srq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.wait_for_srq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blocks until a SRQ, and leaves the bit high</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> – Timeout duration in seconds</p></li>
+<li><p><strong>delay</strong> – Time delay between checking SRQ in seconds</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – SCPI command string to be sent to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VISAAdapter.write_binary_values">
+<span class="sig-name descname"><span class="pre">write_binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VISAAdapter.write_binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write binary data to the instrument, e.g. waveform for signal generators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>values</strong> – iterable representing the binary values</p></li>
+<li><p><strong>kwargs</strong> – Key-word arguments to pass onto <cite>write_binary_values</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of bytes written</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="vxi-11-adapter">
+<h2>VXI-11 adapter<a class="headerlink" href="#vxi-11-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">VXI11Adapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.Adapter" title="pymeasure.adapters.adapter.Adapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adapter</span></code></a></p>
+<dl class="simple">
+<dt>VXI11 Adapter class. Provides a adapter object that</dt><dd><p>wraps around the read, write and ask functionality
+of the vxi11 library.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – string containing the visa connection information.</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the ask command using the
+vx11 interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – string with the command that will be transmitted
+to the instrument.</p>
+</dd>
+</dl>
+<p>:returns string containing a response from the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.ask_raw">
+<span class="sig-name descname"><span class="pre">ask_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.ask_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the ask_raw command using the
+vx11 interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – binary string with the command that will be
+transmitted to the instrument</p>
+</dd>
+</dl>
+<p>:returns binary string containing the response from the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the read command using the
+vx11 interface.</p>
+<p>:return string containing a response from the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.read_raw">
+<span class="sig-name descname"><span class="pre">read_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.read_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the read_raw command using the
+vx11 interface.</p>
+<p>:returns binary string containing the response from the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the write command using the
+vxi11 interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – string with command the that will be transmitted
+to the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.VXI11Adapter.write_raw">
+<span class="sig-name descname"><span class="pre">write_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.VXI11Adapter.write_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for the write_raw command using the
+vxi11 interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – binary string with the command that will be
+transmitted to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="telnet-adapter">
+<h2>Telnet adapter<a class="headerlink" href="#telnet-adapter" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.adapters.</span></span><span class="sig-name descname"><span class="pre">TelnetAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.adapters.Adapter" title="pymeasure.adapters.adapter.Adapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Adapter</span></code></a></p>
+<p>Adapter class for using the Python telnetlib package to allow
+communication to instruments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – host address of the instrument</p></li>
+<li><p><strong>port</strong> – TCPIP port</p></li>
+<li><p><strong>query_delay</strong> – delay in seconds between write and read in the ask
+method</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess strings
+received from the instrument. The callable returns the processed string.</p></li>
+<li><p><strong>kwargs</strong> – Valid keyword arguments for telnetlib.Telnet, currently
+this is only ‘timeout’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter.ask">
+<span class="sig-name descname"><span class="pre">ask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns the resulting ASCII
+response</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – command string to be sent to the instrument</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String ASCII response of the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter.binary_values">
+<span class="sig-name descname"><span class="pre">binary_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_bytes=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter.binary_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array from a query for binary data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>header_bytes</strong> – Integer number of bytes to ignore in header</p></li>
+<li><p><strong>dtype</strong> – The NumPy data type to format the values with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NumPy array of values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read something even with blocking the I/O. After something is
+received check again to obtain a full reply.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String ASCII response of the instrument.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast=&lt;class</span> <span class="pre">'float'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_reply=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument and returns a list of formatted
+values from the result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> – SCPI command to be sent to the instrument</p></li>
+<li><p><strong>separator</strong> – A separator character to split the string into a list</p></li>
+<li><p><strong>cast</strong> – A type to cast the result</p></li>
+<li><p><strong>preprocess_reply</strong> – optional callable used to preprocess values
+received from the instrument. The callable returns the processed string.
+If not specified, the Adapter default is used if available, otherwise no
+preprocessing is done.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the desired type, or strings where the casting fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.adapters.TelnetAdapter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.adapters.TelnetAdapter.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a command to the instrument</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – command string to be sent to the instrument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorial/graphical.html" class="btn btn-neutral float-left" title="Using a graphical interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experiment/index.html" class="btn btn-neutral float-right" title="pymeasure.experiment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2013-2022, PyMeasure Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

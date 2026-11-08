@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Authors" href="authors.html" />
+    <link rel="prev" title="Pymodbus simulator ReST API" href="library/simulator/restapi.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">Simulator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ready-to-run-examples">Ready to run examples:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simple-asynchronous-client">Simple asynchronous client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-synchronous-client">Simple synchronous client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-performance-sync-vs-async">Client performance sync vs async</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-examples">Advanced examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#client-asynchronous-calls">Client asynchronous calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-asynchronous">Client asynchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-calls">Client calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-custom-message">Client custom message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-payload">Client payload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-synchronous">Client synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-asynchronous">Server asynchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-callback">Server callback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-tracer">Server tracer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-payload">Server payload</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-synchronous">Server synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-updating">Server updating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulator-example">Simulator example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulator-datastore-shared-storage-example">Simulator datastore (shared storage) example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#message-generator">Message generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#message-parser">Message Parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modbus-forwarder">Modbus forwarder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples-contributions">Examples contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solar">Solar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#redis-datastore">Redis datastore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#serial-forwarder">Serial Forwarder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sqlalchemy-datastore">Sqlalchemy datastore</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_changes.html">API changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Pymodbus internals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<p>Examples are divided in 2 parts:</p>
+<p>The first part are some simple client examples which can be copied and run directly.
+These examples show the basic functionality of the library.</p>
+<p>The second part are more advanced examples, but in order to not duplicate code,
+this requires you to download the examples directory and run
+the examples in the directory.</p>
+<section id="ready-to-run-examples">
+<h2>Ready to run examples:<a class="headerlink" href="#ready-to-run-examples" title="Link to this heading"></a></h2>
+<p>These examples are very basic examples,
+showing how a client can communicate with a server.</p>
+<p>You need to modify the code to adapt it to your situation.</p>
+<section id="simple-asynchronous-client">
+<h3>Simple asynchronous client<a class="headerlink" href="#simple-asynchronous-client" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/simple_async_client.py">examples/simple_async_client.py</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;Pymodbus asynchronous client example.</span>
+
+<span class="sd">An example of a single threaded synchronous client.</span>
+
+<span class="sd">usage: simple_async_client.py</span>
+
+<span class="sd">All options must be adapted in the code</span>
+<span class="sd">The corresponding server must be started before e.g. as:</span>
+<span class="sd">    python3 server_sync.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="kn">import</span> <span class="nn">pymodbus.client</span> <span class="k">as</span> <span class="nn">ModbusClient</span>
+<span class="kn">from</span> <span class="nn">pymodbus</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ExceptionResponse</span><span class="p">,</span>
+    <span class="n">Framer</span><span class="p">,</span>
+    <span class="n">ModbusException</span><span class="p">,</span>
+    <span class="n">pymodbus_apply_logging_config</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run_async_simple_client</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">framer</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">SOCKET</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run async client.&quot;&quot;&quot;</span>
+    <span class="c1"># activate debugging</span>
+    <span class="n">pymodbus_apply_logging_config</span><span class="p">(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get client&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;tcp&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">AsyncModbusTcpClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># source_address=(&quot;localhost&quot;, 0),</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;udp&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">AsyncModbusUdpClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># source_address=None,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">AsyncModbusSerialClient</span><span class="p">(</span>
+            <span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># strict=True,</span>
+            <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+            <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">parity</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="c1"># handle_local_echo=False,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;tls&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">AsyncModbusTlsClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">TLS</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># sslctx=sslctx,</span>
+            <span class="n">certfile</span><span class="o">=</span><span class="s2">&quot;../examples/certificates/pymodbus.crt&quot;</span><span class="p">,</span>
+            <span class="n">keyfile</span><span class="o">=</span><span class="s2">&quot;../examples/certificates/pymodbus.key&quot;</span><span class="p">,</span>
+            <span class="c1"># password=&quot;none&quot;,</span>
+            <span class="n">server_hostname</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown client </span><span class="si">{</span><span class="n">comm</span><span class="si">}</span><span class="s2"> selected&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;connect to server&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="c1"># test client is connected</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">connected</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get and verify data&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># See all calls in client_calls.py</span>
+        <span class="n">rr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received ModbusException(</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">) from library&quot;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">rr</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library error(</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">ExceptionResponse</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library exception (</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="c1"># THIS IS NOT A PYTHON EXCEPTION, but a valid modbus message</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close connection&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">run_async_simple_client</span><span class="p">(</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">5020</span><span class="p">),</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="simple-synchronous-client">
+<h3>Simple synchronous client<a class="headerlink" href="#simple-synchronous-client" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/simple_sync_client.py">examples/simple_sync_client.py</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;Pymodbus synchronous client example.</span>
+
+<span class="sd">An example of a single threaded synchronous client.</span>
+
+<span class="sd">usage: simple_sync_client.py</span>
+
+<span class="sd">All options must be adapted in the code</span>
+<span class="sd">The corresponding server must be started before e.g. as:</span>
+<span class="sd">    python3 server_sync.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># --------------------------------------------------------------------------- #</span>
+<span class="c1"># import the various client implementations</span>
+<span class="c1"># --------------------------------------------------------------------------- #</span>
+<span class="kn">import</span> <span class="nn">pymodbus.client</span> <span class="k">as</span> <span class="nn">ModbusClient</span>
+<span class="kn">from</span> <span class="nn">pymodbus</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ExceptionResponse</span><span class="p">,</span>
+    <span class="n">Framer</span><span class="p">,</span>
+    <span class="n">ModbusException</span><span class="p">,</span>
+    <span class="n">pymodbus_apply_logging_config</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">run_sync_simple_client</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">framer</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">SOCKET</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run sync client.&quot;&quot;&quot;</span>
+    <span class="c1"># activate debugging</span>
+    <span class="n">pymodbus_apply_logging_config</span><span class="p">(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get client&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;tcp&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">ModbusTcpClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,y</span>
+            <span class="c1"># source_address=(&quot;localhost&quot;, 0),</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;udp&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">ModbusUdpClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># source_address=None,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">ModbusSerialClient</span><span class="p">(</span>
+            <span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">framer</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># strict=True,</span>
+            <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+            <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">parity</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="c1"># handle_local_echo=False,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">comm</span> <span class="o">==</span> <span class="s2">&quot;tls&quot;</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="o">.</span><span class="n">ModbusTlsClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">framer</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">TLS</span><span class="p">,</span>
+            <span class="c1"># timeout=10,</span>
+            <span class="c1"># retries=3,</span>
+            <span class="c1"># retry_on_empty=False,</span>
+            <span class="c1"># sslctx=None,</span>
+            <span class="n">certfile</span><span class="o">=</span><span class="s2">&quot;../examples/certificates/pymodbus.crt&quot;</span><span class="p">,</span>
+            <span class="n">keyfile</span><span class="o">=</span><span class="s2">&quot;../examples/certificates/pymodbus.key&quot;</span><span class="p">,</span>
+            <span class="c1"># password=None,</span>
+            <span class="n">server_hostname</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown client </span><span class="si">{</span><span class="n">comm</span><span class="si">}</span><span class="s2"> selected&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;connect to server&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get and verify data&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rr</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received ModbusException(</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">) from library&quot;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="n">rr</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library error(</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">ExceptionResponse</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library exception (</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="c1"># THIS IS NOT A PYTHON EXCEPTION, but a valid modbus message</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close connection&quot;</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run_sync_simple_client</span><span class="p">(</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="s2">&quot;5020&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="client-performance-sync-vs-async">
+<h3>Client performance sync vs async<a class="headerlink" href="#client-performance-sync-vs-async" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_performance.py">examples/client_performance.py</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;Test performance of client: sync vs. async.</span>
+
+<span class="sd">This example show how much faster the async version is.</span>
+
+<span class="sd">example run:</span>
+
+<span class="sd">(pymodbus) % ./client_performance.py</span>
+<span class="sd">--- Testing sync client v3.4.1</span>
+<span class="sd">running 1000 call (each 10 registers), took 114.10 seconds</span>
+<span class="sd">Averages 114.10 ms pr call and 11.41 ms pr register.</span>
+<span class="sd">--- Testing async client v3.4.1</span>
+<span class="sd">running 1000 call (each 10 registers), took 0.33 seconds</span>
+<span class="sd">Averages 0.33 ms pr call and 0.03 ms pr register.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">pymodbus</span> <span class="kn">import</span> <span class="n">Framer</span>
+<span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusSerialClient</span><span class="p">,</span> <span class="n">ModbusSerialClient</span>
+
+
+<span class="n">LOOP_COUNT</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">REGISTER_COUNT</span> <span class="o">=</span> <span class="mi">10</span>
+
+
+<span class="k">def</span> <span class="nf">run_sync_client_test</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run sync client.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Testing sync client v3.4.1&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusSerialClient</span><span class="p">(</span>
+        <span class="s2">&quot;/dev/ttys007&quot;</span><span class="p">,</span>
+        <span class="n">framer_name</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">RTU</span><span class="p">,</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">connected</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">LOOP_COUNT</span><span class="p">):</span>
+        <span class="n">rr</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">REGISTER_COUNT</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rr</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library error(</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">run_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">avg_call</span> <span class="o">=</span> <span class="p">(</span><span class="n">run_time</span> <span class="o">/</span> <span class="n">LOOP_COUNT</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">avg_register</span> <span class="o">=</span> <span class="n">avg_call</span> <span class="o">/</span> <span class="n">REGISTER_COUNT</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;running </span><span class="si">{</span><span class="n">LOOP_COUNT</span><span class="si">}</span><span class="s2"> call (each </span><span class="si">{</span><span class="n">REGISTER_COUNT</span><span class="si">}</span><span class="s2"> registers), took </span><span class="si">{</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Averages </span><span class="si">{</span><span class="n">avg_call</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms pr call and </span><span class="si">{</span><span class="n">avg_register</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms pr register.&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run_async_client_test</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run async client.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Testing async client v3.4.1&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusSerialClient</span><span class="p">(</span>
+        <span class="s2">&quot;/dev/ttys007&quot;</span><span class="p">,</span>
+        <span class="n">framer_name</span><span class="o">=</span><span class="n">Framer</span><span class="o">.</span><span class="n">RTU</span><span class="p">,</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">connected</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">LOOP_COUNT</span><span class="p">):</span>
+        <span class="n">rr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">REGISTER_COUNT</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rr</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received Modbus library error(</span><span class="si">{</span><span class="n">rr</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">run_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+    <span class="n">avg_call</span> <span class="o">=</span> <span class="p">(</span><span class="n">run_time</span> <span class="o">/</span> <span class="n">LOOP_COUNT</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">avg_register</span> <span class="o">=</span> <span class="n">avg_call</span> <span class="o">/</span> <span class="n">REGISTER_COUNT</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;running </span><span class="si">{</span><span class="n">LOOP_COUNT</span><span class="si">}</span><span class="s2"> call (each </span><span class="si">{</span><span class="n">REGISTER_COUNT</span><span class="si">}</span><span class="s2"> registers), took </span><span class="si">{</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Averages </span><span class="si">{</span><span class="n">avg_call</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms pr call and </span><span class="si">{</span><span class="n">avg_register</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms pr register.&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run_sync_client_test</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_async_client_test</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-examples">
+<h2>Advanced examples<a class="headerlink" href="#advanced-examples" title="Link to this heading"></a></h2>
+<p>These examples are considered essential usage examples, and are guaranteed to work,
+because they are tested automatilly with each dev branch commit using CI.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The examples needs to be run from within the examples directory, unless you modify them.
+Most examples use helper.py and client_*.py or server_*.py. This is done to avoid maintaining the
+same code in multiple files.</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../_downloads/5fcb20102e97ee54994f817e872e8e91/examples.zip"><code class="xref download docutils literal notranslate"><span class="pre">examples.zip</span></code></a></p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/82fca487250825202900cae86f76d7ea/examples.tgz"><code class="xref download docutils literal notranslate"><span class="pre">examples.tgz</span></code></a></p></li>
+</ul>
+</div>
+<section id="client-asynchronous-calls">
+<h3>Client asynchronous calls<a class="headerlink" href="#client-asynchronous-calls" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_async_calls.py">examples/client_async_calls.py</a></p>
+<p>Pymodbus Client modbus async all calls example.</p>
+<p>Please see method <strong>async_template_call</strong>
+for a template on how to make modbus calls and check for different
+error conditions.</p>
+<p>The handle* functions each handle a set of modbus calls with the
+same register type (e.g. coils).</p>
+<p>All available modbus calls are present.</p>
+<p>If you are performing a request that is not available in the client
+mixin, you have to perform the request like this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.diag_message</span> <span class="kn">import</span> <span class="n">ClearCountersRequest</span>
+<span class="kn">from</span> <span class="nn">pymodbus.diag_message</span> <span class="kn">import</span> <span class="n">ClearCountersResponse</span>
+
+<span class="n">request</span>  <span class="o">=</span> <span class="n">ClearCountersRequest</span><span class="p">()</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ClearCountersResponse</span><span class="p">):</span>
+    <span class="o">...</span> <span class="n">do</span> <span class="n">something</span> <span class="k">with</span> <span class="n">the</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p>This example uses client_async.py and client_sync.py to handle connection,
+and have the same options.</p>
+<p>The corresponding server must be started before e.g. as:</p>
+<blockquote>
+<div><p>./server_async.py</p>
+</div></blockquote>
+</section>
+<section id="client-asynchronous">
+<h3>Client asynchronous<a class="headerlink" href="#client-asynchronous" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_async.py">examples/client_async.py</a></p>
+<p>Pymodbus asynchronous client example.</p>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client_async</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PORT</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">baudrate</span> <span class="n">BAUDRATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">communication</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">tcp</span>
+<span class="o">-</span><span class="n">f</span><span class="p">,</span> <span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">framer</span><span class="p">,</span> <span class="n">default</span> <span class="n">depends</span> <span class="n">on</span> <span class="o">--</span><span class="n">comm</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">info</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span>
+<span class="o">--</span><span class="n">baudrate</span> <span class="n">BAUDRATE</span>
+    <span class="nb">set</span> <span class="n">serial</span> <span class="n">device</span> <span class="n">baud</span> <span class="n">rate</span>
+<span class="o">--</span><span class="n">host</span> <span class="n">HOST</span>
+    <span class="nb">set</span> <span class="n">host</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="mf">127.0.0.1</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The corresponding server must be started before e.g. as:</dt><dd><p>python3 server_sync.py</p>
+</dd>
+</dl>
+</section>
+<section id="client-calls">
+<h3>Client calls<a class="headerlink" href="#client-calls" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_calls.py">examples/client_calls.py</a></p>
+<p>Pymodbus Client modbus all calls example.</p>
+<p>Please see method <strong>template_call</strong>
+for a template on how to make modbus calls and check for different
+error conditions.</p>
+<p>The handle* functions each handle a set of modbus calls with the
+same register type (e.g. coils).</p>
+<p>All available modbus calls are present.</p>
+<p>If you are performing a request that is not available in the client
+mixin, you have to perform the request like this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.diag_message</span> <span class="kn">import</span> <span class="n">ClearCountersRequest</span>
+<span class="kn">from</span> <span class="nn">pymodbus.diag_message</span> <span class="kn">import</span> <span class="n">ClearCountersResponse</span>
+
+<span class="n">request</span>  <span class="o">=</span> <span class="n">ClearCountersRequest</span><span class="p">()</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ClearCountersResponse</span><span class="p">):</span>
+    <span class="o">...</span> <span class="n">do</span> <span class="n">something</span> <span class="k">with</span> <span class="n">the</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p>This example uses client_async.py and client_sync.py to handle connection,
+and have the same options.</p>
+<p>The corresponding server must be started before e.g. as:</p>
+<blockquote>
+<div><p>./server_async.py</p>
+</div></blockquote>
+</section>
+<section id="client-custom-message">
+<h3>Client custom message<a class="headerlink" href="#client-custom-message" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_custom_msg.py">examples/client_custom_msg.py</a></p>
+<p>Pymodbus Synchronous Client Examples.</p>
+<p>The following is an example of how to use the synchronous modbus client
+implementation from pymodbus:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">result</span>
+</pre></div>
+</div>
+</section>
+<section id="client-payload">
+<h3>Client payload<a class="headerlink" href="#client-payload" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_payload.py">examples/client_payload.py</a></p>
+<p>Pymodbus Client Payload Example.</p>
+<p>This example shows how to build a client with a
+complicated memory layout using builder.</p>
+<p>Works out of the box together with payload_server.py</p>
+</section>
+<section id="client-synchronous">
+<h3>Client synchronous<a class="headerlink" href="#client-synchronous" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_sync.py">examples/client_sync.py</a></p>
+<p>Pymodbus Synchronous Client Example.</p>
+<p>An example of a single threaded synchronous client.</p>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client_sync</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">PORT</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">baudrate</span> <span class="n">BAUDRATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">communication</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">tcp</span>
+<span class="o">-</span><span class="n">f</span><span class="p">,</span> <span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">framer</span><span class="p">,</span> <span class="n">default</span> <span class="n">depends</span> <span class="n">on</span> <span class="o">--</span><span class="n">comm</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">info</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span>
+<span class="o">--</span><span class="n">baudrate</span> <span class="n">BAUDRATE</span>
+    <span class="nb">set</span> <span class="n">serial</span> <span class="n">device</span> <span class="n">baud</span> <span class="n">rate</span>
+<span class="o">--</span><span class="n">host</span> <span class="n">HOST</span>
+    <span class="nb">set</span> <span class="n">host</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="mf">127.0.0.1</span>
+</pre></div>
+</div>
+<p>The corresponding server must be started before e.g. as:</p>
+<blockquote>
+<div><p>python3 server_sync.py</p>
+</div></blockquote>
+</section>
+<section id="server-asynchronous">
+<h3>Server asynchronous<a class="headerlink" href="#server-asynchronous" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_async.py">examples/server_async.py</a></p>
+<p>Pymodbus asynchronous Server Example.</p>
+<p>An example of a multi threaded asynchronous server.</p>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server_async</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">communication</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">tcp</span>
+<span class="o">-</span><span class="n">f</span><span class="p">,</span> <span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">framer</span><span class="p">,</span> <span class="n">default</span> <span class="n">depends</span> <span class="n">on</span> <span class="o">--</span><span class="n">comm</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">info</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span>
+    <span class="nb">set</span> <span class="n">serial</span> <span class="n">device</span> <span class="n">baud</span> <span class="n">rate</span>
+<span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">datastore</span> <span class="nb">type</span>
+<span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span>
+    <span class="nb">set</span> <span class="n">number</span> <span class="n">of</span> <span class="n">slaves</span> <span class="n">to</span> <span class="n">respond</span> <span class="n">to</span>
+</pre></div>
+</div>
+<p>The corresponding client can be started as:</p>
+<blockquote>
+<div><p>python3 client_sync.py</p>
+</div></blockquote>
+</section>
+<section id="server-callback">
+<h3>Server callback<a class="headerlink" href="#server-callback" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_callback.py">examples/server_callback.py</a></p>
+<p>Pymodbus Server With Callbacks.</p>
+<p>This is an example of adding callbacks to a running modbus server
+when a value is written to it.</p>
+</section>
+<section id="server-tracer">
+<h3>Server tracer<a class="headerlink" href="#server-tracer" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_hook.py">examples/server_hook.py</a></p>
+<p>Pymodbus Server With request/response manipulator.</p>
+<p>This is an example of using the builtin request/response tracer to
+manipulate the messages to/from the modbus server</p>
+</section>
+<section id="server-payload">
+<h3>Server payload<a class="headerlink" href="#server-payload" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_payload.py">examples/server_payload.py</a></p>
+<p>Pymodbus Server Payload Example.</p>
+<p>This example shows how to initialize a server with a
+complicated memory layout using builder.</p>
+</section>
+<section id="server-synchronous">
+<h3>Server synchronous<a class="headerlink" href="#server-synchronous" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_sync.py">examples/server_sync.py</a></p>
+<p>Pymodbus Synchronous Server Example.</p>
+<p>An example of a single threaded synchronous server.</p>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server_sync</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">communication</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">tcp</span>
+<span class="o">-</span><span class="n">f</span><span class="p">,</span> <span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">framer</span><span class="p">,</span> <span class="n">default</span> <span class="n">depends</span> <span class="n">on</span> <span class="o">--</span><span class="n">comm</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">info</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span>
+    <span class="nb">set</span> <span class="n">serial</span> <span class="n">device</span> <span class="n">baud</span> <span class="n">rate</span>
+<span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">datastore</span> <span class="nb">type</span>
+<span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span>
+    <span class="nb">set</span> <span class="n">number</span> <span class="n">of</span> <span class="n">slaves</span> <span class="n">to</span> <span class="n">respond</span> <span class="n">to</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The corresponding client can be started as:</dt><dd><p>python3 client_sync.py</p>
+</dd>
+</dl>
+<p><strong>REMARK</strong> It is recommended to use the async server! The sync server
+is just a thin cover on top of the async server and is in some aspects
+a lot slower.</p>
+</section>
+<section id="server-updating">
+<h3>Server updating<a class="headerlink" href="#server-updating" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/server_updating.py">examples/server_updating.py</a></p>
+<p>Pymodbus asynchronous Server with updating task Example.</p>
+<p>An example of an asynchronous server and
+a task that runs continuously alongside the server and updates values.</p>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">server_updating</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">comm</span> <span class="p">{</span><span class="n">tcp</span><span class="p">,</span><span class="n">udp</span><span class="p">,</span><span class="n">serial</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">communication</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">tcp</span>
+<span class="o">-</span><span class="n">f</span><span class="p">,</span> <span class="o">--</span><span class="n">framer</span> <span class="p">{</span><span class="n">ascii</span><span class="p">,</span><span class="n">binary</span><span class="p">,</span><span class="n">rtu</span><span class="p">,</span><span class="n">socket</span><span class="p">,</span><span class="n">tls</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">framer</span><span class="p">,</span> <span class="n">default</span> <span class="n">depends</span> <span class="n">on</span> <span class="o">--</span><span class="n">comm</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span><span class="p">,</span> <span class="n">default</span> <span class="ow">is</span> <span class="n">info</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span>
+    <span class="nb">set</span> <span class="n">serial</span> <span class="n">device</span> <span class="n">baud</span> <span class="n">rate</span>
+<span class="o">--</span><span class="n">store</span> <span class="p">{</span><span class="n">sequential</span><span class="p">,</span><span class="n">sparse</span><span class="p">,</span><span class="n">factory</span><span class="p">,</span><span class="n">none</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">datastore</span> <span class="nb">type</span>
+<span class="o">--</span><span class="n">slaves</span> <span class="n">SLAVES</span>
+    <span class="nb">set</span> <span class="n">number</span> <span class="n">of</span> <span class="n">slaves</span> <span class="n">to</span> <span class="n">respond</span> <span class="n">to</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The corresponding client can be started as:</dt><dd><p>python3 client_sync.py</p>
+</dd>
+</dl>
+</section>
+<section id="simulator-example">
+<h3>Simulator example<a class="headerlink" href="#simulator-example" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/simulator.py">examples/simulator.py</a></p>
+<p>Pymodbus simulator server/client Example.</p>
+<p>An example of how to use the simulator (server) with a client.</p>
+<p>for usage see documentation of simulator</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>pymodbus.simulator starts the server directly from the commandline</p>
+</div>
+</section>
+<section id="simulator-datastore-shared-storage-example">
+<h3>Simulator datastore (shared storage) example<a class="headerlink" href="#simulator-datastore-shared-storage-example" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/datastore_simulator_share.py">examples/datastore_simulator_share.py</a></p>
+<p>Pymodbus datastore simulator Example.</p>
+<p>An example of using simulator datastore with json interface.</p>
+<p>Detailed description of the device definition can be found at:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/library/simulator/config.html#device-entries">https://pymodbus.readthedocs.io/en/latest/source/library/simulator/config.html#device-entries</a></p>
+</div></blockquote>
+<p>usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datastore_simulator_share</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">port</span> <span class="n">PORT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">test_client</span><span class="p">]</span>
+
+<span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>
+    <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+<span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">log</span> <span class="p">{</span><span class="n">critical</span><span class="p">,</span><span class="n">error</span><span class="p">,</span><span class="n">warning</span><span class="p">,</span><span class="n">info</span><span class="p">,</span><span class="n">debug</span><span class="p">}</span>
+    <span class="nb">set</span> <span class="n">log</span> <span class="n">level</span>
+<span class="o">-</span><span class="n">p</span><span class="p">,</span> <span class="o">--</span><span class="n">port</span> <span class="n">PORT</span>
+    <span class="nb">set</span> <span class="n">port</span> <span class="n">to</span> <span class="n">use</span>
+<span class="o">--</span><span class="n">test_client</span>
+    <span class="n">starts</span> <span class="n">a</span> <span class="n">client</span> <span class="n">to</span> <span class="n">test</span> <span class="n">the</span> <span class="n">configuration</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The corresponding client can be started as:</dt><dd><p>python3 client_sync.py</p>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This is NOT the pymodbus simulator, that is started as pymodbus.simulator.</p>
+</div>
+</section>
+<section id="message-generator">
+<h3>Message generator<a class="headerlink" href="#message-generator" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/message_generator.py">examples/message_generator.py</a></p>
+<p>Modbus Message Generator.</p>
+</section>
+<section id="message-parser">
+<h3>Message Parser<a class="headerlink" href="#message-parser" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/message_parser.py">examples/message_parser.py</a></p>
+<p>Modbus Message Parser.</p>
+<p>The following is an example of how to parse modbus messages
+using the supplied framers.</p>
+</section>
+<section id="modbus-forwarder">
+<h3>Modbus forwarder<a class="headerlink" href="#modbus-forwarder" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/modbus_forwarder.py">examples/modbus_forwarder.py</a></p>
+<p>Pymodbus synchronous forwarder.</p>
+<p>This is a repeater or converter and an example of just how powerful datastore is.</p>
+<p>It consist of a server (any comm) and a client (any comm), functionality:</p>
+<ol class="loweralpha">
+<li><p>server receives a read/write request from external client:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>client sends a new read/write request to target server</p></li>
+<li><p>client receives response and updates the datastore</p></li>
+<li><p>server sends new response to external client</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+<p>Both server and client are tcp based, but it can be easily modified to any server/client
+(see client_sync.py and server_sync.py for other communication types)</p>
+<p><strong>WARNING</strong> This example is a simple solution, that do only forward read requests.</p>
+</section>
+</section>
+<section id="examples-contributions">
+<h2>Examples contributions<a class="headerlink" href="#examples-contributions" title="Link to this heading"></a></h2>
+<p>These examples are supplied by users of pymodbus.
+The pymodbus team thanks for sharing the examples.</p>
+<section id="solar">
+<h3>Solar<a class="headerlink" href="#solar" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/contrib/solar.py">examples/contrib/solar.py</a></p>
+<p>Pymodbus Synchronous Client Example.</p>
+<p>Modified to test long term connection.</p>
+</section>
+<section id="redis-datastore">
+<h3>Redis datastore<a class="headerlink" href="#redis-datastore" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/contrib/redis_datastore.py">examples/contrib/redis_datastore.py</a></p>
+<p>Datastore using redis.</p>
+</section>
+<section id="serial-forwarder">
+<h3>Serial Forwarder<a class="headerlink" href="#serial-forwarder" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/contrib/serial_forwarder.py">examples/contrib/serial_forwarder.py</a></p>
+<p>Pymodbus SerialRTU2TCP Forwarder</p>
+<p>usage :
+python3 serial_forwarder.py –log DEBUG –port “/dev/ttyUSB0” –baudrate 9600 –server_ip “192.168.1.27” –server_port 5020 –slaves 1 2 3</p>
+</section>
+<section id="sqlalchemy-datastore">
+<h3>Sqlalchemy datastore<a class="headerlink" href="#sqlalchemy-datastore" title="Link to this heading"></a></h3>
+<p>Source: <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/contrib/sql_datastore.py">examples/contrib/sql_datastore.py</a></p>
+<p>Datastore using SQL.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="library/simulator/restapi.html" class="btn btn-neutral float-left" title="Pymodbus simulator ReST API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="authors.html" class="btn btn-neutral float-right" title="Authors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

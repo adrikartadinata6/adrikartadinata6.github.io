@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>18. API - Internal Devices &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="19. API - Generic Classes" href="api_generic.html" />
+    <link rel="prev" title="17. API - Boards and Accessories" href="api_boards.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">18. API - Internal Devices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#regular-classes">18.1. Regular Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#timeofday">18.1.1. TimeOfDay</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.TimeOfDay"><code class="docutils literal notranslate"><span class="pre">TimeOfDay</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pingserver">18.1.2. PingServer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.PingServer"><code class="docutils literal notranslate"><span class="pre">PingServer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cputemperature">18.1.3. CPUTemperature</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.CPUTemperature"><code class="docutils literal notranslate"><span class="pre">CPUTemperature</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#loadaverage">18.1.4. LoadAverage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.LoadAverage"><code class="docutils literal notranslate"><span class="pre">LoadAverage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#diskusage">18.1.5. DiskUsage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.DiskUsage"><code class="docutils literal notranslate"><span class="pre">DiskUsage</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#base-classes">18.2. Base Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#polledinternaldevice">18.2.1. PolledInternalDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.PolledInternalDevice"><code class="docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#internaldevice">18.2.2. InternalDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.InternalDevice"><code class="docutils literal notranslate"><span class="pre">InternalDevice</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">18. </span>API - Internal Devices</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_internal.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.internal_devices">
+<span id="api-internal-devices"></span><h1><span class="section-number">18. </span>API - Internal Devices<a class="headerlink" href="#module-gpiozero.internal_devices" title="Link to this heading"></a></h1>
+<p>GPIO Zero also provides several “internal” devices which represent facilities
+provided by the operating system itself. These can be used to react to things
+like the time of day, or whether a server is available on the network.</p>
+<p>These devices provide an API similar to and compatible with GPIO devices so that
+internal device events can trigger changes to GPIO output devices the way input
+devices can. In the same way a <a class="reference internal" href="api_input.html#gpiozero.Button" title="gpiozero.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a> object is <em>active</em> when
+it’s pressed, and can be used to trigger other devices when its state changes,
+a <a class="reference internal" href="#gpiozero.TimeOfDay" title="gpiozero.TimeOfDay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeOfDay</span></code></a> object is <em>active</em> during a particular time period.</p>
+<p>Consider the following code in which a <a class="reference internal" href="api_input.html#gpiozero.Button" title="gpiozero.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a> object is used
+to control an <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> object:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">btn</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">on</span>
+<span class="n">btn</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">off</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now consider the following example in which a <a class="reference internal" href="#gpiozero.TimeOfDay" title="gpiozero.TimeOfDay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeOfDay</span></code></a> object is used
+to control an <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> using the same method:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">TimeOfDay</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">tod</span> <span class="o">=</span> <span class="n">TimeOfDay</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">time</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">tod</span><span class="o">.</span><span class="n">when_activated</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">on</span>
+<span class="n">tod</span><span class="o">.</span><span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">off</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here, rather than the LED being controlled by the press of a button, it’s
+controlled by the time. When the time reaches 09:00AM, the LED comes on, and at
+10:00AM it goes off.</p>
+<p>Like the <a class="reference internal" href="api_input.html#gpiozero.Button" title="gpiozero.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a> object, internal devices like the
+<a class="reference internal" href="#gpiozero.TimeOfDay" title="gpiozero.TimeOfDay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeOfDay</span></code></a> object has <a class="reference internal" href="#gpiozero.TimeOfDay.value" title="gpiozero.TimeOfDay.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">values</span></code>, <a class="reference internal" href="#gpiozero.TimeOfDay.is_active" title="gpiozero.TimeOfDay.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>,
+<a class="reference internal" href="#gpiozero.TimeOfDay.when_activated" title="gpiozero.TimeOfDay.when_activated"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_activated</span></code></a> and <a class="reference internal" href="#gpiozero.TimeOfDay.when_deactivated" title="gpiozero.TimeOfDay.when_deactivated"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_deactivated</span></code></a>
+attributes, so alternative methods using the other paradigms would also work.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that although the constructor parameter <code class="docutils literal notranslate"><span class="pre">pin_factory</span></code> is available
+for internal devices, and is required to be valid, the pin factory chosen
+will not make any practical difference. Reading a remote Pi’s CPU
+temperature, for example, is not currently possible.</p>
+</div>
+<section id="regular-classes">
+<h2><span class="section-number">18.1. </span>Regular Classes<a class="headerlink" href="#regular-classes" title="Link to this heading"></a></h2>
+<p>The following classes are intended for general use with the devices they are
+named after. All classes in this section are concrete (not abstract).</p>
+<section id="timeofday">
+<h3><span class="section-number">18.1.1. </span>TimeOfDay<a class="headerlink" href="#timeofday" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">TimeOfDay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#TimeOfDay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.TimeOfDay" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PolledInternalDevice" title="gpiozero.PolledInternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a> to provide a device which is active
+when the computer’s clock indicates that the current time is between
+<em>start_time</em> and <em>end_time</em> (inclusive) which are <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/datetime.html#datetime.time" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">time</span></code></a>
+instances.</p>
+<p>The following example turns on a lamp attached to an <a class="reference internal" href="api_boards.html#gpiozero.Energenie" title="gpiozero.Energenie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Energenie</span></code></a>
+plug between 07:00AM and 08:00AM:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">TimeOfDay</span><span class="p">,</span> <span class="n">Energenie</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">lamp</span> <span class="o">=</span> <span class="n">Energenie</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">morning</span> <span class="o">=</span> <span class="n">TimeOfDay</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span> <span class="n">time</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+
+<span class="n">morning</span><span class="o">.</span><span class="n">when_activated</span> <span class="o">=</span> <span class="n">lamp</span><span class="o">.</span><span class="n">on</span>
+<span class="n">morning</span><span class="o">.</span><span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">lamp</span><span class="o">.</span><span class="n">off</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that <em>start_time</em> may be greater than <em>end_time</em>, indicating a time
+period which crosses midnight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/datetime.html#datetime.time" title="(in Python v3.12)"><em>time</em></a>) – The time from which the device will be considered active.</p></li>
+<li><p><strong>end_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/datetime.html#datetime.time" title="(in Python v3.12)"><em>time</em></a>) – The time after which the device will be considered inactive.</p></li>
+<li><p><strong>utc</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), a naive UTC time will be used for the
+comparison rather than a local time-zone reading.</p></li>
+<li><p><strong>event_delay</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The number of seconds between file reads (defaults to 10 seconds).</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.end_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_time</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.end_time" title="Link to this definition"></a></dt>
+<dd><p>The time of day after which the device will be considered inactive.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise. This property is usually derived from
+<a class="reference internal" href="#gpiozero.TimeOfDay.value" title="gpiozero.TimeOfDay.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. Unlike <a class="reference internal" href="#gpiozero.TimeOfDay.value" title="gpiozero.TimeOfDay.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>, this is <em>always</em> a boolean.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.start_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_time</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.start_time" title="Link to this definition"></a></dt>
+<dd><p>The time of day after which the device will be considered active.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.utc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">utc</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.utc" title="Link to this definition"></a></dt>
+<dd><p>If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, use a naive UTC time reading for comparison instead of
+a local timezone reading.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.value" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-data docutils literal notranslate"><span class="pre">1</span></code> when the system clock reads between <a class="reference internal" href="#gpiozero.TimeOfDay.start_time" title="gpiozero.TimeOfDay.start_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_time</span></code></a>
+and <a class="reference internal" href="#gpiozero.TimeOfDay.end_time" title="gpiozero.TimeOfDay.end_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end_time</span></code></a>, and <code class="xref py py-data docutils literal notranslate"><span class="pre">0</span></code> otherwise. If <a class="reference internal" href="#gpiozero.TimeOfDay.start_time" title="gpiozero.TimeOfDay.start_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_time</span></code></a> is
+greater than <a class="reference internal" href="#gpiozero.TimeOfDay.end_time" title="gpiozero.TimeOfDay.end_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end_time</span></code></a> (indicating a period that crosses
+midnight), then this returns <code class="xref py py-data docutils literal notranslate"><span class="pre">1</span></code> when the current time is
+greater than <a class="reference internal" href="#gpiozero.TimeOfDay.start_time" title="gpiozero.TimeOfDay.start_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_time</span></code></a> or less than <a class="reference internal" href="#gpiozero.TimeOfDay.end_time" title="gpiozero.TimeOfDay.end_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end_time</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive to
+active (time reaches <em>start_time</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.TimeOfDay.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.TimeOfDay.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from active to
+inactive (time reaches <em>end_time</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pingserver">
+<h3><span class="section-number">18.1.2. </span>PingServer<a class="headerlink" href="#pingserver" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.PingServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PingServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#PingServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PingServer" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PolledInternalDevice" title="gpiozero.PolledInternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a> to provide a device which is active
+when a <em>host</em> (domain name or IP address) can be pinged.</p>
+<p>The following example lights an LED while <code class="docutils literal notranslate"><span class="pre">google.com</span></code> is reachable:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PingServer</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">google</span> <span class="o">=</span> <span class="n">PingServer</span><span class="p">(</span><span class="s1">&#39;google.com&#39;</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">google</span><span class="o">.</span><span class="n">when_activated</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">on</span>
+<span class="n">google</span><span class="o">.</span><span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">led</span><span class="o">.</span><span class="n">off</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The hostname or IP address to attempt to ping.</p></li>
+<li><p><strong>event_delay</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The number of seconds between pings (defaults to 10 seconds).</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PingServer.host">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><a class="headerlink" href="#gpiozero.PingServer.host" title="Link to this definition"></a></dt>
+<dd><p>The hostname or IP address to test whenever <a class="reference internal" href="#gpiozero.PingServer.value" title="gpiozero.PingServer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is queried.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PingServer.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.PingServer.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise. This property is usually derived from
+<a class="reference internal" href="#gpiozero.PingServer.value" title="gpiozero.PingServer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. Unlike <a class="reference internal" href="#gpiozero.PingServer.value" title="gpiozero.PingServer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>, this is <em>always</em> a boolean.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PingServer.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.PingServer.value" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-data docutils literal notranslate"><span class="pre">1</span></code> if the host returned a single ping, and <code class="xref py py-data docutils literal notranslate"><span class="pre">0</span></code>
+otherwise.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.PingServer.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.PingServer.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive
+(host unresponsive) to active (host responsive).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.PingServer.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.PingServer.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive
+(host responsive) to active (host unresponsive).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cputemperature">
+<h3><span class="section-number">18.1.3. </span>CPUTemperature<a class="headerlink" href="#cputemperature" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CPUTemperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#CPUTemperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CPUTemperature" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PolledInternalDevice" title="gpiozero.PolledInternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a> to provide a device which is active
+when the CPU temperature exceeds the <em>threshold</em> value.</p>
+<p>The following example plots the CPU’s temperature on an LED bar graph:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBarGraph</span><span class="p">,</span> <span class="n">CPUTemperature</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="c1"># Use minimums and maximums that are closer to &quot;normal&quot; usage so the</span>
+<span class="c1"># bar graph is a bit more &quot;lively&quot;</span>
+<span class="n">cpu</span> <span class="o">=</span> <span class="n">CPUTemperature</span><span class="p">(</span><span class="n">min_temp</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_temp</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Initial temperature: </span><span class="si">{</span><span class="n">cpu</span><span class="o">.</span><span class="n">temperature</span><span class="si">}</span><span class="s1">C&#39;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">LEDBarGraph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">pwm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">cpu</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensor_file</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The file from which to read the temperature. This defaults to the
+sysfs file <code class="file docutils literal notranslate"><span class="pre">/sys/class/thermal/thermal_zone0/temp</span></code>. Whatever
+file is specified is expected to contain a single line containing the
+temperature in milli-degrees celsius.</p></li>
+<li><p><strong>min_temp</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature at which <a class="reference internal" href="#gpiozero.CPUTemperature.value" title="gpiozero.CPUTemperature.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> will read 0.0. This defaults to
+0.0.</p></li>
+<li><p><strong>max_temp</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature at which <a class="reference internal" href="#gpiozero.CPUTemperature.value" title="gpiozero.CPUTemperature.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> will read 1.0. This defaults to
+100.0.</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The temperature above which the device will be considered “active”.
+(see <a class="reference internal" href="#gpiozero.CPUTemperature.is_active" title="gpiozero.CPUTemperature.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>). This defaults to 80.0.</p></li>
+<li><p><strong>event_delay</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The number of seconds between file reads (defaults to 5 seconds).</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.CPUTemperature.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the CPU <a class="reference internal" href="#gpiozero.CPUTemperature.temperature" title="gpiozero.CPUTemperature.temperature"><code class="xref py py-attr docutils literal notranslate"><span class="pre">temperature</span></code></a> exceeds the
+<em>threshold</em>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature.temperature">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">temperature</span></span><a class="headerlink" href="#gpiozero.CPUTemperature.temperature" title="Link to this definition"></a></dt>
+<dd><p>Returns the current CPU temperature in degrees celsius.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.CPUTemperature.value" title="Link to this definition"></a></dt>
+<dd><p>Returns the current CPU temperature as a value between 0.0
+(representing the <em>min_temp</em> value) and 1.0 (representing the
+<em>max_temp</em> value). These default to 0.0 and 100.0 respectively, hence
+<a class="reference internal" href="#gpiozero.CPUTemperature.value" title="gpiozero.CPUTemperature.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is <a class="reference internal" href="#gpiozero.CPUTemperature.temperature" title="gpiozero.CPUTemperature.temperature"><code class="xref py py-attr docutils literal notranslate"><span class="pre">temperature</span></code></a> divided by 100 by default.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.CPUTemperature.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive to
+active (temperature reaches <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.CPUTemperature.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.CPUTemperature.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from active to
+inactive (temperature drops below <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="loadaverage">
+<h3><span class="section-number">18.1.4. </span>LoadAverage<a class="headerlink" href="#loadaverage" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">LoadAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#LoadAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.LoadAverage" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PolledInternalDevice" title="gpiozero.PolledInternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a> to provide a device which is active
+when the CPU load average exceeds the <em>threshold</em> value.</p>
+<p>The following example plots the load average on an LED bar graph:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBarGraph</span><span class="p">,</span> <span class="n">LoadAverage</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">la</span> <span class="o">=</span> <span class="n">LoadAverage</span><span class="p">(</span><span class="n">min_load_average</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_load_average</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">LEDBarGraph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">pwm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">graph</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">la</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>load_average_file</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The file from which to read the load average. This defaults to the
+proc file <code class="file docutils literal notranslate"><span class="pre">/proc/loadavg</span></code>. Whatever file is specified is expected
+to contain three space-separated load averages at the beginning of the
+file, representing 1 minute, 5 minute and 15 minute averages
+respectively.</p></li>
+<li><p><strong>min_load_average</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The load average at which <a class="reference internal" href="#gpiozero.LoadAverage.value" title="gpiozero.LoadAverage.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> will read 0.0. This defaults to
+0.0.</p></li>
+<li><p><strong>max_load_average</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The load average at which <a class="reference internal" href="#gpiozero.LoadAverage.value" title="gpiozero.LoadAverage.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> will read 1.0. This defaults to
+1.0.</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The load average above which the device will be considered “active”.
+(see <a class="reference internal" href="#gpiozero.LoadAverage.is_active" title="gpiozero.LoadAverage.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>). This defaults to 0.8.</p></li>
+<li><p><strong>minutes</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of minutes over which to average the load. Must be 1, 5 or
+15. This defaults to 5.</p></li>
+<li><p><strong>event_delay</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The number of seconds between file reads (defaults to 10 seconds).</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.LoadAverage.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the <a class="reference internal" href="#gpiozero.LoadAverage.load_average" title="gpiozero.LoadAverage.load_average"><code class="xref py py-attr docutils literal notranslate"><span class="pre">load_average</span></code></a> exceeds the
+<em>threshold</em>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage.load_average">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_average</span></span><a class="headerlink" href="#gpiozero.LoadAverage.load_average" title="Link to this definition"></a></dt>
+<dd><p>Returns the current load average.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.LoadAverage.value" title="Link to this definition"></a></dt>
+<dd><p>Returns the current load average as a value between 0.0 (representing
+the <em>min_load_average</em> value) and 1.0 (representing the
+<em>max_load_average</em> value). These default to 0.0 and 1.0 respectively.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.LoadAverage.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive to
+active (load average reaches <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.LoadAverage.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.LoadAverage.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from active to
+inactive (load average drops below <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="diskusage">
+<h3><span class="section-number">18.1.5. </span>DiskUsage<a class="headerlink" href="#diskusage" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">DiskUsage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#DiskUsage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DiskUsage" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PolledInternalDevice" title="gpiozero.PolledInternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PolledInternalDevice</span></code></a> to provide a device which is active
+when the disk space used exceeds the <em>threshold</em> value.</p>
+<p>The following example plots the disk usage on an LED bar graph:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBarGraph</span><span class="p">,</span> <span class="n">DiskUsage</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">disk</span> <span class="o">=</span> <span class="n">DiskUsage</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Current disk usage: </span><span class="si">{</span><span class="n">disk</span><span class="o">.</span><span class="n">usage</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">LEDBarGraph</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">pwm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">disk</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filesystem</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – A path within the filesystem for which the disk usage needs to be
+computed. This defaults to <code class="file docutils literal notranslate"><span class="pre">/</span></code>, which is the root filesystem.</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The disk usage percentage above which the device will be considered
+“active” (see <a class="reference internal" href="#gpiozero.DiskUsage.is_active" title="gpiozero.DiskUsage.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>). This defaults to 90.0.</p></li>
+<li><p><strong>event_delay</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The number of seconds between file reads (defaults to 30 seconds).</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.DiskUsage.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the disk <a class="reference internal" href="#gpiozero.DiskUsage.usage" title="gpiozero.DiskUsage.usage"><code class="xref py py-attr docutils literal notranslate"><span class="pre">usage</span></code></a> exceeds the
+<em>threshold</em>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage.usage">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">usage</span></span><a class="headerlink" href="#gpiozero.DiskUsage.usage" title="Link to this definition"></a></dt>
+<dd><p>Returns the current disk usage in percentage.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.DiskUsage.value" title="Link to this definition"></a></dt>
+<dd><p>Returns the current disk usage as a value between 0.0 and 1.0 by
+dividing <a class="reference internal" href="#gpiozero.DiskUsage.usage" title="gpiozero.DiskUsage.usage"><code class="xref py py-attr docutils literal notranslate"><span class="pre">usage</span></code></a> by 100.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.DiskUsage.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive to
+active (disk usage reaches <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.DiskUsage.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.DiskUsage.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from active to
+inactive (disk usage drops below <em>threshold</em>).</p>
+<p>This can be set to a function which accepts no (mandatory)
+parameters, or a Python function which accepts a single mandatory
+parameter (with as many optional parameters as you like). If the
+function accepts a single mandatory parameter, the device that
+activated it will be passed as that parameter.</p>
+<p>Set this property to <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="base-classes">
+<h2><span class="section-number">18.2. </span>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h2>
+<p>The classes in the sections above are derived from a series of base classes,
+some of which are effectively abstract. The classes form the (partial)
+hierarchy displayed in the graph below (abstract classes are shaded lighter
+than concrete classes):</p>
+<img alt="_images/internal_device_hierarchy.svg" src="_images/internal_device_hierarchy.svg" /><p>The following sections document these base classes for advanced users that wish
+to construct classes for their own devices.</p>
+<section id="polledinternaldevice">
+<h3><span class="section-number">18.2.1. </span>PolledInternalDevice<a class="headerlink" href="#polledinternaldevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.PolledInternalDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PolledInternalDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#PolledInternalDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PolledInternalDevice" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.InternalDevice" title="gpiozero.InternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalDevice</span></code></a> to provide a background thread to poll
+internal devices that lack any other mechanism to inform the instance of
+changes.</p>
+</dd></dl>
+
+</section>
+<section id="internaldevice">
+<h3><span class="section-number">18.2.2. </span>InternalDevice<a class="headerlink" href="#internaldevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.InternalDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">InternalDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/internal_devices.html#InternalDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.InternalDevice" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_generic.html#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a> to provide a basis for devices which have no
+specific hardware representation. These are effectively pseudo-devices and
+usually represent operating system services like the internal clock, file
+systems or network facilities.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_boards.html" class="btn btn-neutral float-left" title="17. API - Boards and Accessories" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_generic.html" class="btn btn-neutral float-right" title="19. API - Generic Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

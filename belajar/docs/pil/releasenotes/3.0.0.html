@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.0.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2.8.0" href="2.8.0.html" />
+    <link rel="prev" title="3.1.0" href="3.1.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="2.8.0.html" title="2.8.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="3.1.0.html" title="3.1.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.0.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>3.0.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="saving-multipage-images">
+<h2>Saving Multipage Images<a class="headerlink" href="#saving-multipage-images" title="Link to this heading">¶</a></h2>
+<p>There is now support for saving multipage images in the <code class="docutils literal notranslate"><span class="pre">GIF</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PDF</span></code> formats. To enable this functionality, pass in <code class="docutils literal notranslate"><span class="pre">save_all=True</span></code>
+as a keyword argument to the save:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;test.pdf&#39;</span><span class="p">,</span> <span class="n">save_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tiff-imagefiledirectory-rewrite">
+<h2>Tiff ImageFileDirectory Rewrite<a class="headerlink" href="#tiff-imagefiledirectory-rewrite" title="Link to this heading">¶</a></h2>
+<p>The Tiff ImageFileDirectory metadata code has been rewritten. Where
+previously it returned a somewhat arbitrary set of values and tuples,
+it now returns bare values where appropriate and tuples when the
+metadata item is a sequence or collection.</p>
+<p>The original metadata is still available in the TiffImage.tags, the
+new values are available in the TiffImage.tags_v2 member. The old
+structures will be deprecated at some point in the future.  When
+saving Tiff metadata, new code should use the
+TiffImagePlugin.ImageFileDirectory_v2 class.</p>
+</section>
+<section id="deprecated-methods">
+<h2>Deprecated Methods<a class="headerlink" href="#deprecated-methods" title="Link to this heading">¶</a></h2>
+<p>Several methods that have been marked as deprecated for many releases
+have been removed in this release:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Image.tostring()
+Image.fromstring()
+Image.offset()
+ImageDraw.setink()
+ImageDraw.setfill()
+The ImageFileIO module
+The ImageFont.FreeTypeFont and ImageFont.truetype ``file`` keyword arg
+The ImagePalette private _make functions
+ImageWin.fromstring()
+ImageWin.tostring()
+</pre></div>
+</div>
+</section>
+<section id="libjpeg-and-zlib-are-required-by-default">
+<h2>LibJpeg and Zlib are Required by Default<a class="headerlink" href="#libjpeg-and-zlib-are-required-by-default" title="Link to this heading">¶</a></h2>
+<p>The external dependencies on libjpeg and zlib are now required by default.
+If the headers or libraries are not found, then installation will abort
+with an error. This behaviour can be disabled with the <code class="docutils literal notranslate"><span class="pre">--disable-libjpeg</span></code>
+and <code class="docutils literal notranslate"><span class="pre">--disable-zlib</span></code> flags.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">3.0.0</a><ul>
+<li><a class="reference internal" href="#saving-multipage-images">Saving Multipage Images</a></li>
+<li><a class="reference internal" href="#tiff-imagefiledirectory-rewrite">Tiff ImageFileDirectory Rewrite</a></li>
+<li><a class="reference internal" href="#deprecated-methods">Deprecated Methods</a></li>
+<li><a class="reference internal" href="#libjpeg-and-zlib-are-required-by-default">LibJpeg and Zlib are Required by Default</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="3.1.0.html"
+                          title="previous chapter">3.1.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="2.8.0.html"
+                          title="next chapter">2.8.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/3.0.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="2.8.0.html" title="2.8.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="3.1.0.html" title="3.1.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.0.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

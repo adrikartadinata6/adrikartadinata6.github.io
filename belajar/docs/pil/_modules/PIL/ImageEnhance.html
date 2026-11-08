@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.ImageEnhance &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageEnhance</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.ImageEnhance</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># image enhancement classes</span>
+<span class="c1">#</span>
+<span class="c1"># For a background, see &quot;Image Processing By Interpolation and</span>
+<span class="c1"># Extrapolation&quot;, Paul Haeberli and Douglas Voorhies.  Available</span>
+<span class="c1"># at http://www.graficaobscura.com/interp/index.html</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1"># 1996-03-23 fl  Created</span>
+<span class="c1"># 2009-06-16 fl  Fixed mean calculation</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) Secret Labs AB 1997.</span>
+<span class="c1"># Copyright (c) Fredrik Lundh 1996.</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFilter</span><span class="p">,</span> <span class="n">ImageStat</span>
+
+
+<div class="viewcode-block" id="_Enhance">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance._Enhance">[docs]</a>
+<span class="k">class</span> <span class="nc">_Enhance</span><span class="p">:</span>
+<div class="viewcode-block" id="_Enhance.enhance">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance._Enhance.enhance">[docs]</a>
+    <span class="k">def</span> <span class="nf">enhance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an enhanced image.</span>
+
+<span class="sd">        :param factor: A floating point value controlling the enhancement.</span>
+<span class="sd">                       Factor 1.0 always returns a copy of the original image,</span>
+<span class="sd">                       lower factors mean less color (brightness, contrast,</span>
+<span class="sd">                       etc), and higher values more. There are no restrictions</span>
+<span class="sd">                       on this value.</span>
+<span class="sd">        :rtype: :py:class:`~PIL.Image.Image`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">blend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="n">factor</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Color">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance.Color">[docs]</a>
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">_Enhance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust image color balance.</span>
+
+<span class="sd">    This class can be used to adjust the colour balance of an image, in</span>
+<span class="sd">    a manner similar to the controls on a colour TV set. An enhancement</span>
+<span class="sd">    factor of 0.0 gives a black and white image. A factor of 1.0 gives</span>
+<span class="sd">    the original image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_mode</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;A&quot;</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">getbands</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_mode</span> <span class="o">=</span> <span class="s2">&quot;LA&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intermediate_mode</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Contrast">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance.Contrast">[docs]</a>
+<span class="k">class</span> <span class="nc">Contrast</span><span class="p">(</span><span class="n">_Enhance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust image contrast.</span>
+
+<span class="sd">    This class can be used to control the contrast of an image, similar</span>
+<span class="sd">    to the contrast control on a TV set. An enhancement factor of 0.0</span>
+<span class="sd">    gives a solid gray image. A factor of 1.0 gives the original image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ImageStat</span><span class="o">.</span><span class="n">Stat</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;A&quot;</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">getbands</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span><span class="o">.</span><span class="n">putalpha</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getchannel</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Brightness">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance.Brightness">[docs]</a>
+<span class="k">class</span> <span class="nc">Brightness</span><span class="p">(</span><span class="n">_Enhance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust image brightness.</span>
+
+<span class="sd">    This class can be used to control the brightness of an image.  An</span>
+<span class="sd">    enhancement factor of 0.0 gives a black image. A factor of 1.0 gives the</span>
+<span class="sd">    original image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;A&quot;</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">getbands</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span><span class="o">.</span><span class="n">putalpha</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getchannel</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Sharpness">
+<a class="viewcode-back" href="../../reference/ImageEnhance.html#PIL.ImageEnhance.Sharpness">[docs]</a>
+<span class="k">class</span> <span class="nc">Sharpness</span><span class="p">(</span><span class="n">_Enhance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust image sharpness.</span>
+
+<span class="sd">    This class can be used to adjust the sharpness of an image. An</span>
+<span class="sd">    enhancement factor of 0.0 gives a blurred image, a factor of 1.0 gives the</span>
+<span class="sd">    original image, and a factor of 2.0 gives a sharpened image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">ImageFilter</span><span class="o">.</span><span class="n">SMOOTH</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;A&quot;</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">getbands</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">degenerate</span><span class="o">.</span><span class="n">putalpha</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getchannel</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">))</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageEnhance</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

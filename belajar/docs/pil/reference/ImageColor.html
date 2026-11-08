@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImageColor Module &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ImageDraw Module" href="ImageDraw.html" />
+    <link rel="prev" title="ImageCms Module" href="ImageCms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageDraw.html" title="ImageDraw Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImageCms.html" title="ImageCms Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code> Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagecolor-module">
+<span id="module-PIL.ImageColor"></span><h1><a class="reference internal" href="#module-PIL.ImageColor" title="PIL.ImageColor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code></a> Module<a class="headerlink" href="#imagecolor-module" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImageColor" title="PIL.ImageColor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code></a> module contains color tables and converters from
+CSS3-style color specifiers to RGB tuples. This module is used by
+<a class="reference internal" href="Image.html#PIL.Image.new" title="PIL.Image.new"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.new()</span></code></a> and the <a class="reference internal" href="ImageDraw.html#module-PIL.ImageDraw" title="PIL.ImageDraw"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code></a> module, among
+others.</p>
+<section id="color-names">
+<span id="id1"></span><h2>Color Names<a class="headerlink" href="#color-names" title="Link to this heading">¶</a></h2>
+<p>The ImageColor module supports the following string formats:</p>
+<ul class="simple">
+<li><p>Hexadecimal color specifiers, given as <code class="docutils literal notranslate"><span class="pre">#rgb</span></code>, <code class="docutils literal notranslate"><span class="pre">#rgba</span></code>, <code class="docutils literal notranslate"><span class="pre">#rrggbb</span></code> or
+<code class="docutils literal notranslate"><span class="pre">#rrggbbaa</span></code>, where <code class="docutils literal notranslate"><span class="pre">r</span></code> is red, <code class="docutils literal notranslate"><span class="pre">g</span></code> is green, <code class="docutils literal notranslate"><span class="pre">b</span></code> is blue and <code class="docutils literal notranslate"><span class="pre">a</span></code> is
+alpha (also called ‘opacity’). For example, <code class="docutils literal notranslate"><span class="pre">#ff0000</span></code> specifies pure red,
+and <code class="docutils literal notranslate"><span class="pre">#ff0000cc</span></code> specifies red with 80% opacity (<code class="docutils literal notranslate"><span class="pre">cc</span></code> is 204 in decimal
+form, and 204 / 255 = 0.8).</p></li>
+<li><p>RGB functions, given as <code class="docutils literal notranslate"><span class="pre">rgb(red,</span> <span class="pre">green,</span> <span class="pre">blue)</span></code> where the color values are
+integers in the range 0 to 255. Alternatively, the color values can be given
+as three percentages (0% to 100%). For example, <code class="docutils literal notranslate"><span class="pre">rgb(255,0,0)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">rgb(100%,0%,0%)</span></code> both specify pure red.</p></li>
+<li><p>Hue-Saturation-Lightness (HSL) functions, given as <code class="docutils literal notranslate"><span class="pre">hsl(hue,</span> <span class="pre">saturation%,</span>
+<span class="pre">lightness%)</span></code> where hue is the color given as an angle between 0 and 360
+(red=0, green=120, blue=240), saturation is a value between 0% and 100%
+(gray=0%, full color=100%), and lightness is a value between 0% and 100%
+(black=0%, normal=50%, white=100%). For example, <code class="docutils literal notranslate"><span class="pre">hsl(0,100%,50%)</span></code> is pure
+red.</p></li>
+<li><p>Hue-Saturation-Value (HSV) functions, given as <code class="docutils literal notranslate"><span class="pre">hsv(hue,</span> <span class="pre">saturation%,</span>
+<span class="pre">value%)</span></code> where hue and saturation are the same as HSL, and value is between
+0% and 100% (black=0%, normal=100%). For example, <code class="docutils literal notranslate"><span class="pre">hsv(0,100%,100%)</span></code> is
+pure red. This format is also known as Hue-Saturation-Brightness (HSB), and
+can be given as <code class="docutils literal notranslate"><span class="pre">hsb(hue,</span> <span class="pre">saturation%,</span> <span class="pre">brightness%)</span></code>, where each of the
+values are used as they are in HSV.</p></li>
+<li><p>Common HTML color names. The <a class="reference internal" href="#module-PIL.ImageColor" title="PIL.ImageColor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code></a> module provides some
+140 standard color names, based on the colors supported by the X Window
+system and most web browsers. color names are case insensitive. For example,
+<code class="docutils literal notranslate"><span class="pre">red</span></code> and <code class="docutils literal notranslate"><span class="pre">Red</span></code> both specify pure red.</p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageColor.getrgb">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageColor.</span></span><span class="sig-name descname"><span class="pre">getrgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageColor.html#getrgb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageColor.getrgb" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a color string to an RGB tuple. If the string cannot be parsed,
+this function raises a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageColor.getcolor">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageColor.</span></span><span class="sig-name descname"><span class="pre">getcolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageColor.html#getcolor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageColor.getcolor" title="Link to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#PIL.ImageColor.getrgb" title="PIL.ImageColor.getrgb"><code class="xref py py-func docutils literal notranslate"><span class="pre">getrgb()</span></code></a>, but converts the RGB value to a
+grayscale value if the mode is not color or a palette image. If the string
+cannot be parsed, this function raises a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> exception.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.4.</span></p>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code> Module</a><ul>
+<li><a class="reference internal" href="#color-names">Color Names</a></li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#PIL.ImageColor.getrgb"><code class="docutils literal notranslate"><span class="pre">getrgb()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageColor.getcolor"><code class="docutils literal notranslate"><span class="pre">getcolor()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImageCms.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageCms</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ImageDraw.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImageColor.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageDraw.html" title="ImageDraw Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImageCms.html" title="ImageCms Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code> Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

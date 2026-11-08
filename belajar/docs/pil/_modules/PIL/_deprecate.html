@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL._deprecate &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL._deprecate</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL._deprecate</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span>
+
+
+<div class="viewcode-block" id="deprecate">
+<a class="viewcode-back" href="../../reference/internal_modules.html#PIL._deprecate.deprecate">[docs]</a>
+<span class="k">def</span> <span class="nf">deprecate</span><span class="p">(</span>
+    <span class="n">deprecated</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">when</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">replacement</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">plural</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecations helper.</span>
+
+<span class="sd">    :param deprecated: Name of thing to be deprecated.</span>
+<span class="sd">    :param when: Pillow major version to be removed in.</span>
+<span class="sd">    :param replacement: Name of replacement.</span>
+<span class="sd">    :param action: Instead of &quot;replacement&quot;, give a custom call to action</span>
+<span class="sd">        e.g. &quot;Upgrade to new thing&quot;.</span>
+<span class="sd">    :param plural: if the deprecated thing is plural, needing &quot;are&quot; instead of &quot;is&quot;.</span>
+
+<span class="sd">    Usually of the form:</span>
+
+<span class="sd">        &quot;[deprecated] is deprecated and will be removed in Pillow [when] (yyyy-mm-dd).</span>
+<span class="sd">        Use [replacement] instead.&quot;</span>
+
+<span class="sd">    You can leave out the replacement sentence:</span>
+
+<span class="sd">        &quot;[deprecated] is deprecated and will be removed in Pillow [when] (yyyy-mm-dd)&quot;</span>
+
+<span class="sd">    Or with another call to action:</span>
+
+<span class="sd">        &quot;[deprecated] is deprecated and will be removed in Pillow [when] (yyyy-mm-dd).</span>
+<span class="sd">        [action].&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_</span> <span class="o">=</span> <span class="s2">&quot;are&quot;</span> <span class="k">if</span> <span class="n">plural</span> <span class="k">else</span> <span class="s2">&quot;is&quot;</span>
+
+    <span class="k">if</span> <span class="n">when</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="s2">&quot;a future version&quot;</span>
+    <span class="k">elif</span> <span class="n">when</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">__version__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deprecated</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">is_</span><span class="si">}</span><span class="s2"> deprecated and should be removed.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">when</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="s2">&quot;Pillow 11 (2024-10-15)&quot;</span>
+    <span class="k">elif</span> <span class="n">when</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="s2">&quot;Pillow 12 (2025-10-15)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown removal version: </span><span class="si">{</span><span class="n">when</span><span class="si">}</span><span class="s2">. Update </span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">?&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">replacement</span> <span class="ow">and</span> <span class="n">action</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Use only one of &#39;replacement&#39; and &#39;action&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">replacement</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;. Use </span><span class="si">{</span><span class="n">replacement</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+    <span class="k">elif</span> <span class="n">action</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;. </span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deprecated</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">is_</span><span class="si">}</span><span class="s2"> deprecated and will be removed in </span><span class="si">{</span><span class="n">removed</span><span class="si">}{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL._deprecate</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

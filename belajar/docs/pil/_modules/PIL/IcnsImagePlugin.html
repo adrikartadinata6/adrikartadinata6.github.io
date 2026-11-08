@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.IcnsImagePlugin &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.IcnsImagePlugin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.IcnsImagePlugin</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># macOS icns file decoder, based on icns.py by Bob Ippolito.</span>
+<span class="c1">#</span>
+<span class="c1"># history:</span>
+<span class="c1"># 2004-10-09 fl   Turned into a PIL plugin; removed 2.3 dependencies.</span>
+<span class="c1"># 2020-04-04      Allow saving on all operating systems.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2004 by Bob Ippolito.</span>
+<span class="c1"># Copyright (c) 2004 by Secret Labs.</span>
+<span class="c1"># Copyright (c) 2004 by Fredrik Lundh.</span>
+<span class="c1"># Copyright (c) 2014 by Alastair Houghton.</span>
+<span class="c1"># Copyright (c) 2020 by Pan Jing.</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFile</span><span class="p">,</span> <span class="n">PngImagePlugin</span><span class="p">,</span> <span class="n">features</span>
+
+<span class="n">enable_jpeg2k</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">check_codec</span><span class="p">(</span><span class="s2">&quot;jpg_2000&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">enable_jpeg2k</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Jpeg2KImagePlugin</span>
+
+<span class="n">MAGIC</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;icns&quot;</span>
+<span class="n">HEADERSIZE</span> <span class="o">=</span> <span class="mi">8</span>
+
+
+<div class="viewcode-block" id="nextheader">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.nextheader">[docs]</a>
+<span class="k">def</span> <span class="nf">nextheader</span><span class="p">(</span><span class="n">fobj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;4sI&quot;</span><span class="p">,</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">HEADERSIZE</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="read_32t">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.read_32t">[docs]</a>
+<span class="k">def</span> <span class="nf">read_32t</span><span class="p">(</span><span class="n">fobj</span><span class="p">,</span> <span class="n">start_length</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="c1"># The 128x128 icon seems to have an extra header for some reason.</span>
+    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">=</span> <span class="n">start_length</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sig</span> <span class="o">!=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00\x00\x00\x00</span><span class="s2">&quot;</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unknown signature, expecting 0x00000000&quot;</span>
+        <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">read_32</span><span class="p">(</span><span class="n">fobj</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="mi">4</span><span class="p">,</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">4</span><span class="p">),</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="read_32">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.read_32">[docs]</a>
+<span class="k">def</span> <span class="nf">read_32</span><span class="p">(</span><span class="n">fobj</span><span class="p">,</span> <span class="n">start_length</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a 32bit RGB icon resource.  Seems to be either uncompressed or</span>
+<span class="sd">    an RLE packbits-like scheme.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">=</span> <span class="n">start_length</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">pixel_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">sizesq</span> <span class="o">=</span> <span class="n">pixel_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pixel_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="n">sizesq</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># uncompressed (&quot;RGBRGBGB&quot;)</span>
+        <span class="n">indata</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="n">indata</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># decode image</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">band_ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bytesleft</span> <span class="o">=</span> <span class="n">sizesq</span>
+            <span class="k">while</span> <span class="n">bytesleft</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">byte</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">byte</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">byte</span> <span class="o">=</span> <span class="n">byte</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>
+                    <span class="n">blocksize</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">-</span> <span class="mi">125</span>
+                    <span class="n">byte</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">blocksize</span><span class="p">):</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">byte</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">blocksize</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">blocksize</span><span class="p">))</span>
+                <span class="n">bytesleft</span> <span class="o">-=</span> <span class="n">blocksize</span>
+                <span class="k">if</span> <span class="n">bytesleft</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">bytesleft</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error reading channel [</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">bytesleft</span><span class="p">)</span><span class="si">}</span><span class="s2"> left]&quot;</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">putband</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">band_ix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;RGB&quot;</span><span class="p">:</span> <span class="n">im</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="read_mk">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.read_mk">[docs]</a>
+<span class="k">def</span> <span class="nf">read_mk</span><span class="p">(</span><span class="n">fobj</span><span class="p">,</span> <span class="n">start_length</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="c1"># Alpha masks seem to be uncompressed</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">start_length</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">pixel_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">sizesq</span> <span class="o">=</span> <span class="n">pixel_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pixel_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">sizesq</span><span class="p">),</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">band</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="read_png_or_jpeg2000">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.read_png_or_jpeg2000">[docs]</a>
+<span class="k">def</span> <span class="nf">read_png_or_jpeg2000</span><span class="p">(</span><span class="n">fobj</span><span class="p">,</span> <span class="n">start_length</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span> <span class="o">=</span> <span class="n">start_length</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sig</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x89</span><span class="s2">PNG</span><span class="se">\x0d\x0a\x1a\x0a</span><span class="s2">&quot;</span><span class="p">:</span>
+        <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">PngImagePlugin</span><span class="o">.</span><span class="n">PngImageFile</span><span class="p">(</span><span class="n">fobj</span><span class="p">)</span>
+        <span class="n">Image</span><span class="o">.</span><span class="n">_decompression_bomb_check</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;RGBA&quot;</span><span class="p">:</span> <span class="n">im</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">sig</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xff\x4f\xff\x51</span><span class="s2">&quot;</span>
+        <span class="ow">or</span> <span class="n">sig</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x0d\x0a\x87\x0a</span><span class="s2">&quot;</span>
+        <span class="ow">or</span> <span class="n">sig</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00\x00\x00\x0c</span><span class="s2">jP  </span><span class="se">\x0d\x0a\x87\x0a</span><span class="s2">&quot;</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enable_jpeg2k</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Unsupported icon subimage format (rebuild PIL &quot;</span>
+                <span class="s2">&quot;with JPEG 2000 support to fix this)&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c1"># j2k, jpc or j2c</span>
+        <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">jp2kstream</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">jp2kstream</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Jpeg2KImagePlugin</span><span class="o">.</span><span class="n">Jpeg2KImageFile</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">Image</span><span class="o">.</span><span class="n">_decompression_bomb_check</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;RGBA&quot;</span><span class="p">:</span> <span class="n">im</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unsupported icon subimage format&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="IcnsFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsFile">[docs]</a>
+<span class="k">class</span> <span class="nc">IcnsFile</span><span class="p">:</span>
+    <span class="n">SIZES</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic10&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic09&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic14&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic08&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic13&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;ic07&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;it32&quot;</span><span class="p">,</span> <span class="n">read_32t</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;t8mk&quot;</span><span class="p">,</span> <span class="n">read_mk</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;icp6&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic12&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ih32&quot;</span><span class="p">,</span> <span class="n">read_32</span><span class="p">),</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;h8mk&quot;</span><span class="p">,</span> <span class="n">read_mk</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;icp5&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;il32&quot;</span><span class="p">,</span> <span class="n">read_32</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;l8mk&quot;</span><span class="p">,</span> <span class="n">read_mk</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">[(</span><span class="sa">b</span><span class="s2">&quot;ic11&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">)],</span>
+        <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;icp4&quot;</span><span class="p">,</span> <span class="n">read_png_or_jpeg2000</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;is32&quot;</span><span class="p">,</span> <span class="n">read_32</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;s8mk&quot;</span><span class="p">,</span> <span class="n">read_mk</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fobj</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        fobj is a file-like object as an icns resource</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># signature : (start, length)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dct</span> <span class="o">=</span> <span class="n">dct</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fobj</span> <span class="o">=</span> <span class="n">fobj</span>
+        <span class="n">sig</span><span class="p">,</span> <span class="n">filesize</span> <span class="o">=</span> <span class="n">nextheader</span><span class="p">(</span><span class="n">fobj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_accept</span><span class="p">(</span><span class="n">sig</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not an icns file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">HEADERSIZE</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">filesize</span><span class="p">:</span>
+            <span class="n">sig</span><span class="p">,</span> <span class="n">blocksize</span> <span class="o">=</span> <span class="n">nextheader</span><span class="p">(</span><span class="n">fobj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">blocksize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;invalid block header&quot;</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">HEADERSIZE</span>
+            <span class="n">blocksize</span> <span class="o">-=</span> <span class="n">HEADERSIZE</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">sig</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">)</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">blocksize</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_CUR</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">blocksize</span>
+
+<div class="viewcode-block" id="IcnsFile.itersizes">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsFile.itersizes">[docs]</a>
+    <span class="k">def</span> <span class="nf">itersizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">size</span><span class="p">,</span> <span class="n">fmts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SIZES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">reader</span> <span class="ow">in</span> <span class="n">fmts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dct</span><span class="p">:</span>
+                    <span class="n">sizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">sizes</span></div>
+
+
+<div class="viewcode-block" id="IcnsFile.bestsize">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsFile.bestsize">[docs]</a>
+    <span class="k">def</span> <span class="nf">bestsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itersizes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sizes</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No 32bit icon resources found&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IcnsFile.dataforsize">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsFile.dataforsize">[docs]</a>
+    <span class="k">def</span> <span class="nf">dataforsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an icon resource as {channel: array}.  Note that</span>
+<span class="sd">        the arrays are bottom-up like windows bitmaps and will likely</span>
+<span class="sd">        need to be flipped or transposed in some way.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">code</span><span class="p">,</span> <span class="n">reader</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SIZES</span><span class="p">[</span><span class="n">size</span><span class="p">]:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dct</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">reader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fobj</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dct</span></div>
+
+
+<div class="viewcode-block" id="IcnsFile.getimage">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsFile.getimage">[docs]</a>
+    <span class="k">def</span> <span class="nf">getimage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bestsize</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataforsize</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">im</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">im</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">putalpha</span><span class="p">(</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">im</span></div>
+</div>
+
+
+
+<span class="c1">##</span>
+<span class="c1"># Image plugin for Mac OS icons.</span>
+
+
+<div class="viewcode-block" id="IcnsImageFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsImageFile">[docs]</a>
+<span class="k">class</span> <span class="nc">IcnsImageFile</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">ImageFile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PIL image support for Mac OS .icns files.</span>
+<span class="sd">    Chooses the best resolution, but will possibly load</span>
+<span class="sd">    a different size image if you mutate the size attribute</span>
+<span class="sd">    before calling &#39;load&#39;.</span>
+
+<span class="sd">    The info dictionary has a key &#39;sizes&#39; that is a list</span>
+<span class="sd">    of sizes that the icns file has.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;ICNS&quot;</span>
+    <span class="n">format_description</span> <span class="o">=</span> <span class="s2">&quot;Mac OS icns resource&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icns</span> <span class="o">=</span> <span class="n">IcnsFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;RGBA&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">icns</span><span class="o">.</span><span class="n">itersizes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">icns</span><span class="o">.</span><span class="n">bestsize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span>
+
+    <span class="nd">@size</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">info_size</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">info_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">info_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">info_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">info_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">info_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">info_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">info_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+            <span class="ow">and</span> <span class="n">info_size</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="n">simple_sizes</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">simple_sizes</span><span class="p">:</span>
+                <span class="n">info_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">][</span><span class="n">simple_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">info_size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;This is not one of the allowed sizes of this image&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="IcnsImageFile.load">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.IcnsImagePlugin.IcnsImageFile.load">[docs]</a>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="n">px</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="c1"># Already loaded</span>
+            <span class="k">return</span> <span class="n">px</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_prepare</span><span class="p">()</span>
+        <span class="c1"># This is likely NOT the best way to do it, but whatever.</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">icns</span><span class="o">.</span><span class="n">getimage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_size</span><span class="p">)</span>
+
+        <span class="c1"># If this is a PNG or JPEG 2000, it won&#39;t be loaded yet</span>
+        <span class="n">px</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">im</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="k">return</span> <span class="n">px</span></div>
+</div>
+
+
+
+<span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Saves the image as a series of PNG files,</span>
+<span class="sd">    that are then combined into a .icns file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;flush&quot;</span><span class="p">):</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="sa">b</span><span class="s2">&quot;ic07&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic08&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic09&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic10&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic11&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic12&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic13&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="sa">b</span><span class="s2">&quot;ic14&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">provided_images</span> <span class="o">=</span> <span class="p">{</span><span class="n">im</span><span class="o">.</span><span class="n">width</span><span class="p">:</span> <span class="n">im</span> <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">encoderinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;append_images&quot;</span><span class="p">,</span> <span class="p">[])}</span>
+    <span class="n">size_streams</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">provided_images</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">provided_images</span>
+            <span class="k">else</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">)</span>
+        <span class="n">size_streams</span><span class="p">[</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+    <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">type</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">size_streams</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">HEADERSIZE</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">),</span> <span class="s2">&quot;stream&quot;</span><span class="p">:</span> <span class="n">stream</span><span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Header</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">MAGIC</span><span class="p">)</span>
+    <span class="n">file_length</span> <span class="o">=</span> <span class="n">HEADERSIZE</span>  <span class="c1"># Header</span>
+    <span class="n">file_length</span> <span class="o">+=</span> <span class="n">HEADERSIZE</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>  <span class="c1"># TOC</span>
+    <span class="n">file_length</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;i&quot;</span><span class="p">,</span> <span class="n">file_length</span><span class="p">))</span>
+
+    <span class="c1"># TOC</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;TOC &quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;i&quot;</span><span class="p">,</span> <span class="n">HEADERSIZE</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">*</span> <span class="n">HEADERSIZE</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;i&quot;</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># Data</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;i&quot;</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]))</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;flush&quot;</span><span class="p">):</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_accept</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">prefix</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">MAGIC</span>
+
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_open</span><span class="p">(</span><span class="n">IcnsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">IcnsImageFile</span><span class="p">,</span> <span class="n">_accept</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">register_extension</span><span class="p">(</span><span class="n">IcnsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;.icns&quot;</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_save</span><span class="p">(</span><span class="n">IcnsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">_save</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">register_mime</span><span class="p">(</span><span class="n">IcnsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;image/icns&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Syntax: python3 IcnsImagePlugin.py [file]&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">imf</span> <span class="o">=</span> <span class="n">IcnsImageFile</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">imf</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sizes&quot;</span><span class="p">]:</span>
+            <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">imf</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+            <span class="n">imf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out-</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">height</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">as</span> <span class="n">im</span><span class="p">:</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.png&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">startfile</span><span class="p">(</span><span class="s2">&quot;out.png&quot;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.IcnsImagePlugin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

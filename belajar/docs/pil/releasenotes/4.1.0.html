@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4.1.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4.0.0" href="4.0.0.html" />
+    <link rel="prev" title="4.1.1" href="4.1.1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="4.0.0.html" title="4.0.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="4.1.1.html" title="4.1.1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">4.1.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>4.1.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="removed-deprecated-items">
+<h2>Removed Deprecated Items<a class="headerlink" href="#removed-deprecated-items" title="Link to this heading">¶</a></h2>
+<p>Several deprecated items have been removed.</p>
+<ul class="simple">
+<li><p>Support for spaces in tiff kwargs in the parameters for ‘x resolution’, ‘y
+resolution’, ‘resolution unit’, and ‘date time’ has been
+removed. Underscores should be used instead.</p></li>
+<li><p>The methods <code class="docutils literal notranslate"><span class="pre">PIL.ImageDraw.ImageDraw.setink</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PIL.ImageDraw.ImageDraw.setfill</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">PIL.ImageDraw.ImageDraw.setfont</span></code> have been removed.</p></li>
+</ul>
+</section>
+<section id="closing-files-when-opening-images">
+<h2>Closing Files When Opening Images<a class="headerlink" href="#closing-files-when-opening-images" title="Link to this heading">¶</a></h2>
+<p>The file handling when opening images has been overhauled. Previously,
+Pillow would attempt to close some, but not all image formats
+after loading the image data. Now, the following behavior
+is specified:</p>
+<ul class="simple">
+<li><p>For images where an open file is passed in, it is the
+responsibility of the calling code to close the file.</p></li>
+<li><p>For images where Pillow opens the file and the file is known to have
+only one frame, the file is closed after loading.</p></li>
+<li><p>If the file has more than one frame, or if it can’t be determined,
+then the file is left open to permit seeking to subsequent
+frames. It will be closed, eventually, in the <code class="docutils literal notranslate"><span class="pre">close</span></code> or
+<code class="docutils literal notranslate"><span class="pre">__del__</span></code> methods.</p></li>
+<li><p>If the image is memory mapped, then we can’t close the mapping to
+the underlying file until we are done with the image. The mapping
+will be closed in the <code class="docutils literal notranslate"><span class="pre">close</span></code> or <code class="docutils literal notranslate"><span class="pre">__del__</span></code> method.</p></li>
+</ul>
+</section>
+<section id="changes-to-gif-handling-when-saving">
+<h2>Changes to GIF Handling When Saving<a class="headerlink" href="#changes-to-gif-handling-when-saving" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../reference/plugins.html#module-PIL.GifImagePlugin" title="PIL.GifImagePlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.GifImagePlugin</span></code></a> code has been refactored to fix the flow when
+saving images. There are two external changes that arise from this:</p>
+<ul class="simple">
+<li><p>An <a class="reference internal" href="../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette" title="PIL.ImagePalette.ImagePalette"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.ImagePalette.ImagePalette</span></code></a> object is now accepted
+as a specified palette argument in <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.save" title="PIL.Image.Image.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.Image.save()</span></code></a>.</p></li>
+<li><p>The image to be saved is no longer modified in place by any of the
+operations of the save function. Previously it was modified when
+optimizing the image palette.</p></li>
+</ul>
+<p>This refactor fixed some bugs with palette handling when saving
+multiple frame GIFs.</p>
+</section>
+<section id="new-method-image-remap-palette">
+<h2>New Method: Image.remap_palette<a class="headerlink" href="#new-method-image-remap-palette" title="Link to this heading">¶</a></h2>
+<p>The method <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.remap_palette" title="PIL.Image.Image.remap_palette"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.Image.remap_palette()</span></code></a> has been
+added. This method was hoisted from the GifImagePlugin code used to
+optimize the palette.</p>
+</section>
+<section id="added-decoder-registry-and-support-for-python-based-decoders">
+<h2>Added Decoder Registry and Support for Python Based Decoders<a class="headerlink" href="#added-decoder-registry-and-support-for-python-based-decoders" title="Link to this heading">¶</a></h2>
+<p>There is now a decoder registry similar to the image plugin
+registries. Image plugins can register a decoder, and it will be
+called when the decoding is requested. This allows for the creation of
+pure Python decoders. While the Python decoders will not be as fast as
+their C based counterparts, they may be easier and quicker to develop
+or safer to run.</p>
+</section>
+<section id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Link to this heading">¶</a></h2>
+<p>Many tests have been added, including correctness tests for image
+formats that have been previously untested.</p>
+<p>We are now running automated tests in Docker containers against more
+Linux versions than are provided on Travis CI, which is currently
+Ubuntu 14.04 x64. This Pillow release is tested on 64-bit Alpine,
+Arch, Ubuntu 12.04 and 16.04, and 32-bit Debian Stretch and Ubuntu
+14.04. This also covers a wider range of dependency versions than are
+provided on Travis natively.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">4.1.0</a><ul>
+<li><a class="reference internal" href="#removed-deprecated-items">Removed Deprecated Items</a></li>
+<li><a class="reference internal" href="#closing-files-when-opening-images">Closing Files When Opening Images</a></li>
+<li><a class="reference internal" href="#changes-to-gif-handling-when-saving">Changes to GIF Handling When Saving</a></li>
+<li><a class="reference internal" href="#new-method-image-remap-palette">New Method: Image.remap_palette</a></li>
+<li><a class="reference internal" href="#added-decoder-registry-and-support-for-python-based-decoders">Added Decoder Registry and Support for Python Based Decoders</a></li>
+<li><a class="reference internal" href="#tests">Tests</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="4.1.1.html"
+                          title="previous chapter">4.1.1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="4.0.0.html"
+                          title="next chapter">4.0.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/4.1.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="4.0.0.html" title="4.0.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="4.1.1.html" title="4.1.1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">4.1.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

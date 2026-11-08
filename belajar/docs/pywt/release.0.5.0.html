@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyWavelets 0.5.0 Release Notes &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script src="_static/documentation_options.js?v=58fbf978"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PyWavelets 1.0.0 Release Notes" href="release.1.0.0.html" />
+    <link rel="prev" title="PyWavelets 0.4.0 Release Notes" href="release.0.4.0.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="release.1.0.0.html" title="PyWavelets 1.0.0 Release Notes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="release.0.4.0.html" title="PyWavelets 0.4.0 Release Notes"
+             accesskey="P">previous</a> |</li>
+    <li><a href="index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="releasenotes.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyWavelets 0.5.0 Release Notes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pywavelets-0-5-0-release-notes">
+<h1><a class="toc-backref" href="#id1" role="doc-backlink">PyWavelets 0.5.0 Release Notes</a><a class="headerlink" href="#pywavelets-0-5-0-release-notes" title="Link to this heading">¶</a></h1>
+<nav class="contents" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pywavelets-0-5-0-release-notes" id="id1">PyWavelets 0.5.0 Release Notes</a></p>
+<ul>
+<li><p><a class="reference internal" href="#new-features" id="id2">New features</a></p>
+<ul>
+<li><p><a class="reference internal" href="#d-continous-wavelet-transforms" id="id3">1D Continous Wavelet Transforms</a></p></li>
+<li><p><a class="reference internal" href="#new-discrete-wavelets" id="id4">New discrete wavelets</a></p></li>
+<li><p><a class="reference internal" href="#new-extension-mode-reflect" id="id5">New extension mode: reflect</a></p></li>
+<li><p><a class="reference internal" href="#multilevel-dwt-coefficient-handling" id="id6">Multilevel DWT Coefficient Handling</a></p></li>
+<li><p><a class="reference internal" href="#more-c-function-calls-release-the-gil" id="id7">More C function calls release the GIL</a></p></li>
+<li><p><a class="reference internal" href="#multilevel-wavelet-transforms-along-specific-axes" id="id8">Multilevel wavelet transforms along specific axes</a></p></li>
+<li><p><a class="reference internal" href="#faster-multilevel-stationary-wavelet-transforms" id="id9">Faster multilevel stationary wavelet transforms</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#deprecated-features" id="id10">Deprecated features</a></p></li>
+<li><p><a class="reference internal" href="#backwards-incompatible-changes" id="id11">Backwards incompatible changes</a></p></li>
+<li><p><a class="reference internal" href="#bugs-fixed" id="id12">Bugs Fixed</a></p></li>
+<li><p><a class="reference internal" href="#other-changes" id="id13">Other changes</a></p></li>
+<li><p><a class="reference internal" href="#authors" id="id14">Authors</a></p>
+<ul>
+<li><p><a class="reference internal" href="#issues-closed-for-v0-5-0" id="id15">Issues closed for v0.5.0</a></p></li>
+<li><p><a class="reference internal" href="#pull-requests-for-v0-5-0" id="id16">Pull requests for v0.5.0</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>PyWavelets is a Python toolbox implementing both discrete and continuous
+wavelet transforms (mathematical time-frequency transforms) with a wide range
+of built-in wavelets.  C/Cython are used for the low-level routines, enabling
+high performance.  Key Features of PyWavelets are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>1D, 2D and nD Forward and Inverse Discrete Wavelet Transform (DWT and IDWT)</p></li>
+<li><p>1D, 2D and nD Multilevel DWT and IDWT</p></li>
+<li><p>1D and 2D Forward and Inverse Stationary Wavelet Transform</p></li>
+<li><p>1D and 2D Wavelet Packet decomposition and reconstruction</p></li>
+<li><p>1D Continuous Wavelet Transform</p></li>
+<li><p>When multiple valid implementations are available, we have chosen to maintain consistency with MATLAB™’s Wavelet Toolbox.</p></li>
+</ul>
+</div></blockquote>
+<p>PyWavelets 0.5.0 is the culmination of 1 year of work.  In addition to
+several new features, substantial refactoring of the underlying C and Cython
+code have been made.</p>
+<p>This release requires Python 2.6, 2.7 or 3.3-3.5 and NumPy 1.9.1 or greater.
+This will be the final release supporting Python 2.6 and 3.3.</p>
+<p>Highlights of this release include:</p>
+<ul class="simple">
+<li><p>1D continuous wavelet transforms</p></li>
+<li><p>new discrete wavelets added (additional Debauchies and Coiflet wavelets)</p></li>
+<li><p>new ‘reflect’ extension mode for discrete wavelet transforms</p></li>
+<li><p>faster performance for multilevel forward stationary wavelet transforms (SWT)</p></li>
+<li><p>n-dimensional support added to forward SWT</p></li>
+<li><p>routines to convert multilevel DWT coefficients to and from a single array</p></li>
+<li><p>axis support for multilevel DWT</p></li>
+<li><p>substantial refactoring/reorganization of the underlying C and Cython code</p></li>
+</ul>
+<section id="new-features">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">New features</a><a class="headerlink" href="#new-features" title="Link to this heading">¶</a></h2>
+<section id="d-continous-wavelet-transforms">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">1D Continous Wavelet Transforms</a><a class="headerlink" href="#d-continous-wavelet-transforms" title="Link to this heading">¶</a></h3>
+<p>A wide range of continous wavelets are now available.  These include the
+following:</p>
+<ul class="simple">
+<li><p>Gaussian wavelets (<code class="docutils literal notranslate"><span class="pre">gaus1</span></code>…``gaus8``)</p></li>
+<li><p>Mexican hat wavelet (<code class="docutils literal notranslate"><span class="pre">mexh</span></code>)</p></li>
+<li><p>Morlet wavelet (<code class="docutils literal notranslate"><span class="pre">morl</span></code>)</p></li>
+<li><p>Complex Gaussian wavelets (<code class="docutils literal notranslate"><span class="pre">cgau1</span></code>…``cgau8``)</p></li>
+<li><p>Shannon wavelet (<code class="docutils literal notranslate"><span class="pre">shan</span></code>)</p></li>
+<li><p>Frequency B-Spline wavelet (<code class="docutils literal notranslate"><span class="pre">fbsp</span></code>)</p></li>
+<li><p>Complex Morlet wavelet (<code class="docutils literal notranslate"><span class="pre">cmor</span></code>)</p></li>
+</ul>
+<p>Also, see the new CWT-related demo: demo/cwt_analysis.py</p>
+</section>
+<section id="new-discrete-wavelets">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">New discrete wavelets</a><a class="headerlink" href="#new-discrete-wavelets" title="Link to this heading">¶</a></h3>
+<p>Additional Debauchies wavelets (<code class="docutils literal notranslate"><span class="pre">db20</span></code>…``db38``) and Coiflets
+(<code class="docutils literal notranslate"><span class="pre">coif6</span></code>…``coif17``) have been added.</p>
+</section>
+<section id="new-extension-mode-reflect">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">New extension mode: reflect</a><a class="headerlink" href="#new-extension-mode-reflect" title="Link to this heading">¶</a></h3>
+<p>Discrete wavelet transforms support a new extension mode, <code class="docutils literal notranslate"><span class="pre">reflect</span></code>.  This
+mode pads an array symmetrically, but without repeating the edge value.  As an
+example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">pad</span>      <span class="n">array</span>      <span class="n">pad</span>
+<span class="mi">4</span> <span class="mi">3</span> <span class="mi">2</span> <span class="o">|</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="o">|</span> <span class="mi">4</span> <span class="mi">3</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>This differs from <code class="docutils literal notranslate"><span class="pre">symmetric</span></code>, which repeats the values at the boundaries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">pad</span>      <span class="n">array</span>      <span class="n">pad</span>
+<span class="mi">3</span> <span class="mi">2</span> <span class="mi">1</span> <span class="o">|</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="o">|</span> <span class="mi">5</span> <span class="mi">4</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</section>
+<section id="multilevel-dwt-coefficient-handling">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Multilevel DWT Coefficient Handling</a><a class="headerlink" href="#multilevel-dwt-coefficient-handling" title="Link to this heading">¶</a></h3>
+<p>New routines to convert the coefficients returned by multilevel DWT routines
+to and from a single n-dimensional array have been added.
+<code class="docutils literal notranslate"><span class="pre">pywt.coeffs_to_array</span></code> concatenates the output of <code class="docutils literal notranslate"><span class="pre">wavedec</span></code>, <code class="docutils literal notranslate"><span class="pre">wavedec2</span></code>
+or <code class="docutils literal notranslate"><span class="pre">wavedecn</span></code> into a single numpy array.  <code class="docutils literal notranslate"><span class="pre">pywt.array_to_coeffs</span></code> can be
+used to transform back from a single coefficient array to a format appropriate
+for <code class="docutils literal notranslate"><span class="pre">waverec</span></code>, <code class="docutils literal notranslate"><span class="pre">waverec2</span></code> or <code class="docutils literal notranslate"><span class="pre">waverecn</span></code>.</p>
+</section>
+<section id="more-c-function-calls-release-the-gil">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">More C function calls release the GIL</a><a class="headerlink" href="#more-c-function-calls-release-the-gil" title="Link to this heading">¶</a></h3>
+<p>Cython code calling the wavelet filtering routines (DWT and SWT) now releases
+the global interpreter lock (GIL) where possible.  A potential use case is in
+speeding up the batch computation of several large DWTs using multi-threading
+(e.g. via concurrent.futures).</p>
+</section>
+<section id="multilevel-wavelet-transforms-along-specific-axes">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Multilevel wavelet transforms along specific axes</a><a class="headerlink" href="#multilevel-wavelet-transforms-along-specific-axes" title="Link to this heading">¶</a></h3>
+<p>The axis specific transform support introduced in the prior release was
+extended to the multilevel DWT transforms.  All <code class="docutils literal notranslate"><span class="pre">wavedec*</span></code> and <code class="docutils literal notranslate"><span class="pre">waverec*</span></code>
+routines have a new <cite>axis</cite> (1D) or <cite>axes</cite> (2D, nD) keyword argument.  If
+unspecified the default behaviour is to transform all axes of the input.</p>
+</section>
+<section id="faster-multilevel-stationary-wavelet-transforms">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Faster multilevel stationary wavelet transforms</a><a class="headerlink" href="#faster-multilevel-stationary-wavelet-transforms" title="Link to this heading">¶</a></h3>
+<p>Stationary wavelet transforms are now faster when the number of levels is
+greater than one.  The improvement can be very large (multiple orders of
+magnitude) for transforms with a large number of levels.</p>
+</section>
+</section>
+<section id="deprecated-features">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Deprecated features</a><a class="headerlink" href="#deprecated-features" title="Link to this heading">¶</a></h2>
+</section>
+<section id="backwards-incompatible-changes">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Backwards incompatible changes</a><a class="headerlink" href="#backwards-incompatible-changes" title="Link to this heading">¶</a></h2>
+<p>A FutureWarning was added to <code class="docutils literal notranslate"><span class="pre">swt2</span></code> and <code class="docutils literal notranslate"><span class="pre">iswt2</span></code> to warn about a pending
+backwards incompatible change to the order of the coefficients in the list
+returned by these routines.  The actual change will not occur until the next
+release. Transform coefficients will be returned in descending rather than
+ascending order.  This change is being made for consistency with all other
+existing multi-level transforms in PyWavelets.</p>
+</section>
+<section id="bugs-fixed">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Bugs Fixed</a><a class="headerlink" href="#bugs-fixed" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">demo/image_blender.py</span></code> was updated to support the new api of Pillow 3.x</p>
+<p>A bug related to size of assumed <code class="docutils literal notranslate"><span class="pre">size_t</span></code> on some platforms/compilers
+(e.g. Windows with mingw64) was fixed.</p>
+<p>Fix to memory leak in <code class="docutils literal notranslate"><span class="pre">(i)dwt_axis</span></code></p>
+<p>Fix to a performance regression in <code class="docutils literal notranslate"><span class="pre">idwt</span></code> and <code class="docutils literal notranslate"><span class="pre">iswt</span></code> that was introduced
+in v0.4.0.</p>
+<p>Fixed a bug in <code class="docutils literal notranslate"><span class="pre">dwtn</span></code> and <code class="docutils literal notranslate"><span class="pre">idwtn</span></code> for data with complex dtype when
+<code class="docutils literal notranslate"><span class="pre">axes</span> <span class="pre">!=</span> <span class="pre">None</span></code>.</p>
+</section>
+<section id="other-changes">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Other changes</a><a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<p>The minimum supported numpy version has been increased to 1.9.1.</p>
+<p>Test coverage (including for the Cython and C code) via
+<a class="reference external" href="https://codecov.io/">Codecov</a> was added and the overall test coverage has
+been improved.</p>
+<p>A substantial overhaul of the C extension code has been performed.  Custom
+templating is no longer used.  The intention is to make this code easier to
+maintain and expand in the future.</p>
+<p>The Cython code has been split out into a multiple files to hopefully make
+relevant portions of the wrappers easier to find for future developers.</p>
+<p><code class="docutils literal notranslate"><span class="pre">setup.py</span></code> now relies on setuptools in all cases (rather than distutils).</p>
+</section>
+<section id="authors">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Authors</a><a class="headerlink" href="#authors" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Jonathan Dan +</p></li>
+<li><p>Ralf Gommers</p></li>
+<li><p>David Menéndez Hurtado</p></li>
+<li><p>Gregory R. Lee</p></li>
+<li><p>Holger Nahrstaedt +</p></li>
+<li><p>Daniel M. Pelt +</p></li>
+<li><p>Alexandre Saint +</p></li>
+<li><p>Scott Sievert +</p></li>
+<li><p>Kai Wohlfahrt</p></li>
+<li><p>Frank Yu +</p></li>
+</ul>
+<p>A total of 10 people contributed to this release.
+People with a “+” by their names contributed a patch for the first time.
+This list of names is automatically generated, and may not be fully complete.</p>
+<section id="issues-closed-for-v0-5-0">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Issues closed for v0.5.0</a><a class="headerlink" href="#issues-closed-for-v0-5-0" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/48">#48</a>: Continous wavelet transform?</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/127">#127</a>: Reorganize _pywt</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/160">#160</a>: Appveyor failing on recent PRs</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/163">#163</a>: Set up coveralls</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/166">#166</a>: Wavelet coefficients to single array (and vice versa?)</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/177">#177</a>: Fail to install pywt due to the use of index_t which conflict with the defination in /usr/include/sys/types.h on smartos sysmte(open solaris like system)</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/180">#180</a>: Memory leak</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/187">#187</a>: ‘reflect’ signal extension mode</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/189">#189</a>: bump minimum numpy version?</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/191">#191</a>: Upgrade removed Pillow methods</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/196">#196</a>: building in-place for development.</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/200">#200</a>: swt implementation is considerably slower than MATLAB</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/209">#209</a>: broken doctests</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/210">#210</a>: Run doctests in CI setup</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/211">#211</a>: Typo in iswt documentation</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/217">#217</a>: <cite>blank_discrete_wavelet</cite> does not properly intiailize some properties</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/issues/231">#231</a>: I can’t compile pywt</p></li>
+</ul>
+</section>
+<section id="pull-requests-for-v0-5-0">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Pull requests for v0.5.0</a><a class="headerlink" href="#pull-requests-for-v0-5-0" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/148">#148</a>: Reorganize C v2</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/161">#161</a>: Remove numpy distutils</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/162">#162</a>: fix: iswt/idwt performance regression</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/164">#164</a>: Improved coefficients for db and coif</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/167">#167</a>: Add coverage (codecov.io)</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/168">#168</a>: convert transform coefficients to and from a single n-dimensional array</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/169">#169</a>: Remove templating</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/170">#170</a>: :Always install new pip on Appveyor</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/172">#172</a>: Adding of missing wavelets from the matlab list</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/178">#178</a>: use Index_t instead of index_t</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/179">#179</a>: add axis/axes support to multilevel discrete wavelet transforms</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/181">#181</a>: Fix memory leak</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/182">#182</a>: improve test coverage for _multidim.py and _multilevel.py</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/183">#183</a>: improve coverage for _dwt.py</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/184">#184</a>: fix corner case in coeffs_to_array</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/188">#188</a>: Drop GIL in c_wt calls</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/190">#190</a>: bump minimum numpy to 1.9</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/192">#192</a>: Upgrade to Pillow&gt;=3 api</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/193">#193</a>: ENH: add ‘reflect’ extension mode</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/197">#197</a>: BLD: fix “python setup.py develop”. Closes gh-196</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/198">#198</a>: Choose clz* based on SIZE_MAX</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/201">#201</a>: speedup multi-level swt</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/205">#205</a>: fix dwtn/idwtn with axes != None and complex data</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/206">#206</a>:  DOC: correct typo in iswt docstring</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/207">#207</a>:  minor documentation updates</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/208">#208</a>: document coeff_to_array and array_to_coeff</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/214">#214</a>: FIX: update several doctests to reflect the new wavelets added</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/218">#218</a>: FIX: initialize all properties of a blank discrete wavelet</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/219">#219</a>: document coordinate conventions for 2D DWT routines.</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/220">#220</a>: Run doctests on TravisCI</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/221">#221</a>: Documentation for cwt and ContinuousWavelet</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/222">#222</a>: consistent use of double backticks in docs</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/223">#223</a>: add FutureWarning about swt2 coefficient order</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/224">#224</a>: n-dimensional stationary wavelet transform (swtn) and axis support in swt, swt2</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/225">#225</a>: BUG: fix breakage on 32-bit Python.</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/226">#226</a>: DOC: update Copyright statements.</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/227">#227</a>: ENH: add kind keyword to wavelist()</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/228">#228</a>: MAINT: avoid using a builtin as variable name in qmf().</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/229">#229</a>: DOC: add swtn, iswt, iswt2 to the API documentation</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/230">#230</a>: add demo of batch processing via concurrent.futures</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/234">#234</a>: ENH: coeffs_to_array supports axes argument as recently added to wavedec*</p></li>
+<li><p><a class="reference external" href="https://github.com/PyWavelets/pywt/pull/236">#236</a>: BLD: raise an ImportError if Cython should be installed but isn’t.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PyWavelets 0.5.0 Release Notes</a><ul>
+<li><a class="reference internal" href="#new-features">New features</a><ul>
+<li><a class="reference internal" href="#d-continous-wavelet-transforms">1D Continous Wavelet Transforms</a></li>
+<li><a class="reference internal" href="#new-discrete-wavelets">New discrete wavelets</a></li>
+<li><a class="reference internal" href="#new-extension-mode-reflect">New extension mode: reflect</a></li>
+<li><a class="reference internal" href="#multilevel-dwt-coefficient-handling">Multilevel DWT Coefficient Handling</a></li>
+<li><a class="reference internal" href="#more-c-function-calls-release-the-gil">More C function calls release the GIL</a></li>
+<li><a class="reference internal" href="#multilevel-wavelet-transforms-along-specific-axes">Multilevel wavelet transforms along specific axes</a></li>
+<li><a class="reference internal" href="#faster-multilevel-stationary-wavelet-transforms">Faster multilevel stationary wavelet transforms</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deprecated-features">Deprecated features</a></li>
+<li><a class="reference internal" href="#backwards-incompatible-changes">Backwards incompatible changes</a></li>
+<li><a class="reference internal" href="#bugs-fixed">Bugs Fixed</a></li>
+<li><a class="reference internal" href="#other-changes">Other changes</a></li>
+<li><a class="reference internal" href="#authors">Authors</a><ul>
+<li><a class="reference internal" href="#issues-closed-for-v0-5-0">Issues closed for v0.5.0</a></li>
+<li><a class="reference internal" href="#pull-requests-for-v0-5-0">Pull requests for v0.5.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="release.0.4.0.html"
+                          title="previous chapter">PyWavelets 0.4.0 Release Notes</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="release.1.0.0.html"
+                          title="next chapter">PyWavelets 1.0.0 Release Notes</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/release.0.5.0.rst" target="_blank">
+                PyWavelets 0.5.0 Release Notes
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="release.1.0.0.html" title="PyWavelets 1.0.0 Release Notes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="release.0.4.0.html" title="PyWavelets 0.4.0 Release Notes"
+             >previous</a> |</li>
+    <li><a href="index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="releasenotes.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyWavelets 0.5.0 Release Notes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pymodbus internals &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="NullModem" href="library/nullmodem.html" />
+    <link rel="prev" title="API changes" href="api_changes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_changes.html">API changes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pymodbus internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="library/nullmodem.html">NullModem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/datastore.html">Datastore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/framer.html">Framer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html">Extra functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/architecture/architecture.html">Architecture</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pymodbus internals</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/internals.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymodbus-internals">
+<h1>Pymodbus internals<a class="headerlink" href="#pymodbus-internals" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="library/nullmodem.html">NullModem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library/datastore.html">Datastore</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="library/datastore.html#datastore-classes">Datastore classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock.create"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock.reset"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock.validate"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock.validate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock.getValues"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock.getValues()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSparseDataBlock.setValues"><code class="docutils literal notranslate"><span class="pre">ModbusSparseDataBlock.setValues()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext.reset"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext.validate"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext.validate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext.getValues"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext.getValues()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext.setValues"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext.setValues()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSlaveContext.register"><code class="docutils literal notranslate"><span class="pre">ModbusSlaveContext.register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusServerContext"><code class="docutils literal notranslate"><span class="pre">ModbusServerContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusServerContext.slaves"><code class="docutils literal notranslate"><span class="pre">ModbusServerContext.slaves()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSimulatorContext"><code class="docutils literal notranslate"><span class="pre">ModbusSimulatorContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSimulatorContext.get_text_register"><code class="docutils literal notranslate"><span class="pre">ModbusSimulatorContext.get_text_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSimulatorContext.build_registers_from_value"><code class="docutils literal notranslate"><span class="pre">ModbusSimulatorContext.build_registers_from_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/datastore.html#pymodbus.datastore.ModbusSimulatorContext.build_value_from_registers"><code class="docutils literal notranslate"><span class="pre">ModbusSimulatorContext.build_value_from_registers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="library/framer.html">Framer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="library/framer.html#module-pymodbus.framer.ascii_framer">pymodbus.framer.ascii_framer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.decode_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.method</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/framer.html#module-pymodbus.framer.binary_framer">pymodbus.framer.binary_framer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/framer.html#pymodbus.framer.binary_framer.ModbusBinaryFramer"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.binary_framer.ModbusBinaryFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.binary_framer.ModbusBinaryFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.decode_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.binary_framer.ModbusBinaryFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.binary_framer.ModbusBinaryFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.method</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/framer.html#module-pymodbus.framer.rtu_framer">pymodbus.framer.rtu_framer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.decode_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.recvPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.recvPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.rtu_framer.ModbusRtuFramer.sendPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.sendPacket()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/framer.html#module-pymodbus.framer.socket_framer">pymodbus.framer.socket_framer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/framer.html#pymodbus.framer.socket_framer.ModbusSocketFramer"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.socket_framer.ModbusSocketFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.socket_framer.ModbusSocketFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.decode_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.socket_framer.ModbusSocketFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="library/framer.html#pymodbus.framer.socket_framer.ModbusSocketFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.method</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="library/constants.html">Constants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.DeviceInformation.BASIC"><code class="docutils literal notranslate"><span class="pre">DeviceInformation.BASIC</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.DeviceInformation.REGULAR"><code class="docutils literal notranslate"><span class="pre">DeviceInformation.REGULAR</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.DeviceInformation.EXTENDED"><code class="docutils literal notranslate"><span class="pre">DeviceInformation.EXTENDED</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.DeviceInformation.SPECIFIC"><code class="docutils literal notranslate"><span class="pre">DeviceInformation.SPECIFIC</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.Endian.AUTO"><code class="docutils literal notranslate"><span class="pre">Endian.AUTO</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.Endian.BIG"><code class="docutils literal notranslate"><span class="pre">Endian.BIG</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.Endian.LITTLE"><code class="docutils literal notranslate"><span class="pre">Endian.LITTLE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusPlusOperation.GET_STATISTICS"><code class="docutils literal notranslate"><span class="pre">ModbusPlusOperation.GET_STATISTICS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusPlusOperation.CLEAR_STATISTICS"><code class="docutils literal notranslate"><span class="pre">ModbusPlusOperation.CLEAR_STATISTICS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.WAITING"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.WAITING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.READY"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.READY</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.ON"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.ON</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.OFF"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.OFF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.SLAVE_ON"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.SLAVE_ON</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.ModbusStatus.SLAVE_OFF"><code class="docutils literal notranslate"><span class="pre">ModbusStatus.SLAVE_OFF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.MoreData.NOTHING"><code class="docutils literal notranslate"><span class="pre">MoreData.NOTHING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/constants.html#pymodbus.constants.MoreData.KEEP_READING"><code class="docutils literal notranslate"><span class="pre">MoreData.KEEP_READING</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="library/pymodbus.html">Extra functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.ExceptionResponse"><code class="docutils literal notranslate"><span class="pre">ExceptionResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.ExceptionResponse.ExceptionOffset"><code class="docutils literal notranslate"><span class="pre">ExceptionResponse.ExceptionOffset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.ExceptionResponse.decode"><code class="docutils literal notranslate"><span class="pre">ExceptionResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.ExceptionResponse.encode"><code class="docutils literal notranslate"><span class="pre">ExceptionResponse.encode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer"><code class="docutils literal notranslate"><span class="pre">Framer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer.ASCII"><code class="docutils literal notranslate"><span class="pre">Framer.ASCII</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer.BINARY"><code class="docutils literal notranslate"><span class="pre">Framer.BINARY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer.RTU"><code class="docutils literal notranslate"><span class="pre">Framer.RTU</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer.SOCKET"><code class="docutils literal notranslate"><span class="pre">Framer.SOCKET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer.TLS"><code class="docutils literal notranslate"><span class="pre">Framer.TLS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException"><code class="docutils literal notranslate"><span class="pre">ModbusException</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException.isError"><code class="docutils literal notranslate"><span class="pre">ModbusException.isError()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.pymodbus_apply_logging_config"><code class="docutils literal notranslate"><span class="pre">pymodbus_apply_logging_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.bits"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.bits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.decode"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.encode"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.getBit"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.getBit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.resetBit"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.resetBit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadBitsResponseBase.setBit"><code class="docutils literal notranslate"><span class="pre">ReadBitsResponseBase.setBit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsRequest"><code class="docutils literal notranslate"><span class="pre">ReadCoilsRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadCoilsRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadCoilsRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadCoilsRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsResponse"><code class="docutils literal notranslate"><span class="pre">ReadCoilsResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadCoilsResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadCoilsResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsRequest"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsResponse"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_read_message.ReadDiscreteInputsResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadDiscreteInputsResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.decode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.encode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.execute"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.function_code"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsResponse"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsResponse.decode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsResponse.encode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteMultipleCoilsResponse.function_code"><code class="docutils literal notranslate"><span class="pre">WriteMultipleCoilsResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.decode"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.encode"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.execute"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.function_code"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilResponse"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilResponse.decode"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilResponse.encode"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.bit_write_message.WriteSingleCoilResponse.function_code"><code class="docutils literal notranslate"><span class="pre">WriteSingleCoilResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.DeviceInformationFactory"><code class="docutils literal notranslate"><span class="pre">DeviceInformationFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.DeviceInformationFactory.get"><code class="docutils literal notranslate"><span class="pre">DeviceInformationFactory.get()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.MajorMinorRevision"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.MajorMinorRevision</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.ModelName"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.ModelName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.ProductCode"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.ProductCode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.ProductName"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.ProductName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.UserApplicationName"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.UserApplicationName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.VendorName"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.VendorName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.VendorUrl"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.VendorUrl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.summary"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusDeviceIdentification.update"><code class="docutils literal notranslate"><span class="pre">ModbusDeviceIdentification.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusPlusStatistics"><code class="docutils literal notranslate"><span class="pre">ModbusPlusStatistics</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusPlusStatistics.encode"><code class="docutils literal notranslate"><span class="pre">ModbusPlusStatistics.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusPlusStatistics.reset"><code class="docutils literal notranslate"><span class="pre">ModbusPlusStatistics.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.device.ModbusPlusStatistics.summary"><code class="docutils literal notranslate"><span class="pre">ModbusPlusStatistics.summary()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ChangeAsciiInputDelimiterRequest"><code class="docutils literal notranslate"><span class="pre">ChangeAsciiInputDelimiterRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ChangeAsciiInputDelimiterRequest.execute"><code class="docutils literal notranslate"><span class="pre">ChangeAsciiInputDelimiterRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ChangeAsciiInputDelimiterRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ChangeAsciiInputDelimiterRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ChangeAsciiInputDelimiterResponse"><code class="docutils literal notranslate"><span class="pre">ChangeAsciiInputDelimiterResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ChangeAsciiInputDelimiterResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ChangeAsciiInputDelimiterResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearCountersRequest"><code class="docutils literal notranslate"><span class="pre">ClearCountersRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearCountersRequest.execute"><code class="docutils literal notranslate"><span class="pre">ClearCountersRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearCountersRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ClearCountersRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearCountersResponse"><code class="docutils literal notranslate"><span class="pre">ClearCountersResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearCountersResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ClearCountersResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearOverrunCountRequest"><code class="docutils literal notranslate"><span class="pre">ClearOverrunCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearOverrunCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ClearOverrunCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearOverrunCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ClearOverrunCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearOverrunCountResponse"><code class="docutils literal notranslate"><span class="pre">ClearOverrunCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ClearOverrunCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ClearOverrunCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest.decode"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest.encode"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest.function_code"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusResponse"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusResponse.decode"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusResponse.encode"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.DiagnosticStatusResponse.function_code"><code class="docutils literal notranslate"><span class="pre">DiagnosticStatusResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeRequest"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeRequest.execute"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeResponse"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeResponse.should_respond"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeResponse.should_respond</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ForceListenOnlyModeResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ForceListenOnlyModeResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusRequest"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusRequest.encode"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusRequest.execute"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusRequest.get_response_pdu_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusResponse"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.GetClearModbusPlusResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">GetClearModbusPlusResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.RestartCommunicationsOptionRequest"><code class="docutils literal notranslate"><span class="pre">RestartCommunicationsOptionRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.RestartCommunicationsOptionRequest.execute"><code class="docutils literal notranslate"><span class="pre">RestartCommunicationsOptionRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.RestartCommunicationsOptionRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">RestartCommunicationsOptionRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.RestartCommunicationsOptionResponse"><code class="docutils literal notranslate"><span class="pre">RestartCommunicationsOptionResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.RestartCommunicationsOptionResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">RestartCommunicationsOptionResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusCommunicationErrorCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnBusCommunicationErrorCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusCommunicationErrorCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnBusCommunicationErrorCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusCommunicationErrorCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusCommunicationErrorCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusCommunicationErrorCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnBusCommunicationErrorCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusCommunicationErrorCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusCommunicationErrorCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusExceptionErrorCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnBusExceptionErrorCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusExceptionErrorCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnBusExceptionErrorCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusExceptionErrorCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusExceptionErrorCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusExceptionErrorCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnBusExceptionErrorCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusExceptionErrorCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusExceptionErrorCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusMessageCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnBusMessageCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusMessageCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnBusMessageCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusMessageCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusMessageCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusMessageCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnBusMessageCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnBusMessageCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnBusMessageCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnDiagnosticRegisterRequest"><code class="docutils literal notranslate"><span class="pre">ReturnDiagnosticRegisterRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnDiagnosticRegisterRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnDiagnosticRegisterRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnDiagnosticRegisterRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnDiagnosticRegisterRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnDiagnosticRegisterResponse"><code class="docutils literal notranslate"><span class="pre">ReturnDiagnosticRegisterResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnDiagnosticRegisterResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnDiagnosticRegisterResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnIopOverrunCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnIopOverrunCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnIopOverrunCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnIopOverrunCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnIopOverrunCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnIopOverrunCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnIopOverrunCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnIopOverrunCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnIopOverrunCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnIopOverrunCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnQueryDataRequest"><code class="docutils literal notranslate"><span class="pre">ReturnQueryDataRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnQueryDataRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnQueryDataRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnQueryDataRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnQueryDataRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnQueryDataResponse"><code class="docutils literal notranslate"><span class="pre">ReturnQueryDataResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnQueryDataResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnQueryDataResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusCharacterOverrunCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusCharacterOverrunCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusCharacterOverrunCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusCharacterOverrunCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusCharacterOverrunCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusCharacterOverrunCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusCharacterOverrunCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusCharacterOverrunCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusCharacterOverrunCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusCharacterOverrunCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusyCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusyCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusyCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusyCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusyCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusyCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusyCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusyCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveBusyCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveBusyCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveMessageCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveMessageCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveMessageCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveMessageCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveMessageCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveMessageCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveMessageCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveMessageCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveMessageCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveMessageCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNAKCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNAKCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNAKCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNAKCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNAKCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNAKCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNAKCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNAKCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNAKCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNAKCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNoResponseCountRequest"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNoResponseCountRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNoResponseCountRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNoResponseCountRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNoResponseCountRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNoResponseCountRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNoResponseCountResponse"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNoResponseCountResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.diag_message.ReturnSlaveNoResponseCountResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReturnSlaveNoResponseCountResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.CommunicationRestartEvent"><code class="docutils literal notranslate"><span class="pre">CommunicationRestartEvent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.CommunicationRestartEvent.decode"><code class="docutils literal notranslate"><span class="pre">CommunicationRestartEvent.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.CommunicationRestartEvent.encode"><code class="docutils literal notranslate"><span class="pre">CommunicationRestartEvent.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.CommunicationRestartEvent.value"><code class="docutils literal notranslate"><span class="pre">CommunicationRestartEvent.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.EnteredListenModeEvent"><code class="docutils literal notranslate"><span class="pre">EnteredListenModeEvent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.EnteredListenModeEvent.decode"><code class="docutils literal notranslate"><span class="pre">EnteredListenModeEvent.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.EnteredListenModeEvent.encode"><code class="docutils literal notranslate"><span class="pre">EnteredListenModeEvent.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.EnteredListenModeEvent.value"><code class="docutils literal notranslate"><span class="pre">EnteredListenModeEvent.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.ModbusEvent"><code class="docutils literal notranslate"><span class="pre">ModbusEvent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.ModbusEvent.decode"><code class="docutils literal notranslate"><span class="pre">ModbusEvent.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.ModbusEvent.encode"><code class="docutils literal notranslate"><span class="pre">ModbusEvent.encode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteReceiveEvent"><code class="docutils literal notranslate"><span class="pre">RemoteReceiveEvent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteReceiveEvent.decode"><code class="docutils literal notranslate"><span class="pre">RemoteReceiveEvent.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteReceiveEvent.encode"><code class="docutils literal notranslate"><span class="pre">RemoteReceiveEvent.encode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteSendEvent"><code class="docutils literal notranslate"><span class="pre">RemoteSendEvent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteSendEvent.decode"><code class="docutils literal notranslate"><span class="pre">RemoteSendEvent.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.events.RemoteSendEvent.encode"><code class="docutils literal notranslate"><span class="pre">RemoteSendEvent.encode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.ConnectionException"><code class="docutils literal notranslate"><span class="pre">ConnectionException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.InvalidMessageReceivedException"><code class="docutils literal notranslate"><span class="pre">InvalidMessageReceivedException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.MessageRegisterException"><code class="docutils literal notranslate"><span class="pre">MessageRegisterException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.ModbusIOException"><code class="docutils literal notranslate"><span class="pre">ModbusIOException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.NoSuchSlaveException"><code class="docutils literal notranslate"><span class="pre">NoSuchSlaveException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.NotImplementedException"><code class="docutils literal notranslate"><span class="pre">NotImplementedException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.exceptions.ParameterException"><code class="docutils literal notranslate"><span class="pre">ParameterException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ClientDecoder"><code class="docutils literal notranslate"><span class="pre">ClientDecoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ClientDecoder.decode"><code class="docutils literal notranslate"><span class="pre">ClientDecoder.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ClientDecoder.function_table"><code class="docutils literal notranslate"><span class="pre">ClientDecoder.function_table</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ClientDecoder.lookupPduClass"><code class="docutils literal notranslate"><span class="pre">ClientDecoder.lookupPduClass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ClientDecoder.register"><code class="docutils literal notranslate"><span class="pre">ClientDecoder.register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ServerDecoder"><code class="docutils literal notranslate"><span class="pre">ServerDecoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ServerDecoder.decode"><code class="docutils literal notranslate"><span class="pre">ServerDecoder.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ServerDecoder.getFCdict"><code class="docutils literal notranslate"><span class="pre">ServerDecoder.getFCdict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ServerDecoder.lookupPduClass"><code class="docutils literal notranslate"><span class="pre">ServerDecoder.lookupPduClass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.factory.ServerDecoder.register"><code class="docutils literal notranslate"><span class="pre">ServerDecoder.register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.FileRecord"><code class="docutils literal notranslate"><span class="pre">FileRecord</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueResponse"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueResponse.calculateRtuFrameSize"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueResponse.calculateRtuFrameSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFifoQueueResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadFifoQueueResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordResponse"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.ReadFileRecordResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadFileRecordResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest.decode"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest.encode"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest.execute"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest.function_code"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordResponse"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordResponse.decode"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordResponse.encode"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.file_message.WriteFileRecordResponse.function_code"><code class="docutils literal notranslate"><span class="pre">WriteFileRecordResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationRequest.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationRequest.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse.calculateRtuFrameSize"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse.calculateRtuFrameSize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.mei_message.ReadDeviceInformationResponse.sub_function_code"><code class="docutils literal notranslate"><span class="pre">ReadDeviceInformationResponse.sub_function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest.decode"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest.encode"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest.execute"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest.function_code"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterResponse"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterResponse.decode"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterResponse.encode"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventCounterResponse.function_code"><code class="docutils literal notranslate"><span class="pre">GetCommEventCounterResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest.decode"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest.encode"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest.execute"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest.function_code"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogResponse"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogResponse.decode"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogResponse.encode"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.GetCommEventLogResponse.function_code"><code class="docutils literal notranslate"><span class="pre">GetCommEventLogResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusResponse"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReadExceptionStatusResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadExceptionStatusResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdResponse"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.other_message.ReportSlaveIdResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReportSlaveIdResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_16bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_16bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_16bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_16bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_16bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_16bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_32bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_32bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_32bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_32bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_32bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_32bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_64bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_64bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_64bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_64bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_64bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_64bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_8bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_8bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_8bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_8bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_bits"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_bits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.add_string"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.add_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.build"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.encode"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.reset"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.to_coils"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.to_coils()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadBuilder.to_registers"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadBuilder.to_registers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.bit_chunks"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.bit_chunks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_16bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_16bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_16bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_16bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_16bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_16bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_32bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_32bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_32bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_32bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_32bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_32bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_64bit_float"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_64bit_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_64bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_64bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_64bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_64bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_8bit_int"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_8bit_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_8bit_uint"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_8bit_uint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_bits"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_bits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.decode_string"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.decode_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.fromCoils"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.fromCoils()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.fromRegisters"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.fromRegisters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.reset"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.payload.BinaryPayloadDecoder.skip_bytes"><code class="docutils literal notranslate"><span class="pre">BinaryPayloadDecoder.skip_bytes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.pdu.ModbusResponse.should_respond"><code class="docutils literal notranslate"><span class="pre">ModbusResponse.should_respond</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.pdu.ModbusResponse._rtu_frame_size"><code class="docutils literal notranslate"><span class="pre">ModbusResponse._rtu_frame_size</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersRequest"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersResponse"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadHoldingRegistersResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadHoldingRegistersResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersRequest"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersResponse"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadInputRegistersResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadInputRegistersResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadRegistersResponseBase"><code class="docutils literal notranslate"><span class="pre">ReadRegistersResponseBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadRegistersResponseBase.decode"><code class="docutils literal notranslate"><span class="pre">ReadRegistersResponseBase.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadRegistersResponseBase.encode"><code class="docutils literal notranslate"><span class="pre">ReadRegistersResponseBase.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadRegistersResponseBase.getRegister"><code class="docutils literal notranslate"><span class="pre">ReadRegistersResponseBase.getRegister()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadRegistersResponseBase.registers"><code class="docutils literal notranslate"><span class="pre">ReadRegistersResponseBase.registers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.decode"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.encode"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.execute"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.function_code"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersResponse"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersResponse.decode"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersResponse.encode"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_read_message.ReadWriteMultipleRegistersResponse.function_code"><code class="docutils literal notranslate"><span class="pre">ReadWriteMultipleRegistersResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest.decode"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest.encode"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest.execute"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest.function_code"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterRequest.function_code_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterResponse"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterResponse.decode"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterResponse.encode"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.MaskWriteRegisterResponse.function_code"><code class="docutils literal notranslate"><span class="pre">MaskWriteRegisterResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.decode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.encode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.execute"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.function_code"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersResponse"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersResponse.decode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersResponse.encode"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteMultipleRegistersResponse.function_code"><code class="docutils literal notranslate"><span class="pre">WriteMultipleRegistersResponse.function_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.decode"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.encode"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.execute"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.function_code"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.function_code_name"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.function_code_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterRequest.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterRequest.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterResponse"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterResponse.decode"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterResponse.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterResponse.encode"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterResponse.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterResponse.function_code"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterResponse.function_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.register_write_message.WriteSingleRegisterResponse.get_response_pdu_size"><code class="docutils literal notranslate"><span class="pre">WriteSingleRegisterResponse.get_response_pdu_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.DictTransactionManager"><code class="docutils literal notranslate"><span class="pre">DictTransactionManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusAsciiFramer"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusAsciiFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusAsciiFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.decode_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusAsciiFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusAsciiFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer.method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusBinaryFramer"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusBinaryFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusBinaryFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.decode_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusBinaryFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusBinaryFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer.method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.decode_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.recvPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.recvPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusRtuFramer.sendPacket"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer.sendPacket()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusSocketFramer"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusSocketFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusSocketFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.decode_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusSocketFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusSocketFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer.method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTlsFramer"><code class="docutils literal notranslate"><span class="pre">ModbusTlsFramer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTlsFramer.buildPacket"><code class="docutils literal notranslate"><span class="pre">ModbusTlsFramer.buildPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTlsFramer.decode_data"><code class="docutils literal notranslate"><span class="pre">ModbusTlsFramer.decode_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTlsFramer.frameProcessIncomingPacket"><code class="docutils literal notranslate"><span class="pre">ModbusTlsFramer.frameProcessIncomingPacket()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTlsFramer.method"><code class="docutils literal notranslate"><span class="pre">ModbusTlsFramer.method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.addTransaction"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.addTransaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.delTransaction"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.delTransaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.execute"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.getNextTID"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.getNextTID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.getTransaction"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.getTransaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="library/pymodbus.html#pymodbus.transaction.ModbusTransactionManager.reset"><code class="docutils literal notranslate"><span class="pre">ModbusTransactionManager.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.utilities.default"><code class="docutils literal notranslate"><span class="pre">default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.utilities.pack_bitstring"><code class="docutils literal notranslate"><span class="pre">pack_bitstring()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.utilities.rtuFrameSize"><code class="docutils literal notranslate"><span class="pre">rtuFrameSize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="library/pymodbus.html#pymodbus.utilities.unpack_bitstring"><code class="docutils literal notranslate"><span class="pre">unpack_bitstring()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="library/architecture/architecture.html">Architecture</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_changes.html" class="btn btn-neutral float-left" title="API changes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="library/nullmodem.html" class="btn btn-neutral float-right" title="NullModem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

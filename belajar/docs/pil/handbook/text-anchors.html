@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Text anchors &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Writing Your Own Image Plugin" href="writing-your-own-image-plugin.html" />
+    <link rel="prev" title="Image file formats" href="image-file-formats.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing-your-own-image-plugin.html" title="Writing Your Own Image Plugin"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="image-file-formats.html" title="Image file formats"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Handbook</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="appendices.html" accesskey="U">Appendices</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text anchors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="text-anchors">
+<span id="id1"></span><h1>Text anchors<a class="headerlink" href="#text-anchors" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">anchor</span></code> parameter determines the alignment of drawn text relative to the <code class="docutils literal notranslate"><span class="pre">xy</span></code> parameter.
+The default alignment is top left, specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> (left-ascender) for horizontal text
+and <code class="docutils literal notranslate"><span class="pre">lt</span></code> (left-top) for vertical text.</p>
+<p>This parameter is only supported by OpenType/TrueType fonts.
+Other fonts may ignore the parameter and use the default (top left) alignment.</p>
+<section id="specifying-an-anchor">
+<h2>Specifying an anchor<a class="headerlink" href="#specifying-an-anchor" title="Link to this heading">¶</a></h2>
+<p>An anchor is specified with a two-character string. The first character is the
+horizontal alignment, the second character is the vertical alignment.
+For example, the default value of <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text means left-ascender
+aligned text.</p>
+<p>When drawing text with <a class="reference internal" href="../reference/ImageDraw.html#PIL.ImageDraw.ImageDraw.text" title="PIL.ImageDraw.ImageDraw.text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageDraw.ImageDraw.text()</span></code></a> with a specific anchor,
+the text will be placed such that the specified anchor point is at the <code class="docutils literal notranslate"><span class="pre">xy</span></code> coordinates.</p>
+<p>For example, in the following image, the text is <code class="docutils literal notranslate"><span class="pre">ms</span></code> (middle-baseline) aligned, with
+<code class="docutils literal notranslate"><span class="pre">xy</span></code> at the intersection of the two lines:</p>
+<img alt="ms (middle-baseline) aligned text." class="align-left" src="../_images/test_anchor_quick_ms.png" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+
+<span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/NotoSans-Regular.ttf&quot;</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span> <span class="s2">&quot;white&quot;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">line</span><span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">)),</span> <span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">line</span><span class="p">(((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">)),</span> <span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s2">&quot;Quick&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="clearer docutils container">
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</section>
+<section id="quick-reference">
+<h2>Quick reference<a class="headerlink" href="#quick-reference" title="Link to this heading">¶</a></h2>
+<img alt="Horizontal text" class="align-center" src="../_images/anchor_horizontal.svg" /><img alt="Vertical text" class="align-center" src="../_images/anchor_vertical.svg" /></section>
+<section id="horizontal-anchor-alignment">
+<h2>Horizontal anchor alignment<a class="headerlink" href="#horizontal-anchor-alignment" title="Link to this heading">¶</a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">l</span></code> — left</dt><dd><p>Anchor is to the left of the text.</p>
+<p>For <em>horizontal</em> text this is the origin of the first glyph, as shown in the <a class="reference external" href="https://freetype.org/freetype2/docs/tutorial/step2.html">FreeType tutorial</a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">m</span></code> — middle</dt><dd><p>Anchor is horizontally centered with the text.</p>
+<p>For <em>vertical</em> text it is recommended to use <code class="docutils literal notranslate"><span class="pre">s</span></code> (baseline) alignment instead,
+as it does not change based on the specific glyphs of the given text.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">r</span></code> — right</dt><dd><p>Anchor is to the right of the text.</p>
+<p>For <em>horizontal</em> text this is the advanced origin of the last glyph, as shown in the <a class="reference external" href="https://freetype.org/freetype2/docs/tutorial/step2.html">FreeType tutorial</a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">s</span></code> — baseline <em>(vertical text only)</em></dt><dd><p>Anchor is at the baseline (middle) of the text. The exact alignment depends on the font.</p>
+<p>For <em>vertical</em> text this is the recommended alignment,
+as it does not change based on the specific glyphs of the given text
+(see image for vertical text above).</p>
+</dd>
+</dl>
+</section>
+<section id="vertical-anchor-alignment">
+<h2>Vertical anchor alignment<a class="headerlink" href="#vertical-anchor-alignment" title="Link to this heading">¶</a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">a</span></code> — ascender / top <em>(horizontal text only)</em></dt><dd><p>Anchor is at the ascender line (top) of the first line of text, as defined by the font.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Typeface#Font_metrics">Font metrics on Wikipedia</a> for more information.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">t</span></code> — top <em>(single-line text only)</em></dt><dd><p>Anchor is at the top of the text.</p>
+<p>For <em>vertical</em> text this is the origin of the first glyph, as shown in the <a class="reference external" href="https://freetype.org/freetype2/docs/tutorial/step2.html">FreeType tutorial</a>.</p>
+<p>For <em>horizontal</em> text it is recommended to use <code class="docutils literal notranslate"><span class="pre">a</span></code> (ascender) alignment instead,
+as it does not change based on the specific glyphs of the given text.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">m</span></code> — middle</dt><dd><p>Anchor is vertically centered with the text.</p>
+<p>For <em>horizontal</em> text this is the midpoint of the first ascender line and the last descender line.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">s</span></code> — baseline <em>(horizontal text only)</em></dt><dd><p>Anchor is at the baseline (bottom) of the first line of text, only descenders extend below the anchor.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Typeface#Font_metrics">Font metrics on Wikipedia</a> for more information.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">b</span></code> — bottom <em>(single-line text only)</em></dt><dd><p>Anchor is at the bottom of the text.</p>
+<p>For <em>vertical</em> text this is the advanced origin of the last glyph, as shown in the <a class="reference external" href="https://freetype.org/freetype2/docs/tutorial/step2.html">FreeType tutorial</a>.</p>
+<p>For <em>horizontal</em> text it is recommended to use <code class="docutils literal notranslate"><span class="pre">d</span></code> (descender) alignment instead,
+as it does not change based on the specific glyphs of the given text.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">d</span></code> — descender / bottom <em>(horizontal text only)</em></dt><dd><p>Anchor is at the descender line (bottom) of the last line of text, as defined by the font.</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Typeface#Font_metrics">Font metrics on Wikipedia</a> for more information.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>The following image shows several examples of anchors for horizontal text.
+In each section the <code class="docutils literal notranslate"><span class="pre">xy</span></code> parameter was set to the center shown by the intersection
+of the two lines.</p>
+<img alt="Text anchor examples" class="align-center" src="../_images/anchors.png" />
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Text anchors</a><ul>
+<li><a class="reference internal" href="#specifying-an-anchor">Specifying an anchor</a></li>
+<li><a class="reference internal" href="#quick-reference">Quick reference</a></li>
+<li><a class="reference internal" href="#horizontal-anchor-alignment">Horizontal anchor alignment</a></li>
+<li><a class="reference internal" href="#vertical-anchor-alignment">Vertical anchor alignment</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="image-file-formats.html"
+                          title="previous chapter">Image file formats</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="writing-your-own-image-plugin.html"
+                          title="next chapter">Writing Your Own Image Plugin</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/handbook/text-anchors.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing-your-own-image-plugin.html" title="Writing Your Own Image Plugin"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="image-file-formats.html" title="Image file formats"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Handbook</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="appendices.html" >Appendices</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Text anchors</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

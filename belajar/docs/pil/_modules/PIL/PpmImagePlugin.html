@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.PpmImagePlugin &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.PpmImagePlugin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.PpmImagePlugin</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># PPM support for PIL</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1">#       96-03-24 fl     Created</span>
+<span class="c1">#       98-03-06 fl     Write RGBA images (as RGB, that is)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) Secret Labs AB 1997-98.</span>
+<span class="c1"># Copyright (c) Fredrik Lundh 1996.</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFile</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">i16be</span> <span class="k">as</span> <span class="n">i16</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">o8</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">o32le</span> <span class="k">as</span> <span class="n">o32</span>
+
+<span class="c1">#</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+
+<span class="n">b_whitespace</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x20\x09\x0a\x0b\x0c\x0d</span><span class="s2">&quot;</span>
+
+<span class="n">MODES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># standard</span>
+    <span class="sa">b</span><span class="s2">&quot;P1&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;P2&quot;</span><span class="p">:</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;P3&quot;</span><span class="p">:</span> <span class="s2">&quot;RGB&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;P4&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;P5&quot;</span><span class="p">:</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;P6&quot;</span><span class="p">:</span> <span class="s2">&quot;RGB&quot;</span><span class="p">,</span>
+    <span class="c1"># extensions</span>
+    <span class="sa">b</span><span class="s2">&quot;P0CMYK&quot;</span><span class="p">:</span> <span class="s2">&quot;CMYK&quot;</span><span class="p">,</span>
+    <span class="c1"># PIL extensions (for test purposes only)</span>
+    <span class="sa">b</span><span class="s2">&quot;PyP&quot;</span><span class="p">:</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;PyRGBA&quot;</span><span class="p">:</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">,</span>
+    <span class="sa">b</span><span class="s2">&quot;PyCMYK&quot;</span><span class="p">:</span> <span class="s2">&quot;CMYK&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_accept</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;P&quot;</span> <span class="ow">and</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="sa">b</span><span class="s2">&quot;0123456y&quot;</span>
+
+
+<span class="c1">##</span>
+<span class="c1"># Image plugin for PBM, PGM, and PPM images.</span>
+
+
+<div class="viewcode-block" id="PpmImageFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PpmImagePlugin.PpmImageFile">[docs]</a>
+<span class="k">class</span> <span class="nc">PpmImageFile</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">ImageFile</span><span class="p">):</span>
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;PPM&quot;</span>
+    <span class="n">format_description</span> <span class="o">=</span> <span class="s2">&quot;Pbmplus image&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_read_magic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">magic</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="c1"># read until whitespace or longest available magic number</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span> <span class="ow">or</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">b_whitespace</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">magic</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="n">magic</span>
+
+    <span class="k">def</span> <span class="nf">_read_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># read until next whitespace or limit of 10 characters</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">b_whitespace</span><span class="p">:</span>  <span class="c1"># token ended</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+                    <span class="c1"># skip whitespace at start</span>
+                    <span class="k">continue</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;#&quot;</span><span class="p">:</span>
+                <span class="c1"># ignores rest of the line; stops at CR, LF or EOF</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">continue</span>
+            <span class="n">token</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+            <span class="c1"># Token was not even 1 byte</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Reached EOF while reading header&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Token too long in file header: </span><span class="si">{</span><span class="n">token</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">token</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">magic_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_magic</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">MODES</span><span class="p">[</span><span class="n">magic_number</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not a PPM file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">magic_number</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P4&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_mimetype</span> <span class="o">=</span> <span class="s2">&quot;image/x-portable-bitmap&quot;</span>
+        <span class="k">elif</span> <span class="n">magic_number</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P5&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_mimetype</span> <span class="o">=</span> <span class="s2">&quot;image/x-portable-graymap&quot;</span>
+        <span class="k">elif</span> <span class="n">magic_number</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;P3&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P6&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">custom_mimetype</span> <span class="o">=</span> <span class="s2">&quot;image/x-portable-pixmap&quot;</span>
+
+        <span class="n">maxval</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">decoder_name</span> <span class="o">=</span> <span class="s2">&quot;raw&quot;</span>
+        <span class="k">if</span> <span class="n">magic_number</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">b</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P2&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P3&quot;</span><span class="p">):</span>
+            <span class="n">decoder_name</span> <span class="o">=</span> <span class="s2">&quot;ppm_plain&quot;</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_token</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># token is the x size</span>
+                <span class="n">xsize</span> <span class="o">=</span> <span class="n">token</span>
+            <span class="k">elif</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># token is the y size</span>
+                <span class="n">ysize</span> <span class="o">=</span> <span class="n">token</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+                    <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;1;I&quot;</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">rawmode</span> <span class="o">=</span> <span class="n">mode</span>
+            <span class="k">elif</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># token is maxval</span>
+                <span class="n">maxval</span> <span class="o">=</span> <span class="n">token</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">maxval</span> <span class="o">&lt;</span> <span class="mi">65536</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;maxval must be greater than 0 and less than 65536&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">maxval</span> <span class="o">&gt;</span> <span class="mi">255</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span>
+
+                <span class="k">if</span> <span class="n">decoder_name</span> <span class="o">!=</span> <span class="s2">&quot;ppm_plain&quot;</span><span class="p">:</span>
+                    <span class="c1"># If maxval matches a bit depth, use the raw decoder directly</span>
+                    <span class="k">if</span> <span class="n">maxval</span> <span class="o">==</span> <span class="mi">65535</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+                        <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;I;16B&quot;</span>
+                    <span class="k">elif</span> <span class="n">maxval</span> <span class="o">!=</span> <span class="mi">255</span><span class="p">:</span>
+                        <span class="n">decoder_name</span> <span class="o">=</span> <span class="s2">&quot;ppm&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">decoder_name</span> <span class="o">==</span> <span class="s2">&quot;raw&quot;</span> <span class="k">else</span> <span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="n">maxval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="p">[(</span><span class="n">decoder_name</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">(),</span> <span class="n">args</span><span class="p">)]</span></div>
+
+
+
+<span class="c1">#</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="PpmPlainDecoder">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PpmImagePlugin.PpmPlainDecoder">[docs]</a>
+<span class="k">class</span> <span class="nc">PpmPlainDecoder</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">PyDecoder</span><span class="p">):</span>
+    <span class="n">_pulls_fd</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_read_block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">SAFEBLOCK</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_comment_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>  <span class="c1"># lowest nonnegative index (or -1)</span>
+
+    <span class="k">def</span> <span class="nf">_ignore_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comment_spans</span><span class="p">:</span>
+            <span class="c1"># Finish current comment</span>
+            <span class="k">while</span> <span class="n">block</span><span class="p">:</span>
+                <span class="n">comment_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_comment_end</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">comment_end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Comment ends in this block</span>
+                    <span class="c1"># Delete tail of comment</span>
+                    <span class="n">block</span> <span class="o">=</span> <span class="n">block</span><span class="p">[</span><span class="n">comment_end</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Comment spans whole block</span>
+                    <span class="c1"># So read the next block, looking for the end</span>
+                    <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_block</span><span class="p">()</span>
+
+        <span class="c1"># Search for any further comments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comment_spans</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">comment_start</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">comment_start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># No comment found</span>
+                <span class="k">break</span>
+            <span class="n">comment_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_comment_end</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">comment_start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">comment_end</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Comment ends in this block</span>
+                <span class="c1"># Delete comment</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">block</span><span class="p">[:</span><span class="n">comment_start</span><span class="p">]</span> <span class="o">+</span> <span class="n">block</span><span class="p">[</span><span class="n">comment_end</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Comment continues to next block(s)</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">block</span><span class="p">[:</span><span class="n">comment_start</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_comment_spans</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">block</span>
+
+    <span class="k">def</span> <span class="nf">_decode_bitonal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a separate method because in the plain PBM format, all data tokens are</span>
+<span class="sd">        exactly one byte, so the inter-token whitespace is optional.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="n">total_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">xsize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ysize</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">total_bytes</span><span class="p">:</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_block</span><span class="p">()</span>  <span class="c1"># read next block</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">:</span>
+                <span class="c1"># eof</span>
+                <span class="k">break</span>
+
+            <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_comments</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+
+            <span class="n">tokens</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">49</span><span class="p">):</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Invalid token for this mode: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">token</span><span class="p">])</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">tokens</span><span class="p">)[:</span><span class="n">total_bytes</span><span class="p">]</span>
+        <span class="n">invert</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;01&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xFF\x00</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">invert</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_decode_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxval</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="n">max_len</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">out_byte_count</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">out_max</span> <span class="o">=</span> <span class="mi">65535</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="mi">255</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">getmodebands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">total_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">xsize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ysize</span> <span class="o">*</span> <span class="n">bands</span> <span class="o">*</span> <span class="n">out_byte_count</span>
+
+        <span class="n">half_token</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">total_bytes</span><span class="p">:</span>
+            <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_block</span><span class="p">()</span>  <span class="c1"># read next block</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">half_token</span><span class="p">:</span>
+                    <span class="n">block</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># flush half_token</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># eof</span>
+                    <span class="k">break</span>
+
+            <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_comments</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">half_token</span><span class="p">:</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">half_token</span> <span class="o">+</span> <span class="n">block</span>  <span class="c1"># stitch half_token to new block</span>
+                <span class="n">half_token</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">tokens</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">block</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">block</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>  <span class="c1"># block might split token</span>
+                <span class="n">half_token</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>  <span class="c1"># save half token for later</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">half_token</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>  <span class="c1"># prevent buildup of half_token</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">b</span><span class="s2">&quot;Token too long found in data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">half_token</span><span class="p">[:</span> <span class="n">max_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Token too long found in data: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">token</span><span class="p">[:</span> <span class="n">max_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">maxval</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Channel value too large for this mode: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">maxval</span> <span class="o">*</span> <span class="n">out_max</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="n">o32</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="n">o8</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">total_bytes</span><span class="p">:</span>  <span class="c1"># finished!</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="PpmPlainDecoder.decode">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PpmImagePlugin.PpmPlainDecoder.decode">[docs]</a>
+    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comment_spans</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_bitonal</span><span class="p">()</span>
+            <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;1;8&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_blocks</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+            <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;I;32&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_as_raw</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">rawmode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PpmDecoder">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PpmImagePlugin.PpmDecoder">[docs]</a>
+<span class="k">class</span> <span class="nc">PpmDecoder</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">PyDecoder</span><span class="p">):</span>
+    <span class="n">_pulls_fd</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="PpmDecoder.decode">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PpmImagePlugin.PpmDecoder.decode">[docs]</a>
+    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">in_byte_count</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">maxval</span> <span class="o">&lt;</span> <span class="mi">256</span> <span class="k">else</span> <span class="mi">2</span>
+        <span class="n">out_byte_count</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">out_max</span> <span class="o">=</span> <span class="mi">65535</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="mi">255</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">getmodebands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">xsize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">ysize</span> <span class="o">*</span> <span class="n">bands</span> <span class="o">*</span> <span class="n">out_byte_count</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">in_byte_count</span> <span class="o">*</span> <span class="n">bands</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">in_byte_count</span> <span class="o">*</span> <span class="n">bands</span><span class="p">:</span>
+                <span class="c1"># eof</span>
+                <span class="k">break</span>
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bands</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">pixels</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">if</span> <span class="n">in_byte_count</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">i16</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">b</span> <span class="o">*</span> <span class="n">in_byte_count</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">out_max</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">maxval</span> <span class="o">*</span> <span class="n">out_max</span><span class="p">))</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="n">o32</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="n">o8</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;I;32&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_as_raw</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">rawmode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<span class="c1">#</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+        <span class="n">rawmode</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;1;I&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P4&quot;</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+        <span class="n">rawmode</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P5&quot;</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;I&quot;</span><span class="p">:</span>
+        <span class="n">rawmode</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;I;16B&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P5&quot;</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">):</span>
+        <span class="n">rawmode</span><span class="p">,</span> <span class="n">head</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;P6&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;cannot write mode </span><span class="si">{</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> as PPM&quot;</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">head</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;P6&quot;</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;255</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">head</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;P5&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rawmode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;255</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;65535</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ImageFile</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))])</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_open</span><span class="p">(</span><span class="n">PpmImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">PpmImageFile</span><span class="p">,</span> <span class="n">_accept</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">register_save</span><span class="p">(</span><span class="n">PpmImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">_save</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_decoder</span><span class="p">(</span><span class="s2">&quot;ppm&quot;</span><span class="p">,</span> <span class="n">PpmDecoder</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">register_decoder</span><span class="p">(</span><span class="s2">&quot;ppm_plain&quot;</span><span class="p">,</span> <span class="n">PpmPlainDecoder</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_extensions</span><span class="p">(</span><span class="n">PpmImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.pbm&quot;</span><span class="p">,</span> <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span> <span class="s2">&quot;.ppm&quot;</span><span class="p">,</span> <span class="s2">&quot;.pnm&quot;</span><span class="p">])</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_mime</span><span class="p">(</span><span class="n">PpmImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;image/x-portable-anymap&quot;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.PpmImagePlugin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

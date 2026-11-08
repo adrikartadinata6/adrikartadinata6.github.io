@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Guidelines for Releasing PyWavelets &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Release Notes" href="../releasenotes.html" />
+    <link rel="prev" title="Testing" href="testing.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../releasenotes.html" title="Release Notes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Development guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Guidelines for Releasing PyWavelets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="guidelines-for-releasing-pywavelets">
+<h1>Guidelines for Releasing PyWavelets<a class="headerlink" href="#guidelines-for-releasing-pywavelets" title="Link to this heading">¶</a></h1>
+<p>The following are guidelines for preparing a release of PyWavelets.  The
+notation <code class="docutils literal notranslate"><span class="pre">vX.X.X</span></code> in the commands below would be replaced by the actual release
+number.</p>
+<section id="updating-the-release-notes">
+<h2>Updating the release notes<a class="headerlink" href="#updating-the-release-notes" title="Link to this heading">¶</a></h2>
+<p>Prior to the release, make sure the release notes are up to date.  The author
+lists can be generated via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span>  <span class="o">./</span><span class="n">util</span><span class="o">/</span><span class="n">authors</span><span class="o">.</span><span class="n">py</span> <span class="n">vP</span><span class="o">.</span><span class="n">P</span><span class="o">.</span><span class="n">P</span><span class="o">..</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">vP.P.P</span></code> is the previous release number.</p>
+<p>The lists of issues closed and PRs merged can be generated via
+(script requires Python 2.X to run):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">./</span><span class="n">util</span><span class="o">/</span><span class="n">gh_lists</span><span class="o">.</span><span class="n">py</span> <span class="n">vX</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">X</span>
+</pre></div>
+</div>
+</section>
+<section id="tag-the-release">
+<h2>Tag the release<a class="headerlink" href="#tag-the-release" title="Link to this heading">¶</a></h2>
+<p>Change <code class="docutils literal notranslate"><span class="pre">ISRELEASED</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> and commit.</p>
+<p>Tag the release via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tag</span> <span class="o">-</span><span class="n">s</span> <span class="n">vX</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">X</span>
+</pre></div>
+</div>
+<p>Then push the <code class="docutils literal notranslate"><span class="pre">vX.X.X</span></code> tag to the PyWavelets GitHub repo.</p>
+<p>Note that while Appveyor will build wheels for Windows, it is preferred to
+get those wheels from the step below.  Instructions for grabbing Appveyor
+wheels manually here for reference only: if the commit with
+<code class="docutils literal notranslate"><span class="pre">ISRELEASED=True</span></code> is submitted as a PR, the wheels can be downloaded from
+Appveyor once it has run on the PR.  They can be found under the “Artifacts”
+tab in the Appveyor interface.</p>
+</section>
+<section id="build-windows-os-x-and-linux-wheels-and-upload-to-pypi">
+<h2>Build Windows, OS X and Linux wheels and upload to PyPI<a class="headerlink" href="#build-windows-os-x-and-linux-wheels-and-upload-to-pypi" title="Link to this heading">¶</a></h2>
+<p>Push a commit with the new tag and updates of dependency versions where needed
+to <a class="reference external" href="https://github.com/MacPython/pywavelets-wheels">https://github.com/MacPython/pywavelets-wheels</a>.  The wheels will be
+produced automatically and uploaded to <a class="reference external" href="http://wheels.scipy.org/">http://wheels.scipy.org/</a>.
+From there they can be uploaded to
+<a class="reference external" href="https://pypi.python.org/pypi/PyWavelets">PyPI</a> automatically with
+<code class="docutils literal notranslate"><span class="pre">wheel-uploader</span></code>.</p>
+<p>See the README on <a class="reference external" href="https://github.com/MacPython/pywavelets-wheels">https://github.com/MacPython/pywavelets-wheels</a> for more
+details.</p>
+</section>
+<section id="create-the-source-distribution">
+<h2>Create the source distribution<a class="headerlink" href="#create-the-source-distribution" title="Link to this heading">¶</a></h2>
+<p>Remove untracked files and directories with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clean</span></code>.
+<em>Warning: this will delete files &amp; directories that are not under version
+control so you may want to do a dry run first by adding -n, so you can see what
+will be removed</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clean</span> <span class="o">-</span><span class="n">xfdn</span>
+</pre></div>
+</div>
+<p>Then run without <code class="docutils literal notranslate"><span class="pre">-n</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clean</span> <span class="o">-</span><span class="n">xfd</span>
+</pre></div>
+</div>
+<p>Create the source distribution files via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">sdist</span> <span class="o">--</span><span class="n">formats</span><span class="o">=</span><span class="n">gztar</span><span class="p">,</span><span class="nb">zip</span>
+</pre></div>
+</div>
+</section>
+<section id="upload-the-release-to-pypi">
+<h2>Upload the release to PyPI<a class="headerlink" href="#upload-the-release-to-pypi" title="Link to this heading">¶</a></h2>
+<p>The binary Windows wheels downloaded from Appveyor (see above) should
+also be placed into the <code class="docutils literal notranslate"><span class="pre">/dist</span></code> subfolder along with the sdist archives.</p>
+<p>The wheels and source distributions created above can all be securely uploaded
+to pypi.python.org using twine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">twine</span> <span class="n">upload</span> <span class="o">-</span><span class="n">s</span> <span class="n">dist</span><span class="o">/*</span>
+</pre></div>
+</div>
+<p>Note that the documentation on ReadTheDocs (<a class="reference external" href="http://pywavelets.readthedocs.org">http://pywavelets.readthedocs.org</a>)
+will have been automatically generated, so no actions need to be taken for
+documentation.</p>
+</section>
+<section id="update-conda-forge">
+<h2>Update conda-forge<a class="headerlink" href="#update-conda-forge" title="Link to this heading">¶</a></h2>
+<p>Send a PR with the new version number and <code class="docutils literal notranslate"><span class="pre">sha256</span></code> hash of the source release
+to <a class="reference external" href="https://github.com/conda-forge/pywavelets-feedstock">https://github.com/conda-forge/pywavelets-feedstock</a>.</p>
+</section>
+<section id="create-the-release-on-github">
+<h2>Create the release on GitHub<a class="headerlink" href="#create-the-release-on-github" title="Link to this heading">¶</a></h2>
+<p>On the project’s GitHub page, click the releases tab and then press the
+“<em>Draft a new release</em>” button to create a release from the appropriate tag.</p>
+</section>
+<section id="announcing-the-release">
+<h2>Announcing the release<a class="headerlink" href="#announcing-the-release" title="Link to this heading">¶</a></h2>
+<p>Send release announcements to:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="mailto:pywavelets&#37;&#52;&#48;googlegroups&#46;com">pywavelets<span>&#64;</span>googlegroups<span>&#46;</span>com</a></p></li>
+<li><p><a class="reference external" href="mailto:python-announce-list&#37;&#52;&#48;python&#46;org">python-announce-list<span>&#64;</span>python<span>&#46;</span>org</a></p></li>
+<li><p><a class="reference external" href="mailto:scipy-user&#37;&#52;&#48;python&#46;org">scipy-user<span>&#64;</span>python<span>&#46;</span>org</a></p></li>
+</ul>
+</section>
+<section id="prepare-for-continued-development">
+<h2>Prepare for continued development<a class="headerlink" href="#prepare-for-continued-development" title="Link to this heading">¶</a></h2>
+<p>Increment the version number in setup.py and change ISRELEASED to False.</p>
+<p>Prepare new release note files for the upcoming release:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">add</span> <span class="n">doc</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">X</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">X</span><span class="o">-</span><span class="n">notes</span><span class="o">.</span><span class="n">rst</span>
+<span class="n">git</span> <span class="n">add</span> <span class="n">doc</span><span class="o">/</span><span class="n">source</span><span class="o">/</span><span class="n">release</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">rst</span>
+</pre></div>
+</div>
+<p>And add <code class="docutils literal notranslate"><span class="pre">release.X.X.X</span></code> to the list in <code class="docutils literal notranslate"><span class="pre">doc/source/releasenotes.rst</span></code></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Guidelines for Releasing PyWavelets</a><ul>
+<li><a class="reference internal" href="#updating-the-release-notes">Updating the release notes</a></li>
+<li><a class="reference internal" href="#tag-the-release">Tag the release</a></li>
+<li><a class="reference internal" href="#build-windows-os-x-and-linux-wheels-and-upload-to-pypi">Build Windows, OS X and Linux wheels and upload to PyPI</a></li>
+<li><a class="reference internal" href="#create-the-source-distribution">Create the source distribution</a></li>
+<li><a class="reference internal" href="#upload-the-release-to-pypi">Upload the release to PyPI</a></li>
+<li><a class="reference internal" href="#update-conda-forge">Update conda-forge</a></li>
+<li><a class="reference internal" href="#create-the-release-on-github">Create the release on GitHub</a></li>
+<li><a class="reference internal" href="#announcing-the-release">Announcing the release</a></li>
+<li><a class="reference internal" href="#prepare-for-continued-development">Prepare for continued development</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="testing.html"
+                          title="previous chapter">Testing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../releasenotes.html"
+                          title="next chapter">Release Notes</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/dev/how_to_release.rst" target="_blank">
+                Guidelines for Releasing PyWavelets
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../releasenotes.html" title="Release Notes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Development guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Guidelines for Releasing PyWavelets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

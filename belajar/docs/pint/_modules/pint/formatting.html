@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.formatting &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.formatting</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.formatting</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.formatter</span>
+<span class="sd">    ~~~~~~~~~~~~~~</span>
+
+<span class="sd">    Format units for pint.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">.babel_names</span> <span class="kn">import</span> <span class="n">_babel_lengths</span><span class="p">,</span> <span class="n">_babel_units</span>
+<span class="kn">from</span> <span class="nn">.compat</span> <span class="kn">import</span> <span class="n">babel_parse</span>
+
+<span class="n">__JOIN_REG_EXP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;{\d*}&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_join</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Join an iterable with the format specified in fmt.</span>
+
+<span class="sd">    The format can be specified in two ways:</span>
+<span class="sd">    - PEP3101 format with two replacement fields (eg. &#39;{} * {}&#39;)</span>
+<span class="sd">    - The concatenating string (eg. &#39; * &#39;)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fmt : str</span>
+
+<span class="sd">    iterable :</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">__JOIN_REG_EXP</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">fmt</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="n">miter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">miter</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">miter</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">ret</span>
+    <span class="k">return</span> <span class="n">first</span>
+
+
+<span class="n">_PRETTY_EXPONENTS</span> <span class="o">=</span> <span class="s2">&quot;⁰¹²³⁴⁵⁶⁷⁸⁹&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_pretty_fmt_exponent</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format an number into a pretty printed exponent.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num : int</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># unicode dot operator (U+22C5) looks like a superscript decimal</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">num</span><span class="si">:</span><span class="s2">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;⁻&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u22C5</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">_PRETTY_EXPONENTS</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="c1">#: _FORMATS maps format specifications to the corresponding argument set to</span>
+<span class="c1">#: formatter().</span>
+<span class="n">_FORMATS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Pretty format.</span>
+        <span class="s2">&quot;as_ratio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single_denominator&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;product_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;·&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;division_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;power_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parentheses_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;exp_call&quot;</span><span class="p">:</span> <span class="n">_pretty_fmt_exponent</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Latex format.</span>
+        <span class="s2">&quot;as_ratio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single_denominator&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;product_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot; \cdot &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;division_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\frac[</span><span class="si">{}</span><span class="s2">][</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;power_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">^[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parentheses_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\left(</span><span class="si">{}</span><span class="s2">\right)&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;Lx&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;siopts&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;pm_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot; +- &quot;</span><span class="p">},</span>  <span class="c1"># Latex format with SIunitx.</span>
+    <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># HTML format.</span>
+        <span class="s2">&quot;as_ratio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single_denominator&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;product_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;division_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;power_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&lt;sup&gt;</span><span class="si">{}</span><span class="s2">&lt;/sup&gt;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parentheses_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Default format.</span>
+        <span class="s2">&quot;as_ratio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single_denominator&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;product_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot; * &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;division_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot; / &quot;</span><span class="p">,</span>
+        <span class="s2">&quot;power_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ** </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parentheses_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># Compact format.</span>
+        <span class="s2">&quot;as_ratio&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single_denominator&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;product_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>  <span class="c1"># TODO: Should this just be &#39;&#39;?</span>
+        <span class="s2">&quot;division_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;power_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">**</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parentheses_fmt&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1">#: _FORMATTERS maps format names to callables doing the formatting</span>
+<span class="n">_FORMATTERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="register_unit_format"><a class="viewcode-back" href="../../developers_reference.html#pint.register_unit_format">[docs]</a><span class="k">def</span> <span class="nf">register_unit_format</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;register a function as a new format for units</span>
+
+<span class="sd">    The registered function must have a signature of:</span>
+
+<span class="sd">    .. code:: python</span>
+
+<span class="sd">        def new_format(unit, registry, **options):</span>
+<span class="sd">            pass</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the new format (to be used in the format mini-language). A error is</span>
+<span class="sd">        raised if the new format would overwrite a existing format.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    .. code:: python</span>
+
+<span class="sd">        @pint.register_unit_format(&quot;custom&quot;)</span>
+<span class="sd">        def format_custom(unit, registry, **options):</span>
+<span class="sd">            result = &quot;&lt;formatted unit&gt;&quot;  # do the formatting</span>
+<span class="sd">            return result</span>
+
+
+<span class="sd">        ureg = pint.UnitRegistry()</span>
+<span class="sd">        u = ureg.m / ureg.s ** 2</span>
+<span class="sd">        f&quot;{u:custom}&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_FORMATTERS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;format </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">!r</span><span class="si">}</span><span class="s2"> already exists&quot;</span><span class="p">)</span>  <span class="c1"># or warn instead</span>
+        <span class="n">_FORMATTERS</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_pretty</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">formatter</span><span class="p">(</span>
+        <span class="n">unit</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+        <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_denominator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">product_fmt</span><span class="o">=</span><span class="s2">&quot;·&quot;</span><span class="p">,</span>
+        <span class="n">division_fmt</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="n">power_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">parentheses_fmt</span><span class="o">=</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="n">exp_call</span><span class="o">=</span><span class="n">_pretty_fmt_exponent</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_latex</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="n">preprocessed</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="sa">r</span><span class="s2">&quot;\mathrm{{</span><span class="si">{}</span><span class="s2">}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\_&quot;</span><span class="p">)):</span> <span class="n">p</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">unit</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">formatted</span> <span class="o">=</span> <span class="n">formatter</span><span class="p">(</span>
+        <span class="n">preprocessed</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+        <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_denominator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">product_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot; \cdot &quot;</span><span class="p">,</span>
+        <span class="n">division_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\frac[</span><span class="si">{}</span><span class="s2">][</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="p">,</span>
+        <span class="n">power_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">^[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="p">,</span>
+        <span class="n">parentheses_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\left(</span><span class="si">{}</span><span class="s2">\right)&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">formatted</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;{&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;Lx&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_latex_siunitx</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Can&#39;t format as siunitx without a registry.&quot;</span>
+            <span class="s2">&quot; This is usually triggered when formatting a instance&quot;</span>
+            <span class="s1">&#39; of the internal `UnitsContainer` with a spec of `&quot;Lx&quot;`&#39;</span>
+            <span class="s2">&quot; and might indicate a bug in `pint`.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">formatted</span> <span class="o">=</span> <span class="n">siunitx_format_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">rf</span><span class="s2">&quot;\si[]</span><span class="se">{{</span><span class="si">{</span><span class="n">formatted</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_html</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">formatter</span><span class="p">(</span>
+        <span class="n">unit</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+        <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_denominator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">product_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+        <span class="n">division_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">power_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&lt;sup&gt;</span><span class="si">{}</span><span class="s2">&lt;/sup&gt;&quot;</span><span class="p">,</span>
+        <span class="n">parentheses_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_default</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">formatter</span><span class="p">(</span>
+        <span class="n">unit</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+        <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_denominator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">product_fmt</span><span class="o">=</span><span class="s2">&quot; * &quot;</span><span class="p">,</span>
+        <span class="n">division_fmt</span><span class="o">=</span><span class="s2">&quot; / &quot;</span><span class="p">,</span>
+        <span class="n">power_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ** </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">parentheses_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@register_unit_format</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">format_compact</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">formatter</span><span class="p">(</span>
+        <span class="n">unit</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+        <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">single_denominator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">product_fmt</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>  <span class="c1"># TODO: Should this just be &#39;&#39;?</span>
+        <span class="n">division_fmt</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="n">power_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">**</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">parentheses_fmt</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="formatter"><a class="viewcode-back" href="../../developers_reference.html#pint.formatter">[docs]</a><span class="k">def</span> <span class="nf">formatter</span><span class="p">(</span>
+    <span class="n">items</span><span class="p">,</span>
+    <span class="n">as_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">single_denominator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">product_fmt</span><span class="o">=</span><span class="s2">&quot; * &quot;</span><span class="p">,</span>
+    <span class="n">division_fmt</span><span class="o">=</span><span class="s2">&quot; / &quot;</span><span class="p">,</span>
+    <span class="n">power_fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ** </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">parentheses_fmt</span><span class="o">=</span><span class="s2">&quot;(</span><span class="si">{0}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="n">exp_call</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">locale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">babel_length</span><span class="o">=</span><span class="s2">&quot;long&quot;</span><span class="p">,</span>
+    <span class="n">babel_plural_form</span><span class="o">=</span><span class="s2">&quot;one&quot;</span><span class="p">,</span>
+    <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a list of (name, exponent) pairs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    items : list</span>
+<span class="sd">        a list of (name, exponent) pairs.</span>
+<span class="sd">    as_ratio : bool, optional</span>
+<span class="sd">        True to display as ratio, False as negative powers. (Default value = True)</span>
+<span class="sd">    single_denominator : bool, optional</span>
+<span class="sd">        all with terms with negative exponents are</span>
+<span class="sd">        collected together. (Default value = False)</span>
+<span class="sd">    product_fmt : str</span>
+<span class="sd">        the format used for multiplication. (Default value = &quot; * &quot;)</span>
+<span class="sd">    division_fmt : str</span>
+<span class="sd">        the format used for division. (Default value = &quot; / &quot;)</span>
+<span class="sd">    power_fmt : str</span>
+<span class="sd">        the format used for exponentiation. (Default value = &quot;{} ** {}&quot;)</span>
+<span class="sd">    parentheses_fmt : str</span>
+<span class="sd">        the format used for parenthesis. (Default value = &quot;({0})&quot;)</span>
+<span class="sd">    locale : str</span>
+<span class="sd">        the locale object as defined in babel. (Default value = None)</span>
+<span class="sd">    babel_length : str</span>
+<span class="sd">        the length of the translated unit, as defined in babel cldr. (Default value = &quot;long&quot;)</span>
+<span class="sd">    babel_plural_form : str</span>
+<span class="sd">        the plural form, calculated as defined in babel. (Default value = &quot;one&quot;)</span>
+<span class="sd">    exp_call : callable</span>
+<span class="sd">         (Default value = lambda x: f&quot;{x:n}&quot;)</span>
+<span class="sd">    sort : bool, optional</span>
+<span class="sd">        True to sort the formatted units alphabetically (Default value = True)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        the formula as a string.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">as_ratio</span><span class="p">:</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">exp_call</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">exp_call</span>
+
+    <span class="n">pos_terms</span><span class="p">,</span> <span class="n">neg_terms</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">locale</span> <span class="ow">and</span> <span class="n">babel_length</span> <span class="ow">and</span> <span class="n">babel_plural_form</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_babel_units</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="n">_babel_units</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">locale</span> <span class="o">=</span> <span class="n">babel_parse</span><span class="p">(</span><span class="n">locale</span><span class="p">)</span>
+            <span class="n">unit_patterns</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;unit_patterns&quot;</span><span class="p">]</span>
+            <span class="n">compound_unit_patterns</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;compound_unit_patterns&quot;</span><span class="p">]</span>
+            <span class="n">plural</span> <span class="o">=</span> <span class="s2">&quot;one&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">babel_plural_form</span>
+            <span class="k">if</span> <span class="n">babel_length</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_babel_lengths</span><span class="p">:</span>
+                <span class="n">other_lengths</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_babel_length</span>
+                    <span class="k">for</span> <span class="n">_babel_length</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">_babel_lengths</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">babel_length</span> <span class="o">!=</span> <span class="n">_babel_length</span>
+                <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">other_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_babel_length</span> <span class="ow">in</span> <span class="p">[</span><span class="n">babel_length</span><span class="p">]</span> <span class="o">+</span> <span class="n">other_lengths</span><span class="p">:</span>
+                <span class="n">pat</span> <span class="o">=</span> <span class="n">unit_patterns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_key</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_babel_length</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plural</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Don&#39;t remove this positional! This is the format used in Babel</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">pat</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">break</span>
+            <span class="n">division_fmt</span> <span class="o">=</span> <span class="n">compound_unit_patterns</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;per&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">babel_length</span><span class="p">,</span> <span class="n">division_fmt</span>
+            <span class="p">)</span>
+            <span class="n">power_fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">&quot;</span>
+            <span class="n">exp_call</span> <span class="o">=</span> <span class="n">_pretty_fmt_exponent</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">pos_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pos_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">power_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fun</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">as_ratio</span><span class="p">:</span>
+            <span class="n">neg_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neg_terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">power_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fun</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">as_ratio</span><span class="p">:</span>
+        <span class="c1"># Show as Product: positive * negative terms ** -1</span>
+        <span class="k">return</span> <span class="n">_join</span><span class="p">(</span><span class="n">product_fmt</span><span class="p">,</span> <span class="n">pos_terms</span> <span class="o">+</span> <span class="n">neg_terms</span><span class="p">)</span>
+
+    <span class="c1"># Show as Ratio: positive terms / negative terms</span>
+    <span class="n">pos_ret</span> <span class="o">=</span> <span class="n">_join</span><span class="p">(</span><span class="n">product_fmt</span><span class="p">,</span> <span class="n">pos_terms</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">neg_terms</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pos_ret</span>
+
+    <span class="k">if</span> <span class="n">single_denominator</span><span class="p">:</span>
+        <span class="n">neg_ret</span> <span class="o">=</span> <span class="n">_join</span><span class="p">(</span><span class="n">product_fmt</span><span class="p">,</span> <span class="n">neg_terms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neg_terms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">neg_ret</span> <span class="o">=</span> <span class="n">parentheses_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">neg_ret</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">neg_ret</span> <span class="o">=</span> <span class="n">_join</span><span class="p">(</span><span class="n">division_fmt</span><span class="p">,</span> <span class="n">neg_terms</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_join</span><span class="p">(</span><span class="n">division_fmt</span><span class="p">,</span> <span class="p">[</span><span class="n">pos_ret</span><span class="p">,</span> <span class="n">neg_ret</span><span class="p">])</span></div>
+
+
+<span class="c1"># Extract just the type from the specification mini-language: see</span>
+<span class="c1"># http://docs.python.org/2/library/string.html#format-specification-mini-language</span>
+<span class="c1"># We also add uS for uncertainties.</span>
+<span class="n">_BASIC_TYPES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="s2">&quot;bcdeEfFgGnosxX</span><span class="si">%u</span><span class="s2">S&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;~&quot;</span> <span class="ow">or</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">_BASIC_TYPES</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">_FORMATTERS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;~&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;expected &#39;:&#39; after format specifier&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">ch</span>
+        <span class="k">elif</span> <span class="n">ch</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown conversion specified &quot;</span> <span class="o">+</span> <span class="n">ch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">format_unit</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="c1"># registry may be None to allow formatting `UnitsContainer` objects</span>
+    <span class="c1"># in that case, the spec may not be &quot;Lx&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">unit</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;dimensionless&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">spec</span><span class="p">:</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;D&quot;</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">_FORMATTERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fmt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown conversion specified: </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fmt</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="siunitx_format_unit"><a class="viewcode-back" href="../../developers_reference.html#pint.siunitx_format_unit">[docs]</a><span class="k">def</span> <span class="nf">siunitx_format_unit</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns LaTeX code for the unit that can be put into an siunitx command.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_tothe</span><span class="p">(</span><span class="n">power</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">power</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">power</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">elif</span> <span class="n">power</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;\squared&quot;</span>
+            <span class="k">elif</span> <span class="n">power</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;\cubed&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;\tothe{{</span><span class="si">{:d}</span><span class="s2">}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">power</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># limit float powers to 3 decimal places</span>
+            <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;\tothe{{</span><span class="si">{:.3f}</span><span class="s2">}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">power</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+
+    <span class="n">lpos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lneg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># loop through all units in the container</span>
+    <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">power</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="c1"># remove unit prefix if it exists</span>
+        <span class="c1"># siunitx supports \prefix commands</span>
+
+        <span class="n">lpick</span> <span class="o">=</span> <span class="n">lpos</span> <span class="k">if</span> <span class="n">power</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">lneg</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">registry</span><span class="o">.</span><span class="n">_prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">unit</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">p</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">power</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">lpick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\per&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lpick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+        <span class="n">lpick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit</span><span class="p">))</span>
+        <span class="n">lpick</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_tothe</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">power</span><span class="p">))))</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lpos</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lneg</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">extract_custom_flags</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">spec</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># sort by length, with longer items first</span>
+    <span class="n">known_flags</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">_FORMATTERS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">flag_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">known_flags</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;~&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+    <span class="n">custom_flags</span> <span class="o">=</span> <span class="n">flag_re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">custom_flags</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">remove_custom_flags</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">_FORMATTERS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;~&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">flag</span><span class="p">:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">flag</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spec</span>
+
+
+<span class="k">def</span> <span class="nf">split_format</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">separate_format_defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">mspec</span> <span class="o">=</span> <span class="n">remove_custom_flags</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">uspec</span> <span class="o">=</span> <span class="n">extract_custom_flags</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="n">default_mspec</span> <span class="o">=</span> <span class="n">remove_custom_flags</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+    <span class="n">default_uspec</span> <span class="o">=</span> <span class="n">extract_custom_flags</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">separate_format_defaults</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># should we warn always or only if there was no explicit choice?</span>
+        <span class="c1"># Given that we want to eventually remove the flag again, I&#39;d say yes?</span>
+        <span class="k">if</span> <span class="n">spec</span> <span class="ow">and</span> <span class="n">separate_format_defaults</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">uspec</span> <span class="ow">and</span> <span class="n">default_uspec</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;The given format spec does not contain a unit formatter.&quot;</span>
+                        <span class="s2">&quot; Falling back to the builtin defaults, but in the future&quot;</span>
+                        <span class="s2">&quot; the unit formatter specified in the `default_format`&quot;</span>
+                        <span class="s2">&quot; attribute will be used instead.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mspec</span> <span class="ow">and</span> <span class="n">default_mspec</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;The given format spec does not contain a magnitude formatter.&quot;</span>
+                        <span class="s2">&quot; Falling back to the builtin defaults, but in the future&quot;</span>
+                        <span class="s2">&quot; the magnitude formatter specified in the `default_format`&quot;</span>
+                        <span class="s2">&quot; attribute will be used instead.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">spec</span><span class="p">:</span>
+            <span class="n">mspec</span><span class="p">,</span> <span class="n">uspec</span> <span class="o">=</span> <span class="n">default_mspec</span><span class="p">,</span> <span class="n">default_uspec</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mspec</span> <span class="o">=</span> <span class="n">mspec</span> <span class="k">if</span> <span class="n">mspec</span> <span class="k">else</span> <span class="n">default_mspec</span>
+        <span class="n">uspec</span> <span class="o">=</span> <span class="n">uspec</span> <span class="k">if</span> <span class="n">uspec</span> <span class="k">else</span> <span class="n">default_uspec</span>
+
+    <span class="k">return</span> <span class="n">mspec</span><span class="p">,</span> <span class="n">uspec</span>
+
+
+<span class="k">def</span> <span class="nf">vector_to_latex</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">fmtfun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;.2f&quot;</span><span class="p">)):</span>
+    <span class="k">return</span> <span class="n">matrix_to_latex</span><span class="p">([</span><span class="n">vec</span><span class="p">],</span> <span class="n">fmtfun</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">matrix_to_latex</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">fmtfun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;.2f&quot;</span><span class="p">)):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matrix</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot; &amp; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fmtfun</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;\begin</span><span class="si">{pmatrix}%s</span><span class="s2">\end</span><span class="si">{pmatrix}</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\\\\</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">ndarray_to_latex_parts</span><span class="p">(</span><span class="n">ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;.2f&quot;</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fmtfun</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmtfun</span>
+        <span class="n">fmtfun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ndarr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_ndarr</span> <span class="o">=</span> <span class="n">ndarr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">vector_to_latex</span><span class="p">(</span><span class="n">_ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">ndarr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">vector_to_latex</span><span class="p">(</span><span class="n">ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">ndarr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">matrix_to_latex</span><span class="p">(</span><span class="n">ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ndarr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;arr[</span><span class="si">%s</span><span class="s2">,&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dim</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">,:,:]&quot;</span>
+            <span class="k">for</span> <span class="n">elno</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ndarr</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="p">[</span><span class="n">header</span> <span class="o">%</span> <span class="n">elno</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="n">matrix_to_latex</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">elno</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ndarr</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="n">ndarray_to_latex_parts</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">,</span> <span class="n">dim</span> <span class="o">+</span> <span class="p">(</span><span class="n">elno</span><span class="p">,))</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">def</span> <span class="nf">ndarray_to_latex</span><span class="p">(</span><span class="n">ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;.2f&quot;</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="p">()):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ndarray_to_latex_parts</span><span class="p">(</span><span class="n">ndarr</span><span class="p">,</span> <span class="n">fmtfun</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

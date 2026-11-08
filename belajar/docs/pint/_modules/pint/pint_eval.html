@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.pint_eval &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.pint_eval</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.pint_eval</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.pint_eval</span>
+<span class="sd">    ~~~~~~~~~~~~~~</span>
+
+<span class="sd">    An expression evaluator to be used as a safe replacement for builtin eval.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">token</span> <span class="k">as</span> <span class="nn">tokenlib</span>
+
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">DefinitionSyntaxError</span>
+
+<span class="c1"># For controlling order of operations</span>
+<span class="n">_OP_PRIORITY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;**&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;^&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;unary&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># operator for implicit ops</span>
+    <span class="s2">&quot;//&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;/&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;%&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;+&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_power</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.compat</span> <span class="kn">import</span> <span class="n">is_duck_array</span>
+    <span class="kn">from</span> <span class="nn">.quantity</span> <span class="kn">import</span> <span class="n">Quantity</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">is_duck_array</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">left</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;cf&quot;</span>
+        <span class="ow">and</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">operator</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+
+<span class="n">_BINARY_OPERATOR_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;**&quot;</span><span class="p">:</span> <span class="n">_power</span><span class="p">,</span>
+    <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span>
+    <span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span>  <span class="c1"># operator for implicit ops</span>
+    <span class="s2">&quot;/&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">truediv</span><span class="p">,</span>
+    <span class="s2">&quot;+&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
+    <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span>
+    <span class="s2">&quot;%&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span>
+    <span class="s2">&quot;//&quot;</span><span class="p">:</span> <span class="n">operator</span><span class="o">.</span><span class="n">floordiv</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_UNARY_OPERATOR_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;+&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="EvalTreeNode"><a class="viewcode-back" href="../../developers_reference.html#pint.pint_eval.EvalTreeNode">[docs]</a><span class="k">class</span> <span class="nc">EvalTreeNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single node within an evaluation tree</span>
+
+<span class="sd">    left + operator + right --&gt; binary op</span>
+<span class="sd">    left + operator --&gt; unary op</span>
+<span class="sd">    left + right --&gt; implicit op</span>
+<span class="sd">    left --&gt; single value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># For debugging purposes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
+            <span class="n">comps</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">to_string</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">:</span>
+                <span class="n">comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">:</span>
+            <span class="n">comps</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">to_string</span><span class="p">()]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comps</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EvalTreeNode.evaluate"><a class="viewcode-back" href="../../developers_reference.html#pint.pint_eval.EvalTreeNode.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">define_op</span><span class="p">,</span> <span class="n">bin_op</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">un_op</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        define_op : callable</span>
+<span class="sd">            Translates tokens into objects.</span>
+<span class="sd">        bin_op : dict or None, optional</span>
+<span class="sd">             (Default value = _BINARY_OPERATOR_MAP)</span>
+<span class="sd">        un_op : dict or None, optional</span>
+<span class="sd">             (Default value = _UNARY_OPERATOR_MAP)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">bin_op</span> <span class="o">=</span> <span class="n">bin_op</span> <span class="ow">or</span> <span class="n">_BINARY_OPERATOR_MAP</span>
+        <span class="n">un_op</span> <span class="o">=</span> <span class="n">un_op</span> <span class="ow">or</span> <span class="n">_UNARY_OPERATOR_MAP</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
+            <span class="c1"># binary or implicit operator</span>
+            <span class="n">op_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">op_text</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bin_op</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s1">&#39;missing binary operator &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">op_text</span><span class="p">)</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">define_op</span><span class="p">,</span> <span class="n">bin_op</span><span class="p">,</span> <span class="n">un_op</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bin_op</span><span class="p">[</span><span class="n">op_text</span><span class="p">](</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">define_op</span><span class="p">,</span> <span class="n">bin_op</span><span class="p">,</span> <span class="n">un_op</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">:</span>
+            <span class="c1"># unary operator</span>
+            <span class="n">op_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">op_text</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">un_op</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s1">&#39;missing unary operator &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">op_text</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">un_op</span><span class="p">[</span><span class="n">op_text</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">define_op</span><span class="p">,</span> <span class="n">bin_op</span><span class="p">,</span> <span class="n">un_op</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># single value</span>
+            <span class="k">return</span> <span class="n">define_op</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="build_eval_tree"><a class="viewcode-back" href="../../developers_reference.html#pint.pint_eval.build_eval_tree">[docs]</a><span class="k">def</span> <span class="nf">build_eval_tree</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">op_priority</span><span class="o">=</span><span class="n">_OP_PRIORITY</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prev_op</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build an evaluation tree from a set of tokens.</span>
+
+<span class="sd">    Params:</span>
+<span class="sd">    Index, depth, and prev_op used recursively, so don&#39;t touch.</span>
+<span class="sd">    Tokens is an iterable of tokens from an expression to be evaluated.</span>
+
+<span class="sd">    Transform the tokens from an expression into a recursive parse tree, following order</span>
+<span class="sd">    of operations. Operations can include binary ops (3 + 4), implicit ops (3 kg), or</span>
+<span class="sd">    unary ops (-1).</span>
+
+<span class="sd">    General Strategy:</span>
+<span class="sd">    1) Get left side of operator</span>
+<span class="sd">    2) If no tokens left, return final result</span>
+<span class="sd">    3) Get operator</span>
+<span class="sd">    4) Use recursion to create tree starting at token on right side of operator (start at step #1)</span>
+<span class="sd">    4.1) If recursive call encounters an operator with lower or equal priority to step #2, exit recursion</span>
+<span class="sd">    5) Combine left side, operator, and right side into a new left side</span>
+<span class="sd">    6) Go back to step #2</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">prev_op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># ensure tokens is list so we can access by index</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">current_token</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">token_type</span> <span class="o">=</span> <span class="n">current_token</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">token_text</span> <span class="o">=</span> <span class="n">current_token</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">token_type</span> <span class="o">==</span> <span class="n">tokenlib</span><span class="o">.</span><span class="n">OP</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token_text</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prev_op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                        <span class="s2">&quot;unopened parentheses in tokens: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">current_token</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">prev_op</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+                    <span class="c1"># close parenthetical group</span>
+                    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">index</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># parenthetical group ending, but we need to close sub-operations within group</span>
+                    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">token_text</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+                <span class="c1"># gather parenthetical group</span>
+                <span class="n">right</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">build_eval_tree</span><span class="p">(</span>
+                    <span class="n">tokens</span><span class="p">,</span> <span class="n">op_priority</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">token_text</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">tokens</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s2">&quot;weird exit from parentheses&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="c1"># implicit op with a parenthetical group, i.e. &quot;3 (kg ** 2)&quot;</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">EvalTreeNode</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">right</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># get first token</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">right</span>
+            <span class="k">elif</span> <span class="n">token_text</span> <span class="ow">in</span> <span class="n">op_priority</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="c1"># equal-priority operators are grouped in a left-to-right order,</span>
+                    <span class="c1"># unless they&#39;re exponentiation, in which case they&#39;re grouped</span>
+                    <span class="c1"># right-to-left this allows us to get the expected behavior for</span>
+                    <span class="c1"># multiple exponents</span>
+                    <span class="c1">#     (2^3^4)  --&gt; (2^(3^4))</span>
+                    <span class="c1">#     (2 * 3 / 4) --&gt; ((2 * 3) / 4)</span>
+                    <span class="k">if</span> <span class="n">op_priority</span><span class="p">[</span><span class="n">token_text</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">op_priority</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">prev_op</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="p">)</span> <span class="ow">and</span> <span class="n">token_text</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">]:</span>
+                        <span class="c1"># previous operator is higher priority, so end previous binary op</span>
+                        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="c1"># get right side of binary op</span>
+                    <span class="n">right</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">build_eval_tree</span><span class="p">(</span>
+                        <span class="n">tokens</span><span class="p">,</span> <span class="n">op_priority</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">token_text</span>
+                    <span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">EvalTreeNode</span><span class="p">(</span>
+                        <span class="n">left</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="n">current_token</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">right</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># unary operator</span>
+                    <span class="n">right</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">build_eval_tree</span><span class="p">(</span>
+                        <span class="n">tokens</span><span class="p">,</span> <span class="n">op_priority</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;unary&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">EvalTreeNode</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">right</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="n">current_token</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">token_type</span> <span class="o">==</span> <span class="n">tokenlib</span><span class="o">.</span><span class="n">NUMBER</span> <span class="ow">or</span> <span class="n">token_type</span> <span class="o">==</span> <span class="n">tokenlib</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="c1"># tokens with an implicit operation i.e. &quot;1 kg&quot;</span>
+                <span class="k">if</span> <span class="n">op_priority</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">op_priority</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prev_op</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="c1"># previous operator is higher priority than implicit, so end</span>
+                    <span class="c1"># previous binary op</span>
+                    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">right</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">build_eval_tree</span><span class="p">(</span>
+                    <span class="n">tokens</span><span class="p">,</span> <span class="n">op_priority</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+                <span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">EvalTreeNode</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">right</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># get first token</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">EvalTreeNode</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">current_token</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tokens</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tokenlib</span><span class="o">.</span><span class="n">ENDMARKER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prev_op</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s2">&quot;unclosed parentheses in tokens&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">prev_op</span><span class="p">:</span>
+                <span class="c1"># have to close recursion</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">index</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># recursion all closed, so just return the final result</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+            <span class="c1"># should hit ENDMARKER before this ever happens</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s2">&quot;unexpected end to tokens&quot;</span><span class="p">)</span>
+
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

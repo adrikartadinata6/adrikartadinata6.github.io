@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.1.2 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.1.1" href="3.1.1.html" />
+    <link rel="prev" title="3.2.0" href="3.2.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="3.1.1.html" title="3.1.1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="3.2.0.html" title="3.2.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.1.2</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>3.1.2<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="cve-2016-3076-buffer-overflow-in-jpeg2kencode-c">
+<h2>CVE-2016-3076 – Buffer overflow in Jpeg2KEncode.c<a class="headerlink" href="#cve-2016-3076-buffer-overflow-in-jpeg2kencode-c" title="Link to this heading">¶</a></h2>
+<p>Pillow between 2.5.0 and 3.1.1 may overflow a buffer when writing
+large Jpeg2000 files, allowing for code execution or other memory
+corruption (<a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-3076">CVE-2016-3076</a>).</p>
+<p>This occurs specifically in the function <code class="docutils literal notranslate"><span class="pre">j2k_encode_entry</span></code>, at the line:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">state</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="w"> </span><span class="p">(</span><span class="n">tile_width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tile_height</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">components</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">prec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">8</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This vulnerability requires a particular value for <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">*</span> <span class="pre">width</span></code>
+such that <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">*</span> <span class="pre">width</span> <span class="pre">*</span> <span class="pre">components</span> <span class="pre">*</span> <span class="pre">precision</span></code> overflows, at
+which point the malloc will be for a smaller value than expected. The
+buffer that is allocated will be <code class="docutils literal notranslate"><span class="pre">((height</span> <span class="pre">*</span> <span class="pre">width</span> <span class="pre">*</span> <span class="pre">components</span> <span class="pre">*</span>
+<span class="pre">precision)</span> <span class="pre">mod</span> <span class="pre">(2^31)</span> <span class="pre">/</span> <span class="pre">8)</span></code>, where components is 1-4 and precision is
+either 8 or
+16. Common values would be 4 components at precision 8 for a standard
+<code class="docutils literal notranslate"><span class="pre">RGBA</span></code> image.</p>
+<p>The unpackers then split an image that is laid out:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RGBARGBARGBA</span><span class="o">....</span>
+</pre></div>
+</div>
+<p>into:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RRR</span><span class="o">.</span>
+<span class="n">GGG</span><span class="o">.</span>
+<span class="n">BBB</span><span class="o">.</span>
+<span class="n">AAA</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If this buffer is smaller than expected, the jpeg2k unpacker functions
+will write outside the allocation and onto the heap, corrupting
+memory.</p>
+<p>This issue was found by Alyssa Besseling at Atlassian.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">3.1.2</a><ul>
+<li><a class="reference internal" href="#cve-2016-3076-buffer-overflow-in-jpeg2kencode-c">CVE-2016-3076 – Buffer overflow in Jpeg2KEncode.c</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="3.2.0.html"
+                          title="previous chapter">3.2.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="3.1.1.html"
+                          title="next chapter">3.1.1</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/3.1.2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="3.1.1.html" title="3.1.1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="3.2.0.html" title="3.2.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.1.2</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

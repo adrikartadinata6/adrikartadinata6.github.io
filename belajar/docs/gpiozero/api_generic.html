@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>19. API - Generic Classes &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="20. API - Device Source Tools" href="api_tools.html" />
+    <link rel="prev" title="18. API - Internal Devices" href="api_internal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">19. API - Generic Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#device">19.1. Device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.Device"><code class="docutils literal notranslate"><span class="pre">Device</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Device.pin_factory"><code class="docutils literal notranslate"><span class="pre">Device.pin_factory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Device.close"><code class="docutils literal notranslate"><span class="pre">Device.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Device.closed"><code class="docutils literal notranslate"><span class="pre">Device.closed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Device.is_active"><code class="docutils literal notranslate"><span class="pre">Device.is_active</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Device.value"><code class="docutils literal notranslate"><span class="pre">Device.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#valuesmixin">19.2. ValuesMixin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.ValuesMixin"><code class="docutils literal notranslate"><span class="pre">ValuesMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.ValuesMixin.values"><code class="docutils literal notranslate"><span class="pre">ValuesMixin.values</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sourcemixin">19.3. SourceMixin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SourceMixin"><code class="docutils literal notranslate"><span class="pre">SourceMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SourceMixin.source"><code class="docutils literal notranslate"><span class="pre">SourceMixin.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SourceMixin.source_delay"><code class="docutils literal notranslate"><span class="pre">SourceMixin.source_delay</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sharedmixin">19.4. SharedMixin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SharedMixin"><code class="docutils literal notranslate"><span class="pre">SharedMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SharedMixin._shared_key"><code class="docutils literal notranslate"><span class="pre">SharedMixin._shared_key()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#eventsmixin">19.5. EventsMixin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.EventsMixin"><code class="docutils literal notranslate"><span class="pre">EventsMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.wait_for_active"><code class="docutils literal notranslate"><span class="pre">EventsMixin.wait_for_active()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.wait_for_inactive"><code class="docutils literal notranslate"><span class="pre">EventsMixin.wait_for_inactive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.active_time"><code class="docutils literal notranslate"><span class="pre">EventsMixin.active_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.inactive_time"><code class="docutils literal notranslate"><span class="pre">EventsMixin.inactive_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.when_activated"><code class="docutils literal notranslate"><span class="pre">EventsMixin.when_activated</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.EventsMixin.when_deactivated"><code class="docutils literal notranslate"><span class="pre">EventsMixin.when_deactivated</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#holdmixin">19.6. HoldMixin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.HoldMixin"><code class="docutils literal notranslate"><span class="pre">HoldMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.HoldMixin.held_time"><code class="docutils literal notranslate"><span class="pre">HoldMixin.held_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.HoldMixin.hold_repeat"><code class="docutils literal notranslate"><span class="pre">HoldMixin.hold_repeat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.HoldMixin.hold_time"><code class="docutils literal notranslate"><span class="pre">HoldMixin.hold_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.HoldMixin.is_held"><code class="docutils literal notranslate"><span class="pre">HoldMixin.is_held</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.HoldMixin.when_held"><code class="docutils literal notranslate"><span class="pre">HoldMixin.when_held</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">19. </span>API - Generic Classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_generic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.devices">
+<span id="api-generic-classes"></span><h1><span class="section-number">19. </span>API - Generic Classes<a class="headerlink" href="#module-gpiozero.devices" title="Link to this heading"></a></h1>
+<p>The GPIO Zero class hierarchy is quite extensive. It contains several base
+classes (most of which are documented in their corresponding chapters):</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a> is the root of the hierarchy, implementing base functionality
+like <a class="reference internal" href="#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> and context manager handlers.</p></li>
+<li><p><a class="reference internal" href="api_input.html#gpiozero.GPIODevice" title="gpiozero.GPIODevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODevice</span></code></a> represents individual devices that attach to a single
+GPIO pin</p></li>
+<li><p><a class="reference internal" href="api_spi.html#gpiozero.SPIDevice" title="gpiozero.SPIDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIDevice</span></code></a> represents devices that communicate over an SPI interface
+(implemented as four GPIO pins)</p></li>
+<li><p><a class="reference internal" href="api_internal.html#gpiozero.InternalDevice" title="gpiozero.InternalDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalDevice</span></code></a> represents devices that are entirely internal to
+the Pi (usually operating system related services)</p></li>
+<li><p><a class="reference internal" href="api_boards.html#gpiozero.CompositeDevice" title="gpiozero.CompositeDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDevice</span></code></a> represents devices composed of multiple other
+devices like HATs</p></li>
+</ul>
+<p>There are also several <a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">mixin classes</a> for adding important functionality
+at numerous points in the hierarchy, which is illustrated below (mixin classes
+are represented in purple, while abstract classes are shaded lighter):</p>
+<img alt="_images/device_hierarchy.svg" src="_images/device_hierarchy.svg" /><section id="device">
+<h2><span class="section-number">19.1. </span>Device<a class="headerlink" href="#device" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Device">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/devices.html#Device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Device" title="Link to this definition"></a></dt>
+<dd><p>Represents a single device of any type; GPIO-based, SPI-based, I2C-based,
+etc. This is the base class of the device hierarchy. It defines the basic
+services applicable to all devices (specifically the <a class="reference internal" href="#gpiozero.Device.is_active" title="gpiozero.Device.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>
+property, the <a class="reference internal" href="#gpiozero.Device.value" title="gpiozero.Device.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> property, and the <a class="reference internal" href="#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.Device.pin_factory">
+<span class="sig-name descname"><span class="pre">pin_factory</span></span><a class="headerlink" href="#gpiozero.Device.pin_factory" title="Link to this definition"></a></dt>
+<dd><p>This attribute exists at both a class level (representing the default
+pin factory used to construct devices when no <em>pin_factory</em> parameter
+is specified), and at an instance level (representing the pin factory
+that the device was constructed with).</p>
+<p>The pin factory provides various facilities to the device including
+allocating pins, providing low level interfaces (e.g. SPI), and clock
+facilities (querying and calculating elapsed times).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Device.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.Device.close" title="Link to this definition"></a></dt>
+<dd><p>Shut down the device and release all associated resources (such as GPIO
+pins).</p>
+<p>This method is idempotent (can be called on an already closed device
+without any side-effects). It is primarily intended for interactive use
+at the command line. It disables the device and releases its pin(s) for
+use by another device.</p>
+<p>You can attempt to do this simply by deleting an object, but unless
+you’ve cleaned up all references to the object this may not work (even
+if you’ve cleaned up all references, there’s still no guarantee the
+garbage collector will actually delete the object at that point).  By
+contrast, the close method provides a means of ensuring that the object
+is shut down.</p>
+<p>For example, if you have a breadboard with a buzzer connected to pin
+16, but then wish to attach an LED instead:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span> <span class="o">=</span> <span class="n">Buzzer</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">blink</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a> descendents can also be used as context managers using
+the <a class="reference external" href="/usr/share/doc/python3.12-doc/html/reference/compound_stmts.html#with" title="(in Python v3.12)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code></a> statement. For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Buzzer</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">as</span> <span class="n">bz</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">bz</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">as</span> <span class="n">led</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">led</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Device.closed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">closed</span></span><a class="headerlink" href="#gpiozero.Device.closed" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is closed (see the <a class="reference internal" href="#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>
+method). Once a device is closed you can no longer use any other
+methods or properties to control or query the device.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Device.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.Device.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise. This property is usually derived from
+<a class="reference internal" href="#gpiozero.Device.value" title="gpiozero.Device.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. Unlike <a class="reference internal" href="#gpiozero.Device.value" title="gpiozero.Device.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>, this is <em>always</em> a boolean.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Device.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.Device.value" title="Link to this definition"></a></dt>
+<dd><p>Returns a value representing the device’s state. Frequently, this is a
+boolean value, or a number between 0 and 1 but some devices use larger
+ranges (e.g. -1 to +1) and composite devices usually use tuples to
+return the states of all their subordinate components.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="valuesmixin">
+<h2><span class="section-number">19.2. </span>ValuesMixin<a class="headerlink" href="#valuesmixin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.ValuesMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">ValuesMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#ValuesMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.ValuesMixin" title="Link to this definition"></a></dt>
+<dd><p>Adds a <a class="reference internal" href="#gpiozero.ValuesMixin.values" title="gpiozero.ValuesMixin.values"><code class="xref py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> property to the class which returns an infinite
+generator of readings from the <a class="reference internal" href="#gpiozero.Device.value" title="gpiozero.Device.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> property. There is
+rarely a need to use this mixin directly as all base classes in GPIO Zero
+include it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use this mixin <em>first</em> in the parent class list.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.ValuesMixin.values">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#gpiozero.ValuesMixin.values" title="Link to this definition"></a></dt>
+<dd><p>An infinite iterator of values read from <code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="sourcemixin">
+<h2><span class="section-number">19.3. </span>SourceMixin<a class="headerlink" href="#sourcemixin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.SourceMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SourceMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#SourceMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SourceMixin" title="Link to this definition"></a></dt>
+<dd><p>Adds a <a class="reference internal" href="#gpiozero.SourceMixin.source" title="gpiozero.SourceMixin.source"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code></a> property to the class which, given an iterable or a
+<a class="reference internal" href="#gpiozero.ValuesMixin" title="gpiozero.ValuesMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValuesMixin</span></code></a> descendent, sets <a class="reference internal" href="#gpiozero.Device.value" title="gpiozero.Device.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> to each member
+of that iterable until it is exhausted. This mixin is generally included in
+novel output devices to allow their state to be driven from another device.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use this mixin <em>first</em> in the parent class list.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SourceMixin.source">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source</span></span><a class="headerlink" href="#gpiozero.SourceMixin.source" title="Link to this definition"></a></dt>
+<dd><p>The iterable to use as a source of values for <code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SourceMixin.source_delay">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_delay</span></span><a class="headerlink" href="#gpiozero.SourceMixin.source_delay" title="Link to this definition"></a></dt>
+<dd><p>The delay (measured in seconds) in the loop used to read values from
+<a class="reference internal" href="#gpiozero.SourceMixin.source" title="gpiozero.SourceMixin.source"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code></a>. Defaults to 0.01 seconds which is generally sufficient
+to keep CPU usage to a minimum while providing adequate responsiveness.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="sharedmixin">
+<h2><span class="section-number">19.4. </span>SharedMixin<a class="headerlink" href="#sharedmixin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.SharedMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SharedMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#SharedMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SharedMixin" title="Link to this definition"></a></dt>
+<dd><p>This mixin marks a class as “shared”. In this case, the meta-class
+(GPIOMeta) will use <a class="reference internal" href="#gpiozero.SharedMixin._shared_key" title="gpiozero.SharedMixin._shared_key"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_shared_key()</span></code></a> to convert the constructor
+arguments to an immutable key, and will check whether any existing
+instances match that key. If they do, they will be returned by the
+constructor instead of a new instance. An internal reference counter is
+used to determine how many times an instance has been “constructed” in this
+way.</p>
+<p>When <a class="reference internal" href="#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> is called, an internal reference counter will be
+decremented and the instance will only close when it reaches zero.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.SharedMixin._shared_key">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_shared_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#SharedMixin._shared_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SharedMixin._shared_key" title="Link to this definition"></a></dt>
+<dd><p>This is called with the constructor arguments to generate a unique
+key (which must be storable in a <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> and, thus, immutable
+and hashable) representing the instance that can be shared. This must
+be overridden by descendents.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="eventsmixin">
+<h2><span class="section-number">19.5. </span>EventsMixin<a class="headerlink" href="#eventsmixin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">EventsMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#EventsMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.EventsMixin" title="Link to this definition"></a></dt>
+<dd><p>Adds edge-detected <a class="reference internal" href="#gpiozero.EventsMixin.when_activated" title="gpiozero.EventsMixin.when_activated"><code class="xref py py-meth docutils literal notranslate"><span class="pre">when_activated()</span></code></a> and <a class="reference internal" href="#gpiozero.EventsMixin.when_deactivated" title="gpiozero.EventsMixin.when_deactivated"><code class="xref py py-meth docutils literal notranslate"><span class="pre">when_deactivated()</span></code></a>
+events to a device based on changes to the <a class="reference internal" href="#gpiozero.Device.is_active" title="gpiozero.Device.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a>
+property common to all devices. Also adds <a class="reference internal" href="#gpiozero.EventsMixin.wait_for_active" title="gpiozero.EventsMixin.wait_for_active"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait_for_active()</span></code></a> and
+<a class="reference internal" href="#gpiozero.EventsMixin.wait_for_inactive" title="gpiozero.EventsMixin.wait_for_inactive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait_for_inactive()</span></code></a> methods for level-waiting.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this mixin provides no means of actually firing its events;
+call <code class="xref py py-meth docutils literal notranslate"><span class="pre">_fire_events()</span></code> in sub-classes when device state changes to
+trigger the events. This should also be called once at the end of
+initialization to set initial states.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.wait_for_active">
+<span class="sig-name descname"><span class="pre">wait_for_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#EventsMixin.wait_for_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.EventsMixin.wait_for_active" title="Link to this definition"></a></dt>
+<dd><p>Pause the script until the device is activated, or the timeout is
+reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> or </em><em>None</em>) – Number of seconds to wait before proceeding. If this is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default), then wait indefinitely until the device
+is active.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.wait_for_inactive">
+<span class="sig-name descname"><span class="pre">wait_for_inactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#EventsMixin.wait_for_inactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.EventsMixin.wait_for_inactive" title="Link to this definition"></a></dt>
+<dd><p>Pause the script until the device is deactivated, or the timeout is
+reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> or </em><em>None</em>) – Number of seconds to wait before proceeding. If this is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default), then wait indefinitely until the device
+is inactive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.active_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">active_time</span></span><a class="headerlink" href="#gpiozero.EventsMixin.active_time" title="Link to this definition"></a></dt>
+<dd><p>The length of time (in seconds) that the device has been active for.
+When the device is inactive, this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.inactive_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inactive_time</span></span><a class="headerlink" href="#gpiozero.EventsMixin.inactive_time" title="Link to this definition"></a></dt>
+<dd><p>The length of time (in seconds) that the device has been inactive for.
+When the device is active, this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.when_activated">
+<span class="sig-name descname"><span class="pre">when_activated</span></span><a class="headerlink" href="#gpiozero.EventsMixin.when_activated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from inactive to
+active.</p>
+<p>This can be set to a function which accepts no (mandatory) parameters,
+or a Python function which accepts a single mandatory parameter (with
+as many optional parameters as you like). If the function accepts a
+single mandatory parameter, the device that activated it will be passed
+as that parameter.</p>
+<p>Set this property to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) to disable the event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.EventsMixin.when_deactivated">
+<span class="sig-name descname"><span class="pre">when_deactivated</span></span><a class="headerlink" href="#gpiozero.EventsMixin.when_deactivated" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device changes state from active to
+inactive.</p>
+<p>This can be set to a function which accepts no (mandatory) parameters,
+or a Python function which accepts a single mandatory parameter (with
+as many optional parameters as you like). If the function accepts a
+single mandatory parameter, the device that deactivated it will be
+passed as that parameter.</p>
+<p>Set this property to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="holdmixin">
+<h2><span class="section-number">19.6. </span>HoldMixin<a class="headerlink" href="#holdmixin" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">HoldMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/mixins.html#HoldMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.HoldMixin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.EventsMixin" title="gpiozero.EventsMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventsMixin</span></code></a> to add the <a class="reference internal" href="#gpiozero.HoldMixin.when_held" title="gpiozero.HoldMixin.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a> event and the
+machinery to fire that event repeatedly (when <a class="reference internal" href="#gpiozero.HoldMixin.hold_repeat" title="gpiozero.HoldMixin.hold_repeat"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_repeat</span></code></a> is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>) at internals defined by <a class="reference internal" href="#gpiozero.HoldMixin.hold_time" title="gpiozero.HoldMixin.hold_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_time</span></code></a>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin.held_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">held_time</span></span><a class="headerlink" href="#gpiozero.HoldMixin.held_time" title="Link to this definition"></a></dt>
+<dd><p>The length of time (in seconds) that the device has been held for.
+This is counted from the first execution of the <a class="reference internal" href="#gpiozero.HoldMixin.when_held" title="gpiozero.HoldMixin.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a> event
+rather than when the device activated, in contrast to
+<a class="reference internal" href="#gpiozero.EventsMixin.active_time" title="gpiozero.EventsMixin.active_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">active_time</span></code></a>. If the device is not currently held,
+this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin.hold_repeat">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hold_repeat</span></span><a class="headerlink" href="#gpiozero.HoldMixin.hold_repeat" title="Link to this definition"></a></dt>
+<dd><p>If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, <a class="reference internal" href="#gpiozero.HoldMixin.when_held" title="gpiozero.HoldMixin.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a> will be executed repeatedly with
+<a class="reference internal" href="#gpiozero.HoldMixin.hold_time" title="gpiozero.HoldMixin.hold_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_time</span></code></a> seconds between each invocation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin.hold_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hold_time</span></span><a class="headerlink" href="#gpiozero.HoldMixin.hold_time" title="Link to this definition"></a></dt>
+<dd><p>The length of time (in seconds) to wait after the device is activated,
+until executing the <a class="reference internal" href="#gpiozero.HoldMixin.when_held" title="gpiozero.HoldMixin.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a> handler. If <a class="reference internal" href="#gpiozero.HoldMixin.hold_repeat" title="gpiozero.HoldMixin.hold_repeat"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_repeat</span></code></a>
+is True, this is also the length of time between invocations of
+<a class="reference internal" href="#gpiozero.HoldMixin.when_held" title="gpiozero.HoldMixin.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin.is_held">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_held</span></span><a class="headerlink" href="#gpiozero.HoldMixin.is_held" title="Link to this definition"></a></dt>
+<dd><p>When <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the device has been active for at least
+<a class="reference internal" href="#gpiozero.HoldMixin.hold_time" title="gpiozero.HoldMixin.hold_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_time</span></code></a> seconds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.HoldMixin.when_held">
+<span class="sig-name descname"><span class="pre">when_held</span></span><a class="headerlink" href="#gpiozero.HoldMixin.when_held" title="Link to this definition"></a></dt>
+<dd><p>The function to run when the device has remained active for
+<a class="reference internal" href="#gpiozero.HoldMixin.hold_time" title="gpiozero.HoldMixin.hold_time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hold_time</span></code></a> seconds.</p>
+<p>This can be set to a function which accepts no (mandatory) parameters,
+or a Python function which accepts a single mandatory parameter (with
+as many optional parameters as you like). If the function accepts a
+single mandatory parameter, the device that activated will be passed
+as that parameter.</p>
+<p>Set this property to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) to disable the event.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_internal.html" class="btn btn-neutral float-left" title="18. API - Internal Devices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_tools.html" class="btn btn-neutral float-right" title="20. API - Device Source Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Download > Using from C > Xcode</title>
+
+  <!-- Stylesheets -->
+  <link href="vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="download.html">Download</a></span><span class='separator'>></span><span class='page'><a href="install-c.html">Using from C</a></span><span class='separator'>></span><span class='page'><a href="xcode.html">Xcode</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+
+ <p>These instructions show how to setup a basic <b>VLFeat</b> project
+  with Apple Xcode.  For the sake of simplicty, we create a command
+  line tool written in C. However, these steps apply with minor
+  modifications to other project types and to the C++ lanuage.</p>
+
+ <p>First, let us create a new project
+  called <code/>vlfeat-client</code>. Open Xcode and select <b>File
+  &gt; New Project &gt; Command Line Utility &gt; Standard Tool</b>
+  and click <b>Choose</b>. Give a name to your project (in our
+  case <code/>vlfeat-client</code>), and click <b>Save</b>.</p>
+
+ <div class="figure">
+ <img alt="Xcode new project" src="images/using-xcode-new.png"></img>
+ </div>
+
+ <p>Now we need to add <b>VLFeat</b> to the C compiler include search
+  path. To do this, select the <code/>vlfeat-client</code> target and
+  open the information panel (the blue button,
+  or <b>Command-i</b>). Then select the <b>Build</b> panel, search for
+  the field <b>Header Search Paths</b>, and add
+  <b>VLFeat</b> root path (in our case this is
+  just <code/>~/src/vlfeat</code>).</p>
+
+ <img alt="Xcode info" src="images/using-xcode-info.png"></img>
+
+ <p>Next, we add the <code/>libvl.dylib</code> library file to the
+  project resources so that Xcode links against it. To do this, drag
+  and drop the <code/>libvl.dylib</code> file (in our example
+  <code/>~/src/vlfeat/bin/maci/libvl.dylib</code>) to the left panel and click
+  <b>Add</b>.</p>
+
+ <img alt="Xcode dylib" src="images/using-xcode-dylib.png"></img>
+
+ <p>Next, edit the <code/>main.c</code> source file and type the following code:</p>
+
+<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vl/generic.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VL_PRINT</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Hello world!&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+ <img alt="Xcode edit" src="images/using-xcode-edit.png"></img>
+
+ <p>If you try to build the project, it should compile without errors
+  (if you are using C++, do not forget to wrap the <code/>include</code>
+  statements in a <code/>extern &quot;C&quot; {}</code> block). However, if you try
+  to run the program, it will fail, complaining that it cannot find the
+  library image.</p>
+
+ <img alt="Xcode error" src="images/using-xcode-err.png"></img>
+
+ <p>The reason is that <code/>libvl.dylib</code> is compiled with the
+  library <code/>install_name</code> equal
+  to <code/>@loader_path/libvl.dylib</code>. This causes the run-time
+  loader to look for the library in the same directory of the
+  executable. There are two ways around this problem: The first is to
+  install the library in a standard location
+  (e.g. <code/>/usr/local/lib</code>) and use the <code/>otool</code>
+  command to change the
+  library <code/>install_name</code>. The other is to simply copy
+  the <code/>libvl.dylib</code> file in the executable directory. Here we
+  demonstrate the second technique.</p>
+
+ <p>To copy <code/>libvl.dylib</code> in the executable directory, we
+  add a <b>Copy Files</b> build phase to the project. Right-click
+  the <code/>vlfeat-client</code> target in the project panel and select
+  <b>Add &gt; New Build Phase &gt; New Copy Files Build
+   Phase</b>. Select <b>Destination: Executables</b>. Then drag-and-drop
+  the <code/>libvl.dylib</code> item from the panel to the <b>Copy
+   Files</b> build phase.</p>
+
+ <img alt="Xcode copy" src="images/using-xcode-copy.png"></img>
+ <img alt="Xcode copy" src="images/using-xcode-copy-2.png"></img>
+
+ <p>Now rebuild the project, and run it. It should run correctly,
+  and if you open the debugger console you should see this:</p>
+
+ <img alt="Xcode ok" src="images/using-xcode-ok.png"></img>
+
+
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

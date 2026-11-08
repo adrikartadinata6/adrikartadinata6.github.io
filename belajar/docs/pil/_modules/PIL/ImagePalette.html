@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.ImagePalette &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImagePalette</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.ImagePalette</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># image palette object</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1"># 1996-03-11 fl   Rewritten.</span>
+<span class="c1"># 1997-01-03 fl   Up and running.</span>
+<span class="c1"># 1997-08-23 fl   Added load hack</span>
+<span class="c1"># 2001-04-16 fl   Fixed randint shadow bug in random()</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 1997-2001 by Secret Labs AB</span>
+<span class="c1"># Copyright (c) 1996-1997 by Fredrik Lundh</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">array</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">GimpGradientFile</span><span class="p">,</span> <span class="n">GimpPaletteFile</span><span class="p">,</span> <span class="n">ImageColor</span><span class="p">,</span> <span class="n">PaletteFile</span>
+
+
+<div class="viewcode-block" id="ImagePalette">
+<a class="viewcode-back" href="../../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette">[docs]</a>
+<span class="k">class</span> <span class="nc">ImagePalette</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Color palette for palette mapped images</span>
+
+<span class="sd">    :param mode: The mode to use for the palette. See:</span>
+<span class="sd">        :ref:`concept-modes`. Defaults to &quot;RGB&quot;</span>
+<span class="sd">    :param palette: An optional palette. If given, it must be a bytearray,</span>
+<span class="sd">        an array or a list of ints between 0-255. The list must consist of</span>
+<span class="sd">        all channels for one color followed by the next color (e.g. RGBRGBRGB).</span>
+<span class="sd">        Defaults to an empty palette.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># if set, palette contains raw data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">palette</span> <span class="ow">or</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirty</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">palette</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span>
+
+    <span class="nd">@palette</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">palette</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span> <span class="o">=</span> <span class="n">palette</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mode_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">),</span> <span class="n">mode_len</span><span class="p">):</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">mode_len</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="n">mode_len</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span>
+
+    <span class="nd">@colors</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span> <span class="o">=</span> <span class="n">colors</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">ImagePalette</span><span class="p">()</span>
+
+        <span class="n">new</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">rawmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[:]</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">dirty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirty</span>
+
+        <span class="k">return</span> <span class="n">new</span>
+
+<div class="viewcode-block" id="ImagePalette.getdata">
+<a class="viewcode-back" href="../../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette.getdata">[docs]</a>
+    <span class="k">def</span> <span class="nf">getdata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get palette contents in format suitable for the low-level</span>
+<span class="sd">        ``im.putpalette`` primitive.</span>
+
+<span class="sd">        .. warning:: This method is experimental.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ImagePalette.tobytes">
+<a class="viewcode-back" href="../../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette.tobytes">[docs]</a>
+    <span class="k">def</span> <span class="nf">tobytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert palette to bytes.</span>
+
+<span class="sd">        .. warning:: This method is experimental.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;palette contains raw palette data&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Declare tostring as an alias for tobytes</span>
+    <span class="n">tostring</span> <span class="o">=</span> <span class="n">tobytes</span>
+
+    <span class="k">def</span> <span class="nf">_new_color_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span>
+        <span class="n">special_colors</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">special_colors</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">image</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">),</span>
+                <span class="n">image</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;transparency&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">while</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">special_colors</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">256</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                <span class="c1"># Search for an unused index</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">histogram</span><span class="p">()))):</span>
+                    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">special_colors</span><span class="p">:</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="n">i</span>
+                        <span class="k">break</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">256</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot allocate more than 256 colors&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">return</span> <span class="n">index</span>
+
+<div class="viewcode-block" id="ImagePalette.getcolor">
+<a class="viewcode-back" href="../../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette.getcolor">[docs]</a>
+    <span class="k">def</span> <span class="nf">getcolor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given an rgb tuple, allocate palette entry.</span>
+
+<span class="sd">        .. warning:: This method is experimental.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;palette contains raw palette data&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGB&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">255</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot add non-opaque RGBA color to RGB palette&quot;</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">color</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGBA&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">color</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># allocate new color slot</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_color_index</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[:</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span> <span class="p">:]</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dirty</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">index</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;unknown color specifier: </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">color</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ImagePalette.save">
+<a class="viewcode-back" href="../../reference/ImagePalette.html#PIL.ImagePalette.ImagePalette.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save palette to text file.</span>
+
+<span class="sd">        .. warning:: This method is experimental.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawmode</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;palette contains raw palette data&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# Palette</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Mode: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; 0&quot;</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># Internal</span>
+
+
+<span class="k">def</span> <span class="nf">raw</span><span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="n">ImagePalette</span><span class="p">()</span>
+    <span class="n">palette</span><span class="o">.</span><span class="n">rawmode</span> <span class="o">=</span> <span class="n">rawmode</span>
+    <span class="n">palette</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">palette</span><span class="o">.</span><span class="n">dirty</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">palette</span>
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># Factories</span>
+
+
+<span class="k">def</span> <span class="nf">make_linear_lut</span><span class="p">(</span><span class="n">black</span><span class="p">,</span> <span class="n">white</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">black</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">white</span> <span class="o">*</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">255</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">)]</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;unavailable when black is non-zero&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># FIXME</span>
+
+
+<span class="k">def</span> <span class="nf">make_gamma_lut</span><span class="p">(</span><span class="n">exp</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(((</span><span class="n">i</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span> <span class="o">**</span> <span class="n">exp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">255.0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">negative</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGB&quot;</span><span class="p">):</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)))</span>
+    <span class="n">palette</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ImagePalette</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palette</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGB&quot;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+    <span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">ImagePalette</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">palette</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">sepia</span><span class="p">(</span><span class="n">white</span><span class="o">=</span><span class="s2">&quot;#fff0c0&quot;</span><span class="p">):</span>
+    <span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_linear_lut</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">ImageColor</span><span class="o">.</span><span class="n">getrgb</span><span class="p">(</span><span class="n">white</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">ImagePalette</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">bands</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="mi">3</span><span class="p">][</span><span class="n">i</span> <span class="o">//</span> <span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)])</span>
+
+
+<span class="k">def</span> <span class="nf">wedge</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGB&quot;</span><span class="p">):</span>
+    <span class="n">palette</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">ImagePalette</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palette</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="c1"># FIXME: supports GIMP gradients only</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">paletteHandler</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">GimpPaletteFile</span><span class="o">.</span><span class="n">GimpPaletteFile</span><span class="p">,</span>
+            <span class="n">GimpGradientFile</span><span class="o">.</span><span class="n">GimpGradientFile</span><span class="p">,</span>
+            <span class="n">PaletteFile</span><span class="o">.</span><span class="n">PaletteFile</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">lut</span> <span class="o">=</span> <span class="n">paletteHandler</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">getpalette</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">lut</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">SyntaxError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot load palette&quot;</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lut</span>  <span class="c1"># data, rawmode</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImagePalette</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

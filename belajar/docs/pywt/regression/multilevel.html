@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Multilevel DWT, IDWT and SWT &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Wavelet Packets" href="wp.html" />
+    <link rel="prev" title="DWT and IDWT" href="dwt-idwt.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="wp.html" title="Wavelet Packets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dwt-idwt.html" title="DWT and IDWT"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Multilevel DWT, IDWT and SWT</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="multilevel-dwt-idwt-and-swt">
+<span id="reg-multilevel"></span><h1>Multilevel DWT, IDWT and SWT<a class="headerlink" href="#multilevel-dwt-idwt-and-swt" title="Link to this heading">¶</a></h1>
+<section id="multilevel-dwt-decomposition">
+<h2>Multilevel DWT decomposition<a class="headerlink" href="#multilevel-dwt-decomposition" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pywt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db1</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;db1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cA3</span><span class="p">,</span> <span class="n">cD3</span><span class="p">,</span> <span class="n">cD2</span><span class="p">,</span> <span class="n">cD1</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">wavedec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">db1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA3</span><span class="p">)</span>
+<span class="go">[ 8.83883476]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD3</span><span class="p">)</span>
+<span class="go">[-0.35355339]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD2</span><span class="p">)</span>
+<span class="go">[ 4.  -3.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD1</span><span class="p">)</span>
+<span class="go">[-2.82842712  0.         -4.94974747 -1.41421356]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pywt</span><span class="o">.</span><span class="n">dwt_max_level</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">db1</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cA2</span><span class="p">,</span> <span class="n">cD2</span><span class="p">,</span> <span class="n">cD1</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">wavedec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multilevel-idwt-reconstruction">
+<h2>Multilevel IDWT reconstruction<a class="headerlink" href="#multilevel-idwt-reconstruction" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">wavedec</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">db1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">waverec</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">db1</span><span class="p">))</span>
+<span class="go">[ 3.  7.  1.  1. -2.  5.  4.  6.]</span>
+</pre></div>
+</div>
+</section>
+<section id="multilevel-swt-decomposition">
+<h2>Multilevel SWT decomposition<a class="headerlink" href="#multilevel-swt-decomposition" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">cA2</span><span class="p">,</span> <span class="n">cD2</span><span class="p">),</span> <span class="p">(</span><span class="n">cA1</span><span class="p">,</span> <span class="n">cD1</span><span class="p">)</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">swt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA1</span><span class="p">)</span>
+<span class="go">[ 7.07106781  5.65685425  2.82842712  0.70710678  2.82842712  7.07106781</span>
+<span class="go">  7.07106781  6.36396103]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD1</span><span class="p">)</span>
+<span class="go">[-2.82842712  4.24264069 -1.41421356  3.53553391 -5.65685425  1.41421356</span>
+<span class="go"> -1.41421356  2.12132034]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA2</span><span class="p">)</span>
+<span class="go">[  7.    4.5   4.    5.5   7.    9.5  10.    8.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD2</span><span class="p">)</span>
+<span class="go">[ 3.   3.5  0.  -4.5 -3.   0.5  0.   0.5]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">cA2</span><span class="p">,</span> <span class="n">cD2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">swt</span><span class="p">(</span><span class="n">cA1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA2</span><span class="p">)</span>
+<span class="go">[  7.    4.5   4.    5.5   7.    9.5  10.    8.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD2</span><span class="p">)</span>
+<span class="go">[ 3.   3.5  0.  -4.5 -3.   0.5  0.   0.5]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">swt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">db1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pywt</span><span class="o">.</span><span class="n">swt_max_level</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Multilevel DWT, IDWT and SWT</a><ul>
+<li><a class="reference internal" href="#multilevel-dwt-decomposition">Multilevel DWT decomposition</a></li>
+<li><a class="reference internal" href="#multilevel-idwt-reconstruction">Multilevel IDWT reconstruction</a></li>
+<li><a class="reference internal" href="#multilevel-swt-decomposition">Multilevel SWT decomposition</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="dwt-idwt.html"
+                          title="previous chapter">DWT and IDWT</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="wp.html"
+                          title="next chapter">Wavelet Packets</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/regression/multilevel.rst" target="_blank">
+                Multilevel DWT, IDWT and SWT
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="wp.html" title="Wavelet Packets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dwt-idwt.html" title="DWT and IDWT"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Multilevel DWT, IDWT and SWT</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

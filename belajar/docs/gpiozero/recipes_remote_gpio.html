@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5. Remote GPIO Recipes &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="6. Pi Zero USB OTG" href="pi_zero_otg.html" />
+    <link rel="prev" title="4. Configuring Remote GPIO" href="remote_gpio.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Remote GPIO Recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#led-button">5.1. LED + Button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#led-2-buttons">5.2. LED + 2 Buttons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-room-motion-alert">5.3. Multi-room motion alert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-room-doorbell">5.4. Multi-room doorbell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remote-button-robot">5.5. Remote button robot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#light-sensor-sense-hat">5.6. Light sensor + Sense HAT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Remote GPIO Recipes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/recipes_remote_gpio.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="remote-gpio-recipes">
+<h1><span class="section-number">5. </span>Remote GPIO Recipes<a class="headerlink" href="#remote-gpio-recipes" title="Link to this heading"></a></h1>
+<p>The following recipes demonstrate some of the capabilities of the remote GPIO
+feature of the GPIO Zero library. Before you start following these examples,
+please read up on preparing your Pi and your host PC to work with
+<a class="reference internal" href="remote_gpio.html"><span class="doc">Configuring Remote GPIO</span></a>.</p>
+<p>Please note that all recipes are written assuming Python 3. Recipes <em>may</em> work
+under Python 2, but no guarantees!</p>
+<section id="led-button">
+<h2><span class="section-number">5.1. </span>LED + Button<a class="headerlink" href="#led-button" title="Link to this heading"></a></h2>
+<p>Let a <a class="reference internal" href="api_input.html#gpiozero.Button" title="gpiozero.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a> on one Raspberry Pi control the <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> of another:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.3&#39;</span><span class="p">)</span>
+
+<span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">button</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="led-2-buttons">
+<h2><span class="section-number">5.2. </span>LED + 2 Buttons<a class="headerlink" href="#led-2-buttons" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> will come on when both buttons are pressed:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">all_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">factory3</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.3&#39;</span><span class="p">)</span>
+<span class="n">factory4</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.4&#39;</span><span class="p">)</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">button_1</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory3</span><span class="p">)</span>
+<span class="n">button_2</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory4</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">all_values</span><span class="p">(</span><span class="n">button_1</span><span class="p">,</span> <span class="n">button_2</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-room-motion-alert">
+<h2><span class="section-number">5.3. </span>Multi-room motion alert<a class="headerlink" href="#multi-room-motion-alert" title="Link to this heading"></a></h2>
+<p>Install a Raspberry Pi with a <a class="reference internal" href="api_input.html#gpiozero.MotionSensor" title="gpiozero.MotionSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">MotionSensor</span></code></a> in each room of your house,
+and have an class:<cite>LED</cite> indicator showing when there’s motion in each room:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBoard</span><span class="p">,</span> <span class="n">MotionSensor</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">zip_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">ips</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;192.168.1.3&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.4&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.5&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.6&#39;</span><span class="p">]</span>
+<span class="n">remotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">ip</span><span class="p">)</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">]</span>
+
+<span class="n">leds</span> <span class="o">=</span> <span class="n">LEDBoard</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># leds on this pi</span>
+<span class="n">sensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">MotionSensor</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">]</span>  <span class="c1"># remote sensors</span>
+
+<span class="n">leds</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">zip_values</span><span class="p">(</span><span class="o">*</span><span class="n">sensors</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-room-doorbell">
+<h2><span class="section-number">5.4. </span>Multi-room doorbell<a class="headerlink" href="#multi-room-doorbell" title="Link to this heading"></a></h2>
+<p>Install a Raspberry Pi with a <a class="reference internal" href="api_output.html#gpiozero.Buzzer" title="gpiozero.Buzzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Buzzer</span></code></a> attached in each room you want to
+hear the doorbell, and use a push <a class="reference internal" href="api_input.html#gpiozero.Button" title="gpiozero.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a> as the doorbell:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBoard</span><span class="p">,</span> <span class="n">MotionSensor</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">ips</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;192.168.1.3&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.4&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.5&#39;</span><span class="p">,</span> <span class="s1">&#39;192.168.1.6&#39;</span><span class="p">]</span>
+<span class="n">remotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">ip</span><span class="p">)</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">ips</span><span class="p">]</span>
+
+<span class="n">button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>  <span class="c1"># button on this pi</span>
+<span class="n">buzzers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Buzzer</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">remotes</span><span class="p">]</span>  <span class="c1"># buzzers on remote pins</span>
+
+<span class="k">for</span> <span class="n">buzzer</span> <span class="ow">in</span> <span class="n">buzzers</span><span class="p">:</span>
+    <span class="n">buzzer</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">button</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This could also be used as an internal doorbell (tell people it’s time for
+dinner from the kitchen).</p>
+</section>
+<section id="remote-button-robot">
+<h2><span class="section-number">5.5. </span>Remote button robot<a class="headerlink" href="#remote-button-robot" title="Link to this heading"></a></h2>
+<p>Similarly to the simple recipe for the button controlled <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a>, this
+example uses four buttons to control the direction of a robot. However, using
+remote pins for the robot means the control buttons can be separate from the
+robot:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Robot</span><span class="p">,</span> <span class="n">Motor</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.17&#39;</span><span class="p">)</span>
+<span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">Motor</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">right</span><span class="o">=</span><span class="n">Motor</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span>
+              <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>  <span class="c1"># remote pins</span>
+
+<span class="c1"># local buttons</span>
+<span class="n">left</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+<span class="n">right</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">fw</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>
+<span class="n">bw</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">fw</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">forward</span>
+<span class="n">fw</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">stop</span>
+
+<span class="n">left</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">left</span>
+<span class="n">left</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">stop</span>
+
+<span class="n">right</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">right</span>
+<span class="n">right</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">stop</span>
+
+<span class="n">bw</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">backward</span>
+<span class="n">bw</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">stop</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="light-sensor-sense-hat">
+<h2><span class="section-number">5.6. </span>Light sensor + Sense HAT<a class="headerlink" href="#light-sensor-sense-hat" title="Link to this heading"></a></h2>
+<p>The <a class="reference external" href="https://www.raspberrypi.org/products/sense-hat/">Sense HAT</a> (not supported by GPIO Zero) includes temperature, humidity
+and pressure sensors, but no light sensor. Remote GPIO allows an external
+<a class="reference internal" href="api_input.html#gpiozero.LightSensor" title="gpiozero.LightSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">LightSensor</span></code></a> to be used as well. The Sense HAT LED display can be used
+to show different colours according to the light levels:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LightSensor</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">sense_hat</span> <span class="kn">import</span> <span class="n">SenseHat</span>
+
+<span class="n">remote_factory</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.4&#39;</span><span class="p">)</span>
+<span class="n">light</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">remote_factory</span><span class="p">)</span>  <span class="c1"># remote motion sensor</span>
+<span class="n">sense</span> <span class="o">=</span> <span class="n">SenseHat</span><span class="p">()</span>  <span class="c1"># local sense hat</span>
+
+<span class="n">blue</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">yellow</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">light</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="n">sense</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">yellow</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sense</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">blue</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that in this case, the Sense HAT code must be run locally, and the GPIO
+remotely.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="remote_gpio.html" class="btn btn-neutral float-left" title="4. Configuring Remote GPIO" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pi_zero_otg.html" class="btn btn-neutral float-right" title="6. Pi Zero USB OTG" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.ImageGrab &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageGrab</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.ImageGrab</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># screen grabber</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1"># 2001-04-26 fl  created</span>
+<span class="c1"># 2001-09-17 fl  use builtin driver, if present</span>
+<span class="c1"># 2002-11-19 fl  added grabclipboard support</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2001-2002 by Secret Labs AB</span>
+<span class="c1"># Copyright (c) 2001-2002 by Fredrik Lundh</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span>
+
+
+<div class="viewcode-block" id="grab">
+<a class="viewcode-back" href="../../reference/ImageGrab.html#PIL.ImageGrab.grab">[docs]</a>
+<span class="k">def</span> <span class="nf">grab</span><span class="p">(</span><span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_layered_windows</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_screens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xdisplay</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">xdisplay</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="n">fh</span><span class="p">,</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;screencapture&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">=</span> <span class="n">bbox</span>
+                <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">left</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">top</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">bottom</span><span class="o">-</span><span class="n">top</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;-x&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">])</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                <span class="n">im_resized</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">-</span> <span class="n">top</span><span class="p">))</span>
+                <span class="n">im</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">im_resized</span>
+            <span class="k">return</span> <span class="n">im</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">grabscreen_win32</span><span class="p">(</span>
+                <span class="n">include_layered_windows</span><span class="p">,</span> <span class="n">all_screens</span>
+            <span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span>
+                <span class="s2">&quot;RGB&quot;</span><span class="p">,</span>
+                <span class="n">size</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="c1"># RGB, 32-bit line padding, origin lower left corner</span>
+                <span class="s2">&quot;raw&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;BGR&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">offset</span>
+                <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">=</span> <span class="n">bbox</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span><span class="n">left</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">top</span> <span class="o">-</span> <span class="n">y0</span><span class="p">,</span> <span class="n">right</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">-</span> <span class="n">y0</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">im</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">HAVE_XCB</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Pillow was built without XCB support&quot;</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">grabscreen_x11</span><span class="p">(</span><span class="n">xdisplay</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">xdisplay</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;darwin&quot;</span><span class="p">,</span> <span class="s2">&quot;win32&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;gnome-screenshot&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">fh</span><span class="p">,</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&quot;gnome-screenshot&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">])</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+                <span class="n">im_cropped</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
+                <span class="n">im</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">im_cropped</span>
+            <span class="k">return</span> <span class="n">im</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;BGRX&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bbox</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span></div>
+
+
+
+<div class="viewcode-block" id="grabclipboard">
+<a class="viewcode-back" href="../../reference/ImageGrab.html#PIL.ImageGrab.grabclipboard">[docs]</a>
+<span class="k">def</span> <span class="nf">grabclipboard</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+        <span class="n">fh</span><span class="p">,</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;set theFile to (open for access POSIX file &quot;&#39;</span>
+            <span class="o">+</span> <span class="n">filepath</span>
+            <span class="o">+</span> <span class="s1">&#39;&quot; with write permission)&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;try&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;    write (the clipboard as «class PNGf») to theFile&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;end try&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;close access theFile&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;osascript&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">]</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span>
+    <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+        <span class="n">fmt</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">grabclipboard_win32</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>  <span class="c1"># CF_HDROP</span>
+            <span class="kn">import</span> <span class="nn">struct</span>
+
+            <span class="n">o</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack_from</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">o</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-16le&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">o</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;mbcs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">files</span><span class="p">[:</span> <span class="n">files</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;png&quot;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">PngImagePlugin</span>
+
+                <span class="k">return</span> <span class="n">PngImagePlugin</span><span class="o">.</span><span class="n">PngImageFile</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;DIB&quot;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">BmpImagePlugin</span>
+
+                <span class="k">return</span> <span class="n">BmpImagePlugin</span><span class="o">.</span><span class="n">DibImageFile</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;WAYLAND_DISPLAY&quot;</span><span class="p">):</span>
+            <span class="n">session_type</span> <span class="o">=</span> <span class="s2">&quot;wayland&quot;</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DISPLAY&quot;</span><span class="p">):</span>
+            <span class="n">session_type</span> <span class="o">=</span> <span class="s2">&quot;x11&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Session type check failed</span>
+            <span class="n">session_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;wl-paste&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">session_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;wayland&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s2">&quot;wl-paste&quot;</span><span class="p">,</span> <span class="s2">&quot;-l&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">mimetypes</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;image/png&quot;</span> <span class="ow">in</span> <span class="n">mimetypes</span><span class="p">:</span>
+                <span class="n">mimetype</span> <span class="o">=</span> <span class="s2">&quot;image/png&quot;</span>
+            <span class="k">elif</span> <span class="n">mimetypes</span><span class="p">:</span>
+                <span class="n">mimetype</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mimetype</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wl-paste&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">mimetype</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="n">mimetype</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;xclip&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">session_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x11&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xclip&quot;</span><span class="p">,</span> <span class="s2">&quot;-selection&quot;</span><span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">,</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;image/png&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;wl-paste or xclip is required for ImageGrab.grabclipboard() on Linux&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> error: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ChildProcessError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">im</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.ImageGrab</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

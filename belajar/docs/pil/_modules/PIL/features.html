@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.features &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.features</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.features</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">PIL</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">modules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;pil&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;PILLOW_VERSION&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;tkinter&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._tkinter_finder&quot;</span><span class="p">,</span> <span class="s2">&quot;tk_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;freetype2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imagingft&quot;</span><span class="p">,</span> <span class="s2">&quot;freetype2_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;littlecms2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imagingcms&quot;</span><span class="p">,</span> <span class="s2">&quot;littlecms_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;webp&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._webp&quot;</span><span class="p">,</span> <span class="s2">&quot;webpdecoder_version&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="check_module">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.check_module">[docs]</a>
+<span class="k">def</span> <span class="nf">check_module</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a module is available.</span>
+
+<span class="sd">    :param feature: The module to check for.</span>
+<span class="sd">    :returns: ``True`` if available, ``False`` otherwise.</span>
+<span class="sd">    :raises ValueError: If the module is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown module </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">module</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">modules</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="version_module">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.version_module">[docs]</a>
+<span class="k">def</span> <span class="nf">version_module</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param feature: The module to check for.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The loaded version number as a string, or ``None`` if unknown or not available.</span>
+<span class="sd">    :raises ValueError: If the module is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_module</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">module</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">modules</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">ver</span><span class="p">]),</span> <span class="n">ver</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_supported_modules">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.get_supported_modules">[docs]</a>
+<span class="k">def</span> <span class="nf">get_supported_modules</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: A list of all supported modules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">modules</span> <span class="k">if</span> <span class="n">check_module</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span></div>
+
+
+
+<span class="n">codecs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;jpg&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeglib&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;jpg_2000&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;jpeg2k&quot;</span><span class="p">,</span> <span class="s2">&quot;jp2klib&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;zlib&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;zip&quot;</span><span class="p">,</span> <span class="s2">&quot;zlib&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;libtiff&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;libtiff&quot;</span><span class="p">,</span> <span class="s2">&quot;libtiff&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="check_codec">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.check_codec">[docs]</a>
+<span class="k">def</span> <span class="nf">check_codec</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a codec is available.</span>
+
+<span class="sd">    :param feature: The codec to check for.</span>
+<span class="sd">    :returns: ``True`` if available, ``False`` otherwise.</span>
+<span class="sd">    :raises ValueError: If the codec is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">codecs</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown codec </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">codec</span><span class="p">,</span> <span class="n">lib</span> <span class="o">=</span> <span class="n">codecs</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">codec</span> <span class="o">+</span> <span class="s2">&quot;_encoder&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="version_codec">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.version_codec">[docs]</a>
+<span class="k">def</span> <span class="nf">version_codec</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param feature: The codec to check for.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The version number as a string, or ``None`` if not available.</span>
+<span class="sd">        Checked at compile time for ``jpg``, run-time otherwise.</span>
+<span class="sd">    :raises ValueError: If the codec is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_codec</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">codec</span><span class="p">,</span> <span class="n">lib</span> <span class="o">=</span> <span class="n">codecs</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="p">,</span> <span class="n">lib</span> <span class="o">+</span> <span class="s2">&quot;_version&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;libtiff&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Version &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">version</span></div>
+
+
+
+<div class="viewcode-block" id="get_supported_codecs">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.get_supported_codecs">[docs]</a>
+<span class="k">def</span> <span class="nf">get_supported_codecs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: A list of all supported codecs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">codecs</span> <span class="k">if</span> <span class="n">check_codec</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span></div>
+
+
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;webp_anim&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._webp&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_WEBPANIM&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;webp_mux&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._webp&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_WEBPMUX&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;transp_webp&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._webp&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_TRANSPARENCY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;raqm&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imagingft&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_RAQM&quot;</span><span class="p">,</span> <span class="s2">&quot;raqm_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;fribidi&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imagingft&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_FRIBIDI&quot;</span><span class="p">,</span> <span class="s2">&quot;fribidi_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;harfbuzz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imagingft&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_HARFBUZZ&quot;</span><span class="p">,</span> <span class="s2">&quot;harfbuzz_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;libjpeg_turbo&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_LIBJPEGTURBO&quot;</span><span class="p">,</span> <span class="s2">&quot;libjpeg_turbo_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;libimagequant&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_LIBIMAGEQUANT&quot;</span><span class="p">,</span> <span class="s2">&quot;imagequant_version&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;xcb&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;PIL._imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;HAVE_XCB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="check_feature">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.check_feature">[docs]</a>
+<span class="k">def</span> <span class="nf">check_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a feature is available.</span>
+
+<span class="sd">    :param feature: The feature to check for.</span>
+<span class="sd">    :returns: ``True`` if available, ``False`` if unavailable, ``None`` if unknown.</span>
+<span class="sd">    :raises ValueError: If the feature is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown feature </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">module</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">imported_module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PIL&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">imported_module</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="version_feature">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.version_feature">[docs]</a>
+<span class="k">def</span> <span class="nf">version_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param feature: The feature to check for.</span>
+<span class="sd">    :returns: The version number as a string, or ``None`` if not available.</span>
+<span class="sd">    :raises ValueError: If the feature is not defined in this version of Pillow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">module</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">ver</span><span class="p">]),</span> <span class="n">ver</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_supported_features">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.get_supported_features">[docs]</a>
+<span class="k">def</span> <span class="nf">get_supported_features</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: A list of all supported features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span> <span class="k">if</span> <span class="n">check_feature</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span></div>
+
+
+
+<div class="viewcode-block" id="check">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.check">[docs]</a>
+<span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param feature: A module, codec, or feature name.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        ``True`` if the module, codec, or feature is available,</span>
+<span class="sd">        ``False`` or ``None`` otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check_module</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">codecs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check_codec</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">check_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown feature &#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="version">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.version">[docs]</a>
+<span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param feature:</span>
+<span class="sd">        The module, codec, or feature to check for.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        The version number as a string, or ``None`` if unknown or not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">version_module</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">codecs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">version_codec</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">version_feature</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_supported">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.get_supported">[docs]</a>
+<span class="k">def</span> <span class="nf">get_supported</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :returns: A list of all supported modules, features, and codecs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">get_supported_modules</span><span class="p">()</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_supported_features</span><span class="p">())</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_supported_codecs</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+
+<div class="viewcode-block" id="pilinfo">
+<a class="viewcode-back" href="../../reference/features.html#PIL.features.pilinfo">[docs]</a>
+<span class="k">def</span> <span class="nf">pilinfo</span><span class="p">(</span><span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">supported_formats</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints information about this installation of Pillow.</span>
+<span class="sd">    This function can be called with ``python3 -m PIL``.</span>
+
+<span class="sd">    :param out:</span>
+<span class="sd">        The output stream to print to. Defaults to ``sys.stdout`` if ``None``.</span>
+<span class="sd">    :param supported_formats:</span>
+<span class="sd">        If ``True``, a list of all supported image file formats will be printed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+    <span class="n">Image</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pillow </span><span class="si">{</span><span class="n">PIL</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="n">py_version</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Python </span><span class="si">{</span><span class="n">py_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">py_version</span> <span class="ow">in</span> <span class="n">py_version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;       </span><span class="si">{</span><span class="n">py_version</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Python modules loaded from </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Binary modules loaded from </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;pil&quot;</span><span class="p">,</span> <span class="s2">&quot;PIL CORE&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;tkinter&quot;</span><span class="p">,</span> <span class="s2">&quot;TKINTER&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;freetype2&quot;</span><span class="p">,</span> <span class="s2">&quot;FREETYPE2&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;littlecms2&quot;</span><span class="p">,</span> <span class="s2">&quot;LITTLECMS2&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;WEBP&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;transp_webp&quot;</span><span class="p">,</span> <span class="s2">&quot;WEBP Transparency&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;webp_mux&quot;</span><span class="p">,</span> <span class="s2">&quot;WEBPMUX&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;webp_anim&quot;</span><span class="p">,</span> <span class="s2">&quot;WEBP Animation&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;JPEG&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;jpg_2000&quot;</span><span class="p">,</span> <span class="s2">&quot;OPENJPEG (JPEG2000)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;zlib&quot;</span><span class="p">,</span> <span class="s2">&quot;ZLIB (PNG/ZIP)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;libtiff&quot;</span><span class="p">,</span> <span class="s2">&quot;LIBTIFF&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;raqm&quot;</span><span class="p">,</span> <span class="s2">&quot;RAQM (Bidirectional Text)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;libimagequant&quot;</span><span class="p">,</span> <span class="s2">&quot;LIBIMAGEQUANT (Quantization method)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;xcb&quot;</span><span class="p">,</span> <span class="s2">&quot;XCB (X protocol)&quot;</span><span class="p">),</span>
+    <span class="p">]:</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;jpg&quot;</span> <span class="ow">and</span> <span class="n">check_feature</span><span class="p">(</span><span class="s2">&quot;libjpeg_turbo&quot;</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="s2">&quot;libjpeg-turbo &quot;</span> <span class="o">+</span> <span class="n">version_feature</span><span class="p">(</span><span class="s2">&quot;libjpeg_turbo&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">version_static</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pil&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;littlecms2&quot;</span><span class="p">:</span>
+                    <span class="c1"># this check is also in src/_imagingcms.c:setup_module()</span>
+                    <span class="n">version_static</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;compiled for&quot;</span> <span class="k">if</span> <span class="n">version_static</span> <span class="k">else</span> <span class="s2">&quot;loaded&quot;</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;raqm&quot;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;fribidi&quot;</span><span class="p">,</span> <span class="s2">&quot;harfbuzz&quot;</span><span class="p">):</span>
+                        <span class="n">v2</span> <span class="o">=</span> <span class="n">version_feature</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">v2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">v</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">v2</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="s2">&quot;support ok,&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="s2">&quot;support ok&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;***&quot;</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="s2">&quot;support not installed&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">supported_formats</span><span class="p">:</span>
+        <span class="n">extensions</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">EXTENSION</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">extensions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">ID</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">MIME</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">Image</span><span class="o">.</span><span class="n">MIME</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">extensions</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Extensions: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">extensions</span><span class="p">[</span><span class="n">i</span><span class="p">]))),</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span>
+                <span class="p">)</span>
+
+            <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">SAVE</span><span class="p">:</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;save&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">SAVE_ALL</span><span class="p">:</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;save_all&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">DECODERS</span><span class="p">:</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;decode&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">ENCODERS</span><span class="p">:</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;encode&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Features: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">features</span><span class="p">)),</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">68</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.features</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

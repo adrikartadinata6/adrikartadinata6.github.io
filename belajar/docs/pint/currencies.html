@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Using Pint for currency conversions &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command-line script" href="pint-convert.html" />
+    <link rel="prev" title="Different Unit Systems (and default units)" href="systems.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pint-convert.html" title="Command-line script"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="systems.html" title="Different Unit Systems (and default units)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using Pint for currency conversions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="using-pint-for-currency-conversions">
+<span id="currencies"></span><h1>Using Pint for currency conversions<a class="headerlink" href="#using-pint-for-currency-conversions" title="Permalink to this heading">¶</a></h1>
+<p>Currency conversion tends to be substantially more complex than physical units.
+The exact exchange rate between two currencies:</p>
+<ul class="simple">
+<li><p>changes every minute,</p></li>
+<li><p>changes depending on the place,</p></li>
+<li><p>changes depending on who you are and who changes the money,</p></li>
+<li><p>may be not reversible, e.g. EUR-&gt;USD may not be the same as 1/(USD-&gt;EUR),</p></li>
+<li><p>different rates may apply to different amounts of money, e.g. in a BUY/SELL ledger,</p></li>
+<li><p>frequently involves fees, whose calculation can be more or less sophisticated.
+For example, a typical credit card contract may state that the bank will charge you a
+fee on all purchases in foreign currency of 1 USD or 2%, whichever is higher, for all
+amounts less than 1000 USD, and then 1.5% for anything in excess.</p></li>
+</ul>
+<p>You may implement currencies in two ways, both of which require you to be familiar
+with <a class="reference internal" href="contexts.html#contexts"><span class="std std-ref">Contexts</span></a>.</p>
+<section id="simplified-model">
+<h2>Simplified model<a class="headerlink" href="#simplified-model" title="Permalink to this heading">¶</a></h2>
+<p>This model implies a few strong assumptions:</p>
+<ul class="simple">
+<li><p>There are no conversion fees</p></li>
+<li><p>All exchange rates are reversible</p></li>
+<li><p>Any amount of money can be exchanged at the same rate</p></li>
+<li><p>All exchanges can happen at the same time, between the same actors.</p></li>
+</ul>
+<p>In this simplified scenario, you can perform any round-trip across currencies
+and always come back with the original money; e.g.
+1 USD -&gt; EUR -&gt; JPY -&gt; GBP -&gt; USD will always give you 1 USD.</p>
+<p>In reality, these assumptions almost never happen but can be a reasonable approximation,
+for example in the case of large financial institutions, which can use interbank
+exchange rates and have nearly-limitless liquidity and sub-second trading systems.</p>
+<p>This can be implemented by putting all currencies on the same dimension, with a
+default conversion rate of NaN, and then setting the rate within contexts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">USD</span> <span class="o">=</span> <span class="p">[</span><span class="n">currency</span><span class="p">]</span>
+<span class="n">EUR</span> <span class="o">=</span> <span class="n">nan</span> <span class="n">USD</span>
+<span class="n">JPY</span> <span class="o">=</span> <span class="n">nan</span> <span class="n">USD</span>
+<span class="n">GBP</span> <span class="o">=</span> <span class="n">nan</span> <span class="n">USD</span>
+
+<span class="nd">@context</span> <span class="n">FX</span>
+    <span class="n">EUR</span> <span class="o">=</span> <span class="mf">1.11254</span> <span class="n">USD</span>
+    <span class="n">GBP</span> <span class="o">=</span> <span class="mf">1.16956</span> <span class="n">EUR</span>
+<span class="nd">@end</span>
+</pre></div>
+</div>
+<p>Note how, in the example above:</p>
+<ul class="simple">
+<li><p>USD is our <em>base currency</em>. It is arbitrary, only matters for the purpose
+of invoking <code class="docutils literal notranslate"><span class="pre">to_base_units()</span></code>, and can be changed with <a class="reference internal" href="systems.html#systems"><span class="std std-ref">Different Unit Systems (and default units)</span></a>.</p></li>
+<li><p>We did not set a value for JPY - maybe because the trader has no availability, or
+because the data source was for some reason missing up-to-date data.
+Any conversion involving JPY will return NaN.</p></li>
+<li><p>We redefined GBP to be a function of EUR instead of USD. This is fine as long as there
+is a path between two currencies.</p></li>
+</ul>
+</section>
+<section id="full-model">
+<h2>Full model<a class="headerlink" href="#full-model" title="Permalink to this heading">¶</a></h2>
+<p>If any of the assumptions of the simplified model fails, one can resort to putting each
+currency on its own dimension, and then implement transformations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EUR</span> <span class="o">=</span> <span class="p">[</span><span class="n">currency_EUR</span><span class="p">]</span>
+<span class="n">GBP</span> <span class="o">=</span> <span class="p">[</span><span class="n">currency_GBP</span><span class="p">]</span>
+
+<span class="nd">@context</span> <span class="n">FX</span>
+    <span class="n">GBP</span> <span class="o">-&gt;</span> <span class="n">EUR</span><span class="p">:</span> <span class="n">value</span> <span class="o">*</span> <span class="mf">1.11108</span> <span class="n">EUR</span><span class="o">/</span><span class="n">GBP</span>
+    <span class="n">EUR</span> <span class="o">-&gt;</span> <span class="n">GBP</span><span class="p">:</span> <span class="n">value</span> <span class="o">*</span> <span class="mf">0.81227</span> <span class="n">GBP</span><span class="o">/</span><span class="n">EUR</span>
+<span class="nd">@end</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 EUR&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ureg</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="s2">&quot;FX&quot;</span><span class="p">):</span>
+<span class="gp">... </span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;GBP&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;EUR&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span>
+<span class="go">0.9024969516 EUR</span>
+</pre></div>
+</div>
+<p>More sophisticated formulas, e.g. dealing with flat fees and thresholds, can be
+implemented with arbitrary python code by programmatically defining a context (see
+<a class="reference internal" href="contexts.html#contexts"><span class="std std-ref">Contexts</span></a>).</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Using Pint for currency conversions</a><ul>
+<li><a class="reference internal" href="#simplified-model">Simplified model</a></li>
+<li><a class="reference internal" href="#full-model">Full model</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="systems.html" title="previous chapter">Different Unit Systems (and default units)</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="pint-convert.html" title="next chapter">Command-line script</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/currencies.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

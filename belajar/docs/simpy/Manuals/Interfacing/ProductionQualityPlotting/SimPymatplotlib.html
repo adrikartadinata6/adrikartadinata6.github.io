@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Publication-quality plot production with matplotlib &#8212; SimPy 2.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css" />
+    
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Running SimPy on Multiple Processors with Parallel Python" href="../ParallelSimPy/SimPyPP.html" />
+    <link rel="prev" title="Interfacing to External Packages" href="../../../Interfacing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../ParallelSimPy/SimPyPP.html" title="Running SimPy on Multiple Processors with Parallel Python"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../../Interfacing.html" title="Interfacing to External Packages"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../Interfacing.html" accesskey="U">Interfacing to External Packages</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Publication-quality plot production with <strong>matplotlib</strong></a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="publication-quality-plot-production-with-matplotlib">
+<h1>Publication-quality plot production with <strong>matplotlib</strong><a class="headerlink" href="#publication-quality-plot-production-with-matplotlib" title="Permalink to this headline">¶</a></h1>
+<p>This document deals with producing production-quality plots from SimPy
+simulation  output using the <strong>matplotlib</strong> library. matplotlib is known to
+work on Linux, Unix,  MS Windows and OS X platforms. This library is not part
+of the SimPy distribution  and has to be downloaded and installed separately.</p>
+<p>Simulation programs normally produce large quantities of output which needs to
+be  visualized, e.g. by plotting. These plots can help with aggregating data,
+e.g. for  detecting trends over time, frequency distributions or determining
+the warm-up period  of a simulation model experiment.</p>
+<p>SimPy’s SimPlot plotting package is an easy to use, out-of-the-box capability
+which can produce a full range of plot graphs on the screen and in PostScript
+format. After installing SimPy, it can be used without installing any other
+software. It is tightly integrated with SimPy, e.g. its Monitor data collection
+class.</p>
+<p>The SimPlot library is not intended to produce publication-quality plots. If
+you want to publish your plots in a report or on the web, consider using an
+external plotting library which can be called rom Python.</p>
+<section id="about-matplotlib">
+<h2>About matplotlib<a class="headerlink" href="#about-matplotlib" title="Permalink to this headline">¶</a></h2>
+<p>A very popular plotting library for Python is matplotlib. Its capabilities far
+exceed those of SimPy’s SimPlot. This is how matplotlib is described on its
+home page:</p>
+<blockquote>
+<div><p><em>“matplotlib is a python 2D plotting library which produces publication
+quality figures in a variety of hardcopy formats and interactive
+environments across platforms. matplotlib can be used in python scripts,
+the python and ipython shell (a la matlab or mathematica), web application
+servers, and six graphical user interface toolkits.”</em></p>
+</div></blockquote>
+<p>The matplotlib screenshots (with Python code) at
+<a class="reference external" href="http://matplotlib.sourceforge.net/users/screenshots.html">http://matplotlib.sourceforge.net/users/screenshots.html</a> show the great range
+of quality displays the library can produce with little coding. For the
+investment in time in downloading, installing and learning matplotlib, the
+SimPy user is rewarded with a powerful plotting capability.</p>
+<section id="downloading-matplotlib">
+<h3>Downloading matplotlib<a class="headerlink" href="#downloading-matplotlib" title="Permalink to this headline">¶</a></h3>
+<p>You can download matplotlib from <a class="reference external" href="https://sourceforge.net/projects/matplotlib">https://sourceforge.net/projects/matplotlib</a>.
+Extensive installation instructions are provided at
+<a class="reference external" href="http://matplotlib.sourceforge.net/users/installing.html">http://matplotlib.sourceforge.net/users/installing.html</a>.</p>
+</section>
+<section id="matplotlib-input-data">
+<h3>matplotlib input data<a class="headerlink" href="#matplotlib-input-data" title="Permalink to this headline">¶</a></h3>
+<p>matplotlib takes separate sequences (lists, tuples, arrays) for x- and
+y-values. SimPlot, on the other hand, plots Monitor instances, i.e., lists of
+[x,y] lists.</p>
+<p>This difference in data structures is easy to overcome in SimPy by using the
+Monitor functions <code class="docutils literal notranslate"><span class="pre">yseries</span></code> (returning the list of y-data) and <code class="docutils literal notranslate"><span class="pre">tseries</span></code>
+(returning the list of time- or x-data).</p>
+</section>
+<section id="an-example-from-the-bank-tutorial">
+<h3>An example from the Bank Tutorial<a class="headerlink" href="#an-example-from-the-bank-tutorial" title="Permalink to this headline">¶</a></h3>
+<p>As an example of how to use matplotlib with SimPy, a modified version of
+bank12.py from the Bank Tutorial is used here. It produces a line plot of the
+counter’s queue length and a histogram of the customer wait times:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#! /usr/local/bin/python</span>
+<span class="linenos"> 2</span><span class="sd">&quot;&quot;&quot; Based on bank12.py in Bank Tutorial.</span>
+<span class="linenos"> 3</span><span class="sd">   This program uses matplotlib. It produces two plots:</span>
+<span class="linenos"> 4</span><span class="sd">   - Queue length over time</span>
+<span class="linenos"> 5</span><span class="sd">   - Histogram of queue length</span>
+<span class="linenos"> 6</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 8</span><span class="kn">import</span> <span class="nn">pylab</span> <span class="k">as</span> <span class="nn">pyl</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">Random</span>
+<span class="linenos">10</span><span class="c1">## Model components</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">12</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly&quot;&quot;&quot;</span>
+<span class="linenos">13</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">333</span><span class="p">):</span>
+<span class="linenos">14</span>        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="o">.</span><span class="n">SEED</span> <span class="o">=</span> <span class="n">seed</span>
+<span class="linenos">16</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">number</span><span class="p">,</span><span class="n">interval</span><span class="p">):</span>
+<span class="linenos">17</span>        <span class="n">rv</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SEED</span><span class="p">)</span>
+<span class="linenos">18</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">19</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+<span class="linenos">20</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">12.0</span><span class="p">))</span>
+<span class="linenos">21</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">rv</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">interval</span><span class="p">)</span>
+<span class="linenos">22</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span>
+<span class="linenos">23</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">24</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and leaves &quot;&quot;&quot;</span>
+<span class="linenos">25</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+<span class="linenos">26</span>        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="linenos">27</span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="linenos">28</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">timeInBank</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="linenos">29</span>        <span class="n">arrive</span><span class="o">=</span><span class="n">now</span><span class="p">()</span>
+<span class="linenos">30</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">counter</span>
+<span class="linenos">31</span>        <span class="n">wait</span><span class="o">=</span><span class="n">now</span><span class="p">()</span><span class="o">-</span><span class="n">arrive</span>
+<span class="linenos">32</span>        <span class="n">wate</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span>
+<span class="linenos">33</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">counterRV</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">timeInBank</span><span class="p">)</span>
+<span class="linenos">34</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">tib</span>
+<span class="linenos">35</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">counter</span>
+<span class="linenos">36</span><span class="k">class</span> <span class="nc">Observer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">37</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">38</span>        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="linenos">39</span>    <span class="k">def</span> <span class="nf">observe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">40</span>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">41</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="mi">5</span>
+<span class="linenos">42</span>            <span class="n">qu</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">waitQ</span><span class="p">))</span>
+<span class="linenos">43</span><span class="c1">## Model</span>
+<span class="linenos">44</span><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">counterseed</span><span class="o">=</span><span class="mi">3939393</span><span class="p">):</span>
+<span class="linenos">45</span>    <span class="k">global</span> <span class="n">counter</span><span class="p">,</span><span class="n">counterRV</span><span class="p">,</span><span class="n">waitMonitor</span>
+<span class="linenos">46</span>    <span class="n">counter</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">,</span><span class="n">capacity</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">47</span>    <span class="n">counterRV</span> <span class="o">=</span> <span class="n">Random</span><span class="p">(</span><span class="n">counterseed</span><span class="p">)</span>
+<span class="linenos">48</span>    <span class="n">waitMonitor</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">()</span>
+<span class="linenos">49</span>    <span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">50</span>    <span class="n">sourceseed</span><span class="o">=</span><span class="mi">1133</span>
+<span class="linenos">51</span>    <span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">seed</span> <span class="o">=</span> <span class="n">sourceseed</span><span class="p">)</span>
+<span class="linenos">52</span>    <span class="n">activate</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="n">source</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mf">10.0</span><span class="p">))</span>
+<span class="linenos">53</span>    <span class="n">ob</span><span class="o">=</span><span class="n">Observer</span><span class="p">()</span>
+<span class="linenos">54</span>    <span class="n">activate</span><span class="p">(</span><span class="n">ob</span><span class="p">,</span><span class="n">ob</span><span class="o">.</span><span class="n">observe</span><span class="p">())</span>
+<span class="linenos">55</span>    <span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">)</span>
+<span class="linenos">56</span><span class="n">qu</span><span class="o">=</span><span class="n">Monitor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Queue length&quot;</span><span class="p">)</span>
+<span class="linenos">57</span><span class="n">wate</span><span class="o">=</span><span class="n">Monitor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Wait time&quot;</span><span class="p">)</span>
+<span class="linenos">58</span><span class="c1">## Experiment data</span>
+<span class="linenos">59</span><span class="n">sourceSeed</span><span class="o">=</span><span class="mi">333</span>
+<span class="linenos">60</span><span class="c1">## Experiment</span>
+<span class="linenos">61</span><span class="n">model</span><span class="p">()</span>
+<span class="linenos">62</span><span class="c1">## Output</span>
+<span class="linenos">63</span><span class="n">pyl</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.5</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="linenos">64</span><span class="n">pyl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">qu</span><span class="o">.</span><span class="n">tseries</span><span class="p">(),</span><span class="n">qu</span><span class="o">.</span><span class="n">yseries</span><span class="p">())</span>
+<span class="linenos">65</span><span class="n">pyl</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Bank12: queue length over time&quot;</span><span class="p">,</span>
+<span class="linenos">66</span>          <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">67</span><span class="n">pyl</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">68</span><span class="n">pyl</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;queue length before counter&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">69</span><span class="n">pyl</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">70</span><span class="n">pyl</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.\bank12.png&quot;</span><span class="p">)</span>
+<span class="linenos">71</span>
+<span class="linenos">72</span><span class="n">pyl</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="linenos">73</span><span class="n">n</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">patches</span> <span class="o">=</span> <span class="n">pyl</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">qu</span><span class="o">.</span><span class="n">yseries</span><span class="p">(),</span> <span class="mi">10</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">74</span><span class="n">pyl</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Bank12: Frequency of counter queue length&quot;</span><span class="p">,</span>
+<span class="linenos">75</span>          <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">76</span><span class="n">pyl</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;queuelength&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">77</span><span class="n">pyl</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;frequency&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="linenos">78</span><span class="n">pyl</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">79</span><span class="n">pyl</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="p">)</span>
+<span class="linenos">80</span><span class="n">pyl</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.\bank12histo.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the explanation of this program:</p>
+<p><strong>Line number and explanation</strong></p>
+<dl class="simple">
+<dt>01</dt><dd><p>Imports the matplotlib <strong>pylab</strong> module (this import form is needed to avoid
+namespace clashes with SimPy).</p>
+</dd>
+<dt>63</dt><dd><p>Sets the size of the figures following to a width of 5.5 and a height of 4 inches.</p>
+</dd>
+<dt>64</dt><dd><p>Plots the series of queue-length values (qu.yseries()) over their observation
+times series (qu.tseries()).</p>
+</dd>
+<dt>65</dt><dd><p>Sets the figure title, its font size, and its font weight.</p>
+</dd>
+<dt>67</dt><dd><p>Sets the x-axis label, its font size, and its font weight.</p>
+</dd>
+<dt>68</dt><dd><p>Sets the y-axis label, its font size, and its font weight.</p>
+</dd>
+<dt>69</dt><dd><p>Gives the graph a grid.</p>
+</dd>
+<dt>70</dt><dd><p>Saves the plot under the given name.</p>
+</dd>
+</dl>
+<p>72      Clears the current figure (e.g., resets the axes values from the previous plot).</p>
+<dl class="simple">
+<dt>73</dt><dd><p>Makes a histogram of the queue-length series (qu.series()) with 10 bins. The <em>normed</em>
+parameter makes the frequency counts relative to 1.</p>
+</dd>
+<dt>74</dt><dd><p>Sets the title etc.</p>
+</dd>
+<dt>76</dt><dd><p>Sets the x-axis label etc.</p>
+</dd>
+<dt>77</dt><dd><p>Sets the y-axis label etc.</p>
+</dd>
+<dt>78</dt><dd><p>Gives the graph a grid.</p>
+</dd>
+<dt>79</dt><dd><p>Limits the x-axis to the range[0..30].</p>
+</dd>
+<dt>80</dt><dd><p>Saves the plot under the given name.</p>
+</dd>
+</dl>
+<p>Running the program above results in two PNG files. The first (<code class="docutils literal notranslate"><span class="pre">bank12.png</span></code>)
+shows the queue length over time:</p>
+<img alt="../../../_images/bank12.png" src="../../../_images/bank12.png" />
+<p>The second output file (<code class="docutils literal notranslate"><span class="pre">bank12histo.png</span></code>) is a histogram of the customer
+queue length at the counter:</p>
+<img alt="../../../_images/bank12histo.png" src="../../../_images/bank12histo.png" />
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>The small example above already shows the power, flexibility and quality of the
+graphics capabilities provided by matplotlib. Almost anything (fonts, graph
+sizes, line types, number of series in one plot, number of subplots in a plot,
+…) is under user control by setting parameters or calling functions.
+Admittedly, it initially takes a lot of reading in the extensive documentation
+and some experimentation, but the results are definitely worth the effort!</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/sm_SimPy_Logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Publication-quality plot production with <strong>matplotlib</strong></a><ul>
+<li><a class="reference internal" href="#about-matplotlib">About matplotlib</a><ul>
+<li><a class="reference internal" href="#downloading-matplotlib">Downloading matplotlib</a></li>
+<li><a class="reference internal" href="#matplotlib-input-data">matplotlib input data</a></li>
+<li><a class="reference internal" href="#an-example-from-the-bank-tutorial">An example from the Bank Tutorial</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../../../Interfacing.html"
+                          title="previous chapter">Interfacing to External Packages</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../ParallelSimPy/SimPyPP.html"
+                          title="next chapter">Running SimPy on Multiple Processors with <strong>Parallel Python</strong></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Manuals/Interfacing/ProductionQualityPlotting/SimPymatplotlib.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../ParallelSimPy/SimPyPP.html" title="Running SimPy on Multiple Processors with Parallel Python"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../../../Interfacing.html" title="Interfacing to External Packages"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../Interfacing.html" >Interfacing to External Packages</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Publication-quality plot production with <strong>matplotlib</strong></a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2002-2022, Klaus Müller, Tony Vignaux, Ontje Lünsdorf, Stefan Scherfke.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

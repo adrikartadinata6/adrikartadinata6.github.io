@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>24. API - Pins &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="25. API - Exceptions" href="api_exc.html" />
+    <link rel="prev" title="23. API - Pi Information" href="api_info.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">24. API - Pins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#changing-the-pin-factory">24.1. Changing the pin factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mock-pins">24.2. Mock pins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#base-classes">24.3. Base classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.Factory"><code class="docutils literal notranslate"><span class="pre">Factory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.close"><code class="docutils literal notranslate"><span class="pre">Factory.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.pin"><code class="docutils literal notranslate"><span class="pre">Factory.pin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.release_all"><code class="docutils literal notranslate"><span class="pre">Factory.release_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.release_pins"><code class="docutils literal notranslate"><span class="pre">Factory.release_pins()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.reserve_pins"><code class="docutils literal notranslate"><span class="pre">Factory.reserve_pins()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.spi"><code class="docutils literal notranslate"><span class="pre">Factory.spi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.ticks"><code class="docutils literal notranslate"><span class="pre">Factory.ticks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.ticks_diff"><code class="docutils literal notranslate"><span class="pre">Factory.ticks_diff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Factory.board_info"><code class="docutils literal notranslate"><span class="pre">Factory.board_info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.Pin"><code class="docutils literal notranslate"><span class="pre">Pin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.close"><code class="docutils literal notranslate"><span class="pre">Pin.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.input_with_pull"><code class="docutils literal notranslate"><span class="pre">Pin.input_with_pull()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.output_with_state"><code class="docutils literal notranslate"><span class="pre">Pin.output_with_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.bounce"><code class="docutils literal notranslate"><span class="pre">Pin.bounce</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.edges"><code class="docutils literal notranslate"><span class="pre">Pin.edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.frequency"><code class="docutils literal notranslate"><span class="pre">Pin.frequency</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.function"><code class="docutils literal notranslate"><span class="pre">Pin.function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.info"><code class="docutils literal notranslate"><span class="pre">Pin.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.pull"><code class="docutils literal notranslate"><span class="pre">Pin.pull</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.state"><code class="docutils literal notranslate"><span class="pre">Pin.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Pin.when_changed"><code class="docutils literal notranslate"><span class="pre">Pin.when_changed</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPI"><code class="docutils literal notranslate"><span class="pre">SPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.read"><code class="docutils literal notranslate"><span class="pre">SPI.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.transfer"><code class="docutils literal notranslate"><span class="pre">SPI.transfer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.write"><code class="docutils literal notranslate"><span class="pre">SPI.write()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.bits_per_word"><code class="docutils literal notranslate"><span class="pre">SPI.bits_per_word</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.clock_mode"><code class="docutils literal notranslate"><span class="pre">SPI.clock_mode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.clock_phase"><code class="docutils literal notranslate"><span class="pre">SPI.clock_phase</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.clock_polarity"><code class="docutils literal notranslate"><span class="pre">SPI.clock_polarity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.lsb_first"><code class="docutils literal notranslate"><span class="pre">SPI.lsb_first</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.rate"><code class="docutils literal notranslate"><span class="pre">SPI.rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.SPI.select_high"><code class="docutils literal notranslate"><span class="pre">SPI.select_high</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.pi.PiFactory"><code class="docutils literal notranslate"><span class="pre">PiFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.pi.PiFactory.close"><code class="docutils literal notranslate"><span class="pre">PiFactory.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.pi.PiFactory.pin"><code class="docutils literal notranslate"><span class="pre">PiFactory.pin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.pi.PiFactory.spi"><code class="docutils literal notranslate"><span class="pre">PiFactory.spi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.pi.PiPin"><code class="docutils literal notranslate"><span class="pre">PiPin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.pi.PiPin.info"><code class="docutils literal notranslate"><span class="pre">PiPin.info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory"><code class="docutils literal notranslate"><span class="pre">LocalPiFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory.ticks"><code class="docutils literal notranslate"><span class="pre">LocalPiFactory.ticks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory.ticks_diff"><code class="docutils literal notranslate"><span class="pre">LocalPiFactory.ticks_diff()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.local.LocalPiPin"><code class="docutils literal notranslate"><span class="pre">LocalPiPin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gpiozero.pins.rpigpio">24.4. RPi.GPIO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOFactory"><code class="docutils literal notranslate"><span class="pre">RPiGPIOFactory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOPin"><code class="docutils literal notranslate"><span class="pre">RPiGPIOPin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gpiozero.pins.lgpio">24.5. lgpio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOFactory"><code class="docutils literal notranslate"><span class="pre">LGPIOFactory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOPin"><code class="docutils literal notranslate"><span class="pre">LGPIOPin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gpiozero.pins.pigpio">24.6. PiGPIO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOFactory"><code class="docutils literal notranslate"><span class="pre">PiGPIOFactory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOPin"><code class="docutils literal notranslate"><span class="pre">PiGPIOPin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gpiozero.pins.native">24.7. Native</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.native.NativeFactory"><code class="docutils literal notranslate"><span class="pre">NativeFactory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.native.NativePin"><code class="docutils literal notranslate"><span class="pre">NativePin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.native.Native2835Pin"><code class="docutils literal notranslate"><span class="pre">Native2835Pin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.native.Native2711Pin"><code class="docutils literal notranslate"><span class="pre">Native2711Pin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gpiozero.pins.mock">24.8. Mock</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory"><code class="docutils literal notranslate"><span class="pre">MockFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin_class"><code class="docutils literal notranslate"><span class="pre">MockFactory.pin_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin"><code class="docutils literal notranslate"><span class="pre">MockFactory.pin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory.reset"><code class="docutils literal notranslate"><span class="pre">MockFactory.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory.ticks"><code class="docutils literal notranslate"><span class="pre">MockFactory.ticks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.pins.mock.MockFactory.ticks_diff"><code class="docutils literal notranslate"><span class="pre">MockFactory.ticks_diff()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockPin"><code class="docutils literal notranslate"><span class="pre">MockPin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockPWMPin"><code class="docutils literal notranslate"><span class="pre">MockPWMPin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockConnectedPin"><code class="docutils literal notranslate"><span class="pre">MockConnectedPin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockChargingPin"><code class="docutils literal notranslate"><span class="pre">MockChargingPin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockTriggerPin"><code class="docutils literal notranslate"><span class="pre">MockTriggerPin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.pins.mock.MockSPIDevice"><code class="docutils literal notranslate"><span class="pre">MockSPIDevice</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">24. </span>API - Pins</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_pins.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.pins">
+<span id="api-pins"></span><h1><span class="section-number">24. </span>API - Pins<a class="headerlink" href="#module-gpiozero.pins" title="Link to this heading"></a></h1>
+<p>As of release 1.1, the GPIO Zero library can be roughly divided into two
+things: pins and the devices that are connected to them. The majority of the
+documentation focuses on devices as pins are below the level that most users
+are concerned with. However, some users may wish to take advantage of the
+capabilities of alternative GPIO implementations or (in future) use GPIO
+extender chips. This is the purpose of the pins portion of the library.</p>
+<p>When you construct a device, you pass in a pin specification. This is passed to
+a pin <a class="reference internal" href="#gpiozero.Factory" title="gpiozero.Factory"><code class="xref py py-class docutils literal notranslate"><span class="pre">Factory</span></code></a> which turns it into a <a class="reference internal" href="#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> implementation.  The
+default factory can be queried (and changed) with <a class="reference internal" href="api_generic.html#gpiozero.Device.pin_factory" title="gpiozero.Device.pin_factory"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.pin_factory</span></code></a>.
+However, all classes (even internal devices) accept a <em>pin_factory</em> keyword
+argument to their constructors permitting the factory to be overridden on a
+per-device basis (the reason for allowing per-device factories is made apparent
+in the <a class="reference internal" href="remote_gpio.html"><span class="doc">Configuring Remote GPIO</span></a> chapter).</p>
+<p>This is illustrated in the following flow-chart:</p>
+<img alt="_images/device_pin_flowchart.svg" class="align-center" src="_images/device_pin_flowchart.svg" /><p>The default factory is constructed when the first device is initialised; if no
+default factory can be constructed (e.g. because no GPIO implementations are
+installed, or all of them fail to load for whatever reason), a
+<a class="reference internal" href="api_exc.html#gpiozero.BadPinFactory" title="gpiozero.BadPinFactory"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BadPinFactory</span></code></a> exception will be raised at construction time.</p>
+<p>After importing gpiozero, until constructing a gpiozero device, the pin factory
+is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>, but at the point of first construction the default pin factory
+will come into effect:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">pi@raspberrypi:~ $ </span>python3
+<span class="go">Python 3.7.3 (default, Apr  3 2019, 05:39:12)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="go">&gt;&gt;&gt; from gpiozero import Device, LED</span>
+<span class="go">&gt;&gt;&gt; print(Device.pin_factory)</span>
+<span class="go">None</span>
+<span class="go">&gt;&gt;&gt; led = LED(2)</span>
+<span class="go">&gt;&gt;&gt; Device.pin_factory</span>
+<span class="go">&lt;gpiozero.pins.rpigpio.RPiGPIOFactory object at 0xb667ae30&gt;</span>
+<span class="go">&gt;&gt;&gt; led.pin_factory</span>
+<span class="go">&lt;gpiozero.pins.rpigpio.RPiGPIOFactory object at 0xb6323530&gt;</span>
+</pre></div>
+</div>
+<p>As above, on a Raspberry Pi with the RPi.GPIO library installed, (assuming no
+environment variables are set), the default pin factory will be
+<a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOFactory" title="gpiozero.pins.rpigpio.RPiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RPiGPIOFactory</span></code></a>.</p>
+<p>On a PC (with no pin libraries installed and no environment variables set),
+importing will work but attempting to create a device will raise
+<a class="reference internal" href="api_exc.html#gpiozero.BadPinFactory" title="gpiozero.BadPinFactory"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BadPinFactory</span></code></a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">ben@magicman:~ $ </span>python3
+<span class="go">Python 3.6.8 (default, Aug 20 2019, 17:12:48)</span>
+<span class="go">[GCC 8.3.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="go">&gt;&gt;&gt; from gpiozero import Device, LED</span>
+<span class="go">&gt;&gt;&gt; print(Device.pin_factory)</span>
+<span class="go">None</span>
+<span class="go">&gt;&gt;&gt; led = LED(2)</span>
+<span class="go">...</span>
+<span class="go">BadPinFactory: Unable to load any default pin factory!</span>
+</pre></div>
+</div>
+<section id="changing-the-pin-factory">
+<span id="changing-pin-factory"></span><h2><span class="section-number">24.1. </span>Changing the pin factory<a class="headerlink" href="#changing-the-pin-factory" title="Link to this heading"></a></h2>
+<p>The default pin factory can be replaced by specifying a value for the
+<span class="target" id="index-0"></span><a class="reference internal" href="cli_env.html#envvar-GPIOZERO_PIN_FACTORY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">GPIOZERO_PIN_FACTORY</span></code></a> environment variable. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">pi@raspberrypi:~ $ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>native<span class="w"> </span>python3
+<span class="go">Python 3.7.3 (default, Apr  3 2019, 05:39:12)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="go">&gt;&gt;&gt; from gpiozero import Device</span>
+<span class="go">&gt;&gt;&gt; Device._default_pin_factory()</span>
+<span class="go">&lt;gpiozero.pins.native.NativeFactory object at 0x762c26b0&gt;</span>
+</pre></div>
+</div>
+<p>To set the <span class="target" id="index-1"></span><a class="reference internal" href="cli_env.html#envvar-GPIOZERO_PIN_FACTORY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">GPIOZERO_PIN_FACTORY</span></code></a> for the rest of your session you can
+<strong class="command">export</strong> this value:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">pi@raspberrypi:~ $ </span><span class="nb">export</span><span class="w"> </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>native
+<span class="gp">pi@raspberrypi:~ $ </span>python3
+<span class="go">Python 3.7.3 (default, Apr  3 2019, 05:39:12)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="go">&gt;&gt;&gt; import gpiozero</span>
+<span class="go">&gt;&gt;&gt; Device._default_pin_factory()</span>
+<span class="go">&lt;gpiozero.pins.native.NativeFactory object at 0x762c26b0&gt;</span>
+<span class="go">&gt;&gt;&gt; quit()</span>
+<span class="gp">pi@raspberrypi:~ $ </span>python3
+<span class="go">Python 3.7.3 (default, Apr  3 2019, 05:39:12)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="go">&gt;&gt;&gt; import gpiozero</span>
+<span class="go">&gt;&gt;&gt; Device._default_pin_factory()</span>
+<span class="go">&lt;gpiozero.pins.native.NativeFactory object at 0x762c26b0&gt;</span>
+</pre></div>
+</div>
+<p>If you add the <strong class="command">export</strong> command to your <code class="file docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file, you’ll
+set the default pin factory for all future sessions too.</p>
+<p>If the environment variable is set, the corresponding pin factory will be used,
+otherwise each of the four GPIO pin factories will be attempted to be used in
+turn.</p>
+<p>The following values, and the corresponding <a class="reference internal" href="#gpiozero.Factory" title="gpiozero.Factory"><code class="xref py py-class docutils literal notranslate"><span class="pre">Factory</span></code></a> and <a class="reference internal" href="#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a>
+classes are listed in the table below. Factories are listed in the order that
+they are tried by default.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Factory class</p></th>
+<th class="head"><p>Pin class</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>rpigpio</p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOFactory" title="gpiozero.pins.rpigpio.RPiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.rpigpio.RPiGPIOFactory</span></code></a></p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOPin" title="gpiozero.pins.rpigpio.RPiGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.rpigpio.RPiGPIOPin</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>lgpio</p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOFactory" title="gpiozero.pins.lgpio.LGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.lgpio.LGPIOFactory</span></code></a></p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOPin" title="gpiozero.pins.lgpio.LGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.lgpio.LGPIOPin</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>pigpio</p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOFactory" title="gpiozero.pins.pigpio.PiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.pigpio.PiGPIOFactory</span></code></a></p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOPin" title="gpiozero.pins.pigpio.PiGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.pigpio.PiGPIOPin</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>native</p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.native.NativeFactory" title="gpiozero.pins.native.NativeFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.native.NativeFactory</span></code></a></p></td>
+<td><p><a class="reference internal" href="#gpiozero.pins.native.NativePin" title="gpiozero.pins.native.NativePin"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.native.NativePin</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>If you need to change the default pin factory from within a script, either set
+<a class="reference internal" href="api_generic.html#gpiozero.Device.pin_factory" title="gpiozero.Device.pin_factory"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Device.pin_factory</span></code></a> to the new factory instance to use:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.native</span> <span class="kn">import</span> <span class="n">NativeFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Device</span><span class="p">,</span> <span class="n">LED</span>
+
+<span class="n">Device</span><span class="o">.</span><span class="n">pin_factory</span> <span class="o">=</span> <span class="n">NativeFactory</span><span class="p">()</span>
+
+<span class="c1"># These will now implicitly use NativePin instead of RPiGPIOPin</span>
+<span class="n">led1</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">led2</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or use the <em>pin_factory</em> keyword parameter mentioned above:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.native</span> <span class="kn">import</span> <span class="n">NativeFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">my_factory</span> <span class="o">=</span> <span class="n">NativeFactory</span><span class="p">()</span>
+
+<span class="c1"># This will use NativePin instead of RPiGPIOPin for led1</span>
+<span class="c1"># but led2 will continue to use RPiGPIOPin</span>
+<span class="n">led1</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">my_factory</span><span class="p">)</span>
+<span class="n">led2</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Certain factories may take default information from additional sources.
+For example, to default to creating pins with
+<a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOPin" title="gpiozero.pins.pigpio.PiGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">gpiozero.pins.pigpio.PiGPIOPin</span></code></a> on a remote pi called “remote-pi”
+you can set the <span class="target" id="index-2"></span><a class="reference internal" href="cli_env.html#envvar-PIGPIO_ADDR"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">PIGPIO_ADDR</span></code></a> environment variable when running your
+script:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>pigpio<span class="w"> </span><span class="nv">PIGPIO_ADDR</span><span class="o">=</span>remote-pi<span class="w"> </span>python3<span class="w"> </span>my_script.py
+</pre></div>
+</div>
+<p>Like the <span class="target" id="index-3"></span><a class="reference internal" href="cli_env.html#envvar-GPIOZERO_PIN_FACTORY"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">GPIOZERO_PIN_FACTORY</span></code></a> value, these can be exported from your
+<code class="file docutils literal notranslate"><span class="pre">~/.bashrc</span></code> script too.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The astute and mischievous reader may note that it is possible to mix
+factories, e.g. using <a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOFactory" title="gpiozero.pins.rpigpio.RPiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RPiGPIOFactory</span></code></a> for
+one pin, and <a class="reference internal" href="#gpiozero.pins.native.NativeFactory" title="gpiozero.pins.native.NativeFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">NativeFactory</span></code></a> for another. This
+is unsupported, and if it results in your script crashing, your components
+failing, or your Raspberry Pi turning into an actual raspberry pie, you
+have only yourself to blame.</p>
+<p>Sensible uses of multiple pin factories are given in <a class="reference internal" href="remote_gpio.html"><span class="doc">Configuring Remote GPIO</span></a>.</p>
+</div>
+</section>
+<section id="mock-pins">
+<span id="id1"></span><h2><span class="section-number">24.2. </span>Mock pins<a class="headerlink" href="#mock-pins" title="Link to this heading"></a></h2>
+<p>There’s also a <a class="reference internal" href="#gpiozero.pins.mock.MockFactory" title="gpiozero.pins.mock.MockFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockFactory</span></code></a> which generates entirely
+fake pins. This was originally intended for GPIO Zero developers who wish to
+write tests for devices without having to have the physical device wired in to
+their Pi. However, they have also proven useful in developing GPIO Zero scripts
+without having a Pi to hand. This pin factory will never be loaded by default;
+it must be explicitly specified, either by setting an environment variable or
+setting the pin factory within the script. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">pi@raspberrypi:~ $ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>mock<span class="w"> </span>python3
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Device</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.mock</span> <span class="kn">import</span> <span class="n">MockFactory</span>
+
+<span class="n">Device</span><span class="o">.</span><span class="n">pin_factory</span> <span class="o">=</span> <span class="n">MockFactory</span><span class="p">()</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can create device objects and inspect their value changing as you’d expect:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">pi@raspberrypi:~ $ GPIOZERO_PIN_FACTORY=mock python3</span>
+<span class="go">Python 3.7.3 (default, Apr  3 2019, 05:39:12)</span>
+<span class="go">[GCC 8.2.0] on linux</span>
+<span class="go">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">value</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">value</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>You can even control pin state changes to simulate device behaviour:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">Button</span>
+
+<span class="go"># Construct a couple of devices attached to mock pins 16 and 17, and link the devices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">btn</span>
+
+<span class="go"># Initailly the button isn&#39;t &quot;pressed&quot; so the LED should be off</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">value</span>
+<span class="go">0</span>
+
+<span class="go"># Drive the pin low (this is what would happen electrically when the button is pressed)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">btn</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">drive_low</span><span class="p">()</span>
+<span class="go"># The LED is now on</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">value</span>
+<span class="go">1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">btn</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">drive_high</span><span class="p">()</span>
+<span class="go"># The button is now &quot;released&quot;, so the LED should be off again</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">value</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Several sub-classes of mock pins exist for emulating various other things
+(pins that do/don’t support PWM, pins that are connected together, pins that
+drive high after a delay, etc), for example, you have to use
+<a class="reference internal" href="#gpiozero.pins.mock.MockPWMPin" title="gpiozero.pins.mock.MockPWMPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPWMPin</span></code></a> to be able to use devices requiring PWM:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">pi@raspberrypi:~ $ </span><span class="nv">GPIOZERO_PIN_FACTORY</span><span class="o">=</span>mock<span class="w"> </span><span class="nv">GPIOZERO_MOCK_PIN_CLASS</span><span class="o">=</span>mockpwmpin<span class="w"> </span>python3
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Device</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.pins.mock</span> <span class="kn">import</span> <span class="n">MockFactory</span><span class="p">,</span> <span class="n">MockPWMPin</span>
+
+<span class="n">Device</span><span class="o">.</span><span class="n">pin_factory</span> <span class="o">=</span> <span class="n">MockFactory</span><span class="p">(</span><span class="n">pin_class</span><span class="o">=</span><span class="n">MockPWMPin</span><span class="p">)</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Interested users are invited to read the <a class="reference external" href="https://github.com/gpiozero/gpiozero/tree/master/tests">GPIO Zero test suite</a> for further
+examples of usage.</p>
+</section>
+<section id="base-classes">
+<h2><span class="section-number">24.3. </span>Base classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Factory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Factory</span></span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory" title="Link to this definition"></a></dt>
+<dd><p>Generates pins and SPI interfaces for devices. This is an abstract
+base class for pin factories. Descendents <em>must</em> override the following
+methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.Factory.ticks" title="gpiozero.Factory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.ticks_diff" title="gpiozero.Factory.ticks_diff"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks_diff()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_board_info()</span></code></p></li>
+</ul>
+<p>Descendents <em>may</em> override the following methods, if applicable:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.Factory.close" title="gpiozero.Factory.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.reserve_pins" title="gpiozero.Factory.reserve_pins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reserve_pins()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.release_pins" title="gpiozero.Factory.release_pins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">release_pins()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.release_all" title="gpiozero.Factory.release_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">release_all()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.pin" title="gpiozero.Factory.pin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pin()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Factory.spi" title="gpiozero.Factory.spi"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spi()</span></code></a></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.close" title="Link to this definition"></a></dt>
+<dd><p>Closes the pin factory. This is expected to clean up all resources
+manipulated by the factory. It it typically called at script
+termination.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.pin">
+<span class="sig-name descname"><span class="pre">pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.pin" title="Link to this definition"></a></dt>
+<dd><p>Creates an instance of a <a class="reference internal" href="#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> descendent representing the
+specified pin.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Descendents must ensure that pin instances representing the same
+hardware are identical; i.e. two separate invocations of
+<a class="reference internal" href="#gpiozero.Factory.pin" title="gpiozero.Factory.pin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pin()</span></code></a> for the same pin specification must return the same
+object.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.release_all">
+<span class="sig-name descname"><span class="pre">release_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reserver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.release_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.release_all" title="Link to this definition"></a></dt>
+<dd><p>Releases all pin reservations taken out by <em>reserver</em>. See
+<a class="reference internal" href="#gpiozero.Factory.release_pins" title="gpiozero.Factory.release_pins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">release_pins()</span></code></a> for further information).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.release_pins">
+<span class="sig-name descname"><span class="pre">release_pins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reserver</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.release_pins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.release_pins" title="Link to this definition"></a></dt>
+<dd><p>Releases the reservation of <em>reserver</em> against pin <em>names</em>.  This is
+typically called during <a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> to clean up
+reservations taken during construction. Releasing a reservation that is
+not currently held will be silently ignored (to permit clean-up after
+failed / partial construction).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.reserve_pins">
+<span class="sig-name descname"><span class="pre">reserve_pins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requester</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.reserve_pins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.reserve_pins" title="Link to this definition"></a></dt>
+<dd><p>Called to indicate that the device reserves the right to use the
+specified pin <em>names</em>. This should be done during device construction.
+If pins are reserved, you must ensure that the reservation is released
+by eventually called <a class="reference internal" href="#gpiozero.Factory.release_pins" title="gpiozero.Factory.release_pins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">release_pins()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.spi">
+<span class="sig-name descname"><span class="pre">spi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">spi_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.spi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.spi" title="Link to this definition"></a></dt>
+<dd><p>Returns an instance of an <a class="reference internal" href="#gpiozero.SPI" title="gpiozero.SPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPI</span></code></a> interface, for the specified SPI
+<em>port</em> and <em>device</em>, or for the specified pins (<em>clock_pin</em>,
+<em>mosi_pin</em>, <em>miso_pin</em>, and <em>select_pin</em>).  Only one of the schemes can
+be used; attempting to mix <em>port</em> and <em>device</em> with pin numbers will
+raise <a class="reference internal" href="api_exc.html#gpiozero.SPIBadArgs" title="gpiozero.SPIBadArgs"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SPIBadArgs</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.ticks">
+<span class="sig-name descname"><span class="pre">ticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.ticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.ticks" title="Link to this definition"></a></dt>
+<dd><p>Return the current ticks, according to the factory. The reference point
+is undefined and thus the result of this method is only meaningful when
+compared to another value returned by this method.</p>
+<p>The format of the time is also arbitrary, as is whether the time wraps
+after a certain duration. Ticks should only be compared using the
+<a class="reference internal" href="#gpiozero.Factory.ticks_diff" title="gpiozero.Factory.ticks_diff"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks_diff()</span></code></a> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Factory.ticks_diff">
+<span class="sig-name descname"><span class="pre">ticks_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">later</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">earlier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Factory.ticks_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Factory.ticks_diff" title="Link to this definition"></a></dt>
+<dd><p>Return the time in seconds between two <a class="reference internal" href="#gpiozero.Factory.ticks" title="gpiozero.Factory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a> results. The
+arguments are specified in the same order as they would be in the
+formula <em>later</em> - <em>earlier</em> but the result is guaranteed to be in
+seconds, and to be positive even if the ticks “wrapped” between calls
+to <a class="reference internal" href="#gpiozero.Factory.ticks" title="gpiozero.Factory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Factory.board_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">board_info</span></span><a class="headerlink" href="#gpiozero.Factory.board_info" title="Link to this definition"></a></dt>
+<dd><p>Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">BoardInfo</span></code> instance (or derivative) representing the
+board that instances generated by this factory will be attached to.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Pin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Pin</span></span><a class="reference internal" href="_modules/gpiozero/pins.html#Pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Pin" title="Link to this definition"></a></dt>
+<dd><p>Abstract base class representing a pin attached to some form of controller,
+be it GPIO, SPI, ADC, etc.</p>
+<p>Descendents should override property getters and setters to accurately
+represent the capabilities of pins. Descendents <em>must</em> override the
+following methods:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_info()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_function()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_function()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_state()</span></code></p></li>
+</ul>
+<p>Descendents <em>may</em> additionally override the following methods, if
+applicable:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.Pin.close" title="gpiozero.Pin.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Pin.output_with_state" title="gpiozero.Pin.output_with_state"><code class="xref py py-meth docutils literal notranslate"><span class="pre">output_with_state()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.Pin.input_with_pull" title="gpiozero.Pin.input_with_pull"><code class="xref py py-meth docutils literal notranslate"><span class="pre">input_with_pull()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_state()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_frequency()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_frequency()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_pull()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_pull()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_bounce()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_bounce()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_edges()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_edges()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_when_changed()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_when_changed()</span></code></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Pin.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Pin.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Pin.close" title="Link to this definition"></a></dt>
+<dd><p>Cleans up the resources allocated to the pin. After this method is
+called, this <a class="reference internal" href="#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> instance may no longer be used to query or
+control the pin’s state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Pin.input_with_pull">
+<span class="sig-name descname"><span class="pre">input_with_pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pull</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Pin.input_with_pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Pin.input_with_pull" title="Link to this definition"></a></dt>
+<dd><p>Sets the pin’s function to “input” and specifies an initial pull-up
+for the pin. By default this is equivalent to performing:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span>
+<span class="n">pin</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="n">pull</span>
+</pre></div>
+</div>
+<p>However, descendents may override this order to provide the smallest
+possible delay between configuring the pin for input and pulling the
+pin up/down (which can be important for avoiding “blips” in some
+configurations).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Pin.output_with_state">
+<span class="sig-name descname"><span class="pre">output_with_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#Pin.output_with_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Pin.output_with_state" title="Link to this definition"></a></dt>
+<dd><p>Sets the pin’s function to “output” and specifies an initial state
+for the pin. By default this is equivalent to performing:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;output&#39;</span>
+<span class="n">pin</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+</pre></div>
+</div>
+<p>However, descendents may override this in order to provide the smallest
+possible delay between configuring the pin for output and specifying an
+initial value (which can be important for avoiding “blips” in
+active-low configurations).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.bounce">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounce</span></span><a class="headerlink" href="#gpiozero.Pin.bounce" title="Link to this definition"></a></dt>
+<dd><p>The amount of bounce detection (elimination) currently in use by edge
+detection, measured in seconds. If bounce detection is not currently in
+use, this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+<p>For example, if <a class="reference internal" href="#gpiozero.Pin.edges" title="gpiozero.Pin.edges"><code class="xref py py-attr docutils literal notranslate"><span class="pre">edges</span></code></a> is currently “rising”, <a class="reference internal" href="#gpiozero.Pin.bounce" title="gpiozero.Pin.bounce"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bounce</span></code></a> is
+currently 5/1000 (5ms), then the waveform below will only fire
+<a class="reference internal" href="#gpiozero.Pin.when_changed" title="gpiozero.Pin.when_changed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_changed</span></code></a> on two occasions despite there being three rising
+edges:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>TIME 0...1...2...3...4...5...6...7...8...9...10..11..12 ms
+
+bounce elimination   |===================| |==============
+
+HIGH - - - - &gt;       ,--. ,--------------. ,--.
+                     |  | |              | |  |
+                     |  | |              | |  |
+LOW  ----------------&#39;  `-&#39;              `-&#39;  `-----------
+                     :                     :
+                     :                     :
+               when_changed          when_changed
+                   fires                 fires
+</pre></div>
+</div>
+<p>If the pin does not support edge detection, attempts to set this
+property will raise <a class="reference internal" href="api_exc.html#gpiozero.PinEdgeDetectUnsupported" title="gpiozero.PinEdgeDetectUnsupported"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinEdgeDetectUnsupported</span></code></a>. If the pin
+supports edge detection, the class must implement bounce detection,
+even if only in software.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.edges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#gpiozero.Pin.edges" title="Link to this definition"></a></dt>
+<dd><p>The edge that will trigger execution of the function or bound method
+assigned to <a class="reference internal" href="#gpiozero.Pin.when_changed" title="gpiozero.Pin.when_changed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_changed</span></code></a>. This can be one of the strings
+“both” (the default), “rising”, “falling”, or “none”:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>HIGH - - - - &gt;           ,--------------.
+                         |              |
+                         |              |
+LOW  --------------------&#39;              `--------------
+                         :              :
+                         :              :
+Fires when_changed     &quot;both&quot;         &quot;both&quot;
+when edges is ...     &quot;rising&quot;       &quot;falling&quot;
+</pre></div>
+</div>
+<p>If the pin does not support edge detection, attempts to set this
+property will raise <a class="reference internal" href="api_exc.html#gpiozero.PinEdgeDetectUnsupported" title="gpiozero.PinEdgeDetectUnsupported"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinEdgeDetectUnsupported</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.frequency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#gpiozero.Pin.frequency" title="Link to this definition"></a></dt>
+<dd><p>The frequency (in Hz) for the pin’s PWM implementation, or <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>
+if PWM is not currently in use. This value always defaults to
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> and may be changed with certain pin types to activate or
+deactivate PWM.</p>
+<p>If the pin does not support PWM, <a class="reference internal" href="api_exc.html#gpiozero.PinPWMUnsupported" title="gpiozero.PinPWMUnsupported"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinPWMUnsupported</span></code></a> will be
+raised when attempting to set this to a value other than <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.function">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">function</span></span><a class="headerlink" href="#gpiozero.Pin.function" title="Link to this definition"></a></dt>
+<dd><p>The function of the pin. This property is a string indicating the
+current function or purpose of the pin. Typically this is the string
+“input” or “output”. However, in some circumstances it can be other
+strings indicating non-GPIO related functionality.</p>
+<p>With certain pin types (e.g. GPIO pins), this attribute can be changed
+to configure the function of a pin. If an invalid function is
+specified, for this attribute, <a class="reference internal" href="api_exc.html#gpiozero.PinInvalidFunction" title="gpiozero.PinInvalidFunction"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinInvalidFunction</span></code></a> will be
+raised.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#gpiozero.Pin.info" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference internal" href="api_info.html#gpiozero.PinInfo" title="gpiozero.PinInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinInfo</span></code></a> associated with the pin. This can be used
+to determine physical properties of the pin, including its location on
+the header, fixed pulls, and the various specs that can be used to
+identify it.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.pull">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pull</span></span><a class="headerlink" href="#gpiozero.Pin.pull" title="Link to this definition"></a></dt>
+<dd><p>The pull-up state of the pin represented as a string. This is typically
+one of the strings “up”, “down”, or “floating” but additional values
+may be supported by the underlying hardware.</p>
+<p>If the pin does not support changing pull-up state (for example because
+of a fixed pull-up resistor), attempts to set this property will raise
+<a class="reference internal" href="api_exc.html#gpiozero.PinFixedPull" title="gpiozero.PinFixedPull"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinFixedPull</span></code></a>. If the specified value is not supported by the
+underlying hardware, <a class="reference internal" href="api_exc.html#gpiozero.PinInvalidPull" title="gpiozero.PinInvalidPull"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinInvalidPull</span></code></a> is raised.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#gpiozero.Pin.state" title="Link to this definition"></a></dt>
+<dd><p>The state of the pin. This is 0 for low, and 1 for high. As a low level
+view of the pin, no swapping is performed in the case of pull ups (see
+<a class="reference internal" href="#gpiozero.Pin.pull" title="gpiozero.Pin.pull"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pull</span></code></a> for more information):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>HIGH - - - - &gt;       ,----------------------
+                     |
+                     |
+LOW  ----------------&#39;
+</pre></div>
+</div>
+<p>Descendents which implement analog, or analog-like capabilities can
+return values between 0 and 1. For example, pins implementing PWM
+(where <a class="reference internal" href="#gpiozero.Pin.frequency" title="gpiozero.Pin.frequency"><code class="xref py py-attr docutils literal notranslate"><span class="pre">frequency</span></code></a> is not <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>) return a value between
+0.0 and 1.0 representing the current PWM duty cycle.</p>
+<p>If a pin is currently configured for input, and an attempt is made to
+set this attribute, <a class="reference internal" href="api_exc.html#gpiozero.PinSetInput" title="gpiozero.PinSetInput"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinSetInput</span></code></a> will be raised. If an invalid
+value is specified for this attribute, <a class="reference internal" href="api_exc.html#gpiozero.PinInvalidState" title="gpiozero.PinInvalidState"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinInvalidState</span></code></a> will be
+raised.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Pin.when_changed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">when_changed</span></span><a class="headerlink" href="#gpiozero.Pin.when_changed" title="Link to this definition"></a></dt>
+<dd><p>A function or bound method to be called when the pin’s state changes
+(more specifically when the edge specified by <a class="reference internal" href="#gpiozero.Pin.edges" title="gpiozero.Pin.edges"><code class="xref py py-attr docutils literal notranslate"><span class="pre">edges</span></code></a> is detected
+on the pin). The function or bound method must accept two parameters:
+the first will report the ticks (from <a class="reference internal" href="#gpiozero.Factory.ticks" title="gpiozero.Factory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Factory.ticks()</span></code></a>) when
+the pin’s state changed, and the second will report the pin’s current
+state.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on hardware support, the state is <em>not guaranteed to be
+accurate</em>. For instance, many GPIO implementations will provide
+an interrupt indicating when a pin’s state changed but not what it
+changed to. In this case the pin driver simply reads the pin’s
+current state to supply this parameter, but the pin’s state may
+have changed <em>since</em> the interrupt. Exercise appropriate caution
+when relying upon this parameter.</p>
+</div>
+<p>If the pin does not support edge detection, attempts to set this
+property will raise <a class="reference internal" href="api_exc.html#gpiozero.PinEdgeDetectUnsupported" title="gpiozero.PinEdgeDetectUnsupported"><code class="xref py py-exc docutils literal notranslate"><span class="pre">PinEdgeDetectUnsupported</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.SPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#SPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPI" title="Link to this definition"></a></dt>
+<dd><p>Abstract interface for <a class="reference external" href="https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus">Serial Peripheral Interface</a> (SPI)
+implementations. Descendents <em>must</em> override the following methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.SPI.transfer" title="gpiozero.SPI.transfer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transfer()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_clock_mode()</span></code></p></li>
+</ul>
+<p>Descendents <em>may</em> override the following methods, if applicable:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#gpiozero.SPI.read" title="gpiozero.SPI.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#gpiozero.SPI.write" title="gpiozero.SPI.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_clock_mode()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_lsb_first()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_lsb_first()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_select_high()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_select_high()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_bits_per_word()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_bits_per_word()</span></code></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.SPI.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#SPI.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPI.read" title="Link to this definition"></a></dt>
+<dd><p>Read <em>n</em> words of data from the SPI interface, returning them as a
+sequence of unsigned ints, each no larger than the configured
+<a class="reference internal" href="#gpiozero.SPI.bits_per_word" title="gpiozero.SPI.bits_per_word"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code></a> of the interface.</p>
+<p>This method is typically used with read-only devices that feature
+half-duplex communication. See <a class="reference internal" href="#gpiozero.SPI.transfer" title="gpiozero.SPI.transfer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transfer()</span></code></a> for full duplex
+communication.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.SPI.transfer">
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#SPI.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPI.transfer" title="Link to this definition"></a></dt>
+<dd><p>Write <em>data</em> to the SPI interface. <em>data</em> must be a sequence of
+unsigned integer words each of which will fit within the configured
+<a class="reference internal" href="#gpiozero.SPI.bits_per_word" title="gpiozero.SPI.bits_per_word"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code></a> of the interface. The method returns the sequence
+of words read from the interface while writing occurred (full duplex
+communication).</p>
+<p>The length of the sequence returned dictates the number of words of
+<em>data</em> written to the interface. Each word in the returned sequence
+will be an unsigned integer no larger than the configured
+<a class="reference internal" href="#gpiozero.SPI.bits_per_word" title="gpiozero.SPI.bits_per_word"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code></a> of the interface.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.SPI.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins.html#SPI.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPI.write" title="Link to this definition"></a></dt>
+<dd><p>Write <em>data</em> to the SPI interface. <em>data</em> must be a sequence of
+unsigned integer words each of which will fit within the configured
+<a class="reference internal" href="#gpiozero.SPI.bits_per_word" title="gpiozero.SPI.bits_per_word"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code></a> of the interface. The method returns the number
+of words written to the interface (which may be less than or equal to
+the length of <em>data</em>).</p>
+<p>This method is typically used with write-only devices that feature
+half-duplex communication. See <a class="reference internal" href="#gpiozero.SPI.transfer" title="gpiozero.SPI.transfer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">transfer()</span></code></a> for full duplex
+communication.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.bits_per_word">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bits_per_word</span></span><a class="headerlink" href="#gpiozero.SPI.bits_per_word" title="Link to this definition"></a></dt>
+<dd><p>Controls the number of bits that make up a word, and thus where the
+word boundaries appear in the data stream, and the maximum value of a
+word. Defaults to 8 meaning that words are effectively bytes.</p>
+<p>Several implementations do not support non-byte-sized words.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.clock_mode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clock_mode</span></span><a class="headerlink" href="#gpiozero.SPI.clock_mode" title="Link to this definition"></a></dt>
+<dd><p>Presents a value representing the <a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> and
+<a class="reference internal" href="#gpiozero.SPI.clock_phase" title="gpiozero.SPI.clock_phase"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_phase</span></code></a> attributes combined according to the following
+table:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>polarity (CPOL)</p></th>
+<th class="head"><p>phase (CPHA)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p>Adjusting this value adjusts both the <a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> and
+<a class="reference internal" href="#gpiozero.SPI.clock_phase" title="gpiozero.SPI.clock_phase"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_phase</span></code></a> attributes simultaneously.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.clock_phase">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clock_phase</span></span><a class="headerlink" href="#gpiozero.SPI.clock_phase" title="Link to this definition"></a></dt>
+<dd><p>The phase of the SPI clock pin. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default),
+data will be read from the MISO pin when the clock pin activates.
+Setting this to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> will cause data to be read from the MISO
+pin when the clock pin deactivates. On many data sheets this is
+documented as the CPHA value. Whether the clock edge is rising or
+falling when the clock is considered activated is controlled by the
+<a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> attribute (corresponding to CPOL).</p>
+<p>The following diagram indicates when data is read when
+<a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, and <a class="reference internal" href="#gpiozero.SPI.clock_phase" title="gpiozero.SPI.clock_phase"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_phase</span></code></a> is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), equivalent to CPHA 0:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>    ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `-------
+    :       :       :       :       :       :       :
+MISO---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+  /     \ /     \ /     \ /     \ /     \ /     \ /     \
+-{  Bit  X  Bit  X  Bit  X  Bit  X  Bit  X  Bit  X  Bit  }------
+  \     / \     / \     / \     / \     / \     / \     /
+   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;
+</pre></div>
+</div>
+<p>The following diagram indicates when data is read when
+<a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, but <a class="reference internal" href="#gpiozero.SPI.clock_phase" title="gpiozero.SPI.clock_phase"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_phase</span></code></a> is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, equivalent to CPHA 1:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>    ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `-------
+        :       :       :       :       :       :       :
+MISO   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+      /     \ /     \ /     \ /     \ /     \ /     \ /     \
+-----{  Bit  X  Bit  X  Bit  X  Bit  X  Bit  X  Bit  X  Bit  }--
+      \     / \     / \     / \     / \     / \     / \     /
+       `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.clock_polarity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clock_polarity</span></span><a class="headerlink" href="#gpiozero.SPI.clock_polarity" title="Link to this definition"></a></dt>
+<dd><p>The polarity of the SPI clock pin. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the
+default), the clock pin will idle low, and pulse high. Setting this to
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> will cause the clock pin to idle high, and pulse low. On
+many data sheets this is documented as the CPOL value.</p>
+<p>The following diagram illustrates the waveform when
+<a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), equivalent to
+CPOL 0:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>       on      on      on      on      on      on      on
+      ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+CLK   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+      |   |   |   |   |   |   |   |   |   |   |   |   |   |
+------&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `------
+idle       off     off     off     off     off     off       idle
+</pre></div>
+</div>
+<p>The following diagram illustrates the waveform when
+<a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, equivalent to CPOL 1:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>idle       off     off     off     off     off     off       idle
+------.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,------
+      |   |   |   |   |   |   |   |   |   |   |   |   |   |
+CLK   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+      `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;
+       on      on      on      on      on      on      on
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.lsb_first">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lsb_first</span></span><a class="headerlink" href="#gpiozero.SPI.lsb_first" title="Link to this definition"></a></dt>
+<dd><p>Controls whether words are read and written LSB in (Least Significant
+Bit first) order. The default is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> indicating that words
+are read and written in MSB (Most Significant Bit first) order.
+Effectively, this controls the <a class="reference external" href="https://en.wikipedia.org/wiki/Endianness#Bit_endianness">Bit endianness</a> of the connection.</p>
+<p>The following diagram shows the a word containing the number 5 (binary
+0101) transmitted on MISO with <a class="reference internal" href="#gpiozero.SPI.bits_per_word" title="gpiozero.SPI.bits_per_word"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code></a> set to 4, and
+<a class="reference internal" href="#gpiozero.SPI.clock_mode" title="gpiozero.SPI.clock_mode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_mode</span></code></a> set to 0, when <a class="reference internal" href="#gpiozero.SPI.lsb_first" title="gpiozero.SPI.lsb_first"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lsb_first</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>
+(the default):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>    ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `-----
+    :     ,-------. :     ,-------.
+MISO:     | :     | :     | :     |
+    :     | :     | :     | :     |
+----------&#39; :     `-------&#39; :     `----
+    :       :       :       :
+   MSB                     LSB
+</pre></div>
+</div>
+<p>And now with <a class="reference internal" href="#gpiozero.SPI.lsb_first" title="gpiozero.SPI.lsb_first"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lsb_first</span></code></a> set to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (and all other
+parameters the same):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>    ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `-----
+  ,-------. :     ,-------. :
+MISO:     | :     | :     | :
+  | :     | :     | :     | :
+--&#39; :     `-------&#39; :     `-----------
+    :       :       :       :
+   LSB                     MSB
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.rate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rate</span></span><a class="headerlink" href="#gpiozero.SPI.rate" title="Link to this definition"></a></dt>
+<dd><p>Controls the speed of the SPI interface in Hz (or baud).</p>
+<p>Note that most software SPI implementations ignore this property, and
+will raise <code class="xref py py-exc docutils literal notranslate"><span class="pre">SPIFixedRate</span></code> if an attempt is made to set it, as they
+have no rate control (they simply bit-bang as fast as possible because
+typically this isn’t very fast anyway, and introducing measures to
+limit the rate would simply slow them down to the point of being
+useless).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.SPI.select_high">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_high</span></span><a class="headerlink" href="#gpiozero.SPI.select_high" title="Link to this definition"></a></dt>
+<dd><p>If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), the chip select line is considered
+active when it is pulled low. When set to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the chip select
+line is considered active when it is driven high.</p>
+<p>The following diagram shows the waveform of the chip select line, and
+the clock when <a class="reference internal" href="#gpiozero.SPI.clock_polarity" title="gpiozero.SPI.clock_polarity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clock_polarity</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, and
+<a class="reference internal" href="#gpiozero.SPI.select_high" title="gpiozero.SPI.select_high"><code class="xref py py-attr docutils literal notranslate"><span class="pre">select_high</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>---.                                                     ,------
+__ |                                                     |
+CS |      chip is selected, and will react to clock      |  idle
+   `-----------------------------------------------------&#39;
+
+    ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `-------
+</pre></div>
+</div>
+<p>And when <a class="reference internal" href="#gpiozero.SPI.select_high" title="gpiozero.SPI.select_high"><code class="xref py py-attr docutils literal notranslate"><span class="pre">select_high</span></code></a> is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>   ,-----------------------------------------------------.
+CS |      chip is selected, and will react to clock      |  idle
+   |                                                     |
+---&#39;                                                     `------
+
+    ,---.   ,---.   ,---.   ,---.   ,---.   ,---.   ,---.
+CLK |   |   |   |   |   |   |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |   |   |   |   |   |   |
+----&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `---&#39;   `-------
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-gpiozero.pins.pi">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.pi.</span></span><span class="sig-name descname"><span class="pre">PiFactory</span></span><a class="reference internal" href="_modules/gpiozero/pins/pi.html#PiFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pi.PiFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.Factory" title="gpiozero.Factory"><code class="xref py py-class docutils literal notranslate"><span class="pre">Factory</span></code></a>. Abstract base class representing
+hardware attached to a Raspberry Pi. This forms the base of
+<a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory" title="gpiozero.pins.local.LocalPiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiFactory</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiFactory.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pi.html#PiFactory.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pi.PiFactory.close" title="Link to this definition"></a></dt>
+<dd><p>Closes the pin factory. This is expected to clean up all resources
+manipulated by the factory. It it typically called at script
+termination.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiFactory.pin">
+<span class="sig-name descname"><span class="pre">pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pi.html#PiFactory.pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pi.PiFactory.pin" title="Link to this definition"></a></dt>
+<dd><p>Creates an instance of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code> descendent representing the
+specified pin.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Descendents must ensure that pin instances representing the same
+hardware are identical; i.e. two separate invocations of
+<a class="reference internal" href="#gpiozero.pins.pi.PiFactory.pin" title="gpiozero.pins.pi.PiFactory.pin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pin()</span></code></a> for the same pin specification must return the same
+object.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiFactory.spi">
+<span class="sig-name descname"><span class="pre">spi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">spi_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pi.html#PiFactory.spi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pi.PiFactory.spi" title="Link to this definition"></a></dt>
+<dd><p>Returns an SPI interface, for the specified SPI <em>port</em> and <em>device</em>, or
+for the specified pins (<em>clock_pin</em>, <em>mosi_pin</em>, <em>miso_pin</em>, and
+<em>select_pin</em>).  Only one of the schemes can be used; attempting to mix
+<em>port</em> and <em>device</em> with pin numbers will raise
+<a class="reference internal" href="api_exc.html#gpiozero.SPIBadArgs" title="gpiozero.SPIBadArgs"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SPIBadArgs</span></code></a>.</p>
+<p>If the pins specified match the hardware SPI pins (clock on GPIO11,
+MOSI on GPIO10, MISO on GPIO9, and chip select on GPIO8 or GPIO7), and
+the spidev module can be imported, a hardware based interface (using
+spidev) will be returned. Otherwise, a software based interface will be
+returned which will use simple bit-banging to communicate.</p>
+<p>Both interfaces have the same API, support clock polarity and phase
+attributes, and can handle half and full duplex communications, but the
+hardware interface is significantly faster (though for many simpler
+devices this doesn’t matter).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.pi.</span></span><span class="sig-name descname"><span class="pre">PiPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pi.html#PiPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pi.PiPin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a>. Abstract base class representing a
+multi-function GPIO pin attached to a Raspberry Pi. Descendents <em>must</em>
+override the following methods:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_function()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_function()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_state()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_call_when_changed()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_enable_event_detect()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_disable_event_detect()</span></code></p></li>
+</ul>
+<p>Descendents <em>may</em> additionally override the following methods, if
+applicable:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">output_with_state()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">input_with_pull()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_state()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_frequency()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_frequency()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_pull()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_pull()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_bounce()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_bounce()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_get_edges()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_edges()</span></code></p></li>
+</ul>
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.pins.pi.PiPin.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#gpiozero.pins.pi.PiPin.info" title="Link to this definition"></a></dt>
+<dd><p>Returns the <code class="xref py py-class docutils literal notranslate"><span class="pre">PinInfo</span></code> associated with the pin. This can be used
+to determine physical properties of the pin, including its location on
+the header, fixed pulls, and the various specs that can be used to
+identify it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-gpiozero.pins.local">
+<dt class="sig sig-object py" id="gpiozero.pins.local.LocalPiFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.local.</span></span><span class="sig-name descname"><span class="pre">LocalPiFactory</span></span><a class="reference internal" href="_modules/gpiozero/pins/local.html#LocalPiFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.local.LocalPiFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.pi.PiFactory" title="gpiozero.pins.pi.PiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiFactory</span></code></a>. Abstract base class
+representing pins attached locally to a Pi. This forms the base class for
+local-only pin interfaces (<a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOPin" title="gpiozero.pins.rpigpio.RPiGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">RPiGPIOPin</span></code></a>,
+<a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOPin" title="gpiozero.pins.lgpio.LGPIOPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LGPIOPin</span></code></a>, and
+<a class="reference internal" href="#gpiozero.pins.native.NativePin" title="gpiozero.pins.native.NativePin"><code class="xref py py-class docutils literal notranslate"><span class="pre">NativePin</span></code></a>).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.local.LocalPiFactory.ticks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/local.html#LocalPiFactory.ticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.local.LocalPiFactory.ticks" title="Link to this definition"></a></dt>
+<dd><p>Return the current ticks, according to the factory. The reference point
+is undefined and thus the result of this method is only meaningful when
+compared to another value returned by this method.</p>
+<p>The format of the time is also arbitrary, as is whether the time wraps
+after a certain duration. Ticks should only be compared using the
+<a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory.ticks_diff" title="gpiozero.pins.local.LocalPiFactory.ticks_diff"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks_diff()</span></code></a> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.local.LocalPiFactory.ticks_diff">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ticks_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">later</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">earlier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/local.html#LocalPiFactory.ticks_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.local.LocalPiFactory.ticks_diff" title="Link to this definition"></a></dt>
+<dd><p>Return the time in seconds between two <a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory.ticks" title="gpiozero.pins.local.LocalPiFactory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a> results. The
+arguments are specified in the same order as they would be in the
+formula <em>later</em> - <em>earlier</em> but the result is guaranteed to be in
+seconds, and to be positive even if the ticks “wrapped” between calls
+to <a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory.ticks" title="gpiozero.pins.local.LocalPiFactory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.local.LocalPiPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.local.</span></span><span class="sig-name descname"><span class="pre">LocalPiPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/local.html#LocalPiPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.local.LocalPiPin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.pi.PiPin" title="gpiozero.pins.pi.PiPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiPin</span></code></a>. Abstract base class representing
+a multi-function GPIO pin attached to the local Raspberry Pi.</p>
+</dd></dl>
+
+</section>
+<section id="module-gpiozero.pins.rpigpio">
+<span id="rpi-gpio"></span><h2><span class="section-number">24.4. </span>RPi.GPIO<a class="headerlink" href="#module-gpiozero.pins.rpigpio" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.rpigpio.RPiGPIOFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.rpigpio.</span></span><span class="sig-name descname"><span class="pre">RPiGPIOFactory</span></span><a class="reference internal" href="_modules/gpiozero/pins/rpigpio.html#RPiGPIOFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.rpigpio.RPiGPIOFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory" title="gpiozero.pins.local.LocalPiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiFactory</span></code></a>. Uses the <a class="reference external" href="https://pypi.python.org/pypi/RPi.GPIO">RPi.GPIO</a>
+library to interface to the Pi’s GPIO pins. This is the default pin
+implementation if the RPi.GPIO library is installed. Supports all features
+including PWM (via software).</p>
+<p>Because this is the default pin implementation you can use it simply by
+specifying an integer number for the pin in most operations, e.g.:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, you can also construct RPi.GPIO pins manually if you wish:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.rpigpio</span> <span class="kn">import</span> <span class="n">RPiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">RPiGPIOFactory</span><span class="p">()</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.rpigpio.RPiGPIOPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.rpigpio.</span></span><span class="sig-name descname"><span class="pre">RPiGPIOPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/rpigpio.html#RPiGPIOPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.rpigpio.RPiGPIOPin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiPin" title="gpiozero.pins.local.LocalPiPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiPin</span></code></a>. Pin implementation for
+the <a class="reference external" href="https://pypi.python.org/pypi/RPi.GPIO">RPi.GPIO</a> library. See <a class="reference internal" href="#gpiozero.pins.rpigpio.RPiGPIOFactory" title="gpiozero.pins.rpigpio.RPiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RPiGPIOFactory</span></code></a> for more information.</p>
+</dd></dl>
+
+</section>
+<section id="module-gpiozero.pins.lgpio">
+<span id="lgpio"></span><h2><span class="section-number">24.5. </span>lgpio<a class="headerlink" href="#module-gpiozero.pins.lgpio" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.lgpio.LGPIOFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.lgpio.</span></span><span class="sig-name descname"><span class="pre">LGPIOFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/lgpio.html#LGPIOFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.lgpio.LGPIOFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory" title="gpiozero.pins.local.LocalPiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiFactory</span></code></a>. Uses the <a class="reference external" href="http://abyz.me.uk/lg/py_lgpio.html">lgpio</a>
+library to interface to the local computer’s GPIO pins. The lgpio library
+simply talks to Linux gpiochip devices; it is not specific to the Raspberry
+Pi although this class is currently constructed under the assumption that
+it is running on a Raspberry Pi.</p>
+<p>You can construct lgpio pins manually like so:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.lgpio</span> <span class="kn">import</span> <span class="n">LGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">LGPIOFactory</span><span class="p">(</span><span class="n">chip</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <em>chip</em> parameter to the factory constructor specifies which gpiochip
+device to attempt to open. It defaults to 0 and thus doesn’t normally need
+to be specified (the example above only includes it for completeness).</p>
+<p>The lgpio library relies on access to the <code class="file docutils literal notranslate"><span class="pre">/dev/gpiochip*</span></code> devices.
+If you run into issues, please check that your user has read/write access
+to the specific gpiochip device you are attempting to open (0 by default).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.lgpio.LGPIOPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.lgpio.</span></span><span class="sig-name descname"><span class="pre">LGPIOPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/lgpio.html#LGPIOPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.lgpio.LGPIOPin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiPin" title="gpiozero.pins.local.LocalPiPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiPin</span></code></a>. Pin implementation for
+the <a class="reference external" href="http://abyz.me.uk/lg/py_lgpio.html">lgpio</a> library. See <a class="reference internal" href="#gpiozero.pins.lgpio.LGPIOFactory" title="gpiozero.pins.lgpio.LGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LGPIOFactory</span></code></a> for more information.</p>
+</dd></dl>
+
+</section>
+<section id="module-gpiozero.pins.pigpio">
+<span id="pigpio"></span><h2><span class="section-number">24.6. </span>PiGPIO<a class="headerlink" href="#module-gpiozero.pins.pigpio" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.pigpio.PiGPIOFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.pigpio.</span></span><span class="sig-name descname"><span class="pre">PiGPIOFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pigpio.html#PiGPIOFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pigpio.PiGPIOFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.pi.PiFactory" title="gpiozero.pins.pi.PiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiFactory</span></code></a>. Uses the <a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> library to
+interface to the Pi’s GPIO pins. The pigpio library relies on a daemon
+(<strong class="command">pigpiod</strong>) to be running as root to provide access to the GPIO
+pins, and communicates with this daemon over a network socket.</p>
+<p>While this does mean only the daemon itself should control the pins, the
+architecture does have several advantages:</p>
+<ul class="simple">
+<li><p>Pins can be remote controlled from another machine (the other
+machine doesn’t even have to be a Raspberry Pi; it simply needs the
+<a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> client library installed on it)</p></li>
+<li><p>The daemon supports hardware PWM via the DMA controller</p></li>
+<li><p>Your script itself doesn’t require root privileges; it just needs to
+be able to communicate with the daemon</p></li>
+</ul>
+<p>You can construct pigpio pins manually like so:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">()</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is particularly useful for controlling pins on a remote machine. To
+accomplish this simply specify the host (and optionally port) when
+constructing the pin:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">PiGPIOFactory</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.0.2&#39;</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In some circumstances, especially when playing with PWM, it does appear
+to be possible to get the daemon into “unusual” states. We would be
+most interested to hear any bug reports relating to this (it may be a
+bug in our pin implementation). A workaround for now is simply to
+restart the <strong class="command">pigpiod</strong> daemon.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.pigpio.PiGPIOPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.pigpio.</span></span><span class="sig-name descname"><span class="pre">PiGPIOPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/pigpio.html#PiGPIOPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.pigpio.PiGPIOPin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.pi.PiPin" title="gpiozero.pins.pi.PiPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiPin</span></code></a>. Pin implementation for the
+<a class="reference external" href="http://abyz.me.uk/rpi/pigpio/">pigpio</a> library. See <a class="reference internal" href="#gpiozero.pins.pigpio.PiGPIOFactory" title="gpiozero.pins.pigpio.PiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiGPIOFactory</span></code></a> for more information.</p>
+</dd></dl>
+
+</section>
+<section id="module-gpiozero.pins.native">
+<span id="native"></span><h2><span class="section-number">24.7. </span>Native<a class="headerlink" href="#module-gpiozero.pins.native" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.native.NativeFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.native.</span></span><span class="sig-name descname"><span class="pre">NativeFactory</span></span><a class="reference internal" href="_modules/gpiozero/pins/native.html#NativeFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.native.NativeFactory" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiFactory" title="gpiozero.pins.local.LocalPiFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiFactory</span></code></a>. Uses a built-in pure
+Python implementation to interface to the Pi’s GPIO pins. This is the
+default pin implementation if no third-party libraries are discovered.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This implementation does <em>not</em> currently support PWM. Attempting to
+use any class which requests PWM will raise an exception.</p>
+</div>
+<p>You can construct native pin instances manually like so:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.pins.native</span> <span class="kn">import</span> <span class="n">NativeFactory</span>
+<span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">factory</span> <span class="o">=</span> <span class="n">NativeFactory</span><span class="p">()</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">factory</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.native.NativePin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.native.</span></span><span class="sig-name descname"><span class="pre">NativePin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/native.html#NativePin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.native.NativePin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.local.LocalPiPin" title="gpiozero.pins.local.LocalPiPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalPiPin</span></code></a>. Native pin
+implementation. See <a class="reference internal" href="#gpiozero.pins.native.NativeFactory" title="gpiozero.pins.native.NativeFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">NativeFactory</span></code></a> for more information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.native.Native2835Pin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.native.</span></span><span class="sig-name descname"><span class="pre">Native2835Pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/native.html#Native2835Pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.native.Native2835Pin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.native.NativePin" title="gpiozero.pins.native.NativePin"><code class="xref py py-class docutils literal notranslate"><span class="pre">NativePin</span></code></a> for Pi hardware prior to the Pi 4 (Pi 0, 1, 2,
+3, and 3+).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.native.Native2711Pin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.native.</span></span><span class="sig-name descname"><span class="pre">Native2711Pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/native.html#Native2711Pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.native.Native2711Pin" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.pins.native.NativePin" title="gpiozero.pins.native.NativePin"><code class="xref py py-class docutils literal notranslate"><span class="pre">NativePin</span></code></a> for Pi 4 hardware (Pi 4, CM4, Pi 400 at the time
+of writing).</p>
+</dd></dl>
+
+</section>
+<section id="module-gpiozero.pins.mock">
+<span id="mock"></span><h2><span class="section-number">24.8. </span>Mock<a class="headerlink" href="#module-gpiozero.pins.mock" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockFactory" title="Link to this definition"></a></dt>
+<dd><p>Factory for generating mock pins.</p>
+<p>The <em>revision</em> parameter specifies what revision of Pi the mock factory
+pretends to be (this affects the result of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Factory.board_info</span></code>
+attribute as well as where pull-ups are assumed to be).</p>
+<p>The <em>pin_class</em> attribute specifies which mock pin class will be generated
+by the <a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin" title="gpiozero.pins.mock.MockFactory.pin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pin()</span></code></a> method by default. This can be changed after
+construction by modifying the <a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin_class" title="gpiozero.pins.mock.MockFactory.pin_class"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin_class</span></code></a> attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory.pin_class">
+<span class="sig-name descname"><span class="pre">pin_class</span></span><a class="headerlink" href="#gpiozero.pins.mock.MockFactory.pin_class" title="Link to this definition"></a></dt>
+<dd><p>This attribute stores the <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> class (or descendant) that
+will be used when constructing pins with the <a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin" title="gpiozero.pins.mock.MockFactory.pin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pin()</span></code></a> method (if
+no <em>pin_class</em> parameter is used to override it). It defaults on
+construction to the value of the <em>pin_class</em> parameter in the
+constructor, or <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> if that is unspecified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory.pin">
+<span class="sig-name descname"><span class="pre">pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockFactory.pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockFactory.pin" title="Link to this definition"></a></dt>
+<dd><p>The pin method for <a class="reference internal" href="#gpiozero.pins.mock.MockFactory" title="gpiozero.pins.mock.MockFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockFactory</span></code></a> additionally takes a
+<em>pin_class</em> attribute which can be used to override the class’
+<a class="reference internal" href="#gpiozero.pins.mock.MockFactory.pin_class" title="gpiozero.pins.mock.MockFactory.pin_class"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin_class</span></code></a> attribute. Any additional keyword arguments will be
+passed along to the pin constructor (useful with things like
+<a class="reference internal" href="#gpiozero.pins.mock.MockConnectedPin" title="gpiozero.pins.mock.MockConnectedPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockConnectedPin</span></code></a> which expect to be constructed with another
+pin).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockFactory.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockFactory.reset" title="Link to this definition"></a></dt>
+<dd><p>Clears the pins and reservations sets. This is primarily useful in
+test suites to ensure the pin factory is back in a “clean” state before
+the next set of tests are run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory.ticks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ticks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockFactory.ticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockFactory.ticks" title="Link to this definition"></a></dt>
+<dd><p>Return the current ticks, according to the factory. The reference point
+is undefined and thus the result of this method is only meaningful when
+compared to another value returned by this method.</p>
+<p>The format of the time is also arbitrary, as is whether the time wraps
+after a certain duration. Ticks should only be compared using the
+<a class="reference internal" href="#gpiozero.pins.mock.MockFactory.ticks_diff" title="gpiozero.pins.mock.MockFactory.ticks_diff"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks_diff()</span></code></a> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockFactory.ticks_diff">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ticks_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">later</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">earlier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockFactory.ticks_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockFactory.ticks_diff" title="Link to this definition"></a></dt>
+<dd><p>Return the time in seconds between two <a class="reference internal" href="#gpiozero.pins.mock.MockFactory.ticks" title="gpiozero.pins.mock.MockFactory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a> results. The
+arguments are specified in the same order as they would be in the
+formula <em>later</em> - <em>earlier</em> but the result is guaranteed to be in
+seconds, and to be positive even if the ticks “wrapped” between calls
+to <a class="reference internal" href="#gpiozero.pins.mock.MockFactory.ticks" title="gpiozero.pins.mock.MockFactory.ticks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ticks()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockPin" title="Link to this definition"></a></dt>
+<dd><p>A mock pin used primarily for testing. This class does <em>not</em> support PWM.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockPWMPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockPWMPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockPWMPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockPWMPin" title="Link to this definition"></a></dt>
+<dd><p>This derivative of <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> adds PWM support.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockConnectedPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockConnectedPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockConnectedPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockConnectedPin" title="Link to this definition"></a></dt>
+<dd><p>This derivative of <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> emulates a pin connected to another
+mock pin. This is used in the “real pins” portion of the test suite to
+check that one pin can influence another.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockChargingPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockChargingPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockChargingPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockChargingPin" title="Link to this definition"></a></dt>
+<dd><p>This derivative of <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> emulates a pin which, when set to
+input, waits a predetermined length of time and then drives itself high
+(as if attached to, e.g. a typical circuit using an LDR and a capacitor
+to time the charging rate).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockTriggerPin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockTriggerPin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockTriggerPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockTriggerPin" title="Link to this definition"></a></dt>
+<dd><p>This derivative of <a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> is intended to be used with another
+<a class="reference internal" href="#gpiozero.pins.mock.MockPin" title="gpiozero.pins.mock.MockPin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockPin</span></code></a> to emulate a distance sensor. Set <em>echo_pin</em> to the
+corresponding pin instance. When this pin is driven high it will trigger
+the echo pin to drive high for the echo time.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.pins.mock.MockSPIDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.pins.mock.</span></span><span class="sig-name descname"><span class="pre">MockSPIDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosi_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miso_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clock_polarity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clock_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsb_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bits_per_word</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/pins/mock.html#MockSPIDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.pins.mock.MockSPIDevice" title="Link to this definition"></a></dt>
+<dd><p>This class is used to test <code class="xref py py-class docutils literal notranslate"><span class="pre">SPIDevice</span></code> implementations. It can be
+used to mock up the slave side of simple SPI devices, e.g. the MCP3xxx
+series of ADCs.</p>
+<p>Descendants should override the <code class="xref py py-meth docutils literal notranslate"><span class="pre">on_start()</span></code> and/or <code class="xref py py-meth docutils literal notranslate"><span class="pre">on_bit()</span></code>
+methods to respond to SPI interface events. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">rx_word()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">tx_word()</span></code> methods can be used facilitate communications within these
+methods. Such descendents can then be passed as the <em>spi_class</em> parameter
+of the <a class="reference internal" href="#gpiozero.pins.mock.MockFactory" title="gpiozero.pins.mock.MockFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">MockFactory</span></code></a> constructor to have instances attached to any
+SPI interface requested by an <code class="xref py py-class docutils literal notranslate"><span class="pre">SPIDevice</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_info.html" class="btn btn-neutral float-left" title="23. API - Pi Information" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_exc.html" class="btn btn-neutral float-right" title="25. API - Exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

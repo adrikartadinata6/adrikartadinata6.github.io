@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>11. Migrating from RPi.GPIO &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="12. Contributing" href="contributing.html" />
+    <link rel="prev" title="10. Backwards Compatibility" href="compat.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Migrating from RPi.GPIO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#output-devices">11.1. Output devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-devices">11.2. Input devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#composite-devices-boards-and-accessories">11.3. Composite devices, boards and accessories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pwm-pulse-width-modulation">11.4. PWM (Pulse-width modulation)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cleanup">11.5. Cleanup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pi-information">11.6. Pi Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more">11.7. More</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#faqs">11.8. FAQs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">11. </span>Migrating from RPi.GPIO</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/migrating_from_rpigpio.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="migrating-from-rpi-gpio">
+<span id="migrating-from-rpigpio"></span><h1><span class="section-number">11. </span>Migrating from RPi.GPIO<a class="headerlink" href="#migrating-from-rpi-gpio" title="Link to this heading"></a></h1>
+<p>If you are familiar with the <a class="reference external" href="https://pypi.org/project/RPi.GPIO/">RPi.GPIO</a> library, you will be used to writing
+code which deals with <em>pins</em> and the <em>state of pins</em>. You will see from the
+examples in this documentation that we generally refer to things like LEDs and
+Buttons rather than input pins and output pins.</p>
+<p>GPIO Zero provides classes which represent <em>devices</em>, so instead of having a
+pin number and telling it to go high, you have an LED and you tell it to turn
+on, and instead of having a pin number and asking if it’s high or low, you have
+a button and ask if it’s pressed. There is also no boilerplate code to get
+started — you just import the parts you need.</p>
+<p>GPIO Zero provides many device classes, each with specific methods and
+properties bespoke to that device. For example, the functionality for an
+HC-SR04 Distance Sensor can be found in the <a class="reference internal" href="api_input.html#gpiozero.DistanceSensor" title="gpiozero.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a> class.</p>
+<p>As well as specific device classes, we provide base classes
+<a class="reference internal" href="api_input.html#gpiozero.InputDevice" title="gpiozero.InputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputDevice</span></code></a> and <a class="reference internal" href="api_output.html#gpiozero.OutputDevice" title="gpiozero.OutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputDevice</span></code></a>. One main difference between
+these and the equivalents in RPi.GPIO is that they are classes, not functions,
+which means that you initialize one to begin, and provide its pin number, but
+then you never need to use the pin number again, as it’s stored by the object.</p>
+<p>GPIO Zero was originally just a layer on top of RPi.GPIO, but we later added
+support for various other underlying pin libraries. RPi.GPIO is currently the
+default pin library used. Read more about this in <a class="reference internal" href="api_pins.html#changing-pin-factory"><span class="std std-ref">Changing the pin factory</span></a>.</p>
+<section id="output-devices">
+<h2><span class="section-number">11.1. </span>Output devices<a class="headerlink" href="#output-devices" title="Link to this heading"></a></h2>
+<p>Turning an LED on in <a class="reference external" href="https://pypi.org/project/RPi.GPIO/">RPi.GPIO</a>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Turning an LED on in GPIO Zero:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> class also supports threaded blinking through the
+<a class="reference internal" href="api_output.html#gpiozero.LED.blink" title="gpiozero.LED.blink"><code class="xref py py-meth docutils literal notranslate"><span class="pre">blink()</span></code></a> method.</p>
+<p><a class="reference internal" href="api_output.html#gpiozero.OutputDevice" title="gpiozero.OutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputDevice</span></code></a> is the base class for output devices, and can be used in a
+similar way to output devices in RPi.GPIO.</p>
+<p>See a full list of supported <a class="reference internal" href="api_output.html"><span class="doc">output devices</span></a>. Other output
+devices have similar property and method names. There is commonality in naming
+at base level, such as <code class="xref py py-attr docutils literal notranslate"><span class="pre">OutputDevice.is_active</span></code>, which is aliased in a
+device class, such as <a class="reference internal" href="api_output.html#gpiozero.LED.is_lit" title="gpiozero.LED.is_lit"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LED.is_lit</span></code></a>.</p>
+</section>
+<section id="input-devices">
+<h2><span class="section-number">11.2. </span>Input devices<a class="headerlink" href="#input-devices" title="Link to this heading"></a></h2>
+<p>Reading a button press in <a class="reference external" href="https://pypi.org/project/RPi.GPIO/">RPi.GPIO</a>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button is pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Reading a button press in GPIO Zero:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">btn</span><span class="o">.</span><span class="n">is_pressed</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button is pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that in the RPi.GPIO example, the button is set up with the option
+<code class="docutils literal notranslate"><span class="pre">GPIO.PUD_UP</span></code> which means “pull-up”, and therefore when the button is not
+pressed, the pin is high. When the button is pressed, the pin goes low, so the
+condition requires negation (<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">not</span></code>). If the button was configured as
+pull-down, the logic is reversed and the condition would become <code class="docutils literal notranslate"><span class="pre">if</span>
+<span class="pre">GPIO.input(4)</span></code>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_DOWN</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button is pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In GPIO Zero, the default configuration for a button is pull-up, but this can
+be configured at initialization, and the rest of the code stays the same:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">btn</span><span class="o">.</span><span class="n">is_pressed</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button is pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>RPi.GPIO also supports blocking edge detection.</p>
+<p>Wait for a pull-up button to be pressed in RPi.GPIO:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">wait_for_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">FALLING</span><span class="p">):</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The equivalent in GPIO Zero:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">btn</span><span class="o">.</span><span class="n">wait_for_press</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, if the button is pulled down, the logic is reversed. Instead of waiting
+for a falling edge, we’re waiting for a rising edge:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">wait_for_edge</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">FALLING</span><span class="p">):</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, in GPIO Zero, the only difference is in the initialization:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">btn</span><span class="o">.</span><span class="n">wait_for_press</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>RPi.GPIO has threaded callbacks. You create a function (which must take one
+argument), and pass it in to <code class="docutils literal notranslate"><span class="pre">add_event_detect</span></code>, along with the pin number
+and the edge direction:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">pressed</span><span class="p">(</span><span class="n">pin</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">released</span><span class="p">(</span><span class="n">pin</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was released&quot;</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">add_event_detect</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">FALLING</span><span class="p">,</span> <span class="n">pressed</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">add_event_detect</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">RISING</span><span class="p">,</span> <span class="n">released</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In GPIO Zero, you assign the <a class="reference internal" href="api_input.html#gpiozero.Button.when_pressed" title="gpiozero.Button.when_pressed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_pressed</span></code></a> and
+<a class="reference internal" href="api_input.html#gpiozero.Button.when_released" title="gpiozero.Button.when_released"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_released</span></code></a> properties to set up callbacks on those actions:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="k">def</span> <span class="nf">pressed</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was pressed&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">released</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;button was released&quot;</span><span class="p">)</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">btn</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">pressed</span>
+<span class="n">btn</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">released</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_input.html#gpiozero.Button.when_held" title="gpiozero.Button.when_held"><code class="xref py py-attr docutils literal notranslate"><span class="pre">when_held</span></code></a> is also provided, where the length of time considered
+a “hold” is configurable.</p>
+<p>The callback functions don’t have to take any arguments, but if they take one,
+the button object is passed in, allowing you to determine which button called
+the function.</p>
+<p><a class="reference internal" href="api_input.html#gpiozero.InputDevice" title="gpiozero.InputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputDevice</span></code></a> is the base class for input devices, and can be used in a
+similar way to input devices in RPi.GPIO.</p>
+<p>See a full list of <a class="reference internal" href="api_input.html"><span class="doc">input devices</span></a>. Other input devices have
+similar property and method names. There is commonality in naming at base level,
+such as <a class="reference internal" href="api_input.html#gpiozero.InputDevice.is_active" title="gpiozero.InputDevice.is_active"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InputDevice.is_active</span></code></a>, which is aliased in a device class, such
+as <a class="reference internal" href="api_input.html#gpiozero.Button.is_pressed" title="gpiozero.Button.is_pressed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Button.is_pressed</span></code></a> and <a class="reference internal" href="api_input.html#gpiozero.LightSensor.light_detected" title="gpiozero.LightSensor.light_detected"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LightSensor.light_detected</span></code></a>.</p>
+</section>
+<section id="composite-devices-boards-and-accessories">
+<h2><span class="section-number">11.3. </span>Composite devices, boards and accessories<a class="headerlink" href="#composite-devices-boards-and-accessories" title="Link to this heading"></a></h2>
+<p>Some devices require connections to multiple pins, for example a distance
+sensor, a combination of LEDs or a HAT. Some GPIO Zero devices comprise
+multiple device connections within one object, such as <a class="reference internal" href="api_output.html#gpiozero.RGBLED" title="gpiozero.RGBLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">RGBLED</span></code></a>,
+<a class="reference internal" href="api_boards.html#gpiozero.LEDBoard" title="gpiozero.LEDBoard"><code class="xref py py-class docutils literal notranslate"><span class="pre">LEDBoard</span></code></a>, <a class="reference internal" href="api_input.html#gpiozero.DistanceSensor" title="gpiozero.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a>, <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a> and <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a>.</p>
+<p>With RPi.GPIO, you would have one output pin for the trigger, and one input pin
+for the echo. You would time the echo and calculate the distance. With GPIO
+Zero, you create a single <a class="reference internal" href="api_input.html#gpiozero.DistanceSensor" title="gpiozero.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a> object, specifying the
+trigger and echo pins, and you would read the <a class="reference internal" href="api_input.html#gpiozero.DistanceSensor.distance" title="gpiozero.DistanceSensor.distance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistanceSensor.distance</span></code></a>
+property which automatically calculates the distance within the implementation
+of the class.</p>
+<p>The <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a> class controls two output pins to drive the motor forwards
+or backwards. The <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> class controls four output pins (two motors)
+in the right combination to drive a robot forwards or backwards, and turn left
+and right.</p>
+<p>The <a class="reference internal" href="api_boards.html#gpiozero.LEDBoard" title="gpiozero.LEDBoard"><code class="xref py py-class docutils literal notranslate"><span class="pre">LEDBoard</span></code></a> class takes an arbitrary number of pins, each controlling
+a single LED. The resulting <a class="reference internal" href="api_boards.html#gpiozero.LEDBoard" title="gpiozero.LEDBoard"><code class="xref py py-class docutils literal notranslate"><span class="pre">LEDBoard</span></code></a> object can be used to control all
+LEDs together (all on / all off), or individually by index. Also the object can
+be iterated over to turn LEDs on in order. See examples of this (including
+slicing) in the <a class="reference internal" href="recipes_advanced.html#ledboard-advanced"><span class="std std-ref">advanced recipes</span></a>.</p>
+</section>
+<section id="pwm-pulse-width-modulation">
+<h2><span class="section-number">11.4. </span>PWM (Pulse-width modulation)<a class="headerlink" href="#pwm-pulse-width-modulation" title="Link to this heading"></a></h2>
+<p>Both libraries support software PWM control on any pin. Depending on the pin
+library used, GPIO Zero can also support hardware PWM (using
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RPIOPin</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">PiGPIOPin</span></code>).</p>
+<p>A simple example of using PWM is to control the brightness of an LED.</p>
+<p>In <a class="reference external" href="https://pypi.org/project/RPi.GPIO/">RPi.GPIO</a>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setwarnings</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+<span class="n">pwm</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">pwm</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">dc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">101</span><span class="p">):</span>
+    <span class="n">pwm</span><span class="o">.</span><span class="n">changeDutyCycle</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In GPIO Zero:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">101</span><span class="p">):</span>
+    <span class="n">led</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">b</span> <span class="o">/</span> <span class="mf">100.0</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_output.html#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> has a <a class="reference internal" href="api_output.html#gpiozero.PWMLED.blink" title="gpiozero.PWMLED.blink"><code class="xref py py-meth docutils literal notranslate"><span class="pre">blink()</span></code></a> method which can be used the same
+was as <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a>’s <a class="reference internal" href="api_output.html#gpiozero.LED.blink" title="gpiozero.LED.blink"><code class="xref py py-meth docutils literal notranslate"><span class="pre">blink()</span></code></a> method, but its PWM capabilities allow
+for <code class="docutils literal notranslate"><span class="pre">fade_in</span></code> and <code class="docutils literal notranslate"><span class="pre">fade_out</span></code> options to be provided. There is also the
+<a class="reference internal" href="api_output.html#gpiozero.PWMLED.pulse" title="gpiozero.PWMLED.pulse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pulse()</span></code></a> method which provides a neat way to have an LED fade in
+and out repeatedly.</p>
+<p>Other devices can make use of PWM, such as motors (for variable speed) and
+servos. See the <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a>, <a class="reference internal" href="api_output.html#gpiozero.Servo" title="gpiozero.Servo"><code class="xref py py-class docutils literal notranslate"><span class="pre">Servo</span></code></a> and <a class="reference internal" href="api_output.html#gpiozero.AngularServo" title="gpiozero.AngularServo"><code class="xref py py-class docutils literal notranslate"><span class="pre">AngularServo</span></code></a>
+classes for information on those. <a class="reference internal" href="api_output.html#gpiozero.Motor" title="gpiozero.Motor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a> and <a class="reference internal" href="api_boards.html#gpiozero.Robot" title="gpiozero.Robot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Robot</span></code></a> default to
+using PWM, but it can be disabled with <code class="docutils literal notranslate"><span class="pre">pwm=False</span></code> at initialization. Servos
+cannot be used without PWM. Devices containing LEDs default to not using PWM,
+but <code class="docutils literal notranslate"><span class="pre">pwm=True</span></code> can be specified and any LED objects within the device will be
+initialized as <a class="reference internal" href="api_output.html#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> objects.</p>
+</section>
+<section id="cleanup">
+<h2><span class="section-number">11.5. </span>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading"></a></h2>
+<p>Pin state cleanup is explicit in RPi.GPIO, and is done manually with
+<code class="docutils literal notranslate"><span class="pre">GPIO.cleanup()</span></code> but in GPIO Zero, cleanup is automatically performed on every
+pin used, at the end of the script. Manual cleanup is possible by use of the
+<a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method on the device.</p>
+<p>Note that cleanup only occurs at the point of normal termination of the script.
+If the script exits due to a program error, cleanup will not be performed. To
+ensure that cleanup is performed after an exception is raised, the exception
+must be handled, for example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span>
+
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">btn</span><span class="o">.</span><span class="n">is_pressed</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pressed&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ending program&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read more in the relevant FAQ: <a class="reference internal" href="faq.html#gpio-cleanup"><span class="std std-ref">What’s the gpiozero equivalent of GPIO.cleanup()?</span></a></p>
+</section>
+<section id="pi-information">
+<h2><span class="section-number">11.6. </span>Pi Information<a class="headerlink" href="#pi-information" title="Link to this heading"></a></h2>
+<p>RPi.GPIO provides information about the Pi you’re using. The equivalent in GPIO
+Zero is the function <a class="reference internal" href="api_info.html#gpiozero.pi_info" title="gpiozero.pi_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">pi_info()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">pi_info</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pi</span> <span class="o">=</span> <span class="n">pi_info</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pi</span>
+<span class="go">PiBoardInfo(revision=&#39;a02082&#39;, model=&#39;3B&#39;, pcb_revision=&#39;1.2&#39;, released=&#39;2016Q1&#39;, soc=&#39;BCM2837&#39;, manufacturer=&#39;Sony&#39;, memory=1024, storage=&#39;MicroSD&#39;, usb=4, ethernet=1, wifi=True, bluetooth=True, csi=1, dsi=1, headers=..., board=...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pi</span><span class="o">.</span><span class="n">soc</span>
+<span class="go">&#39;BCM2837&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pi</span><span class="o">.</span><span class="n">wifi</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Read more about what <a class="reference internal" href="api_info.html#gpiozero.PiBoardInfo" title="gpiozero.PiBoardInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiBoardInfo</span></code></a> provides.</p>
+</section>
+<section id="more">
+<h2><span class="section-number">11.7. </span>More<a class="headerlink" href="#more" title="Link to this heading"></a></h2>
+<p>GPIO Zero provides more than just GPIO device support, it includes some support
+for <a class="reference internal" href="api_spi.html"><span class="doc">SPI devices</span></a> including a range of analog to digital
+converters.</p>
+<p>Device classes which are compatible with other GPIO devices, but have no
+relation to GPIO pins, such as <a class="reference internal" href="api_internal.html#gpiozero.CPUTemperature" title="gpiozero.CPUTemperature"><code class="xref py py-class docutils literal notranslate"><span class="pre">CPUTemperature</span></code></a>, <a class="reference internal" href="api_internal.html#gpiozero.TimeOfDay" title="gpiozero.TimeOfDay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeOfDay</span></code></a>,
+<a class="reference internal" href="api_internal.html#gpiozero.PingServer" title="gpiozero.PingServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PingServer</span></code></a> and <a class="reference internal" href="api_internal.html#gpiozero.LoadAverage" title="gpiozero.LoadAverage"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadAverage</span></code></a> are also provided.</p>
+<p>GPIO Zero features support for multiple pin libraries. The default is to use
+<code class="docutils literal notranslate"><span class="pre">RPi.GPIO</span></code> to control the pins, but you can choose to use another library,
+such as <code class="docutils literal notranslate"><span class="pre">pigpio</span></code>, which supports network controlled GPIO. See
+<a class="reference internal" href="api_pins.html#changing-pin-factory"><span class="std std-ref">Changing the pin factory</span></a> and <a class="reference internal" href="remote_gpio.html"><span class="doc">Configuring Remote GPIO</span></a> for more information.</p>
+<p>It is possible to run GPIO Zero on your PC, both for remote GPIO and for testing
+purposes, using <a class="reference internal" href="api_pins.html#mock-pins"><span class="std std-ref">Mock pins</span></a>.</p>
+<p>Another feature of this library is configuring devices to be connected together
+in a logical way, for example in one line you can say that an LED and button are
+“paired”, i.e. the button being pressed turns the LED on. Read about this in
+<a class="reference internal" href="source_values.html"><span class="doc">Source/Values</span></a>.</p>
+</section>
+<section id="faqs">
+<h2><span class="section-number">11.8. </span>FAQs<a class="headerlink" href="#faqs" title="Link to this heading"></a></h2>
+<p>Note the following FAQs which may catch out users too familiar with RPi.GPIO:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="faq.html#keep-your-script-running"><span class="std std-ref">How do I keep my script running?</span></a></p></li>
+<li><p><a class="reference internal" href="faq.html#pinfactoryfallback-warnings"><span class="std std-ref">Why do I get PinFactoryFallback warnings when I import gpiozero?</span></a></p></li>
+<li><p><a class="reference internal" href="faq.html#gpio-cleanup"><span class="std std-ref">What’s the gpiozero equivalent of GPIO.cleanup()?</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="compat.html" class="btn btn-neutral float-left" title="10. Backwards Compatibility" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="12. Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

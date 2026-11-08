@@ -188,7 +188,7 @@
       const needles = q.split(/\s+/).filter(Boolean);
       items.forEach((it) => {
         const hay = it.textContent.toLowerCase();
-        const ok = (cur === "all" || it.dataset.cat === cur) && needles.every((w) => hay.includes(w));
+        const ok = (cur === "all" || it.dataset.cat === cur || it.dataset.grp === cur) && needles.every((w) => hay.includes(w));
         it.hidden = !ok; if (ok) n++;
       });
       chips.forEach((c) => { const on = c.dataset.filter === cur; c.classList.toggle("is-on", on); c.setAttribute("aria-pressed", on); });

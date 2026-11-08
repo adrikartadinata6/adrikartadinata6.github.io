@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Wavelet Packets &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2D Wavelet Packets" href="wp2d.html" />
+    <link rel="prev" title="Multilevel DWT, IDWT and SWT" href="multilevel.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="wp2d.html" title="2D Wavelet Packets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="multilevel.html" title="Multilevel DWT, IDWT and SWT"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wavelet Packets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="doctest highlight-default notranslate" id="reg-wp"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+</pre></div>
+</div>
+<section id="wavelet-packets">
+<h1>Wavelet Packets<a class="headerlink" href="#wavelet-packets" title="Link to this heading">¶</a></h1>
+<section id="import-pywt">
+<h2>Import pywt<a class="headerlink" href="#import-pywt" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pywt</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">format_array</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Consistent array representation across different systems&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">... </span>    <span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-wavelet-packet-structure">
+<h2>Create Wavelet Packet structure<a class="headerlink" href="#create-wavelet-packet-structure" title="Link to this heading">¶</a></h2>
+<p>Ok, let’s create a sample <a class="reference internal" href="../ref/wavelet-packets.html#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input <code class="docutils literal notranslate"><span class="pre">data</span></code> and decomposition coefficients are stored in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">WaveletPacket.data</span></code> attribute:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[1, 2, 3, 4, 5, 6, 7, 8]</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../ref/wavelet-packets.html#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nodes</span></code></a> are identified by <code class="xref py py-attr docutils literal notranslate"><span class="pre">paths</span></code>. For the root
+node the path is <code class="docutils literal notranslate"><span class="pre">''</span></code> and the decomposition level is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">maxlevel</span></code>, if not given as param in the constructor, is automatically
+computed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">maxlevel</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</section>
+<section id="traversing-wp-tree">
+<h2>Traversing WP tree:<a class="headerlink" href="#traversing-wp-tree" title="Link to this heading">¶</a></h2>
+<section id="accessing-subnodes">
+<h3>Accessing subnodes:<a class="headerlink" href="#accessing-subnodes" title="Link to this heading">¶</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First check what is the maximum level of decomposition:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">maxlevel</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>and try accessing subnodes of the WP tree:</p>
+<blockquote>
+<div><ul>
+<li><p>1st level:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[  2.12132034   4.94974747   7.77817459  10.60660172]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="go">a</span>
+</pre></div>
+</div>
+</li>
+<li><p>2nd level:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[  5.  13.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="go">aa</span>
+</pre></div>
+</div>
+</li>
+<li><p>3rd level:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aaa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[ 12.72792206]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aaa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="go">aaa</span>
+</pre></div>
+</div>
+<p>Ups, we have reached the maximum level of decomposition and got an
+<code class="xref py py-exc docutils literal notranslate"><span class="pre">IndexError</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aaaa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">IndexError</span>: <span class="n">Path length is out of range.</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>Now try some invalid path:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ac&#39;</span><span class="p">])</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Subnode name must be in [&#39;a&#39;, &#39;d&#39;], not &#39;c&#39;.</span>
+</pre></div>
+</div>
+<p>which just yielded a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+</section>
+<section id="accessing-node-s-attributes">
+<h3>Accessing Node’s attributes:<a class="headerlink" href="#accessing-node-s-attributes" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../ref/wavelet-packets.html#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a> object is a tree data structure, which evaluates to a set
+of <a class="reference internal" href="../ref/wavelet-packets.html#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects. <a class="reference internal" href="../ref/wavelet-packets.html#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a> is just a special subclass
+of the <a class="reference internal" href="../ref/wavelet-packets.html#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> class (which in turn inherits from the <a class="reference internal" href="../ref/wavelet-packets.html#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a>).</p>
+<p>Tree nodes can be accessed using the <code class="docutils literal notranslate"><span class="pre">obj[x]</span></code> (<code class="xref py py-meth docutils literal notranslate"><span class="pre">Node.__getitem__()</span></code>)
+operator.
+Each tree node has a set of attributes: <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">node_name</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">parent</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">level</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">maxlevel</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">mode</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[-2. -2.]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="go">ad</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">node_name</span><span class="p">)</span>
+<span class="go">d</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+<span class="go">a</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">maxlevel</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+<span class="go">symmetric</span>
+</pre></div>
+</div>
+</section>
+<section id="collecting-nodes">
+<h3>Collecting nodes<a class="headerlink" href="#collecting-nodes" title="Link to this heading">¶</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can get all nodes on the particular level either in <code class="docutils literal notranslate"><span class="pre">natural</span></code> order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">node</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_level</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;natural&#39;</span><span class="p">)])</span>
+<span class="go">[&#39;aaa&#39;, &#39;aad&#39;, &#39;ada&#39;, &#39;add&#39;, &#39;daa&#39;, &#39;dad&#39;, &#39;dda&#39;, &#39;ddd&#39;]</span>
+</pre></div>
+</div>
+<p>or sorted based on the band frequency (<code class="docutils literal notranslate"><span class="pre">freq</span></code>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">node</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_level</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;freq&#39;</span><span class="p">)])</span>
+<span class="go">[&#39;aaa&#39;, &#39;aad&#39;, &#39;add&#39;, &#39;ada&#39;, &#39;dda&#39;, &#39;ddd&#39;, &#39;dad&#39;, &#39;daa&#39;]</span>
+</pre></div>
+</div>
+<p>Note that <a class="reference internal" href="../ref/wavelet-packets.html#pywt.WaveletPacket.get_level" title="pywt.WaveletPacket.get_level"><code class="xref py py-meth docutils literal notranslate"><span class="pre">WaveletPacket.get_level()</span></code></a> also performs automatic decomposition
+until it reaches the specified <code class="docutils literal notranslate"><span class="pre">level</span></code>.</p>
+</section>
+</section>
+<section id="reconstructing-data-from-wavelet-packets">
+<h2>Reconstructing data from Wavelet Packets:<a class="headerlink" href="#reconstructing-data-from-wavelet-packets" title="Link to this heading">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now create a new <a class="reference internal" href="../ref/wavelet-packets.html#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span> <span class="pre">Packet</span></code></a> and set its nodes with
+some data.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_wp</span><span class="p">[</span><span class="s1">&#39;aa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;aa&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For convenience, <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.data</span></code> gets automatically extracted from the
+<a class="reference internal" href="../ref/wavelet-packets.html#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_wp</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>And reconstruct the data from the <code class="docutils literal notranslate"><span class="pre">aa</span></code>, <code class="docutils literal notranslate"><span class="pre">ad</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code> packets.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_wp</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="go">[ 1.  2.  3.  4.  5.  6.  7.  8.]</span>
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">update</span></code> param in the reconstruct method is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
+node’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> will not be updated.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_wp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+<p>Otherwise, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> attribute will be set to the reconstructed
+value.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_wp</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">[ 1.  2.  3.  4.  5.  6.  7.  8.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_wp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[ 1.  2.  3.  4.  5.  6.  7.  8.]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_wp</span><span class="o">.</span><span class="n">get_leaf_nodes</span><span class="p">(</span><span class="kc">False</span><span class="p">)])</span>
+<span class="go">[&#39;aa&#39;, &#39;ad&#39;, &#39;d&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_wp</span><span class="o">.</span><span class="n">get_leaf_nodes</span><span class="p">(</span><span class="kc">True</span><span class="p">)])</span>
+<span class="go">[&#39;aaa&#39;, &#39;aad&#39;, &#39;ada&#39;, &#39;add&#39;, &#39;daa&#39;, &#39;dad&#39;, &#39;dda&#39;, &#39;ddd&#39;]</span>
+</pre></div>
+</div>
+</section>
+<section id="removing-nodes-from-wavelet-packet-tree">
+<h2>Removing nodes from Wavelet Packet tree:<a class="headerlink" href="#removing-nodes-from-wavelet-packet-tree" title="Link to this heading">¶</a></h2>
+<p>Let’s create a sample data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, start with a tree decomposition at level 2. Leaf nodes in the tree are:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dummy</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_level</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_leaf_nodes</span><span class="p">(</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">format_array</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="go">aa [  5.  13.]</span>
+<span class="go">ad [-2. -2.]</span>
+<span class="go">da [-1. -1.]</span>
+<span class="go">dd [ 0.  0.]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="go">ad: [-2. -2.]</span>
+</pre></div>
+</div>
+<p>To remove a node from the WP tree, use Python’s <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">obj[x]</span></code>
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">Node.__delitem__</span></code>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The leaf nodes that left in the tree are:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_leaf_nodes</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">format_array</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="go">aa [  5.  13.]</span>
+<span class="go">da [-1. -1.]</span>
+<span class="go">dd [ 0.  0.]</span>
+</pre></div>
+</div>
+<p>And the reconstruction is:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">())</span>
+<span class="go">[ 2.  3.  2.  3.  6.  7.  6.  7.]</span>
+</pre></div>
+</div>
+<p>Now restore the deleted node value.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;ad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Printing leaf nodes and tree reconstruction confirms the original state of the
+tree:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">wp</span><span class="o">.</span><span class="n">get_leaf_nodes</span><span class="p">(</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">format_array</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="go">aa [  5.  13.]</span>
+<span class="go">ad [-2. -2.]</span>
+<span class="go">da [-1. -1.]</span>
+<span class="go">dd [ 0.  0.]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">())</span>
+<span class="go">[ 1.  2.  3.  4.  5.  6.  7.  8.]</span>
+</pre></div>
+</div>
+</section>
+<section id="lazy-evaluation">
+<h2>Lazy evaluation:<a class="headerlink" href="#lazy-evaluation" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section is for demonstration of pywt internals purposes
+only. Do not rely on the attribute access to nodes as presented in
+this example.</p>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">WaveletPacket</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="s1">&#39;db1&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p>At first the wp’s attribute <code class="docutils literal notranslate"><span class="pre">a</span></code> is None</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+<p><strong>Remember that you should not rely on the attribute access.</strong></p>
+</li>
+<li><p>At first attempt to access the node it is computed via decomposition
+of its parent node (the wp object itself).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<span class="go">a: [  2.12132034   4.94974747   7.77817459  10.60660172]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Now the <code class="docutils literal notranslate"><span class="pre">wp.a</span></code> is set to the newly created node:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">a</span><span class="p">)</span>
+<span class="go">a: [  2.12132034   4.94974747   7.77817459  10.60660172]</span>
+</pre></div>
+</div>
+<p>And so is <code class="docutils literal notranslate"><span class="pre">wp.d</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+<span class="go">d: [-0.70710678 -0.70710678 -0.70710678 -0.70710678]</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Wavelet Packets</a><ul>
+<li><a class="reference internal" href="#import-pywt">Import pywt</a></li>
+<li><a class="reference internal" href="#create-wavelet-packet-structure">Create Wavelet Packet structure</a></li>
+<li><a class="reference internal" href="#traversing-wp-tree">Traversing WP tree:</a><ul>
+<li><a class="reference internal" href="#accessing-subnodes">Accessing subnodes:</a></li>
+<li><a class="reference internal" href="#accessing-node-s-attributes">Accessing Node’s attributes:</a></li>
+<li><a class="reference internal" href="#collecting-nodes">Collecting nodes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reconstructing-data-from-wavelet-packets">Reconstructing data from Wavelet Packets:</a></li>
+<li><a class="reference internal" href="#removing-nodes-from-wavelet-packet-tree">Removing nodes from Wavelet Packet tree:</a></li>
+<li><a class="reference internal" href="#lazy-evaluation">Lazy evaluation:</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="multilevel.html"
+                          title="previous chapter">Multilevel DWT, IDWT and SWT</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="wp2d.html"
+                          title="next chapter">2D Wavelet Packets</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/regression/wp.rst" target="_blank">
+                Wavelet Packets
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="wp2d.html" title="2D Wavelet Packets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="multilevel.html" title="Multilevel DWT, IDWT and SWT"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wavelet Packets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

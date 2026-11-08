@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Framer &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Constants" href="constants.html" />
+    <link rel="prev" title="Datastore" href="datastore.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_changes.html">API changes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../internals.html">Pymodbus internals</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nullmodem.html">NullModem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastore.html">Datastore</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Framer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-pymodbus.framer.ascii_framer">pymodbus.framer.ascii_framer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer"><code class="docutils literal notranslate"><span class="pre">ModbusAsciiFramer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pymodbus.framer.binary_framer">pymodbus.framer.binary_framer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer"><code class="docutils literal notranslate"><span class="pre">ModbusBinaryFramer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pymodbus.framer.rtu_framer">pymodbus.framer.rtu_framer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer"><code class="docutils literal notranslate"><span class="pre">ModbusRtuFramer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pymodbus.framer.socket_framer">pymodbus.framer.socket_framer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.framer.socket_framer.ModbusSocketFramer"><code class="docutils literal notranslate"><span class="pre">ModbusSocketFramer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymodbus.html">Extra functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/architecture.html">Architecture</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../internals.html">Pymodbus internals</a></li>
+      <li class="breadcrumb-item active">Framer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/library/framer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="framer">
+<h1>Framer<a class="headerlink" href="#framer" title="Link to this heading"></a></h1>
+<section id="module-pymodbus.framer.ascii_framer">
+<span id="pymodbus-framer-ascii-framer-module"></span><h2>pymodbus.framer.ascii_framer module<a class="headerlink" href="#module-pymodbus.framer.ascii_framer" title="Link to this heading"></a></h2>
+<p>Ascii_framer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.framer.ascii_framer.ModbusAsciiFramer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.framer.ascii_framer.</span></span><span class="sig-name descname"><span class="pre">ModbusAsciiFramer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusFramer</span></code></p>
+<p>Modbus ASCII Frame Controller.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>[ Start ][Address ][ Function ][ Data ][ LRC ][ End ]</dt><dd><p>1c        2c         2c         Nc     2c      2c</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>data can be 0 - 2x252 chars</p></li>
+<li><p>end is “\r\n” (Carriage return line feed), however the line feed
+character can be changed via a special command</p></li>
+<li><p>start is “:”</p></li>
+</ul>
+</div></blockquote>
+<p>This framer is used for serial transmission.  Unlike the RTU protocol,
+the data in this framer is transferred in plain text ascii.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.ascii_framer.ModbusAsciiFramer.buildPacket">
+<span class="sig-name descname"><span class="pre">buildPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer.buildPacket" title="Link to this definition"></a></dt>
+<dd><p>Create a ready to send modbus packet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – The request/response to send</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The encoded packet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.ascii_framer.ModbusAsciiFramer.decode_data">
+<span class="sig-name descname"><span class="pre">decode_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer.decode_data" title="Link to this definition"></a></dt>
+<dd><p>Decode data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.ascii_framer.ModbusAsciiFramer.frameProcessIncomingPacket">
+<span class="sig-name descname"><span class="pre">frameProcessIncomingPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_tid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer.frameProcessIncomingPacket" title="Link to this definition"></a></dt>
+<dd><p>Process new packet pattern.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymodbus.framer.ascii_framer.ModbusAsciiFramer.method">
+<span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ascii'</span></em><a class="headerlink" href="#pymodbus.framer.ascii_framer.ModbusAsciiFramer.method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pymodbus.framer.binary_framer">
+<span id="pymodbus-framer-binary-framer-module"></span><h2>pymodbus.framer.binary_framer module<a class="headerlink" href="#module-pymodbus.framer.binary_framer" title="Link to this heading"></a></h2>
+<p>Binary framer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.framer.binary_framer.ModbusBinaryFramer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.framer.binary_framer.</span></span><span class="sig-name descname"><span class="pre">ModbusBinaryFramer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusFramer</span></code></p>
+<p>Modbus Binary Frame Controller.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>[ Start ][Address ][ Function ][ Data ][ CRC ][ End ]</dt><dd><p>1b        1b         1b         Nb     2b     1b</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>data can be 0 - 2x252 chars</p></li>
+<li><p>end is   “}”</p></li>
+<li><p>start is “{”</p></li>
+</ul>
+</div></blockquote>
+<p>The idea here is that we implement the RTU protocol, however,
+instead of using timing for message delimiting, we use start
+and end of message characters (in this case { and }). Basically,
+this is a binary framer.</p>
+<p>The only case we have to watch out for is when a message contains
+the { or } characters.  If we encounter these characters, we
+simply duplicate them.  Hopefully we will not encounter those
+characters that often and will save a little bit of bandwitch
+without a real-time system.</p>
+<p>Protocol defined by jamod.sourceforge.net.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.binary_framer.ModbusBinaryFramer.buildPacket">
+<span class="sig-name descname"><span class="pre">buildPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer.buildPacket" title="Link to this definition"></a></dt>
+<dd><p>Create a ready to send modbus packet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – The request/response to send</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The encoded packet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.binary_framer.ModbusBinaryFramer.decode_data">
+<span class="sig-name descname"><span class="pre">decode_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer.decode_data" title="Link to this definition"></a></dt>
+<dd><p>Decode data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.binary_framer.ModbusBinaryFramer.frameProcessIncomingPacket">
+<span class="sig-name descname"><span class="pre">frameProcessIncomingPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_tid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer.frameProcessIncomingPacket" title="Link to this definition"></a></dt>
+<dd><p>Process new packet pattern.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymodbus.framer.binary_framer.ModbusBinaryFramer.method">
+<span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'binary'</span></em><a class="headerlink" href="#pymodbus.framer.binary_framer.ModbusBinaryFramer.method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pymodbus.framer.rtu_framer">
+<span id="pymodbus-framer-rtu-framer-module"></span><h2>pymodbus.framer.rtu_framer module<a class="headerlink" href="#module-pymodbus.framer.rtu_framer" title="Link to this heading"></a></h2>
+<p>RTU framer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.framer.rtu_framer.</span></span><span class="sig-name descname"><span class="pre">ModbusRtuFramer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusFramer</span></code></p>
+<p>Modbus RTU Frame controller.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>[ Start Wait ] [Address ][ Function Code] [ Data ][ CRC ][  End Wait  ]</dt><dd><p>3.5 chars     1b         1b               Nb      2b      3.5 chars</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Wait refers to the amount of time required to transmit at least x many
+characters.  In this case it is 3.5 characters.  Also, if we receive a
+wait of 1.5 characters at any point, we must trigger an error message.
+Also, it appears as though this message is little endian. The logic is
+simplified as the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">block</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">read</span><span class="p">:</span>
+    <span class="n">read</span> <span class="n">until</span> <span class="mf">3.5</span> <span class="n">delay</span>
+    <span class="n">check</span> <span class="k">for</span> <span class="n">errors</span>
+    <span class="n">decode</span>
+</pre></div>
+</div>
+<p>The following table is a listing of the baud wait times for the specified
+baud rates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------------</span>
+ <span class="n">Baud</span>  <span class="mf">1.5</span><span class="n">c</span> <span class="p">(</span><span class="mi">18</span> <span class="n">bits</span><span class="p">)</span>   <span class="mf">3.5</span><span class="n">c</span> <span class="p">(</span><span class="mi">38</span> <span class="n">bits</span><span class="p">)</span>
+<span class="o">------------------------------------------------------------------</span>
+ <span class="mi">1200</span>   <span class="mf">13333.3</span> <span class="n">us</span>       <span class="mf">31666.7</span> <span class="n">us</span>
+ <span class="mi">4800</span>    <span class="mf">3333.3</span> <span class="n">us</span>        <span class="mf">7916.7</span> <span class="n">us</span>
+ <span class="mi">9600</span>    <span class="mf">1666.7</span> <span class="n">us</span>        <span class="mf">3958.3</span> <span class="n">us</span>
+<span class="mi">19200</span>     <span class="mf">833.3</span> <span class="n">us</span>        <span class="mf">1979.2</span> <span class="n">us</span>
+<span class="mi">38400</span>     <span class="mf">416.7</span> <span class="n">us</span>         <span class="mf">989.6</span> <span class="n">us</span>
+<span class="o">------------------------------------------------------------------</span>
+<span class="mi">1</span> <span class="n">Byte</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">8</span> <span class="n">bits</span> <span class="o">+</span> <span class="n">parity</span> <span class="o">+</span> <span class="n">stop</span> <span class="o">=</span> <span class="mi">11</span> <span class="n">bits</span>
+<span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">Baud</span><span class="p">)(</span><span class="n">bits</span><span class="p">)</span> <span class="o">=</span> <span class="n">delay</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.buildPacket">
+<span class="sig-name descname"><span class="pre">buildPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.buildPacket" title="Link to this definition"></a></dt>
+<dd><p>Create a ready to send modbus packet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – The populated request/response to send</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.decode_data">
+<span class="sig-name descname"><span class="pre">decode_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.decode_data" title="Link to this definition"></a></dt>
+<dd><p>Decode data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.frameProcessIncomingPacket">
+<span class="sig-name descname"><span class="pre">frameProcessIncomingPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_single</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_tid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.frameProcessIncomingPacket" title="Link to this definition"></a></dt>
+<dd><p>Process new packet pattern.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.method">
+<span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rtu'</span></em><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.recvPacket">
+<span class="sig-name descname"><span class="pre">recvPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.recvPacket" title="Link to this definition"></a></dt>
+<dd><p>Receive packet from the bus with specified len.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> – Number of bytes to read</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.rtu_framer.ModbusRtuFramer.sendPacket">
+<span class="sig-name descname"><span class="pre">sendPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.rtu_framer.ModbusRtuFramer.sendPacket" title="Link to this definition"></a></dt>
+<dd><p>Send packets on the bus with 3.5char delay between frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – Message to be sent over the bus</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pymodbus.framer.socket_framer">
+<span id="pymodbus-framer-socket-framer-module"></span><h2>pymodbus.framer.socket_framer module<a class="headerlink" href="#module-pymodbus.framer.socket_framer" title="Link to this heading"></a></h2>
+<p>Socket framer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.framer.socket_framer.ModbusSocketFramer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.framer.socket_framer.</span></span><span class="sig-name descname"><span class="pre">ModbusSocketFramer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">decoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.socket_framer.ModbusSocketFramer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusFramer</span></code></p>
+<p>Modbus Socket Frame controller.</p>
+<p>Before each modbus TCP message is an MBAP header which is used as a
+message frame.  It allows us to easily separate messages as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[         MBAP Header         ] [ Function Code] [ Data ]         [ tid ][ pid ][ length ][ uid ]
+  2b     2b     2b        1b           1b           Nb
+
+while len(message) &gt; 0:
+    tid, pid, length`, uid = struct.unpack(&quot;&gt;HHHB&quot;, message)
+    request = message[0:7 + length - 1`]
+    message = [7 + length - 1:]
+
+* length = uid + function code + data
+* The -1 is to account for the uid byte
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.socket_framer.ModbusSocketFramer.buildPacket">
+<span class="sig-name descname"><span class="pre">buildPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.socket_framer.ModbusSocketFramer.buildPacket" title="Link to this definition"></a></dt>
+<dd><p>Create a ready to send modbus packet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – The populated request/response to send</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.socket_framer.ModbusSocketFramer.decode_data">
+<span class="sig-name descname"><span class="pre">decode_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.socket_framer.ModbusSocketFramer.decode_data" title="Link to this definition"></a></dt>
+<dd><p>Decode data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.framer.socket_framer.ModbusSocketFramer.frameProcessIncomingPacket">
+<span class="sig-name descname"><span class="pre">frameProcessIncomingPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.framer.socket_framer.ModbusSocketFramer.frameProcessIncomingPacket" title="Link to this definition"></a></dt>
+<dd><p>Process new packet pattern.</p>
+<p>This takes in a new request packet, adds it to the current
+packet stream, and performs framing on it. That is, checks
+for complete messages, and once found, will process all that
+exist.  This handles the case when we read N + 1 or 1 // N
+messages at a time instead of 1.</p>
+<p>The processed and decoded messages are pushed to the callback
+function to process and send.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymodbus.framer.socket_framer.ModbusSocketFramer.method">
+<span class="sig-name descname"><span class="pre">method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'socket'</span></em><a class="headerlink" href="#pymodbus.framer.socket_framer.ModbusSocketFramer.method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="datastore.html" class="btn btn-neutral float-left" title="Datastore" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constants.html" class="btn btn-neutral float-right" title="Constants" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > vl_demo_print</title>
+
+  <!-- Stylesheets -->
+  <link href="../../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="vl_demo_print.html">vl_demo_print</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+<h1 id="id-6010">Source code for <code/>vl_demo_print.m</code></h1><p>This file is located in the <code/>toolbox/demo</code> folder in VLFeat package.</p>
+<div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span><span class="nf">vl_demo_print</span><span class="p">(</span>varargin<span class="p">)</span>
+<span class="c">% VL_DEMO_PRINT</span>
+<span class="c">%   VL_DEMO_PRINT(NAME) prints the current figure to the documentation</span>
+<span class="c">%   directory with the specified filename, assuming that the global</span>
+<span class="c">%   variable VL_DEMO_PRINT is defined and non-empty when MATLAB is</span>
+<span class="c">%   started (our using SETENV() from MATLAB). Otherwise the function</span>
+<span class="c">%   flushes the displays and returns.</span>
+<span class="c">%</span>
+<span class="c">%   VL_DEMO_PRINT(NAME, R) specifies a magnification factor R, setting</span>
+<span class="c">%   the figure width relatively to the page width. If not specified, R</span>
+<span class="c">%   is assumed to be 1/2.</span>
+<span class="c">%</span>
+<span class="c">%   Remarks:: The figure paper type is set to letter, that has size 8.5 x</span>
+<span class="c">%     11 inches. When converted for web viewing, images are rasterized</span>
+<span class="c">%     at either 75 or 95 DPI, The documentation system converts images</span>
+<span class="c">%     to bitmap with a resolution of 75 DPI, which makes a letter size</span>
+<span class="c">%     page 637 or 808 pixels large, repsectively.</span>
+<span class="c">%</span>
+<span class="c">%     In MATLAB font sizes are usually expressed in points, where a</span>
+<span class="c">%     point is a 1/72 inch. Thus a 12pt font sampled at 75 DPI is</span>
+<span class="c">%     about 12.5 pixels high.</span>
+
+<span class="c">% Copyright (C) 2007-12 Andrea Vedaldi and Brian Fulkerson.</span>
+<span class="c">% All rights reserved.</span>
+<span class="c">%</span>
+<span class="c">% This file is part of the VLFeat library and is made available under</span>
+<span class="c">% the terms of the BSD license (see the COPYING file).</span>
+
+<span class="k">if</span><span class="w"> </span><span class="nb">isempty</span><span class="p">(</span><span class="nb">getenv</span><span class="p">(</span><span class="s">&#39;VL_DEMO_PRINT&#39;</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">drawnow</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="k">if</span><span class="w"> </span><span class="nb">isa</span><span class="p">(</span><span class="nb">varargin</span><span class="p">{</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="s">&#39;double&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">fig</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">varargin</span><span class="p">{</span><span class="mi">1</span><span class="p">}</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">varargin</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="p">;</span>
+<span class="k">else</span>
+<span class="w">  </span><span class="n">fig</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">gcf</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">varargin</span><span class="p">{</span><span class="mi">1</span><span class="p">}</span><span class="w"> </span><span class="p">;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="nb">length</span><span class="p">(</span><span class="nb">varargin</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="n">figurePaperSize</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="p">;</span>
+<span class="k">else</span>
+<span class="w">  </span><span class="n">figurePaperSize</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">varargin</span><span class="p">{</span><span class="mi">2</span><span class="p">}</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="n">vl_printsize</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span><span class="w"> </span><span class="n">figurePaperSize</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">figDir</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">fullfile</span><span class="p">(</span><span class="n">vl_root</span><span class="p">,</span><span class="s">&#39;doc&#39;</span><span class="p">,</span><span class="s">&#39;demo&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nb">exist</span><span class="p">(</span><span class="n">figDir</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;dir&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">mkdir</span><span class="p">(</span><span class="n">figDir</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="k">if</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="n">filePath</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">fullfile</span><span class="p">(</span><span class="n">figDir</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">name</span><span class="w"> </span><span class="s">&#39;.eps&#39;</span><span class="p">])</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-depsc2&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">filePath</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="k">else</span>
+<span class="w">  </span><span class="n">filePath</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">fullfile</span><span class="p">(</span><span class="n">figDir</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">name</span><span class="w"> </span><span class="s">&#39;.jpg&#39;</span><span class="p">])</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-djpeg95&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">filePath</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-r95&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+<span class="nb">fprintf</span><span class="p">(</span><span class="s">&#39;%s: wrote file &#39;&#39;%s&#39;&#39;\n&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">mfilename</span><span class="p">,</span><span class="w">  </span><span class="n">filePath</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

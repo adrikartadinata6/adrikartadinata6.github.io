@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Simulator datastore" href="datastore.html" />
+    <link rel="prev" title="Simulator" href="../../simulator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../simulator.html">Simulator</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#json-file-layout">Json file layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-entries">Server entries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-configuration-examples">Server configuration examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#device-entries">Device entries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup-section">Setup section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#invalid-section">Invalid section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#write-section">Write section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bits-section">Bits section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uint16-section">Uint16 section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uint32-section">Uint32 section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#float32-section">Float32 section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#string-section">String section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#repeat-section">Repeat section</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#device-configuration-examples">Device configuration examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-used-for-test">Configuration used for test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datastore.html">Simulator datastore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="web.html">Web frontend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="restapi.html">Pymodbus simulator ReST API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_changes.html">API changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../internals.html">Pymodbus internals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../simulator.html">Simulator</a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/library/simulator/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p>Configuring the pymodbus simulator is done with a json file, or if only
+using the datastore simulator a python dict (same structure as the
+device part of the json file).</p>
+<section id="json-file-layout">
+<h2>Json file layout<a class="headerlink" href="#json-file-layout" title="Link to this heading"></a></h2>
+<p>The json file consist of 2 main entries “server_list” (see <a class="reference internal" href="#server-entries"><span class="std std-ref">Server entries</span></a>) and “device_list” (see <a class="reference internal" href="#device-entries"><span class="std std-ref">Device entries</span></a>)
+each containing a list of servers/devices</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;server_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;&lt;name&gt;&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;device_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;&lt;name&gt;&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can define as many server and devices as you like, when starting
+<a class="reference internal" href="web.html#pymodbus-simulator"><span class="std std-ref">pymodbus.simulator</span></a> you select one server and one device to simulate.</p>
+<p>A entry in “device_list” correspond to the dict you can use as parameter
+to datastore_simulator is you want to construct your own simulator.</p>
+</section>
+<section id="server-entries">
+<h2>Server entries<a class="headerlink" href="#server-entries" title="Link to this heading"></a></h2>
+<p>The entries for a tcp server with minimal parameters look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+     <span class="s2">&quot;server_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="p">{</span>
+             <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+             <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;socket&quot;</span><span class="p">,</span>
+         <span class="p">}</span>
+     <span class="p">}</span>
+     <span class="s2">&quot;device_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="o">...</span>
+     <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The example uses <code class="docutils literal notranslate"><span class="pre">“comm”:</span> <span class="pre">“tcp”</span></code>, so the entries are arguments to <a class="reference internal" href="../../server.html#pymodbus.server.ModbusTcpServer" title="pymodbus.server.ModbusTcpServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.server.ModbusTcpServer</span></code></a>, where detailed information are available.</p>
+<p>The entry “comm” allows the following values:</p>
+<ul class="simple">
+<li><p>“serial”, to use <a class="reference internal" href="../../server.html#pymodbus.server.ModbusSerialServer" title="pymodbus.server.ModbusSerialServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.server.ModbusSerialServer</span></code></a>,</p></li>
+<li><p>“tcp”, to use <a class="reference internal" href="../../server.html#pymodbus.server.ModbusTcpServer" title="pymodbus.server.ModbusTcpServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.server.ModbusTcpServer</span></code></a>,</p></li>
+<li><p>“tls”, to use <a class="reference internal" href="../../server.html#pymodbus.server.ModbusTlsServer" title="pymodbus.server.ModbusTlsServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.server.ModbusTlsServer</span></code></a>,</p></li>
+<li><p>“udp”;  to use <a class="reference internal" href="../../server.html#pymodbus.server.ModbusUdpServer" title="pymodbus.server.ModbusUdpServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.server.ModbusUdpServer</span></code></a>.</p></li>
+</ul>
+<p>The entry “framer” allows the following values:</p>
+<ul class="simple">
+<li><p>“ascii” to use <a class="reference internal" href="../framer.html#pymodbus.framer.ascii_framer.ModbusAsciiFramer" title="pymodbus.framer.ascii_framer.ModbusAsciiFramer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.framer.ascii_framer.ModbusAsciiFramer</span></code></a>,</p></li>
+<li><p>“binary to use <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.framer.ascii_framer.ModbusBinaryFramer</span></code>,</p></li>
+<li><p>“rtu” to use <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.framer.ascii_framer.ModbusRtuFramer</span></code>,</p></li>
+<li><p>“tls” to use <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.framer.ascii_framer.ModbusTlsFramer</span></code>,</p></li>
+<li><p>“socket” to use <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodbus.framer.ascii_framer.ModbusSocketFramer</span></code>.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>not all “framer” types can be used with all “comm” types.</p>
+<p>e.g. <code class="docutils literal notranslate"><span class="pre">&quot;framer&quot;:</span> <span class="pre">“tls”</span></code> only works with <code class="docutils literal notranslate"><span class="pre">“comm”:</span> <span class="pre">“tls”</span></code>!</p>
+</div>
+</section>
+<section id="server-configuration-examples">
+<h2>Server configuration examples<a class="headerlink" href="#server-configuration-examples" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;server_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;socket&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_try_serial&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;serial&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/tty0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stopbits&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;bytesize&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;parity&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;baudrate&quot;</span><span class="p">:</span> <span class="mi">9600</span><span class="p">,</span>
+            <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;reconnect_delay&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;rtu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_try_tls&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;tls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;certfile&quot;</span><span class="p">:</span> <span class="s2">&quot;certificates/pymodbus.crt&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;keyfile&quot;</span><span class="p">:</span> <span class="s2">&quot;certificates/pymodbus.key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;tls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_test_try_udp&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;udp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;socket&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="device-entries">
+<h2>Device entries<a class="headerlink" href="#device-entries" title="Link to this heading"></a></h2>
+<p>Each device is configured in a number of sections, described in detail below</p>
+<ul class="simple">
+<li><p>“setup”, defines the overall structure of the device, like e.g. number of registers,</p></li>
+<li><p>“invalid”, defines invalid registers and causes a modbus exception when reading and/or writing,</p></li>
+<li><p>“write”, defines registers which allow read/write, other registers causes a modbus exception when writing,</p></li>
+<li><p>“bits”, defines registers which contain bits (discrete input and coils),</p></li>
+<li><p>“uint16”, defines registers which contain a 16 bit unsigned integer,</p></li>
+<li><p>“uint32”, defines sets of registers (2) which contain a 32 bit unsigned integer,</p></li>
+<li><p>“float32”, defines sets of registers (2) which contain a 32 bit float,</p></li>
+<li><p>“string”, defines sets of registers which contain a string,</p></li>
+<li><p>“repeat”, is a special command to copy configuration if a device contains X bay controllers, configure one and use repeat for X-1.</p></li>
+</ul>
+<p>The datastore simulator manages the registers in a big list, which can be manipulated with</p>
+<ul class="simple">
+<li><p>actions (functions that are called with each access)</p></li>
+<li><p>manually via the WEB interface</p></li>
+<li><p>automated via the REST API interface</p></li>
+<li><p>the client (writing values)</p></li>
+</ul>
+<p>It is important to understand that the modbus protocol does not know or care how the physical memory/registers are organized, but it has a huge impact on the client!</p>
+<p>Communication with a modbus device is based on registers which each contain 16 bits (2 bytes). The requests are grouped in 4 groups</p>
+<ul class="simple">
+<li><p>Input Discrete</p></li>
+<li><p>Coils</p></li>
+<li><p>Input registers</p></li>
+<li><p>Holding registers</p></li>
+</ul>
+<p>The 4 blocks are mapped into physical memory, but the modbus protocol makes no assumption or demand on how this is done.</p>
+<p>The history of modbus devices have shown 2 forms of mapping.</p>
+<p>The first form is also the original form. It originates from a time where the devices did not contain memory, but the request was mapped directly to a physical sensor:</p>
+<img alt="../../../_images/modbus4block.png" src="../../../_images/modbus4block.png" />
+<p>When reading holding register 1 (block 4) you get a different register as when reading input register 1 (block 1).
+Each block references a different physical register memory, in other words the size of the needed memory is the sum of the block sizes.</p>
+<p>The second form uses 1 shared block, most modern devices use this form for 2 main reasons:</p>
+<ul class="simple">
+<li><p>the modbus protocol implementation do not connect directly to the sensors but to a shared memory controlled by a small microprocessor.</p></li>
+<li><p>designers can group related information independent of type (e.g. a bay controller with register 1 as coil, register 2 as input and register 3 as holding)</p></li>
+</ul>
+<img alt="../../../_images/modbuscommonblock.png" src="../../../_images/modbuscommonblock.png" />
+<p>When reading holding register 1 the same phyical register is accessed as when reading input register 1.
+Each block references the same physical register memory, in other words the size of the needed memory is the size of the largest block.</p>
+<p>The datastore simulator supports both types.</p>
+<section id="setup-section">
+<h3>Setup section<a class="headerlink" href="#setup-section" title="Link to this heading"></a></h3>
+<p>Example “setup” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>“co size”</strong>, <strong>“di size”</strong>, <strong>“hr size”</strong>, <strong>“ir size”</strong>:</p>
+<blockquote>
+<div><p>Define the size of each block.
+If using shared block the register list size will be the size of the biggest block (25 registers)
+If not using shared block the register list size will be the sum of the 4 block sizes (70 registers).</p>
+</div></blockquote>
+<p><strong>“shared blocks”</strong></p>
+<blockquote>
+<div><p>Defines if the blocks are independent or shared (true)</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>if shared is set to false, please remember to adjust the addresses, depending on in which group they are.</p>
+<dl>
+<dt>assuming all sizes are set to 10, the addresses for configuration are as follows:</dt><dd><ul class="simple">
+<li><p>coils have addresses 0-9,</p></li>
+<li><p>discrete_inputs have addresses 10-19,</p></li>
+<li><p>input_registers have addresses 20-29,</p></li>
+<li><p>holding_registers have addresses 30-39</p></li>
+</ul>
+<p>when configuring the the datatypes (when calling each block start with 0).</p>
+</dd>
+</dl>
+<p>This is needed because the datatypes can be in different blocks.</p>
+</div>
+</div></blockquote>
+<p><strong>“type exception”</strong></p>
+<blockquote>
+<div><p>Defines is the server returns a modbus exception if a read/write request violates the specified type.
+E.g. Read holding register 10 with count 1, but the 10,11 are defined as UINT32 and thus can only be read with multiples of 2.</p>
+<p>This feature is designed to control that a client access the device in the manner it was designed.</p>
+</div></blockquote>
+<p><strong>“defaults”</strong></p>
+<blockquote>
+<div><p>Defines how to defines registers not configured or or only partial configured.</p>
+<p><strong>“value”</strong> defines the default value for each type.</p>
+<p><strong>“action”</strong> defines the default action for each type.
+Actions are functions that are called whenever the register is accessed and thus allows automatic manipulation.</p>
+</div></blockquote>
+<p>The datastore simulator have a number of builtin actions, and allows custom actions to be added:</p>
+<ul class="simple">
+<li><p><strong>“random”</strong>, change the value with every access,</p></li>
+<li><p><strong>“increment”</strong>, increment the value by 1 with every access,</p></li>
+<li><p><strong>“timestamp”</strong>, uses 6 registers and build a timestamp,</p></li>
+<li><p><strong>“reset”</strong>, causes a reboot of the simulator,</p></li>
+<li><p><strong>“uptime”</strong>, sets the number of seconds the server have been running.</p></li>
+</ul>
+<p>The <strong>“random”</strong> and <strong>“increment”</strong> actions may optionally minimum and/or maximum.
+In case of <strong>“increment”</strong>, the counter is reset to the minimum value, if the maximum is crossed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span> <span class="p">},</span>
+<span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span> <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="invalid-section">
+<h3>Invalid section<a class="headerlink" href="#invalid-section" title="Link to this heading"></a></h3>
+<p>Example “invalid” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">5</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>Defines invalid registers which cannot be read or written. When accessed the response in a modbus exception <strong>invalid address</strong>.
+In the example registers 5, 10, 11, 12, 13, 14, 15 will produce an exception response.</p>
+<p>Registers can be singulars (first entry) or arrays (second entry)</p>
+</section>
+<section id="write-section">
+<h3>Write section<a class="headerlink" href="#write-section" title="Link to this heading"></a></h3>
+<p>Example “write” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">4</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>Defines registers which can be written to. When writing to registers not defined here the response is a modbus exception <strong>invalid address</strong>.</p>
+<p>Registers can be singulars (first entry) or arrays (second entry)</p>
+</section>
+<section id="bits-section">
+<h3>Bits section<a class="headerlink" href="#bits-section" title="Link to this heading"></a></h3>
+<p>Example “bits” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">5</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>defines registers which contain bits (discrete input and coils),</p>
+<p>Registers can be singulars (first entry) or arrays (second entry),
+furthermore a value and/or a action can be defined,
+the value and/or action is inserted into each register defined in “addr”.</p>
+</section>
+<section id="uint16-section">
+<h3>Uint16 section<a class="headerlink" href="#uint16-section" title="Link to this heading"></a></h3>
+<p>Example “uint16” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">5</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">30123</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">712</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">517</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>defines registers which contain a 16 bit unsigned integer,</p>
+<p>Registers can be singulars (first entry) or arrays (second entry),
+furthermore a value and/or a action can be defined,
+the value and/or action is inserted into each register defined in “addr”.</p>
+</section>
+<section id="uint32-section">
+<h3>Uint32 section<a class="headerlink" href="#uint32-section" title="Link to this heading"></a></h3>
+<p>Example “uint32” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300123</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">400712</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500517</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>defines sets of registers (2) which contain a 32 bit unsigned integer,</p>
+<p>Registers can only be arrays in multiples of 2,
+furthermore a value and/or a action can be defined,
+the value and/or action is converted (high/low value) and inserted into each register set defined in “addr”.</p>
+</section>
+<section id="float32-section">
+<h3>Float32 section<a class="headerlink" href="#float32-section" title="Link to this heading"></a></h3>
+<p>Example “float32” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">3123.17</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">712.5</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">517.0</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>defines sets of registers (2) which contain a 32 bit float,</p>
+<p>Registers can only be arrays in multiples of 2,
+furthermore a value and/or a action can be defined,
+the value and/or action is converted (high/low value) and inserted into each register set defined in “addr”.</p>
+<p>Remark remember to set <code class="docutils literal notranslate"><span class="pre">&quot;value&quot;:</span> <span class="pre">&lt;float</span> <span class="pre">value&gt;</span></code> like 512.0 (float) not 512 (integer).</p>
+</section>
+<section id="string-section">
+<h3>String section<a class="headerlink" href="#string-section" title="Link to this heading"></a></h3>
+<p>Example “string” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">7</span><span class="p">,</span>
+    <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;A_B_C_D_E_&quot;</span><span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>defines sets of registers which contain a string,</p>
+<p>Registers can be singulars (first entry) or arrays (second entry). Important each string must be defined individually.</p>
+<ul class="simple">
+<li><p>Entry 1 is a string of 2 chars,</p></li>
+<li><p>Entry 2 is a string of 4 chars,</p></li>
+<li><p>Entry 3 is a string of 10 chars with the value ‘’A_B_C_D_E_’’.</p></li>
+</ul>
+</section>
+<section id="repeat-section">
+<h3>Repeat section<a class="headerlink" href="#repeat-section" title="Link to this heading"></a></h3>
+<p>Example “repeat” configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>is a special command to copy configuration if a device contains X bay controllers, configure one and use repeat for X-1.</p>
+<p>First entry copies registers 0-2 to 10-11, resulting in 10 == 0, 11 == 1, 12 unchanged.</p>
+<p>Second entry copies registers 0-2 to 10-15, resulting in 10 == 0, 11 == 1, 12 == 2, 13 == 0, 14 == 1, 15 == 2, 16 unchanged.</p>
+</section>
+</section>
+<section id="device-configuration-examples">
+<h2>Device configuration examples<a class="headerlink" href="#device-configuration-examples" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;server_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;device_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">1</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">5</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">17001</span><span class="p">},</span>
+                <span class="mi">2100</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">617001</span><span class="p">},</span>
+                <span class="p">[</span><span class="mi">3037</span><span class="p">,</span> <span class="mi">3038</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">404.17</span><span class="p">},</span>
+                <span class="p">[</span><span class="mi">4100</span><span class="p">,</span> <span class="mi">4101</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">5047</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;A_B_C_D_E_&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;device_try&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="s2">&quot;register&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+                <span class="mi">77</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">10</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">61</span><span class="p">,</span> <span class="mi">76</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">10</span><span class="p">,</span>
+                <span class="mi">1009</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">1116</span><span class="p">,</span> <span class="mi">1119</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">1144</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1148</span><span class="p">,</span><span class="mi">1149</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32117</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1208</span><span class="p">,</span> <span class="mi">1306</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">11</span><span class="p">,</span>
+                <span class="mi">2027</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">2126</span><span class="p">,</span> <span class="mi">2129</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2164</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2168</span><span class="p">,</span><span class="mi">2169</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32117</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2208</span><span class="p">,</span> <span class="mi">2306</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">12</span><span class="p">,</span>
+                <span class="mi">3037</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">3136</span><span class="p">,</span> <span class="mi">3139</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">3174</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3188</span><span class="p">,</span><span class="mi">3189</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32514</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3308</span><span class="p">,</span> <span class="mi">3406</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3688</span><span class="p">,</span> <span class="mi">3878</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">115</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">14</span><span class="p">,</span>
+                <span class="mi">4047</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">4146</span><span class="p">,</span> <span class="mi">4149</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">4184</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4198</span><span class="p">,</span><span class="mi">4191</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">32514.1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4308</span><span class="p">,</span> <span class="mi">4406</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4688</span><span class="p">,</span> <span class="mi">4878</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">115.7</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;A_B_C_D_E_&quot;</span><span class="p">},</span>
+                <span class="mi">5047</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">5146</span><span class="p">,</span> <span class="mi">5149</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">529</span><span class="p">,</span> <span class="mi">544</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;Brand name, 32 bytes...........X&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">999</span><span class="p">],</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">10999</span><span class="p">]},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1999</span><span class="p">],</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">11000</span><span class="p">,</span> <span class="mi">11999</span><span class="p">]}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;device_minimum&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-used-for-test">
+<h2>Configuration used for test<a class="headerlink" href="#configuration-used-for-test" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;server_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;tcp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;socket&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus/&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_try_serial&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;serial&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/tty0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;stopbits&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;bytesize&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;parity&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;baudrate&quot;</span><span class="p">:</span> <span class="mi">9600</span><span class="p">,</span>
+            <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;reconnect_delay&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;rtu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus/&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_try_tls&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;tls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;certfile&quot;</span><span class="p">:</span> <span class="s2">&quot;certificates/pymodbus.crt&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;keyfile&quot;</span><span class="p">:</span> <span class="s2">&quot;certificates/pymodbus.key&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;tls&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus/&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;server_test_try_udp&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;comm&quot;</span><span class="p">:</span> <span class="s2">&quot;udp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5020</span><span class="p">,</span>
+            <span class="s2">&quot;ignore_missing_slaves&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+            <span class="s2">&quot;framer&quot;</span><span class="p">:</span> <span class="s2">&quot;socket&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;VendorName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductCode&quot;</span><span class="p">:</span> <span class="s2">&quot;PM&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;VendorUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/pymodbus-dev/pymodbus/&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ProductName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ModelName&quot;</span><span class="p">:</span> <span class="s2">&quot;pymodbus Server&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;MajorMinorRevision&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.0&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;device_list&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">1</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">3</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">17001</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="mi">2100</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">617001</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="p">[</span><span class="mi">3037</span><span class="p">,</span> <span class="mi">3038</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">404.17</span><span class="p">},</span>
+                <span class="p">[</span><span class="mi">4100</span><span class="p">,</span> <span class="mi">4101</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">5047</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;A_B_C_D_E_&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;device_try&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;setup&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;co size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;di size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;hr size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;ir size&quot;</span><span class="p">:</span> <span class="mi">63000</span><span class="p">,</span>
+                <span class="s2">&quot;shared blocks&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;type exception&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+                        <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">null</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+                <span class="mi">77</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;write&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">10</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;bits&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">10</span><span class="p">,</span>
+                <span class="mi">1009</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">1116</span><span class="p">,</span> <span class="mi">1119</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">1144</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1148</span><span class="p">,</span><span class="mi">1149</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32117</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1208</span><span class="p">,</span> <span class="mi">1306</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint16&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="mi">11</span><span class="p">,</span>
+                <span class="mi">2027</span><span class="p">,</span>
+                <span class="p">[</span><span class="mi">2126</span><span class="p">,</span> <span class="mi">2129</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2164</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2168</span><span class="p">,</span><span class="mi">2169</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32117</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2208</span><span class="p">,</span> <span class="mi">2304</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2305</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mi">155</span><span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="mi">2306</span><span class="p">,</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mi">55</span><span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;uint32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">3037</span><span class="p">,</span> <span class="mi">3038</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">3136</span><span class="p">,</span> <span class="mi">3139</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3174</span><span class="p">,</span> <span class="mi">3175</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3188</span><span class="p">,</span><span class="mi">3189</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">32514</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3308</span><span class="p">,</span> <span class="mi">3407</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3688</span><span class="p">,</span> <span class="mi">3875</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">115</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3876</span><span class="p">,</span> <span class="mi">3877</span><span class="p">],</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">50000</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">45000</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mi">55000</span><span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3878</span><span class="p">,</span> <span class="mi">3879</span><span class="p">],</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">50000</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mi">45000</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mi">55000</span><span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">4047</span><span class="p">,</span> <span class="mi">4048</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">4146</span><span class="p">,</span> <span class="mi">4149</span><span class="p">],</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4184</span><span class="p">,</span> <span class="mi">4185</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4188</span><span class="p">,</span> <span class="mi">4191</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">32514.2</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4308</span><span class="p">,</span> <span class="mi">4407</span><span class="p">],</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4688</span><span class="p">,</span> <span class="mi">4875</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">115.7</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4876</span><span class="p">,</span> <span class="mi">4877</span><span class="p">],</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">50000.0</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;increment&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mf">45000.0</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mf">55000.0</span><span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4878</span><span class="p">,</span> <span class="mi">48779</span><span class="p">],</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">50000.0</span><span class="p">,</span>
+                    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;minval&quot;</span><span class="p">:</span> <span class="mf">45000.0</span><span class="p">,</span> <span class="s2">&quot;maxval&quot;</span><span class="p">:</span> <span class="mf">55000.0</span><span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;A_B_C_D_E_&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;addr&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">529</span><span class="p">,</span> <span class="mi">544</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;Brand name, 32 bytes...........X&quot;</span><span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;repeat&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../simulator.html" class="btn btn-neutral float-left" title="Simulator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="datastore.html" class="btn btn-neutral float-right" title="Simulator datastore" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

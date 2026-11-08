@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6.1.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.0.0" href="6.0.0.html" />
+    <link rel="prev" title="6.2.0" href="6.2.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="6.0.0.html" title="6.0.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="6.2.0.html" title="6.2.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">6.1.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>6.1.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h2>
+<section id="image-del">
+<h3>Image.__del__<a class="headerlink" href="#image-del" title="Link to this heading">¶</a></h3>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 6.1.0.</span></p>
+</div>
+<p>Implicitly closing the image’s underlying file in <code class="docutils literal notranslate"><span class="pre">Image.__del__</span></code> has been deprecated.
+Use a context manager or call <code class="docutils literal notranslate"><span class="pre">Image.close()</span></code> instead to close the file in a
+deterministic way.</p>
+<p>Deprecated:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;hopper.png&quot;</span><span class="p">)</span>
+<span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.jpg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;hopper.png&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">im</span><span class="p">:</span>
+    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.jpg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="image-entropy">
+<h3>Image.entropy<a class="headerlink" href="#image-entropy" title="Link to this heading">¶</a></h3>
+<p>Calculates and returns the entropy for the image. A bilevel image (mode “1”) is treated
+as a grayscale (“L”) image by this method.  If a mask is provided, the method employs
+the histogram for those parts of the image where the mask image is non-zero. The mask
+image must have the same size as the image, and be either a bi-level image (mode “1”) or
+a grayscale image (“L”).</p>
+</section>
+<section id="imagegrab-grab">
+<h3>ImageGrab.grab<a class="headerlink" href="#imagegrab-grab" title="Link to this heading">¶</a></h3>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">include_layered_windows</span></code> parameter has been added to <code class="docutils literal notranslate"><span class="pre">ImageGrab.grab</span></code>,
+defaulting to <code class="docutils literal notranslate"><span class="pre">False</span></code>. If true, layered windows will be included in the resulting
+image on Windows.</p>
+</section>
+<section id="imagesequence-all-frames">
+<h3>ImageSequence.all_frames<a class="headerlink" href="#imagesequence-all-frames" title="Link to this heading">¶</a></h3>
+<p>A new method to facilitate applying a given function to all frames in an image, or to
+all frames in a list of images. The frames are returned as a list of separate images.
+For example, <code class="docutils literal notranslate"><span class="pre">ImageSequence.all_frames(im,</span> <span class="pre">lambda</span> <span class="pre">im_frame:</span> <span class="pre">im_frame.rotate(90))</span></code>
+could be used to return all frames from an image, each rotated 90 degrees.</p>
+</section>
+<section id="variation-fonts">
+<h3>Variation fonts<a class="headerlink" href="#variation-fonts" title="Link to this heading">¶</a></h3>
+<p>Variation fonts are now supported, allowing for different styles from the same font
+file. <code class="docutils literal notranslate"><span class="pre">ImageFont.FreeTypeFont</span></code> has four new methods,
+<a class="reference internal" href="../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.get_variation_names" title="PIL.ImageFont.FreeTypeFont.get_variation_names"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageFont.FreeTypeFont.get_variation_names()</span></code></a> and
+<a class="reference internal" href="../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.set_variation_by_name" title="PIL.ImageFont.FreeTypeFont.set_variation_by_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageFont.FreeTypeFont.set_variation_by_name()</span></code></a> for using named styles, and
+<a class="reference internal" href="../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.get_variation_axes" title="PIL.ImageFont.FreeTypeFont.get_variation_axes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageFont.FreeTypeFont.get_variation_axes()</span></code></a> and
+<a class="reference internal" href="../reference/ImageFont.html#PIL.ImageFont.FreeTypeFont.set_variation_by_axes" title="PIL.ImageFont.FreeTypeFont.set_variation_by_axes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageFont.FreeTypeFont.set_variation_by_axes()</span></code></a> for using font axes
+instead. An <code class="xref py py-exc docutils literal notranslate"><span class="pre">IOError</span></code> will be raised if the font is not a variation font. FreeType
+2.9.1 or greater is required.</p>
+</section>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="imagetk-getimage">
+<h3>ImageTk.getimage<a class="headerlink" href="#imagetk-getimage" title="Link to this heading">¶</a></h3>
+<p>This function is now supported. It returns the contents of an <code class="docutils literal notranslate"><span class="pre">ImageTk.PhotoImage</span></code> as
+an RGBA <code class="docutils literal notranslate"><span class="pre">Image.Image</span></code> instance.</p>
+</section>
+<section id="image-quality-for-jpeg-compressed-tiff">
+<h3>Image quality for JPEG compressed TIFF<a class="headerlink" href="#image-quality-for-jpeg-compressed-tiff" title="Link to this heading">¶</a></h3>
+<p>The TIFF encoder accepts a <code class="docutils literal notranslate"><span class="pre">quality</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">jpeg</span></code> compressed TIFF files. A
+value from 0 (worst) to 100 (best) controls the image quality, similar to the JPEG
+encoder. The default is 75. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.tif&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">85</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="improve-encoding-of-tiff-tags">
+<h3>Improve encoding of TIFF tags<a class="headerlink" href="#improve-encoding-of-tiff-tags" title="Link to this heading">¶</a></h3>
+<p>The TIFF encoder supports more types, especially arrays. This is required for the
+GeoTIFF format which encodes geospatial information.</p>
+<ul class="simple">
+<li><p>Pass <code class="docutils literal notranslate"><span class="pre">tagtype</span></code> from v2 directory to libtiff encoder, instead of autodetecting type.</p></li>
+<li><p>Use explicit types eg. <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> for <code class="docutils literal notranslate"><span class="pre">TIFF_LONG</span></code> to fix issues on platforms with
+64-bit longs.</p></li>
+<li><p>Add support for multiple values (arrays). Requires type in v2 directory and values
+must be passed as a tuple.</p></li>
+<li><p>Add support for signed types eg. <code class="docutils literal notranslate"><span class="pre">TIFFTypes.TIFF_SIGNED_SHORT</span></code>.</p></li>
+</ul>
+</section>
+<section id="respect-pkg-config-environment-variable-when-building">
+<h3>Respect PKG_CONFIG environment variable when building<a class="headerlink" href="#respect-pkg-config-environment-variable-when-building" title="Link to this heading">¶</a></h3>
+<p>This variable is commonly used by other build systems and using it can help with
+cross-compiling. Falls back to <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> as before.</p>
+</section>
+<section id="top-to-bottom-complex-text-rendering">
+<h3>Top-to-bottom complex text rendering<a class="headerlink" href="#top-to-bottom-complex-text-rendering" title="Link to this heading">¶</a></h3>
+<p>Drawing text in the ‘ttb’ direction with <code class="docutils literal notranslate"><span class="pre">ImageFont</span></code> has been significantly improved
+and requires Raqm 0.7 or greater.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">6.1.0</a><ul>
+<li><a class="reference internal" href="#deprecations">Deprecations</a><ul>
+<li><a class="reference internal" href="#image-del">Image.__del__</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#image-entropy">Image.entropy</a></li>
+<li><a class="reference internal" href="#imagegrab-grab">ImageGrab.grab</a></li>
+<li><a class="reference internal" href="#imagesequence-all-frames">ImageSequence.all_frames</a></li>
+<li><a class="reference internal" href="#variation-fonts">Variation fonts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#imagetk-getimage">ImageTk.getimage</a></li>
+<li><a class="reference internal" href="#image-quality-for-jpeg-compressed-tiff">Image quality for JPEG compressed TIFF</a></li>
+<li><a class="reference internal" href="#improve-encoding-of-tiff-tags">Improve encoding of TIFF tags</a></li>
+<li><a class="reference internal" href="#respect-pkg-config-environment-variable-when-building">Respect PKG_CONFIG environment variable when building</a></li>
+<li><a class="reference internal" href="#top-to-bottom-complex-text-rendering">Top-to-bottom complex text rendering</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="6.2.0.html"
+                          title="previous chapter">6.2.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="6.0.0.html"
+                          title="next chapter">6.0.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/6.1.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="6.0.0.html" title="6.0.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="6.2.0.html" title="6.2.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">6.1.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

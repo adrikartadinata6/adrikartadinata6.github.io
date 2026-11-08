@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>SimGUI Manual &#8212; SimPy 2.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Visualize model events and states using SimulationGUIDebug" href="../../SimulationGUIDebug.html" />
+    <link rel="prev" title="SimPlot Manual" href="../PlotManual/ManualPlotting.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../SimulationGUIDebug.html" title="Visualize model events and states using SimulationGUIDebug"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../PlotManual/ManualPlotting.html" title="SimPlot Manual"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../SimPy_Tools.html" accesskey="U">SimPy Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SimGUI Manual</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="simgui-manual">
+<h1><a class="toc-backref" href="#id1">SimGUI Manual</a><a class="headerlink" href="#simgui-manual" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Klaus Muller &lt;<a class="reference external" href="mailto:Muller&#37;&#52;&#48;users&#46;sourceforge&#46;net">Muller<span>&#64;</span>users<span>&#46;</span>sourceforge<span>&#46;</span>net</a>&gt;</p>
+</dd>
+<dt class="field-even">SimPy release</dt>
+<dd class="field-even"><p>2.3.1</p>
+</dd>
+<dt class="field-odd">Web-site</dt>
+<dd class="field-odd"><p><a class="reference external" href="http://simpy.sourceforge.net/">http://simpy.sourceforge.net/</a></p>
+</dd>
+<dt class="field-even">Python-Version</dt>
+<dd class="field-even"><p>2.6 and later</p>
+</dd>
+<dt class="field-odd">Date</dt>
+<dd class="field-odd"><p>December 2011</p>
+</dd>
+</dl>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#simgui-manual" id="id1">SimGUI Manual</a></p>
+<ul>
+<li><p><a class="reference internal" href="#acknowledgements" id="id2">Acknowledgements</a></p></li>
+<li><p><a class="reference internal" href="#introduction" id="id3">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#simgui-overview" id="id4">SimGUI overview</a></p></li>
+<li><p><a class="reference internal" href="#the-simgui-api" id="id5">The SimGUI API</a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous-simgui-capabilities" id="id6">Miscellaneous SimGUI capabilities</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>This manual describes <strong>SimGUI</strong>, a GUI framework for SimPy simulation applications.</p>
+<section id="acknowledgements">
+<h2><a class="toc-backref" href="#id2">Acknowledgements</a><a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>The initial ideas for using a Tk/Tkinter-based GUI for SimPy simulation models
+and first applications came from Mike Mellor and Prof. Simon Frost of University
+of California, San Diego. Simon has been a very productive co-developer of SimGUI.</p>
+<p>Following an idea by Simon Frost, SimGUI uses a great Tkinter-based console for conversing
+with the Python interpreter, developed by Ka-Ping Yee &lt;<a class="reference external" href="mailto:ping&#37;&#52;&#48;lfw&#46;org">ping<span>&#64;</span>lfw<span>&#46;</span>org</a>&gt;.</p>
+</section>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id3">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>SimGUI is a GUI framework for SimPy simulation programs. It provides for:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a standard layout of the user interface, including its menu structure</p></li>
+<li><p>running a simulation</p></li>
+<li><p>viewing simulation output</p></li>
+<li><p>saving the output to a file</p></li>
+<li><p>changing the simulation model parameters</p></li>
+<li><p>viewing a model description</p></li>
+<li><p>viewing the simulation program’s code</p></li>
+<li><p>a Python console for debugging</p></li>
+</ul>
+</div></blockquote>
+<p>SimGUI is based on the Tk GUI library.</p>
+</section>
+<section id="simgui-overview">
+<h2><a class="toc-backref" href="#id4">SimGUI overview</a><a class="headerlink" href="#simgui-overview" title="Permalink to this headline">¶</a></h2>
+<p>Here is a minimalistic program which does nothing but show the SimGUI user interface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## SimGUIminimal.py</span>
+<span class="kn">from</span> <span class="nn">SimPy.SimGUI</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">root</span><span class="o">=</span><span class="n">Tk</span><span class="p">()</span>
+<span class="n">gu</span><span class="o">=</span><span class="n">SimGUI</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">consoleHeight</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">gu</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running it produces this output:</p>
+<img alt="../../_images/Minimal.png" src="../../_images/Minimal.png" />
+<p>The large frame is the <strong>SimGUI application window</strong>. To its right are
+the standard menu items of SimGUI. To show them, the menus have been torn off by
+clicking on the dotted line on all SimGUI drop-down menu items.</p>
+<p>The SimGUI application window consists of five widgets:</p>
+<blockquote>
+<div><ul>
+<li><p>the outside frame is a Tk Toplevel widget with a default title (which can be changed),</p>
+<blockquote>
+<div><ul>
+<li><p>a <strong>menu bar</strong>, a Tk Menu widget which can be adapted by the application program (contained in toplevel)</p></li>
+<li><p>the <strong>output window</strong>, a Tk Frame widet for SimPy program output (contained in toplevel)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the <strong>status bar</strong> for one-line status messages, a Tk Label widget (contained in output window)</p></li>
+<li><p>the <strong>output console</strong> for application output, a Tk Text widget (contained in output window)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>The <strong>File</strong> sub-menu is for saving or opening files and also for quitting the application. By default, it supports
+saving the content of the output console.</p>
+<p>The <strong>Edit</strong> sub-menu is for any editing or change operations. By default, it supports changing model parameters
+and clearing the output console.</p>
+<p>The <strong>Run</strong> sub-menu is for running the SimPy model. By default, it is empty, as there is no model to run.</p>
+<p>The <strong>View</strong> sub-menu is for calling up any application output, e.g. plots or statistics. By default, it has the ability
+to automatically show the data from any Monitor instance in the SimPy application.</p>
+<p>The <strong>Help</strong> sub-menu is for viewing any information about SimGUI and the specific application behind it.
+By default, it provides information about the version of SimGUI, lists the application’s code and allows
+the launching of a Python console for testing and debugging purposes.</p>
+<p>To show how simple it is to interface a model to SimGUI, here is an example with a simple simulation model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="vm">__doc__</span><span class="o">=</span><span class="s2">&quot;&quot;&quot; GUIdemo.py</span>
+<span class="s2">This is a very basic model, demonstrating the ease</span>
+<span class="s2">of interfacing to SimGUI.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">generators</span>
+<span class="kn">from</span> <span class="nn">SimPy.Simulation</span>  <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">SimPy.SimGUI</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">Launcher</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="n">nrLaunched</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">gui</span><span class="o">.</span><span class="n">writeConsole</span><span class="p">(</span><span class="s2">&quot;Launch at </span><span class="si">%.1f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">now</span><span class="p">())</span>
+            <span class="n">Launcher</span><span class="o">.</span><span class="n">nrLaunched</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="n">gui</span><span class="o">.</span><span class="n">launchmonitor</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">Launcher</span><span class="o">.</span><span class="n">nrLaunched</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">gui</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">maxFlightTime</span><span class="p">)</span>
+            <span class="n">gui</span><span class="o">.</span><span class="n">writeConsole</span><span class="p">(</span><span class="s2">&quot;Boom!!! Aaaah!! at </span><span class="si">%.1f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">now</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">model</span><span class="p">():</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">launchmonitor</span><span class="o">=</span><span class="n">Monitor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Rocket counter&quot;</span><span class="p">,</span>
+                              <span class="n">ylab</span><span class="o">=</span><span class="s2">&quot;nr launched&quot;</span><span class="p">,</span><span class="n">tlab</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+    <span class="n">initialize</span><span class="p">()</span>
+    <span class="n">Launcher</span><span class="o">.</span><span class="n">nrLaunched</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gui</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">nrLaunchers</span><span class="p">):</span>
+        <span class="n">lau</span><span class="o">=</span><span class="n">Launcher</span><span class="p">()</span>
+        <span class="n">activate</span><span class="p">(</span><span class="n">lau</span><span class="p">,</span><span class="n">lau</span><span class="o">.</span><span class="n">launch</span><span class="p">())</span>
+    <span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">gui</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">noRunYet</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">writeStatusLine</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> rockets launched in </span><span class="si">%.1f</span><span class="s2"> minutes&quot;</span><span class="o">%</span>
+                        <span class="p">(</span><span class="n">Launcher</span><span class="o">.</span><span class="n">nrLaunched</span><span class="p">,</span><span class="n">now</span><span class="p">()))</span>
+
+<span class="k">class</span> <span class="nc">MyGUI</span><span class="p">(</span><span class="n">SimGUI</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">win</span><span class="p">,</span><span class="o">**</span><span class="n">par</span><span class="p">):</span>
+        <span class="n">SimGUI</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">win</span><span class="p">,</span><span class="o">**</span><span class="n">par</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Start fireworks&quot;</span><span class="p">,</span>
+                             <span class="n">command</span><span class="o">=</span><span class="n">model</span><span class="p">,</span><span class="n">underline</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">=</span><span class="n">Parameters</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span><span class="n">maxFlightTime</span><span class="o">=</span><span class="mf">11.7</span><span class="p">,</span><span class="n">nrLaunchers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">root</span><span class="o">=</span><span class="n">Tk</span><span class="p">()</span>
+<span class="n">gui</span><span class="o">=</span><span class="n">MyGUI</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;RocketGUI&quot;</span><span class="p">,</span><span class="n">doc</span><span class="o">=</span><span class="vm">__doc__</span><span class="p">,</span><span class="n">consoleHeight</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">gui</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It produces the following output when the model run command is selected:</p>
+<img alt="../../_images/GUIdemo.png" src="../../_images/GUIdemo.png" />
+<p>class MyGUI adds one menu item under the Run menu. It also defines three parameters
+(duration, maxFlighTime and nrLaunchers) with their initial values which the user can
+change interactively before each run. The MyGUI instance named gui sets the
+window title, the model description (the __doc__ string) and the height of the
+output window.</p>
+<p>The simulation part of the program writes to the output console and to the status line.</p>
+<p>The model uses a Monitor for keeping track of the number of rockets launched over
+time. Because it is made an attribute of the MyGUI instance, the super class
+(SimGUI) can output the Monitor after a run. This requires no application code.
+When the menu item ‘Collected data’ under the View menu is selected, this
+results in:</p>
+<img alt="../../_images/GUIdemoMoni.png" src="../../_images/GUIdemoMoni.png" />
+</section>
+<section id="the-simgui-api">
+<h2><a class="toc-backref" href="#id5">The SimGUI API</a><a class="headerlink" href="#the-simgui-api" title="Permalink to this headline">¶</a></h2>
+<section id="structure">
+<h3>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h3>
+<p>The SimGUI module exposes the following API to the applications programmer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SimGUI</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+        <span class="k">def</span> <span class="fm">__init__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">noRunYet</span><span class="o">=</span><span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="n">Menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">Menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edit</span> <span class="o">=</span> <span class="n">Menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">Menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">Menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">Menu</span>
+        <span class="k">def</span> <span class="nf">makeFileMenu</span>
+        <span class="k">def</span> <span class="nf">makeEditMenu</span>
+        <span class="k">def</span> <span class="nf">makeRunMenu</span>
+        <span class="k">def</span> <span class="nf">makeViewMenu</span>
+        <span class="k">def</span> <span class="nf">makeHelpMenu</span>
+        <span class="k">def</span> <span class="nf">writeConsole</span>
+        <span class="k">def</span> <span class="nf">saveConsole</span>
+        <span class="k">def</span> <span class="nf">clearConsole</span>
+        <span class="k">def</span> <span class="nf">writeStatusLine</span>
+        <span class="k">def</span> <span class="nf">about</span>
+        <span class="k">def</span> <span class="nf">notdone</span>
+        <span class="k">def</span> <span class="nf">showTextBox</span>
+        <span class="k">def</span> <span class="nf">mainloop</span>
+
+<span class="k">class</span> <span class="nc">Parameters</span>
+        <span class="k">def</span> <span class="fm">__init__</span>
+        <span class="k">def</span> <span class="nf">show</span>
+</pre></div>
+</div>
+</section>
+<section id="class-simgui-init-constructor">
+<h3><strong>class SimGUI, __init__ constructor</strong><a class="headerlink" href="#class-simgui-init-constructor" title="Permalink to this headline">¶</a></h3>
+<p>Encapsulates the SimGUI functionality.</p>
+<dl class="simple">
+<dt>Call:</dt><dd><p><strong>&lt;variable&gt;.SimGUI(win[,optional parameters])</strong></p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><ul class="simple">
+<li><p><strong>win</strong> : the master widget in which the SimGUI widgets are embedded</p></li>
+</ul>
+</dd>
+<dt>Optional parameters:</dt><dd><ul class="simple">
+<li><p><strong>title=SimGUI</strong> : the title of the top level window (string)</p></li>
+<li><p><strong>doc=None</strong> : the model description (string)</p></li>
+<li><p><strong>consoleHeight=50</strong> : the height of the output console in lines (positive integer)</p></li>
+</ul>
+</dd>
+<dt>Return value:</dt><dd><p>Returns a reference to the SimGUI instance.</p>
+</dd>
+</dl>
+</section>
+<section id="simgui-instance-fields">
+<h3><strong>SimGUI instance fields</strong><a class="headerlink" href="#simgui-instance-fields" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the constructor parameters, the SimGUI fields of interest
+to the applications programmer are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>self.noRunYet=True</strong> : a predicate indicating whether the model has been run yet; must be set to True after each model run; should be tested by application program before any run-dependent output is produced (boolean)</p></li>
+<li><p><strong>self.top = Menu</strong> : the top level menu widget (menu bar)</p></li>
+<li><p><strong>self.file = Menu</strong> : the ‘File’ menu widger</p></li>
+<li><p><strong>self.edit = Menu</strong> : the ‘Edit’ menu widget</p></li>
+<li><p><strong>self.run = Menu</strong> : the ‘Run’ menu widget</p></li>
+<li><p><strong>self.view = Menu</strong> : the ‘View’ menu widget</p></li>
+<li><p><strong>self.help = Menu</strong> : the ‘Help’ menu widget</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="adding-menu-items">
+<h3><strong>Adding menu items</strong><a class="headerlink" href="#adding-menu-items" title="Permalink to this headline">¶</a></h3>
+<p>Menu items can be added to SimGUI submenus by:</p>
+<blockquote>
+<div><p><strong>&lt;menufield&gt;.add_command(label= &lt;string,command=&lt;callable&gt;, underline=&lt;integer&gt;)</strong></p>
+</div></blockquote>
+<p>E.g. <em>self.run.add_command(label=”Start fireworks”,command=model,underline=0)</em>. This is all
+standard Tk/Tkinter syntax – read any Tk/Tkinter manual or book.</p>
+</section>
+<section id="changing-menus">
+<h3><strong>Changing menus</strong><a class="headerlink" href="#changing-menus" title="Permalink to this headline">¶</a></h3>
+<p>Any of the submenus provided by SimGUI can be replaced by overloading one or
+more of the methods <strong>makeFileMenu, makeEditMenu, makeRunMenu, makeViewMenu,
+makeHelpMenu</strong>. This is done by defining the methods to be overloaded in the SimGUI
+subclass.</p>
+<p>The overloading method should look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">makeFileMenu</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Save some results&#39;</span><span class="p">,</span>
+                      <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">saveResults</span><span class="p">,</span> <span class="n">underline</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Get out of here&#39;</span><span class="p">,</span>
+                 <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">win</span><span class="o">.</span><span class="n">quit</span><span class="p">,</span><span class="n">underline</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;File&#39;</span><span class="p">,</span><span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span><span class="n">underline</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>Note: It is advisable to keep the basic the SimGUI menu structure in order
+to maintain the SimGUI look-and-feel.</em></p>
+</section>
+<section id="writeconsole">
+<h3><strong>writeConsole</strong><a class="headerlink" href="#writeconsole" title="Permalink to this headline">¶</a></h3>
+<p>Writes a string into the output console Text widget, with newline at end.</p>
+<p>Call:</p>
+<blockquote>
+<div><p><strong>&lt;SimGUI instance&gt;.writeConsole(text)</strong></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><ul class="simple">
+<li><p><strong>text=’’</strong> : text to write (string)</p></li>
+</ul>
+</dd>
+<dt>Return value:</dt><dd><p>None.</p>
+</dd>
+</dl>
+</section>
+<section id="saveconsole">
+<h3><strong>saveConsole</strong><a class="headerlink" href="#saveconsole" title="Permalink to this headline">¶</a></h3>
+<p>Saves output console to a text file which the user is prompted to name.</p>
+<dl class="simple">
+<dt>Call:</dt><dd><p><strong>&lt;SimGUI instance&gt;.saveConsole()</strong></p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><p>None</p>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None</p>
+</dd>
+<dt>Return value:</dt><dd><p>None</p>
+</dd>
+</dl>
+</section>
+<section id="clearconsole">
+<h3><strong>clearConsole</strong><a class="headerlink" href="#clearconsole" title="Permalink to this headline">¶</a></h3>
+<p>Clears output console.</p>
+<dl class="simple">
+<dt>Call:</dt><dd><p><strong>&lt;SimGUI instance&gt;.clearConsole()</strong></p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><p>None</p>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None</p>
+</dd>
+<dt>Return value:</dt><dd><p>None</p>
+</dd>
+</dl>
+</section>
+<section id="writestatusline">
+<h3><strong>writeStatusLine</strong><a class="headerlink" href="#writestatusline" title="Permalink to this headline">¶</a></h3>
+<p>Writes a one-line string to the status line.</p>
+<p>Call:</p>
+<blockquote>
+<div><p><strong>&lt;SimGUI instance&gt;.writeStatusLine(text)</strong></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><ul class="simple">
+<li><p><strong>text=’’</strong> : text to write (string, not longer than 80 character)</p></li>
+</ul>
+</dd>
+<dt>Return value:</dt><dd><p>None.</p>
+</dd>
+</dl>
+</section>
+<section id="notdone">
+<h3><strong>notdone</strong><a class="headerlink" href="#notdone" title="Permalink to this headline">¶</a></h3>
+<p>Brings up a warning box staing that a feature is not implemented yet.
+Useful during development of application.</p>
+<p>Call:</p>
+<blockquote>
+<div><p><strong>&lt;SimGUI instance&gt;.notdone()</strong></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Return value:</dt><dd><p>None.</p>
+</dd>
+</dl>
+</section>
+<section id="showtextbox">
+<h3><strong>showTextBox</strong><a class="headerlink" href="#showtextbox" title="Permalink to this headline">¶</a></h3>
+<p>Pops up a text box (Text widget)with a text in it.</p>
+<p>Call:</p>
+<blockquote>
+<div><p><strong>&lt;SimGUI instance&gt;.showTextBox(optional parameters)</strong></p>
+</div></blockquote>
+<dl class="simple">
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><ul class="simple">
+<li><p><strong>title=’’</strong> : title of text box (string)</p></li>
+<li><p><strong>text=’’</strong> : text to write (string)</p></li>
+<li><p><strong>width=80</strong> : width of box in characters (positive integer)</p></li>
+<li><p><strong>height=10</strong> : height of box in lines (positive integer)</p></li>
+</ul>
+</dd>
+<dt>Return value:</dt><dd><p>None.</p>
+</dd>
+</dl>
+</section>
+<section id="mainloop">
+<h3><strong>mainloop</strong><a class="headerlink" href="#mainloop" title="Permalink to this headline">¶</a></h3>
+<p>Starts up SimGUI execution.</p>
+<dl class="simple">
+<dt>Call:</dt><dd><p><strong>&lt;SimGUI instance&gt;.mainloop()</strong></p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Return value:</dt><dd><p>None</p>
+</dd>
+</dl>
+</section>
+<section id="class-parameters-init-constructor-and-adding-parameters">
+<h3><strong>class Parameters, __init__ constructor and adding parameters</strong><a class="headerlink" href="#class-parameters-init-constructor-and-adding-parameters" title="Permalink to this headline">¶</a></h3>
+<p>This class provides for interactive user changes of model parameters. Any user-input
+is checked against the type of the original (default) value of the parameter.In this version,
+parameters of type integer, floating point, text and list are supported.
+Boolean parameters can be implemented by using 0 for False and 1 for True.</p>
+<dl>
+<dt>Example:</dt><dd><p>gui.params=Parameters(endtime=2000,
+numberCustomers=50,
+interval=10.0,
+trace=0)</p>
+<p>This results in parameters gui.params.numberCustomers, gui.params.interval and gui.params.trace.</p>
+</dd>
+<dt>Call:</dt><dd><p><strong>&lt;SimGUI instance&gt;.params=Parameters(par)</strong> (constructor)
+<strong>&lt;SimGUI instance&gt;.params.&lt;name&gt;=&lt;value&gt;</strong> (adding parameters)</p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><ul class="simple">
+<li><p><strong>par</strong> : one or more pairs <em>&lt;name&gt;=&lt;value&gt;</em>, separated by commas. &lt;value&gt; must be one of the four types supported.</p></li>
+<li><p><strong>&lt;name&gt;</strong> : the parameter name (any legal Python identifier)</p></li>
+<li><p><strong>&lt;value&gt;</strong> : the parameter’s initial value (must be one of the four types supported, i.e. integer/boolean, floating point, text and list)</p></li>
+</ul>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Return value:</dt><dd><p>A Parameter instance.</p>
+</dd>
+</dl>
+</section>
+<section id="show">
+<h3><strong>show</strong><a class="headerlink" href="#show" title="Permalink to this headline">¶</a></h3>
+<p>Returns the parameter name/value pairs of a Parameter instance in pretty-printed form
+(one pair per line).</p>
+<dl class="simple">
+<dt>Call:</dt><dd><p><strong>&lt;Parameter instance&gt;.show()</strong></p>
+</dd>
+<dt>Mandatory parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Optional parameters:</dt><dd><p>None.</p>
+</dd>
+<dt>Return value:</dt><dd><p>A string with the name/value pairs separated by newline (’n’).</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="miscellaneous-simgui-capabilities">
+<h2><a class="toc-backref" href="#id6">Miscellaneous SimGUI capabilities</a><a class="headerlink" href="#miscellaneous-simgui-capabilities" title="Permalink to this headline">¶</a></h2>
+<section id="source-code-listing">
+<h3><strong>Source code listing</strong><a class="headerlink" href="#source-code-listing" title="Permalink to this headline">¶</a></h3>
+<p>The ‘Model code’ item of the ‘Help’ submenu lists the application code
+of a running SimGUI application by outputting the content of sys.argv[0].
+No user programming is required for this.</p>
+</section>
+<section id="automatic-display-of-monitor-instances">
+<h3><strong>Automatic display of Monitor instances</strong><a class="headerlink" href="#automatic-display-of-monitor-instances" title="Permalink to this headline">¶</a></h3>
+<p>After a model run, any Monitor instance which is referred to by a SimGUI (sub)class instance
+is shown in the output console by the ‘Collected data’ item on the ‘View’
+submenu. Just e.g. <strong>gui.waitMon=Monitor(“Waiting times”)</strong>, where gui refers to
+a SimGUI (sub)class instance, is enough to facilitate this.</p>
+<p>$Revision: 297 $ $Date: 2009-03-31 02:24:46 +1300 (Tue, 31 Mar 2009) $ kgm</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/sm_SimPy_Logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">SimGUI Manual</a><ul>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#simgui-overview">SimGUI overview</a></li>
+<li><a class="reference internal" href="#the-simgui-api">The SimGUI API</a><ul>
+<li><a class="reference internal" href="#structure">Structure</a></li>
+<li><a class="reference internal" href="#class-simgui-init-constructor"><strong>class SimGUI, __init__ constructor</strong></a></li>
+<li><a class="reference internal" href="#simgui-instance-fields"><strong>SimGUI instance fields</strong></a></li>
+<li><a class="reference internal" href="#adding-menu-items"><strong>Adding menu items</strong></a></li>
+<li><a class="reference internal" href="#changing-menus"><strong>Changing menus</strong></a></li>
+<li><a class="reference internal" href="#writeconsole"><strong>writeConsole</strong></a></li>
+<li><a class="reference internal" href="#saveconsole"><strong>saveConsole</strong></a></li>
+<li><a class="reference internal" href="#clearconsole"><strong>clearConsole</strong></a></li>
+<li><a class="reference internal" href="#writestatusline"><strong>writeStatusLine</strong></a></li>
+<li><a class="reference internal" href="#notdone"><strong>notdone</strong></a></li>
+<li><a class="reference internal" href="#showtextbox"><strong>showTextBox</strong></a></li>
+<li><a class="reference internal" href="#mainloop"><strong>mainloop</strong></a></li>
+<li><a class="reference internal" href="#class-parameters-init-constructor-and-adding-parameters"><strong>class Parameters, __init__ constructor and adding parameters</strong></a></li>
+<li><a class="reference internal" href="#show"><strong>show</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#miscellaneous-simgui-capabilities">Miscellaneous SimGUI capabilities</a><ul>
+<li><a class="reference internal" href="#source-code-listing"><strong>Source code listing</strong></a></li>
+<li><a class="reference internal" href="#automatic-display-of-monitor-instances"><strong>Automatic display of Monitor instances</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../PlotManual/ManualPlotting.html"
+                          title="previous chapter">SimPlot Manual</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../../SimulationGUIDebug.html"
+                          title="next chapter">Visualize model events and states using <strong>SimulationGUIDebug</strong></a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/Manuals/GUIManual/SimGUImanual.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../SimulationGUIDebug.html" title="Visualize model events and states using SimulationGUIDebug"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../PlotManual/ManualPlotting.html" title="SimPlot Manual"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../SimPy_Tools.html" >SimPy Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SimGUI Manual</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2002-2022, Klaus Müller, Tony Vignaux, Ontje Lünsdorf, Stefan Scherfke.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.EpsImagePlugin &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.EpsImagePlugin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.EpsImagePlugin</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># EPS file handling</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1"># 1995-09-01 fl   Created (0.1)</span>
+<span class="c1"># 1996-05-18 fl   Don&#39;t choke on &quot;atend&quot; fields, Ghostscript interface (0.2)</span>
+<span class="c1"># 1996-08-22 fl   Don&#39;t choke on floating point BoundingBox values</span>
+<span class="c1"># 1996-08-23 fl   Handle files from Macintosh (0.3)</span>
+<span class="c1"># 2001-02-17 fl   Use &#39;re&#39; instead of &#39;regex&#39; (Python 2.1) (0.4)</span>
+<span class="c1"># 2003-09-07 fl   Check gs.close status (from Federico Di Gregorio) (0.5)</span>
+<span class="c1"># 2014-05-07 e    Handling of EPS with binary preview and fixed resolution</span>
+<span class="c1">#                 resizing</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 1997-2003 by Secret Labs AB.</span>
+<span class="c1"># Copyright (c) 1995-2003 by Fredrik Lundh</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFile</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">i32le</span> <span class="k">as</span> <span class="n">i32</span>
+<span class="kn">from</span> <span class="nn">._deprecate</span> <span class="kn">import</span> <span class="n">deprecate</span>
+
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<span class="n">split</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^</span><span class="si">%%</span><span class="s2">([^:]*):[ \t]*(.*)[ \t]*$&quot;</span><span class="p">)</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^%[%!\w]([^:]*)[ \t]*$&quot;</span><span class="p">)</span>
+
+<span class="n">gs_binary</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">gs_windows_binary</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="has_ghostscript">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.has_ghostscript">[docs]</a>
+<span class="k">def</span> <span class="nf">has_ghostscript</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">gs_binary</span><span class="p">,</span> <span class="n">gs_windows_binary</span>
+    <span class="k">if</span> <span class="n">gs_binary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gs_windows_binary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">shutil</span>
+
+                <span class="k">for</span> <span class="n">binary</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;gswin32c&quot;</span><span class="p">,</span> <span class="s2">&quot;gswin64c&quot;</span><span class="p">,</span> <span class="s2">&quot;gs&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">gs_windows_binary</span> <span class="o">=</span> <span class="n">binary</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">gs_windows_binary</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">gs_binary</span> <span class="o">=</span> <span class="n">gs_windows_binary</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">([</span><span class="s2">&quot;gs&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">)</span>
+                <span class="n">gs_binary</span> <span class="o">=</span> <span class="s2">&quot;gs&quot;</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">gs_binary</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">gs_binary</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="Ghostscript">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.Ghostscript">[docs]</a>
+<span class="k">def</span> <span class="nf">Ghostscript</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">transparency</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an image using Ghostscript&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">gs_binary</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_ghostscript</span><span class="p">():</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Unable to locate Ghostscript on paths&quot;</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Unpack decoder tile</span>
+    <span class="n">decoder</span><span class="p">,</span> <span class="n">tile</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">tile</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">length</span><span class="p">,</span> <span class="n">bbox</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="c1"># Hack to support hi-res rendering</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale</span>
+    <span class="c1"># resolution is dependent on bbox and size</span>
+    <span class="n">res_x</span> <span class="o">=</span> <span class="mf">72.0</span> <span class="o">*</span> <span class="n">width</span> <span class="o">/</span> <span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">res_y</span> <span class="o">=</span> <span class="mf">72.0</span> <span class="o">*</span> <span class="n">height</span> <span class="o">/</span> <span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">out_fd</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">out_fd</span><span class="p">)</span>
+
+    <span class="n">infile_temp</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">in_fd</span><span class="p">,</span> <span class="n">infile_temp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">in_fd</span><span class="p">)</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">infile_temp</span>
+
+        <span class="c1"># Ignore length and offset!</span>
+        <span class="c1"># Ghostscript can read it</span>
+        <span class="c1"># Copy whole file to read in Ghostscript</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">infile_temp</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># fetch length of fp</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
+            <span class="n">fsize</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="c1"># ensure start position</span>
+            <span class="c1"># go back</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">lengthfile</span> <span class="o">=</span> <span class="n">fsize</span>
+            <span class="k">while</span> <span class="n">lengthfile</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">lengthfile</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">lengthfile</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;pngalpha&quot;</span> <span class="k">if</span> <span class="n">transparency</span> <span class="k">else</span> <span class="s2">&quot;ppmraw&quot;</span>
+
+    <span class="c1"># Build Ghostscript command</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">gs_binary</span><span class="p">,</span>
+        <span class="s2">&quot;-q&quot;</span><span class="p">,</span>  <span class="c1"># quiet mode</span>
+        <span class="sa">f</span><span class="s2">&quot;-g</span><span class="si">{</span><span class="n">width</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">height</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># set output geometry (pixels)</span>
+        <span class="sa">f</span><span class="s2">&quot;-r</span><span class="si">{</span><span class="n">res_x</span><span class="si">:</span><span class="s2">f</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">res_y</span><span class="si">:</span><span class="s2">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># set input DPI (dots per inch)</span>
+        <span class="s2">&quot;-dBATCH&quot;</span><span class="p">,</span>  <span class="c1"># exit after processing</span>
+        <span class="s2">&quot;-dNOPAUSE&quot;</span><span class="p">,</span>  <span class="c1"># don&#39;t pause between pages</span>
+        <span class="s2">&quot;-dSAFER&quot;</span><span class="p">,</span>  <span class="c1"># safe mode</span>
+        <span class="sa">f</span><span class="s2">&quot;-sDEVICE=</span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;-sOutputFile=</span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># output file</span>
+        <span class="c1"># adjust for image origin</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="o">-</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="o">-</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> translate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="n">infile</span><span class="p">,</span>  <span class="c1"># input file</span>
+        <span class="c1"># showpage (see https://bugs.ghostscript.com/show_bug.cgi?id=698272)</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;showpage&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># push data through Ghostscript</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">startupinfo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">):</span>
+            <span class="n">startupinfo</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">STARTUPINFO</span><span class="p">()</span>
+            <span class="n">startupinfo</span><span class="o">.</span><span class="n">dwFlags</span> <span class="o">|=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">STARTF_USESHOWWINDOW</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">startupinfo</span><span class="o">=</span><span class="n">startupinfo</span><span class="p">)</span>
+        <span class="n">out_im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">out_im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">infile_temp</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">infile_temp</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">out_im</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">out_im</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+
+<div class="viewcode-block" id="PSFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.PSFile">[docs]</a>
+<span class="k">class</span> <span class="nc">PSFile</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper for bytesio object that treats either CR or LF as end of line.</span>
+<span class="sd">    This class is no longer used internally, but kept for backwards compatibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+        <span class="n">deprecate</span><span class="p">(</span>
+            <span class="s2">&quot;PSFile&quot;</span><span class="p">,</span>
+            <span class="mi">11</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;If you need the functionality of this class &quot;</span>
+            <span class="s2">&quot;you will need to implement it yourself.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span> <span class="o">=</span> <span class="n">fp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="PSFile.seek">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.PSFile.seek">[docs]</a>
+    <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">whence</span><span class="o">=</span><span class="n">io</span><span class="o">.</span><span class="n">SEEK_SET</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">whence</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PSFile.readline">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.PSFile.readline">[docs]</a>
+    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># line endings can be 1 or 2 of \r \n, in either order</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">def</span> <span class="nf">_accept</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">prefix</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;%!PS&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">i32</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xC6D3D0C5</span><span class="p">)</span>
+
+
+<span class="c1">##</span>
+<span class="c1"># Image plugin for Encapsulated PostScript. This plugin supports only</span>
+<span class="c1"># a few variants of this format.</span>
+
+
+<div class="viewcode-block" id="EpsImageFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.EpsImageFile">[docs]</a>
+<span class="k">class</span> <span class="nc">EpsImageFile</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">ImageFile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;EPS File Parser for the Python Imaging Library&quot;&quot;&quot;</span>
+
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;EPS&quot;</span>
+    <span class="n">format_description</span> <span class="o">=</span> <span class="s2">&quot;Encapsulated Postscript&quot;</span>
+
+    <span class="n">mode_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;LAB&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;CMYK&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_offset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">)</span>
+
+        <span class="c1"># go to offset - start of &quot;%!PS&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">byte_arr</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>
+        <span class="n">bytes_mv</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">byte_arr</span><span class="p">)</span>
+        <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">reading_header_comments</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">reading_trailer_comments</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">trailer_reached</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">check_required_header_comments</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;PS-Adobe&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;EPS header missing &quot;%!PS-Adobe&quot; comment&#39;</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;BoundingBox&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;EPS header missing &quot;</span><span class="si">%%</span><span class="s1">BoundingBox&quot; comment&#39;</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_read_comment</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">reading_trailer_comments</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not an EPS file&quot;</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;BoundingBox&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;(atend)&quot;</span><span class="p">:</span>
+                        <span class="n">reading_trailer_comments</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="n">trailer_reached</span> <span class="ow">and</span> <span class="n">reading_trailer_comments</span>
+                    <span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="c1"># Note: The DSC spec says that BoundingBox</span>
+                            <span class="c1"># fields should be integers, but some drivers</span>
+                            <span class="c1"># put floating point values there anyway.</span>
+                            <span class="n">box</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="p">[</span>
+                                <span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">box</span><span class="p">))</span>
+                            <span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">byte</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="c1"># if we didn&#39;t read a byte we must be at the end of the file</span>
+                <span class="k">if</span> <span class="n">bytes_read</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">byte</span> <span class="ow">in</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                <span class="c1"># if we read a line ending character, ignore it and parse what</span>
+                <span class="c1"># we have already read. if we haven&#39;t read any other characters,</span>
+                <span class="c1"># continue reading</span>
+                <span class="k">if</span> <span class="n">bytes_read</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ASCII/hexadecimal lines in an EPS file must not exceed</span>
+                <span class="c1"># 255 characters, not including line ending characters</span>
+                <span class="k">if</span> <span class="n">bytes_read</span> <span class="o">&gt;=</span> <span class="mi">255</span><span class="p">:</span>
+                    <span class="c1"># only enforce this for lines starting with a &quot;%&quot;,</span>
+                    <span class="c1"># otherwise assume it&#39;s binary data</span>
+                    <span class="k">if</span> <span class="n">byte_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">):</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not an EPS file&quot;</span>
+                        <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">reading_header_comments</span><span class="p">:</span>
+                            <span class="n">check_required_header_comments</span><span class="p">()</span>
+                            <span class="n">reading_header_comments</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="c1"># reset bytes_read so we can keep reading</span>
+                        <span class="c1"># data until the end of the line</span>
+                        <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">byte_arr</span><span class="p">[</span><span class="n">bytes_read</span><span class="p">]</span> <span class="o">=</span> <span class="n">byte</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">bytes_read</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">reading_header_comments</span><span class="p">:</span>
+                <span class="c1"># Load EPS header</span>
+
+                <span class="c1"># if this line doesn&#39;t start with a &quot;%&quot;,</span>
+                <span class="c1"># or does start with &quot;%%EndComments&quot;,</span>
+                <span class="c1"># then we&#39;ve reached the end of the header/comments</span>
+                <span class="k">if</span> <span class="n">byte_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">bytes_mv</span><span class="p">[:</span><span class="mi">13</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">EndComments&quot;</span><span class="p">:</span>
+                    <span class="n">check_required_header_comments</span><span class="p">()</span>
+                    <span class="n">reading_header_comments</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">continue</span>
+
+                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bytes_mv</span><span class="p">[:</span><span class="n">bytes_read</span><span class="p">],</span> <span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">_read_comment</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">k</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;PS-Adobe&quot;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;PS-Adobe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">elif</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;%&quot;</span><span class="p">:</span>
+                        <span class="c1"># handle non-DSC PostScript comments that some</span>
+                        <span class="c1"># tools mistakenly put in the Comments section</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;bad EPS header&quot;</span>
+                        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">bytes_mv</span><span class="p">[:</span><span class="mi">11</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;%ImageData:&quot;</span><span class="p">:</span>
+                <span class="c1"># Check for an &quot;ImageData&quot; descriptor</span>
+                <span class="c1"># https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577413_pgfId-1035096</span>
+
+                <span class="c1"># Values:</span>
+                <span class="c1"># columns</span>
+                <span class="c1"># rows</span>
+                <span class="c1"># bit depth (1 or 8)</span>
+                <span class="c1"># mode (1: L, 2: LAB, 3: RGB, 4: CMYK)</span>
+                <span class="c1"># number of padding channels</span>
+                <span class="c1"># block size (number of bytes per row per channel)</span>
+                <span class="c1"># binary/ascii (1: binary, 2: ascii)</span>
+                <span class="c1"># data start identifier (the image data follows after a single line</span>
+                <span class="c1">#   consisting only of this quoted value)</span>
+                <span class="n">image_data_values</span> <span class="o">=</span> <span class="n">byte_arr</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="n">bytes_read</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+                <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">bit_depth</span><span class="p">,</span> <span class="n">mode_id</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">image_data_values</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">bit_depth</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+                <span class="k">elif</span> <span class="n">bit_depth</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode_map</span><span class="p">[</span><span class="n">mode_id</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="n">trailer_reached</span> <span class="ow">and</span> <span class="n">reading_trailer_comments</span><span class="p">:</span>
+                <span class="c1"># Load EPS trailer</span>
+
+                <span class="c1"># if this line starts with &quot;%%EOF&quot;,</span>
+                <span class="c1"># then we&#39;ve reached the end of the file</span>
+                <span class="k">if</span> <span class="n">bytes_mv</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">EOF&quot;</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bytes_mv</span><span class="p">[:</span><span class="n">bytes_read</span><span class="p">],</span> <span class="s2">&quot;latin-1&quot;</span><span class="p">)</span>
+                <span class="n">_read_comment</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">bytes_mv</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">Trailer&quot;</span><span class="p">:</span>
+                <span class="n">trailer_reached</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">check_required_header_comments</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;cannot determine EPS bounding box&quot;</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_find_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;%!PS&quot;</span><span class="p">:</span>
+            <span class="c1"># for HEAD without binary preview</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xC6D3D0C5</span><span class="p">:</span>
+            <span class="c1"># FIX for: Some EPS file not handled correctly / issue #302</span>
+            <span class="c1"># EPS can contain binary data</span>
+            <span class="c1"># or start directly with latin coding</span>
+            <span class="c1"># more info see:</span>
+            <span class="c1"># https://web.archive.org/web/20160528181353/http://partners.adobe.com/public/developer/en/ps/5002.EPSF_Spec.pdf</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not an EPS file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">length</span><span class="p">,</span> <span class="n">offset</span>
+
+<div class="viewcode-block" id="EpsImageFile.load">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.EpsImageFile.load">[docs]</a>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">transparency</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Load EPS via Ghostscript</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">Ghostscript</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">transparency</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EpsImageFile.load_seek">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.EpsImagePlugin.EpsImageFile.load_seek">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># we can&#39;t incrementally load, so force ImageFile.parser to</span>
+        <span class="c1"># use our custom load method by defining this method.</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;EPS Writer for the Python Imaging Library.&quot;&quot;&quot;</span>
+
+    <span class="c1"># make sure image data is available</span>
+    <span class="n">im</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+    <span class="c1"># determine PostScript image mode</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;image&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;RGB&quot;</span><span class="p">:</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;false 3 colorimage&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;CMYK&quot;</span><span class="p">:</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;false 4 colorimage&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;image mode is not supported&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">eps</span><span class="p">:</span>
+        <span class="c1"># write EPS header</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;%!PS-Adobe-3.0 EPSF-3.0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">Creator: PIL 0.1 EpsEncode</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># fp.write(&quot;%%CreationDate: %s&quot;...)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%%%</span><span class="s2">BoundingBox: 0 0 </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">Pages: 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">EndComments</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">Page: 1 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">ImageData: </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> </span><span class="si">%d</span><span class="s1"> 0 1 1 &quot;</span><span class="si">%s</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operator</span><span class="p">)</span>
+
+    <span class="c1"># image header</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;gsave</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;10 dict begin</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;/buf </span><span class="si">%d</span><span class="s2"> string def</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">operator</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> scale</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> 8</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>  <span class="c1"># &lt;= bits</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;[</span><span class="si">%d</span><span class="s2"> 0 0 -</span><span class="si">%d</span><span class="s2"> 0 </span><span class="si">%d</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;{ currentfile buf readhexstring pop } bind</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">operator</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;flush&quot;</span><span class="p">):</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">ImageFile</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;eps&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)])</span>
+
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%%%%</span><span class="s2">EndBinary</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;grestore end</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;flush&quot;</span><span class="p">):</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_open</span><span class="p">(</span><span class="n">EpsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">EpsImageFile</span><span class="p">,</span> <span class="n">_accept</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_save</span><span class="p">(</span><span class="n">EpsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">_save</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_extensions</span><span class="p">(</span><span class="n">EpsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.ps&quot;</span><span class="p">,</span> <span class="s2">&quot;.eps&quot;</span><span class="p">])</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_mime</span><span class="p">(</span><span class="n">EpsImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;application/postscript&quot;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.EpsImagePlugin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

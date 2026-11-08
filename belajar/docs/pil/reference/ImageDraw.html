@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImageDraw Module &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ImageEnhance Module" href="ImageEnhance.html" />
+    <link rel="prev" title="ImageColor Module" href="ImageColor.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageEnhance.html" title="ImageEnhance Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImageColor.html" title="ImageColor Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code> Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagedraw-module">
+<span id="module-PIL.ImageDraw"></span><h1><a class="reference internal" href="#module-PIL.ImageDraw" title="PIL.ImageDraw"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code></a> Module<a class="headerlink" href="#imagedraw-module" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImageDraw" title="PIL.ImageDraw"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code></a> module provides simple 2D graphics for
+<a class="reference internal" href="Image.html#PIL.Image.Image" title="PIL.Image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a> objects.  You can use this module to create new
+images, annotate or retouch existing images, and to generate graphics on the
+fly for web use.</p>
+<p>For a more advanced drawing library for PIL, see the <a class="reference external" href="https://github.com/pytroll/aggdraw">aggdraw module</a>.</p>
+<section id="example-draw-a-gray-cross-over-an-image">
+<h2>Example: Draw a gray cross over an image<a class="headerlink" href="#example-draw-a-gray-cross-over-an-image" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span>
+
+<span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;hopper.jpg&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">im</span><span class="p">:</span>
+
+    <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+
+    <span class="c1"># write to stdout</span>
+    <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="s2">&quot;PNG&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h2>
+<section id="coordinates">
+<h3>Coordinates<a class="headerlink" href="#coordinates" title="Link to this heading">¶</a></h3>
+<p>The graphics interface uses the same coordinate system as PIL itself, with (0,
+0) in the upper left corner. Any pixels drawn outside of the image bounds will
+be discarded.</p>
+</section>
+<section id="colors">
+<h3>Colors<a class="headerlink" href="#colors" title="Link to this heading">¶</a></h3>
+<p>To specify colors, you can use numbers or tuples just as you would use with
+<a class="reference internal" href="Image.html#PIL.Image.new" title="PIL.Image.new"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.new()</span></code></a> or <a class="reference internal" href="Image.html#PIL.Image.Image.putpixel" title="PIL.Image.Image.putpixel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.Image.putpixel()</span></code></a>. For “1”,
+“L”, and “I” images, use integers. For “RGB” images, use a 3-tuple containing
+integer values. For “F” images, use integer or floating point values.</p>
+<p>For palette images (mode “P”), use integers as color indexes. In 1.1.4 and
+later, you can also use RGB 3-tuples or color names (see below). The drawing
+layer will automatically assign color indexes, as long as you don’t draw with
+more than 256 colors.</p>
+</section>
+<section id="color-names">
+<h3>Color Names<a class="headerlink" href="#color-names" title="Link to this heading">¶</a></h3>
+<p>See <a class="reference internal" href="ImageColor.html#color-names"><span class="std std-ref">Color Names</span></a> for the color names supported by Pillow.</p>
+</section>
+<section id="fonts">
+<h3>Fonts<a class="headerlink" href="#fonts" title="Link to this heading">¶</a></h3>
+<p>PIL can use bitmap fonts or OpenType/TrueType fonts.</p>
+<p>Bitmap fonts are stored in PIL’s own format, where each font typically consists
+of two files, one named .pil and the other usually named .pbm. The former
+contains font metrics, the latter raster data.</p>
+<p>To load a bitmap font, use the load functions in the <a class="reference internal" href="ImageFont.html#module-PIL.ImageFont" title="PIL.ImageFont"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code></a>
+module.</p>
+<p>To load a OpenType/TrueType font, use the truetype function in the
+<a class="reference internal" href="ImageFont.html#module-PIL.ImageFont" title="PIL.ImageFont"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code></a> module. Note that this function depends on third-party
+libraries, and may not available in all PIL builds.</p>
+</section>
+</section>
+<section id="example-draw-partial-opacity-text">
+<h2>Example: Draw Partial Opacity Text<a class="headerlink" href="#example-draw-partial-opacity-text" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+
+<span class="c1"># get an image</span>
+<span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;Pillow/Tests/images/hopper.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">base</span><span class="p">:</span>
+
+    <span class="c1"># make a blank image for the text, initialized to transparent text color</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># get a font</span>
+    <span class="n">fnt</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Pillow/Tests/fonts/FreeMono.ttf&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="c1"># get a drawing context</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+
+    <span class="c1"># draw text, half opacity</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">fnt</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+    <span class="c1"># draw text, full opacity</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">fnt</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">alpha_composite</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+
+    <span class="n">out</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-draw-multiline-text">
+<h2>Example: Draw Multiline Text<a class="headerlink" href="#example-draw-multiline-text" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+
+<span class="c1"># create an image</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+
+<span class="c1"># get a font</span>
+<span class="n">fnt</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Pillow/Tests/fonts/FreeMono.ttf&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="c1"># get a drawing context</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+<span class="c1"># draw multiline text</span>
+<span class="n">d</span><span class="o">.</span><span class="n">multiline_text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;Hello</span><span class="se">\n</span><span class="s2">World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">fnt</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="n">out</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.Draw">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageDraw.</span></span><span class="sig-name descname"><span class="pre">Draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#Draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.Draw" title="Link to this definition">¶</a></dt>
+<dd><p>Creates an object that can be used to draw in the given image.</p>
+<p>Note that the image will be modified in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> – The image to draw in.</p></li>
+<li><p><strong>mode</strong> – Optional mode to use for color values.  For RGB
+images, this argument can be RGB or RGBA (to blend the
+drawing into the image).  For all other modes, this argument
+must be the same as the image mode.  If omitted, the mode
+defaults to the mode of the image.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.fill">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">fill</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.fill" title="Link to this definition">¶</a></dt>
+<dd><p>Selects whether <a class="reference internal" href="#PIL.ImageDraw.ImageDraw.ink" title="PIL.ImageDraw.ImageDraw.ink"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ImageDraw.ink</span></code></a> should be used as a fill or outline color.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.font">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">font</span></span><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.font" title="Link to this definition">¶</a></dt>
+<dd><p>The current default font.</p>
+<p>Can be set per instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+<span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/FreeMono.ttf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or globally for all future ImageDraw instances:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+<span class="n">ImageDraw</span><span class="o">.</span><span class="n">ImageDraw</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/FreeMono.ttf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.fontmode">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">fontmode</span></span><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.fontmode" title="Link to this definition">¶</a></dt>
+<dd><p>The current font drawing mode.</p>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code> to disable antialiasing or <code class="docutils literal notranslate"><span class="pre">&quot;L&quot;</span></code> to enable it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.ink">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">ink</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.ink" title="Link to this definition">¶</a></dt>
+<dd><p>The internal representation of the current default color.</p>
+</dd></dl>
+
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.getfont">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">getfont</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.getfont"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.getfont" title="Link to this definition">¶</a></dt>
+<dd><p>Get the current default font, <a class="reference internal" href="#PIL.ImageDraw.ImageDraw.font" title="PIL.ImageDraw.ImageDraw.font"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ImageDraw.font</span></code></a>.</p>
+<p>If the current default font is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+it is initialized with <a class="reference internal" href="ImageFont.html#PIL.ImageFont.load_default" title="PIL.ImageFont.load_default"><code class="xref py py-func docutils literal notranslate"><span class="pre">ImageFont.load_default()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An image font.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.arc">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">arc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.arc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.arc" title="Link to this definition">¶</a></dt>
+<dd><p>Draws an arc (a portion of a circle outline) between the start and end
+angles, inside the given bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of <code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span>
+<span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code> and <code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span>
+<span class="pre">y0</span></code>.</p></li>
+<li><p><strong>start</strong> – Starting angle, in degrees. Angles are measured from 3
+o’clock, increasing clockwise.</p></li>
+<li><p><strong>end</strong> – Ending angle, in degrees.</p></li>
+<li><p><strong>fill</strong> – Color to use for the arc.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.bitmap">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">bitmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitmap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.bitmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.bitmap" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a bitmap (mask) at the given position, using the current fill color
+for the non-zero portions. The bitmap should be a valid transparency mask
+(mode “1”) or matte (mode “L” or “RGBA”).</p>
+<p>This is equivalent to doing <code class="docutils literal notranslate"><span class="pre">image.paste(xy,</span> <span class="pre">color,</span> <span class="pre">bitmap)</span></code>.</p>
+<p>To paste pixel data into an image, use the
+<a class="reference internal" href="Image.html#PIL.Image.Image.paste" title="PIL.Image.Image.paste"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paste()</span></code></a> method on the image itself.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.chord">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">chord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.chord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.chord" title="Link to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#PIL.ImageDraw.ImageDraw.arc" title="PIL.ImageDraw.ImageDraw.arc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arc()</span></code></a>, but connects the end points
+with a straight line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of <code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span>
+<span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code> and <code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span>
+<span class="pre">y0</span></code>.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.ellipse">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">ellipse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.ellipse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.ellipse" title="Link to this definition">¶</a></dt>
+<dd><p>Draws an ellipse inside the given bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of either
+<code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span> <span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code>
+and <code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span> <span class="pre">y0</span></code>.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.line">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.line" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a line between the coordinates in the <code class="docutils literal notranslate"><span class="pre">xy</span></code> list.
+The coordinate pixels are included in the drawn line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Sequence of either 2-tuples like <code class="docutils literal notranslate"><span class="pre">[(x,</span> <span class="pre">y),</span> <span class="pre">(x,</span> <span class="pre">y),</span> <span class="pre">...]</span></code> or
+numeric values like <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">...]</span></code>.</p></li>
+<li><p><strong>fill</strong> – Color to use for the line.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.5.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This option was broken until version 1.1.6.</p>
+</div>
+</p></li>
+<li><p><strong>joint</strong> – <p>Joint type between a sequence of lines. It can be <code class="docutils literal notranslate"><span class="pre">&quot;curve&quot;</span></code>, for rounded edges, or <code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.pieslice">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">pieslice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.pieslice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.pieslice" title="Link to this definition">¶</a></dt>
+<dd><p>Same as arc, but also draws straight lines between the end points and the
+center of the bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of <code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span>
+<span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code> and <code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span>
+<span class="pre">y0</span></code>.</p></li>
+<li><p><strong>start</strong> – Starting angle, in degrees. Angles are measured from 3
+o’clock, increasing clockwise.</p></li>
+<li><p><strong>end</strong> – Ending angle, in degrees.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.point">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.point" title="Link to this definition">¶</a></dt>
+<dd><p>Draws points (individual pixels) at the given coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Sequence of either 2-tuples like <code class="docutils literal notranslate"><span class="pre">[(x,</span> <span class="pre">y),</span> <span class="pre">(x,</span> <span class="pre">y),</span> <span class="pre">...]</span></code> or
+numeric values like <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">...]</span></code>.</p></li>
+<li><p><strong>fill</strong> – Color to use for the point.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.polygon">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.polygon" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a polygon.</p>
+<p>The polygon outline consists of straight lines between the given
+coordinates, plus a straight line between the last and the first
+coordinate. The coordinate pixels are included in the drawn polygon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Sequence of either 2-tuples like <code class="docutils literal notranslate"><span class="pre">[(x,</span> <span class="pre">y),</span> <span class="pre">(x,</span> <span class="pre">y),</span> <span class="pre">...]</span></code> or
+numeric values like <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">...]</span></code>.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>width</strong> – The line width, in pixels.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.regular_polygon">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">regular_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounding_circle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sides</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.regular_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.regular_polygon" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a regular polygon inscribed in <code class="docutils literal notranslate"><span class="pre">bounding_circle</span></code>,
+with <code class="docutils literal notranslate"><span class="pre">n_sides</span></code>, and rotation of <code class="docutils literal notranslate"><span class="pre">rotation</span></code> degrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounding_circle</strong> – The bounding circle is a tuple defined
+by a point and radius.
+(e.g. <code class="docutils literal notranslate"><span class="pre">bounding_circle=(x,</span> <span class="pre">y,</span> <span class="pre">r)</span></code> or <code class="docutils literal notranslate"><span class="pre">((x,</span> <span class="pre">y),</span> <span class="pre">r)</span></code>).
+The polygon is inscribed in this circle.</p></li>
+<li><p><strong>n_sides</strong> – Number of sides
+(e.g. <code class="docutils literal notranslate"><span class="pre">n_sides=3</span></code> for a triangle, <code class="docutils literal notranslate"><span class="pre">6</span></code> for a hexagon).</p></li>
+<li><p><strong>rotation</strong> – Apply an arbitrary rotation to the polygon
+(e.g. <code class="docutils literal notranslate"><span class="pre">rotation=90</span></code>, applies a 90 degree rotation).</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>width</strong> – The line width, in pixels.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.rectangle">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.rectangle" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a rectangle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of either
+<code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span> <span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span> <span class="pre">y0</span></code>. The bounding box is inclusive of both endpoints.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>width</strong> – <p>The line width, in pixels.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 5.3.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.rounded_rectangle">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">rounded_rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corners</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.rounded_rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.rounded_rectangle" title="Link to this definition">¶</a></dt>
+<dd><p>Draws a rounded rectangle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – Two points to define the bounding box. Sequence of either
+<code class="docutils literal notranslate"><span class="pre">[(x0,</span> <span class="pre">y0),</span> <span class="pre">(x1,</span> <span class="pre">y1)]</span></code> or <code class="docutils literal notranslate"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1]</span></code>, where <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">&gt;=</span> <span class="pre">x0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">y1</span> <span class="pre">&gt;=</span> <span class="pre">y0</span></code>. The bounding box is inclusive of both endpoints.</p></li>
+<li><p><strong>radius</strong> – Radius of the corners.</p></li>
+<li><p><strong>fill</strong> – Color to use for the fill.</p></li>
+<li><p><strong>outline</strong> – Color to use for the outline.</p></li>
+<li><p><strong>width</strong> – The line width, in pixels.</p></li>
+<li><p><strong>corners</strong> – A tuple of whether to round each corner,
+<code class="docutils literal notranslate"><span class="pre">(top_left,</span> <span class="pre">top_right,</span> <span class="pre">bottom_right,</span> <span class="pre">bottom_left)</span></code>.
+Keyword-only argument.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.2.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.shape">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.shape" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is experimental.</p>
+</div>
+<p>Draw a shape.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.text">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.text" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the string at the given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – The anchor coordinates of the text.</p></li>
+<li><p><strong>text</strong> – String to be drawn. If it contains any newline characters,
+the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_text" title="PIL.ImageDraw.ImageDraw.multiline_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_text()</span></code></a>.</p></li>
+<li><p><strong>fill</strong> – Color to use for the text.</p></li>
+<li><p><strong>font</strong> – An <a class="reference internal" href="ImageFont.html#PIL.ImageFont.ImageFont" title="PIL.ImageFont.ImageFont"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageFont</span></code></a> instance.</p></li>
+<li><p><strong>anchor</strong> – <p>The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.
+This parameter is ignored for non-TrueType fonts.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter was present in earlier versions
+of Pillow, but implemented only in version 8.0.0.</p>
+</div>
+</div></blockquote>
+</p></li>
+<li><p><strong>spacing</strong> – If the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_text" title="PIL.ImageDraw.ImageDraw.multiline_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_text()</span></code></a>,
+the number of pixels between lines.</p></li>
+<li><p><strong>align</strong> – If the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_text" title="PIL.ImageDraw.ImageDraw.multiline_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_text()</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>. Determines the relative alignment of lines.
+Use the <code class="docutils literal notranslate"><span class="pre">anchor</span></code> parameter to specify the alignment to <code class="docutils literal notranslate"><span class="pre">xy</span></code>.</p></li>
+<li><p><strong>direction</strong> – <p>Direction of the text. It can be <code class="docutils literal notranslate"><span class="pre">&quot;rtl&quot;</span></code> (right to
+left), <code class="docutils literal notranslate"><span class="pre">&quot;ltr&quot;</span></code> (left to right) or <code class="docutils literal notranslate"><span class="pre">&quot;ttb&quot;</span></code> (top to bottom).
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>features</strong> – <p>A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example <code class="docutils literal notranslate"><span class="pre">&quot;dlig&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ss01&quot;</span></code>, but can be also
+used to turn off default font features, for
+example <code class="docutils literal notranslate"><span class="pre">&quot;-liga&quot;</span></code> to disable ligatures or <code class="docutils literal notranslate"><span class="pre">&quot;-kern&quot;</span></code>
+to disable kerning.  To get all supported
+features, see <a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">OpenType docs</a>.
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>language</strong> – <p>Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>.
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_width</strong> – <p>The width of the text stroke.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_fill</strong> – <p>Color to use for the text stroke. If not given, will default to
+the <code class="docutils literal notranslate"><span class="pre">fill</span></code> parameter.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>embedded_color</strong> – <p>Whether to use font embedded color glyphs (COLR, CBDT, SBIX).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>font_size</strong> – <dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">font</span></code> is not provided, then the size to use for the default</dt><dd><p>font.
+Keyword-only argument.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.multiline_text">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">multiline_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.multiline_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.multiline_text" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the string at the given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – The anchor coordinates of the text.</p></li>
+<li><p><strong>text</strong> – String to be drawn.</p></li>
+<li><p><strong>fill</strong> – Color to use for the text.</p></li>
+<li><p><strong>font</strong> – An <a class="reference internal" href="ImageFont.html#PIL.ImageFont.ImageFont" title="PIL.ImageFont.ImageFont"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageFont</span></code></a> instance.</p></li>
+<li><p><strong>anchor</strong> – <p>The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.
+This parameter is ignored for non-TrueType fonts.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter was present in earlier versions
+of Pillow, but implemented only in version 8.0.0.</p>
+</div>
+</div></blockquote>
+</p></li>
+<li><p><strong>spacing</strong> – The number of pixels between lines.</p></li>
+<li><p><strong>align</strong> – <code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>. Determines the relative alignment of lines.
+Use the <code class="docutils literal notranslate"><span class="pre">anchor</span></code> parameter to specify the alignment to <code class="docutils literal notranslate"><span class="pre">xy</span></code>.</p></li>
+<li><p><strong>direction</strong> – <p>Direction of the text. It can be <code class="docutils literal notranslate"><span class="pre">&quot;rtl&quot;</span></code> (right to
+left), <code class="docutils literal notranslate"><span class="pre">&quot;ltr&quot;</span></code> (left to right) or <code class="docutils literal notranslate"><span class="pre">&quot;ttb&quot;</span></code> (top to bottom).
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>features</strong> – <p>A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example <code class="docutils literal notranslate"><span class="pre">&quot;dlig&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ss01&quot;</span></code>, but can be also
+used to turn off default font features, for
+example <code class="docutils literal notranslate"><span class="pre">&quot;-liga&quot;</span></code> to disable ligatures or <code class="docutils literal notranslate"><span class="pre">&quot;-kern&quot;</span></code>
+to disable kerning.  To get all supported
+features, see <a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">OpenType docs</a>.
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>language</strong> – <p>Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>.
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_width</strong> – <p>The width of the text stroke.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_fill</strong> – <dl class="simple">
+<dt>Color to use for the text stroke. If not given, will default to</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">fill</span></code> parameter.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>embedded_color</strong> – <p>Whether to use font embedded color glyphs (COLR, CBDT, SBIX).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>font_size</strong> – <dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">font</span></code> is not provided, then the size to use for the default</dt><dd><p>font.
+Keyword-only argument.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.textlength">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">textlength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.textlength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.textlength" title="Link to this definition">¶</a></dt>
+<dd><p>Returns length (in pixels with 1/64 precision) of given text when rendered
+in font with provided direction, features, and language.</p>
+<p>This is the amount by which following text should be offset.
+Text bounding box may extend past the length in some fonts,
+e.g. when using italics or accents.</p>
+<p>The result is returned as a float; it is a whole number if using basic layout.</p>
+<p>Note that the sum of two lengths may not equal the length of a concatenated
+string due to kerning. If you need to adjust for kerning, include the following
+character and subtract its length.</p>
+<p>For example, instead of</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># not adjusted for kerning</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>  <span class="c1"># may fail</span>
+</pre></div>
+</div>
+<p>use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;HelloW&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span> <span class="o">-</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span>
+    <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="n">font</span>
+<span class="p">)</span>  <span class="c1"># adjusted for kerning</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># adjusted for kerning</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">)</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+<p>or disable kerning with (requires libraqm)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># kerning is disabled, no need to adjust</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to be measured. May not contain any newline characters.</p></li>
+<li><p><strong>font</strong> – An <a class="reference internal" href="ImageFont.html#PIL.ImageFont.ImageFont" title="PIL.ImageFont.ImageFont"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageFont</span></code></a> instance.</p></li>
+<li><p><strong>direction</strong> – Direction of the text. It can be <code class="docutils literal notranslate"><span class="pre">&quot;rtl&quot;</span></code> (right to
+left), <code class="docutils literal notranslate"><span class="pre">&quot;ltr&quot;</span></code> (left to right) or <code class="docutils literal notranslate"><span class="pre">&quot;ttb&quot;</span></code> (top to bottom).
+Requires libraqm.</p></li>
+<li><p><strong>features</strong> – A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example <code class="docutils literal notranslate"><span class="pre">&quot;dlig&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ss01&quot;</span></code>, but can be also
+used to turn off default font features, for
+example <code class="docutils literal notranslate"><span class="pre">&quot;-liga&quot;</span></code> to disable ligatures or <code class="docutils literal notranslate"><span class="pre">&quot;-kern&quot;</span></code>
+to disable kerning.  To get all supported
+features, see <a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">OpenType docs</a>.
+Requires libraqm.</p></li>
+<li><p><strong>language</strong> – Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>.
+Requires libraqm.</p></li>
+<li><p><strong>embedded_color</strong> – Whether to use font embedded color glyphs (COLR, CBDT, SBIX).</p></li>
+<li><p><strong>font_size</strong> – <dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">font</span></code> is not provided, then the size to use for the default</dt><dd><p>font.
+Keyword-only argument.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either width for horizontal text, or height for vertical text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.textbbox">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">textbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.textbbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.textbbox" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bounding box (in pixels) of given text relative to given anchor
+when rendered in font with provided direction, features, and language.
+Only supported for TrueType fonts.</p>
+<p>Use <a class="reference internal" href="#PIL.ImageDraw.ImageDraw.textlength" title="PIL.ImageDraw.ImageDraw.textlength"><code class="xref py py-meth docutils literal notranslate"><span class="pre">textlength()</span></code></a> to get the offset of following text with
+1/64 pixel precision. The bounding box includes extra margins for
+some fonts, e.g. italics or accents.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – The anchor coordinates of the text.</p></li>
+<li><p><strong>text</strong> – Text to be measured. If it contains any newline characters,
+the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_textbbox" title="PIL.ImageDraw.ImageDraw.multiline_textbbox"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_textbbox()</span></code></a>.</p></li>
+<li><p><strong>font</strong> – A <a class="reference internal" href="ImageFont.html#PIL.ImageFont.FreeTypeFont" title="PIL.ImageFont.FreeTypeFont"><code class="xref py py-class docutils literal notranslate"><span class="pre">FreeTypeFont</span></code></a> instance.</p></li>
+<li><p><strong>anchor</strong> – The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.
+This parameter is ignored for non-TrueType fonts.</p></li>
+<li><p><strong>spacing</strong> – If the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_textbbox" title="PIL.ImageDraw.ImageDraw.multiline_textbbox"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_textbbox()</span></code></a>,
+the number of pixels between lines.</p></li>
+<li><p><strong>align</strong> – If the text is passed on to
+<a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_textbbox" title="PIL.ImageDraw.ImageDraw.multiline_textbbox"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiline_textbbox()</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>. Determines the relative alignment of lines.
+Use the <code class="docutils literal notranslate"><span class="pre">anchor</span></code> parameter to specify the alignment to <code class="docutils literal notranslate"><span class="pre">xy</span></code>.</p></li>
+<li><p><strong>direction</strong> – Direction of the text. It can be <code class="docutils literal notranslate"><span class="pre">&quot;rtl&quot;</span></code> (right to
+left), <code class="docutils literal notranslate"><span class="pre">&quot;ltr&quot;</span></code> (left to right) or <code class="docutils literal notranslate"><span class="pre">&quot;ttb&quot;</span></code> (top to bottom).
+Requires libraqm.</p></li>
+<li><p><strong>features</strong> – A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example <code class="docutils literal notranslate"><span class="pre">&quot;dlig&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ss01&quot;</span></code>, but can be also
+used to turn off default font features, for
+example <code class="docutils literal notranslate"><span class="pre">&quot;-liga&quot;</span></code> to disable ligatures or <code class="docutils literal notranslate"><span class="pre">&quot;-kern&quot;</span></code>
+to disable kerning.  To get all supported
+features, see <a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">OpenType docs</a>.
+Requires libraqm.</p></li>
+<li><p><strong>language</strong> – Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>.
+Requires libraqm.</p></li>
+<li><p><strong>stroke_width</strong> – The width of the text stroke.</p></li>
+<li><p><strong>embedded_color</strong> – Whether to use font embedded color glyphs (COLR, CBDT, SBIX).</p></li>
+<li><p><strong>font_size</strong> – <dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">font</span></code> is not provided, then the size to use for the default</dt><dd><p>font.
+Keyword-only argument.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(left,</span> <span class="pre">top,</span> <span class="pre">right,</span> <span class="pre">bottom)</span></code> bounding box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.ImageDraw.multiline_textbbox">
+<span class="sig-prename descclassname"><span class="pre">ImageDraw.</span></span><span class="sig-name descname"><span class="pre">multiline_textbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedded_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#ImageDraw.multiline_textbbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.ImageDraw.multiline_textbbox" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bounding box (in pixels) of given text relative to given anchor
+when rendered in font with provided direction, features, and language.
+Only supported for TrueType fonts.</p>
+<p>Use <a class="reference internal" href="#PIL.ImageDraw.ImageDraw.textlength" title="PIL.ImageDraw.ImageDraw.textlength"><code class="xref py py-meth docutils literal notranslate"><span class="pre">textlength()</span></code></a> to get the offset of following text with
+1/64 pixel precision. The bounding box includes extra margins for
+some fonts, e.g. italics or accents.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – The anchor coordinates of the text.</p></li>
+<li><p><strong>text</strong> – Text to be measured.</p></li>
+<li><p><strong>font</strong> – A <a class="reference internal" href="ImageFont.html#PIL.ImageFont.FreeTypeFont" title="PIL.ImageFont.FreeTypeFont"><code class="xref py py-class docutils literal notranslate"><span class="pre">FreeTypeFont</span></code></a> instance.</p></li>
+<li><p><strong>anchor</strong> – The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.
+This parameter is ignored for non-TrueType fonts.</p></li>
+<li><p><strong>spacing</strong> – The number of pixels between lines.</p></li>
+<li><p><strong>align</strong> – <code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>. Determines the relative alignment of lines.
+Use the <code class="docutils literal notranslate"><span class="pre">anchor</span></code> parameter to specify the alignment to <code class="docutils literal notranslate"><span class="pre">xy</span></code>.</p></li>
+<li><p><strong>direction</strong> – Direction of the text. It can be <code class="docutils literal notranslate"><span class="pre">&quot;rtl&quot;</span></code> (right to
+left), <code class="docutils literal notranslate"><span class="pre">&quot;ltr&quot;</span></code> (left to right) or <code class="docutils literal notranslate"><span class="pre">&quot;ttb&quot;</span></code> (top to bottom).
+Requires libraqm.</p></li>
+<li><p><strong>features</strong> – A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example <code class="docutils literal notranslate"><span class="pre">&quot;dlig&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ss01&quot;</span></code>, but can be also
+used to turn off default font features, for
+example <code class="docutils literal notranslate"><span class="pre">&quot;-liga&quot;</span></code> to disable ligatures or <code class="docutils literal notranslate"><span class="pre">&quot;-kern&quot;</span></code>
+to disable kerning.  To get all supported
+features, see <a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">OpenType docs</a>.
+Requires libraqm.</p></li>
+<li><p><strong>language</strong> – Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>.
+Requires libraqm.</p></li>
+<li><p><strong>stroke_width</strong> – The width of the text stroke.</p></li>
+<li><p><strong>embedded_color</strong> – Whether to use font embedded color glyphs (COLR, CBDT, SBIX).</p></li>
+<li><p><strong>font_size</strong> – <dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">font</span></code> is not provided, then the size to use for the default</dt><dd><p>font.
+Keyword-only argument.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(left,</span> <span class="pre">top,</span> <span class="pre">right,</span> <span class="pre">bottom)</span></code> bounding box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.getdraw">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageDraw.</span></span><span class="sig-name descname"><span class="pre">getdraw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#getdraw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.getdraw" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is experimental.</p>
+</div>
+<p>A more advanced 2D drawing interface for PIL images,
+based on the WCK interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> – The image to draw in.</p></li>
+<li><p><strong>hints</strong> – An optional list of hints.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A (drawing context, drawing resource factory) tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageDraw.floodfill">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageDraw.</span></span><span class="sig-name descname"><span class="pre">floodfill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageDraw.html#floodfill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageDraw.floodfill" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is experimental.</p>
+</div>
+<p>Fills a bounded region with a given color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – Target image.</p></li>
+<li><p><strong>xy</strong> – Seed position (a 2-item coordinate tuple).</p></li>
+<li><p><strong>value</strong> – Fill color.</p></li>
+<li><p><strong>border</strong> – Optional border value.  If given, the region consists of
+pixels with a color different from the border color.  If not given,
+the region consists of pixels having the same color as the seed
+pixel.</p></li>
+<li><p><strong>thresh</strong> – Optional threshold value which specifies a maximum
+tolerable difference of a pixel value from the ‘background’ in
+order for it to be replaced. Useful for filling regions of non-
+homogeneous, but similar, colors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code> Module</a><ul>
+<li><a class="reference internal" href="#example-draw-a-gray-cross-over-an-image">Example: Draw a gray cross over an image</a></li>
+<li><a class="reference internal" href="#concepts">Concepts</a><ul>
+<li><a class="reference internal" href="#coordinates">Coordinates</a></li>
+<li><a class="reference internal" href="#colors">Colors</a></li>
+<li><a class="reference internal" href="#color-names">Color Names</a></li>
+<li><a class="reference internal" href="#fonts">Fonts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-draw-partial-opacity-text">Example: Draw Partial Opacity Text</a></li>
+<li><a class="reference internal" href="#example-draw-multiline-text">Example: Draw Multiline Text</a></li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#PIL.ImageDraw.Draw"><code class="docutils literal notranslate"><span class="pre">Draw()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attributes">Attributes</a><ul>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.fill"><code class="docutils literal notranslate"><span class="pre">ImageDraw.fill</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.font"><code class="docutils literal notranslate"><span class="pre">ImageDraw.font</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.fontmode"><code class="docutils literal notranslate"><span class="pre">ImageDraw.fontmode</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.ink"><code class="docutils literal notranslate"><span class="pre">ImageDraw.ink</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#methods">Methods</a><ul>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.getfont"><code class="docutils literal notranslate"><span class="pre">ImageDraw.getfont()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.arc"><code class="docutils literal notranslate"><span class="pre">ImageDraw.arc()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.bitmap"><code class="docutils literal notranslate"><span class="pre">ImageDraw.bitmap()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.chord"><code class="docutils literal notranslate"><span class="pre">ImageDraw.chord()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.ellipse"><code class="docutils literal notranslate"><span class="pre">ImageDraw.ellipse()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.line"><code class="docutils literal notranslate"><span class="pre">ImageDraw.line()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.pieslice"><code class="docutils literal notranslate"><span class="pre">ImageDraw.pieslice()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.point"><code class="docutils literal notranslate"><span class="pre">ImageDraw.point()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.polygon"><code class="docutils literal notranslate"><span class="pre">ImageDraw.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.regular_polygon"><code class="docutils literal notranslate"><span class="pre">ImageDraw.regular_polygon()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.rectangle"><code class="docutils literal notranslate"><span class="pre">ImageDraw.rectangle()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.rounded_rectangle"><code class="docutils literal notranslate"><span class="pre">ImageDraw.rounded_rectangle()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.shape"><code class="docutils literal notranslate"><span class="pre">ImageDraw.shape()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.text"><code class="docutils literal notranslate"><span class="pre">ImageDraw.text()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_text"><code class="docutils literal notranslate"><span class="pre">ImageDraw.multiline_text()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.textlength"><code class="docutils literal notranslate"><span class="pre">ImageDraw.textlength()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.textbbox"><code class="docutils literal notranslate"><span class="pre">ImageDraw.textbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.ImageDraw.multiline_textbbox"><code class="docutils literal notranslate"><span class="pre">ImageDraw.multiline_textbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.getdraw"><code class="docutils literal notranslate"><span class="pre">getdraw()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageDraw.floodfill"><code class="docutils literal notranslate"><span class="pre">floodfill()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImageColor.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageColor</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ImageEnhance.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageEnhance</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImageDraw.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageEnhance.html" title="ImageEnhance Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImageColor.html" title="ImageColor Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code> Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

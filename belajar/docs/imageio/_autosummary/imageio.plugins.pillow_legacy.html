@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>imageio.plugins.pillow_legacy &#8212; imageio 2.34.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css?v=c4c5097c" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="../_static/documentation_options.js?v=f4216541"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="imageio.plugins.pyav" href="imageio.plugins.pyav.html" />
+    <link rel="prev" title="imageio.plugins.pillow.PillowPlugin.get_meta" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.get_meta.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">imageio</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../examples.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../formats/index.html">
+  Supported Formats
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../development/index.html">
+  Contributing
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/imageio/imageio" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/imageio/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fas fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../reference/core_v3.html">
+   Core API v3 (narrative docs)
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.imread.html">
+     imageio.v3.imread
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.imwrite.html">
+     imageio.v3.imwrite
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.imiter.html">
+     imageio.v3.imiter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.improps.html">
+     imageio.v3.improps
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.immeta.html">
+     imageio.v3.immeta
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v3.imopen.html">
+     imageio.v3.imopen
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../reference/userapi.html">
+   Core API v2 (narrative docs)
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.imread.html">
+     imageio.v2.imread
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.mimread.html">
+     imageio.v2.mimread
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.volread.html">
+     imageio.v2.volread
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.mvolread.html">
+     imageio.v2.mvolread
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.imwrite.html">
+     imageio.v2.imwrite
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.mimwrite.html">
+     imageio.v2.mimwrite
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.volwrite.html">
+     imageio.v2.volwrite
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.v2.mvolwrite.html">
+     imageio.v2.mvolwrite
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.bsdf.html">
+   imageio.plugins.bsdf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.dicom.html">
+   imageio.plugins.dicom
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.feisem.html">
+   imageio.plugins.feisem
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.ffmpeg.html">
+   imageio.plugins.ffmpeg
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.fits.html">
+   imageio.plugins.fits
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.freeimage.html">
+   imageio.plugins.freeimage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.gdal.html">
+   imageio.plugins.gdal
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.lytro.html">
+   imageio.plugins.lytro
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.npz.html">
+   imageio.plugins.npz
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="imageio.plugins.opencv.html">
+   imageio.plugins.opencv
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.opencv.OpenCVPlugin.read.html">
+     imageio.plugins.opencv.OpenCVPlugin.read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.opencv.OpenCVPlugin.iter.html">
+     imageio.plugins.opencv.OpenCVPlugin.iter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.opencv.OpenCVPlugin.write.html">
+     imageio.plugins.opencv.OpenCVPlugin.write
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.opencv.OpenCVPlugin.properties.html">
+     imageio.plugins.opencv.OpenCVPlugin.properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.opencv.OpenCVPlugin.metadata.html">
+     imageio.plugins.opencv.OpenCVPlugin.metadata
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="imageio.plugins.pillow.html">
+   imageio.plugins.pillow
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.read.html">
+     imageio.plugins.pillow.PillowPlugin.read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.write.html">
+     imageio.plugins.pillow.PillowPlugin.write
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.iter.html">
+     imageio.plugins.pillow.PillowPlugin.iter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.get_meta.html">
+     imageio.plugins.pillow.PillowPlugin.get_meta
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   imageio.plugins.pillow_legacy
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="imageio.plugins.pyav.html">
+   imageio.plugins.pyav
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.read.html">
+     imageio.plugins.pyav.PyAVPlugin.read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.iter.html">
+     imageio.plugins.pyav.PyAVPlugin.iter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.write.html">
+     imageio.plugins.pyav.PyAVPlugin.write
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.properties.html">
+     imageio.plugins.pyav.PyAVPlugin.properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.metadata.html">
+     imageio.plugins.pyav.PyAVPlugin.metadata
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.init_video_stream.html">
+     imageio.plugins.pyav.PyAVPlugin.init_video_stream
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.write_frame.html">
+     imageio.plugins.pyav.PyAVPlugin.write_frame
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.set_video_filter.html">
+     imageio.plugins.pyav.PyAVPlugin.set_video_filter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.container_metadata.html">
+     imageio.plugins.pyav.PyAVPlugin.container_metadata
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.pyav.PyAVPlugin.video_stream_metadata.html">
+     imageio.plugins.pyav.PyAVPlugin.video_stream_metadata
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.simpleitk.html">
+   imageio.plugins.simpleitk
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="imageio.plugins.spe.html">
+   imageio.plugins.spe
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.spe.SpePlugin.read.html">
+     imageio.plugins.spe.SpePlugin.read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.spe.SpePlugin.iter.html">
+     imageio.plugins.spe.SpePlugin.iter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.spe.SpePlugin.properties.html">
+     imageio.plugins.spe.SpePlugin.properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.spe.SpePlugin.metadata.html">
+     imageio.plugins.spe.SpePlugin.metadata
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.swf.html">
+   imageio.plugins.swf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="imageio.plugins.tifffile.html">
+   imageio.plugins.tifffile
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="imageio.plugins.tifffile_v3.html">
+   imageio.plugins.tifffile_v3
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.read.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.iter.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.iter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.write.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.write
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.properties.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.metadata.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.metadata
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="imageio.plugins.tifffile_v3.TifffilePlugin.iter_pages.html">
+     imageio.plugins.tifffile_v3.TifffilePlugin.iter_pages
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parameters-for-reading">
+   Parameters for Reading
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parameters-for-saving">
+   Parameters for saving
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#notes">
+   Notes
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/imageio/imageio/edit/master/docs/_autosummary/imageio.plugins.pillow_legacy.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="module-imageio.plugins.pillow_legacy">
+<span id="imageio-plugins-pillow-legacy"></span><h1>imageio.plugins.pillow_legacy<a class="headerlink" href="#module-imageio.plugins.pillow_legacy" title="Link to this heading">¶</a></h1>
+<p>Read/Write images using pillow/PIL (legacy).</p>
+<p>Backend Library: <a class="reference external" href="https://pillow.readthedocs.io/en/stable/">Pillow</a></p>
+<p>Pillow is a friendly fork of PIL (Python Image Library) and supports
+reading and writing of common formats (jpg, png, gif, tiff, …). While
+these docs provide an overview of some of its features, pillow is
+constantly improving. Hence, the complete list of features can be found
+in pillows official docs (see the Backend Library link).</p>
+<section id="parameters-for-reading">
+<h2>Parameters for Reading<a class="headerlink" href="#parameters-for-reading" title="Link to this heading">¶</a></h2>
+<dl>
+<dt>pilmode<span class="classifier">str</span></dt><dd><p>(Available for all formats except GIF-PIL)
+From the Pillow documentation:</p>
+<ul class="simple">
+<li><p>‘L’ (8-bit pixels, grayscale)</p></li>
+<li><p>‘P’ (8-bit pixels, mapped to any other mode using a color palette)</p></li>
+<li><p>‘RGB’ (3x8-bit pixels, true color)</p></li>
+<li><p>‘RGBA’ (4x8-bit pixels, true color with transparency mask)</p></li>
+<li><p>‘CMYK’ (4x8-bit pixels, color separation)</p></li>
+<li><p>‘YCbCr’ (3x8-bit pixels, color video format)</p></li>
+<li><p>‘I’ (32-bit signed integer pixels)</p></li>
+<li><p>‘F’ (32-bit floating point pixels)</p></li>
+</ul>
+<p>PIL also provides limited support for a few special modes, including
+‘LA’ (‘L’ with alpha), ‘RGBX’ (true color with padding) and ‘RGBa’
+(true color with premultiplied alpha).</p>
+<p>When translating a color image to grayscale (mode ‘L’, ‘I’ or ‘F’),
+the library uses the ITU-R 601-2 luma transform:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="mi">299</span><span class="o">/</span><span class="mi">1000</span> <span class="o">+</span> <span class="n">G</span> <span class="o">*</span> <span class="mi">587</span><span class="o">/</span><span class="mi">1000</span> <span class="o">+</span> <span class="n">B</span> <span class="o">*</span> <span class="mi">114</span><span class="o">/</span><span class="mi">1000</span>
+</pre></div>
+</div>
+</dd>
+<dt>as_gray<span class="classifier">bool</span></dt><dd><p>(Available for all formats except GIF-PIL)
+If True, the image is converted using mode ‘F’. When <cite>mode</cite> is
+not None and <cite>as_gray</cite> is True, the image is first converted
+according to <cite>mode</cite>, and the result is then “flattened” using
+mode ‘F’.</p>
+</dd>
+<dt>ignoregamma<span class="classifier">bool</span></dt><dd><p>(Only available in PNG-PIL)
+Avoid gamma correction. Default True.</p>
+</dd>
+<dt>exifrotate<span class="classifier">bool</span></dt><dd><p>(Only available in JPEG-PIL)
+Automatically rotate the image according to exif flag. Default True.</p>
+</dd>
+</dl>
+</section>
+<section id="parameters-for-saving">
+<h2>Parameters for saving<a class="headerlink" href="#parameters-for-saving" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>optimize<span class="classifier">bool</span></dt><dd><p>(Only available in PNG-PIL)
+If present and true, instructs the PNG writer to make the output file
+as small as possible. This includes extra processing in order to find
+optimal encoder settings.</p>
+</dd>
+<dt>transparency:</dt><dd><p>(Only available in PNG-PIL)
+This option controls what color image to mark as transparent.</p>
+</dd>
+<dt>dpi: tuple of two scalars</dt><dd><p>(Only available in PNG-PIL)
+The desired dpi in each direction.</p>
+</dd>
+<dt>pnginfo: PIL.PngImagePlugin.PngInfo</dt><dd><p>(Only available in PNG-PIL)
+Object containing text tags.</p>
+</dd>
+<dt>compress_level: int</dt><dd><p>(Only available in PNG-PIL)
+ZLIB compression level, a number between 0 and 9: 1 gives best speed,
+9 gives best compression, 0 gives no compression at all. Default is 9.
+When <code class="docutils literal notranslate"><span class="pre">optimize</span></code> option is True <code class="docutils literal notranslate"><span class="pre">compress_level</span></code> has no effect
+(it is set to 9 regardless of a value passed).</p>
+</dd>
+<dt>compression: int</dt><dd><p>(Only available in PNG-PIL)
+Compatibility with the freeimage PNG format. If given, it overrides
+compress_level.</p>
+</dd>
+<dt>icc_profile:</dt><dd><p>(Only available in PNG-PIL)
+The ICC Profile to include in the saved file.</p>
+</dd>
+<dt>bits (experimental): int</dt><dd><p>(Only available in PNG-PIL)
+This option controls how many bits to store. If omitted,
+the PNG writer uses 8 bits (256 colors).</p>
+</dd>
+<dt>quantize:</dt><dd><p>(Only available in PNG-PIL)
+Compatibility with the freeimage PNG format. If given, it overrides
+bits. In this case, given as a number between 1-256.</p>
+</dd>
+<dt>dictionary (experimental): dict</dt><dd><p>(Only available in PNG-PIL)
+Set the ZLIB encoder dictionary.</p>
+</dd>
+<dt>prefer_uint8: bool</dt><dd><p>(Only available in PNG-PIL)
+Let the PNG writer truncate uint16 image arrays to uint8 if their values fall
+within the range [0, 255]. Defaults to true for legacy compatibility, however
+it is recommended to set this to false to avoid unexpected behavior when
+saving e.g. weakly saturated images.</p>
+</dd>
+<dt>quality<span class="classifier">scalar</span></dt><dd><p>(Only available in JPEG-PIL)
+The compression factor of the saved image (1..100), higher
+numbers result in higher quality but larger file size. Default 75.</p>
+</dd>
+<dt>progressive<span class="classifier">bool</span></dt><dd><p>(Only available in JPEG-PIL)
+Save as a progressive JPEG file (e.g. for images on the web).
+Default False.</p>
+</dd>
+<dt>optimize<span class="classifier">bool</span></dt><dd><p>(Only available in JPEG-PIL)
+On saving, compute optimal Huffman coding tables (can reduce a few
+percent of file size). Default False.</p>
+</dd>
+<dt>dpi<span class="classifier">tuple of int</span></dt><dd><p>(Only available in JPEG-PIL)
+The pixel density, <code class="docutils literal notranslate"><span class="pre">(x,y)</span></code>.</p>
+</dd>
+<dt>icc_profile<span class="classifier">object</span></dt><dd><p>(Only available in JPEG-PIL)
+If present and true, the image is stored with the provided ICC profile.
+If this parameter is not provided, the image will be saved with no
+profile attached.</p>
+</dd>
+<dt>exif<span class="classifier">dict</span></dt><dd><p>(Only available in JPEG-PIL)
+If present, the image will be stored with the provided raw EXIF data.</p>
+</dd>
+<dt>subsampling<span class="classifier">str</span></dt><dd><p>(Only available in JPEG-PIL)
+Sets the subsampling for the encoder. See Pillow docs for details.</p>
+</dd>
+<dt>qtables<span class="classifier">object</span></dt><dd><p>(Only available in JPEG-PIL)
+Set the qtables for the encoder. See Pillow docs for details.</p>
+</dd>
+<dt>quality_mode<span class="classifier">str</span></dt><dd><p>(Only available in JPEG2000-PIL)
+Either <cite>“rates”</cite> or <cite>“dB”</cite> depending on the units you want to use to
+specify image quality.</p>
+</dd>
+<dt>quality<span class="classifier">float</span></dt><dd><p>(Only available in JPEG2000-PIL)
+Approximate size reduction (if quality mode is <cite>rates</cite>) or a signal to noise ratio
+in decibels (if quality mode is <cite>dB</cite>).</p>
+</dd>
+<dt>loop<span class="classifier">int</span></dt><dd><p>(Only available in GIF-PIL)
+The number of iterations. Default 0 (meaning loop indefinitely).</p>
+</dd>
+<dt>duration<span class="classifier">{float, list}</span></dt><dd><p>(Only available in GIF-PIL)
+The duration (in seconds) of each frame. Either specify one value
+that is used for all frames, or one value for each frame.
+Note that in the GIF format the duration/delay is expressed in
+hundredths of a second, which limits the precision of the duration.</p>
+</dd>
+<dt>fps<span class="classifier">float</span></dt><dd><p>(Only available in GIF-PIL)
+The number of frames per second. If duration is not given, the
+duration for each frame is set to 1/fps. Default 10.</p>
+</dd>
+<dt>palettesize<span class="classifier">int</span></dt><dd><p>(Only available in GIF-PIL)
+The number of colors to quantize the image to. Is rounded to
+the nearest power of two. Default 256.</p>
+</dd>
+<dt>subrectangles<span class="classifier">bool</span></dt><dd><p>(Only available in GIF-PIL)
+If True, will try and optimize the GIF by storing only the
+rectangular parts of each frame that change with respect to the
+previous. Default False.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<p>To enable JPEG 2000 support, you need to build and install the OpenJPEG library,
+version 2.0.0 or higher, before building the Python Imaging Library. Windows
+users can install the OpenJPEG binaries available on the OpenJPEG website, but
+must add them to their PATH in order to use PIL (if you fail to do this, you
+will get errors about not being able to load the <code class="docutils literal notranslate"><span class="pre">_imaging</span></code> DLL).</p>
+<p>GIF images read with this plugin are always RGBA. The alpha channel is ignored
+when saving RGB images.</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="_plugins/pillow/imageio.plugins.pillow.PillowPlugin.get_meta.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">imageio.plugins.pillow.PillowPlugin.get_meta</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="imageio.plugins.pyav.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">imageio.plugins.pyav</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2014-2024, imageio contributors.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

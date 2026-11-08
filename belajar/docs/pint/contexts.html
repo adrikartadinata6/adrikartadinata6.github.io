@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Contexts &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using Measurements" href="measurement.html" />
+    <link rel="prev" title="Buckingham Pi Theorem" href="pitheorem.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="measurement.html" title="Using Measurements"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pitheorem.html" title="Buckingham Pi Theorem"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Contexts</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="contexts">
+<h1>Contexts<a class="headerlink" href="#contexts" title="Permalink to this heading">¶</a></h1>
+<p>If you work frequently on certain topics, you will probably find the need to
+convert between dimensions based on some pre-established (physical)
+relationships. For example, in spectroscopy you need to transform from
+wavelength to frequency. These are incompatible units and therefore Pint will
+raise an error if you do this directly:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="mi">500</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">DimensionalityError</span>: <span class="n">Cannot convert from &#39;nanometer&#39; ([length]) to &#39;hertz&#39; (1 / [time])</span>
+</pre></div>
+</div>
+<p>You probably want to use the relation <cite>frequency = speed_of_light / wavelength</cite>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">speed_of_light</span> <span class="o">/</span> <span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>To make this task easy, Pint has the concept of <cite>contexts</cite> which provides
+conversion rules between dimensions. For example, the relation between
+wavelength and frequency is defined in the <cite>spectroscopy</cite> context (abbreviated
+<cite>sp</cite>). You can tell pint to use this context when you convert a quantity to
+different units.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">,</span> <span class="s1">&#39;spectroscopy&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or with the abbreviated form:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">,</span> <span class="s1">&#39;sp&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Contexts can be also enabled for blocks of code using the <cite>with</cite> statement:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ureg</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>If you need a particular context in all your code, you can enable it for all
+operations with the registry</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">enable_contexts</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To disable the context, just call</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">disable_contexts</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="enabling-multiple-contexts">
+<h2>Enabling multiple contexts<a class="headerlink" href="#enabling-multiple-contexts" title="Permalink to this heading">¶</a></h2>
+<p>You can enable multiple contexts:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">,</span> <span class="s1">&#39;sp&#39;</span><span class="p">,</span> <span class="s1">&#39;boltzmann&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>This works also using the <cite>with</cite> statement:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ureg</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">,</span> <span class="s1">&#39;boltzmann&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or in the registry:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">enable_contexts</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">,</span> <span class="s1">&#39;boltzmann&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>If a conversion rule between two dimensions appears in more than one context,
+the one in the last context has precedence. This is easy to remember if you
+think that the previous syntax is equivalent to nest contexts:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ureg</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="n">ureg</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="s1">&#39;boltzmann&#39;</span><span class="p">)</span> <span class="p">:</span>
+<span class="gp">... </span>        <span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(5.99584916e+14, &#39;hertz&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="parameterized-contexts">
+<h2>Parameterized contexts<a class="headerlink" href="#parameterized-contexts" title="Permalink to this heading">¶</a></h2>
+<p>Contexts can also take named parameters. For example, in the spectroscopy you
+can specify the index of refraction of the medium (<cite>n</cite>). In this way you can
+calculate, for example, the wavelength in water of a laser which on air is 530 nm.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span> <span class="o">=</span> <span class="mf">530.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">wl</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">,</span> <span class="s1">&#39;sp&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;nm&#39;</span><span class="p">,</span> <span class="s1">&#39;sp&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">1.33</span><span class="p">)</span>
+<span class="go">&lt;Quantity(398.4962..., &#39;nanometer&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Contexts can also accept Pint Quantity objects as parameters. For example, the
+‘chemistry’ context accepts the molecular weight of a substance (as a Quantity
+with dimensions of [mass]/[substance]) to allow conversion between moles and
+mass.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">substance</span> <span class="o">=</span> <span class="mi">95</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">substance</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;moles&#39;</span><span class="p">,</span> <span class="s1">&#39;chemistry&#39;</span><span class="p">,</span> <span class="n">mw</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;g/mol&#39;</span><span class="p">))</span>
+<span class="go">&lt;Quantity(19.0, &#39;mole&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="ensuring-context-when-calling-a-function">
+<h2>Ensuring context when calling a function<a class="headerlink" href="#ensuring-context-when-calling-a-function" title="Permalink to this heading">¶</a></h2>
+<p>Pint provides a decorator to make sure that a function called is done within a given
+context. Just like before, you have to provide as argument the name (or alias) of the
+context and the parameters that you wish to set.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wl</span> <span class="o">=</span> <span class="mf">530.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">with_context</span><span class="p">(</span><span class="s1">&#39;sp&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mf">1.33</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">wl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">wl</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="p">(</span><span class="n">wl</span><span class="p">)</span>
+<span class="go">425297855014895.6</span>
+</pre></div>
+</div>
+<p>This decorator can be combined with <strong>wraps</strong> or <strong>check</strong> decorators described in
+<a class="reference internal" href="wrapping.html"><span class="doc">Wrapping and checking functions</span></a>.</p>
+</section>
+<section id="defining-contexts-in-a-file">
+<h2>Defining contexts in a file<a class="headerlink" href="#defining-contexts-in-a-file" title="Permalink to this heading">¶</a></h2>
+<p>Like all units and dimensions in Pint, <cite>contexts</cite> are defined using an easy to
+read text syntax. For example, the definition of the spectroscopy
+context is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@context</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="n">spectroscopy</span> <span class="o">=</span> <span class="n">sp</span>
+    <span class="c1"># n index of refraction of the medium.</span>
+    <span class="p">[</span><span class="n">length</span><span class="p">]</span> <span class="o">&lt;-&gt;</span> <span class="p">[</span><span class="n">frequency</span><span class="p">]:</span> <span class="n">speed_of_light</span> <span class="o">/</span> <span class="n">n</span> <span class="o">/</span> <span class="n">value</span>
+    <span class="p">[</span><span class="n">frequency</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">energy</span><span class="p">]:</span> <span class="n">planck_constant</span> <span class="o">*</span> <span class="n">value</span>
+    <span class="p">[</span><span class="n">energy</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">frequency</span><span class="p">]:</span> <span class="n">value</span> <span class="o">/</span> <span class="n">planck_constant</span>
+<span class="nd">@end</span>
+</pre></div>
+</div>
+<p>The <cite>&#64;context</cite> directive indicates the beginning of the transformations which
+are finished by the <cite>&#64;end</cite> statement. You can optionally specify parameters for
+the context in parenthesis. All parameters are named and default values are
+mandatory. Multiple parameters are separated by commas (like in a python
+function definition). Finally, you provide the name of the context (e.g.
+spectroscopy) and, optionally, a short version of the name (e.g. sp) separated
+by an equal sign. See the definition of the ‘chemistry’ context in
+default_en.txt for an example of a multiple-parameter context.</p>
+<p>Conversions rules are specified by providing source and destination dimensions
+separated using a colon (<cite>:</cite>) from the equation. A special variable named
+<cite>value</cite> will be replaced by the source quantity. Other names will be looked
+first in the context arguments and then in registry.</p>
+<p>A single forward arrow (<cite>-&gt;</cite>) indicates that the equations is used to transform
+from the first dimension to the second one. A double arrow (<cite>&lt;-&gt;</cite>) is used to
+indicate that the transformation operates both ways.</p>
+<p>Context definitions are stored and imported exactly like custom units
+definition file (and can be included in the same file as unit definitions). See
+“Defining units” for details.</p>
+</section>
+<section id="defining-contexts-programmatically">
+<h2>Defining contexts programmatically<a class="headerlink" href="#defining-contexts-programmatically" title="Permalink to this heading">¶</a></h2>
+<p>You can create <cite>Context</cite> object, and populate the conversion rules using python
+functions. For example:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="s1">&#39;ab&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="s1">&#39;[length]&#39;</span><span class="p">,</span> <span class="s1">&#39;[time]&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="k">lambda</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">speed_of_light</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="s1">&#39;[time]&#39;</span><span class="p">,</span> <span class="s1">&#39;[length]&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="k">lambda</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">speed_of_light</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s2">&quot;1 s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(299792.458, &#39;kilometer&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>It is also possible to create anonymous contexts without invoking add_context:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="s1">&#39;[time]&#39;</span><span class="p">,</span> <span class="s1">&#39;[length]&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">speed_of_light</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s2">&quot;1 s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="go">&lt;Quantity(299792.458, &#39;kilometer&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-contexts-for-unit-redefinition">
+<h2>Using contexts for unit redefinition<a class="headerlink" href="#using-contexts-for-unit-redefinition" title="Permalink to this heading">¶</a></h2>
+<p>The exact definition of a unit of measure can change slightly depending on the country,
+year, and more in general convention. For example, the ISO board released over the years
+several revisions of its whitepapers, which subtly change the value of some of the more
+obscure units. And as soon as one steps out of the SI system and starts wandering into
+imperial and colonial measuring systems, the same unit may start being defined slightly
+differently every time - with no clear ‘right’ or ‘wrong’ definition.</p>
+<p>The default pint definitions file (default_en.txt) tries to mitigate the problem by
+offering multiple variants of the same unit by calling them with different names; for
+example, one will find multiple definitions of a “BTU”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">british_thermal_unit</span> <span class="o">=</span> <span class="mf">1055.056</span> <span class="o">*</span> <span class="n">joule</span> <span class="o">=</span> <span class="n">Btu</span> <span class="o">=</span> <span class="n">BTU</span> <span class="o">=</span> <span class="n">Btu_iso</span>
+<span class="n">international_british_thermal_unit</span> <span class="o">=</span> <span class="mf">1e3</span> <span class="o">*</span> <span class="n">pound</span> <span class="o">/</span> <span class="n">kilogram</span> <span class="o">*</span> <span class="n">degR</span> <span class="o">/</span> <span class="n">kelvin</span> <span class="o">*</span> <span class="n">international_calorie</span> <span class="o">=</span> <span class="n">Btu_it</span>
+<span class="n">thermochemical_british_thermal_unit</span> <span class="o">=</span> <span class="mf">1e3</span> <span class="o">*</span> <span class="n">pound</span> <span class="o">/</span> <span class="n">kilogram</span> <span class="o">*</span> <span class="n">degR</span> <span class="o">/</span> <span class="n">kelvin</span> <span class="o">*</span> <span class="n">calorie</span> <span class="o">=</span> <span class="n">Btu_th</span>
+</pre></div>
+</div>
+<p>That’s sometimes insufficient, as Wikipedia reports <a class="reference external" href="https://en.wikipedia.org/wiki/British_thermal_unit">no less than 6 different
+definitions</a> for BTU, and it’s
+entirely possible that some companies in the energy sector, or even individual energy
+contracts, may redefine it to something new entirely, e.g. with a different rounding.</p>
+<p>Pint allows changing the definition of a unit within the scope of a context.
+This allows layering; in the example above, a company may use the global definition
+of BTU from default_en.txt above, then override it with a customer-specific one in
+a context, and then override it again with a contract-specific one on top of it.</p>
+<p>A redefinition follows the following syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">unit</span> <span class="n">name</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">new</span> <span class="n">definition</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>where &lt;unit name&gt; can be the base unit name or one of its aliases.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BTU</span> <span class="o">=</span> <span class="mi">1055</span> <span class="n">J</span>
+</pre></div>
+</div>
+<p>Programmatically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 BTU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">)</span>
+<span class="go">1055.056 joule</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ctx</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ctx</span><span class="o">.</span><span class="n">redefine</span><span class="p">(</span><span class="s2">&quot;BTU = 1055 J&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+<span class="go">1055.0 joule</span>
+<span class="go"># When the context is disabled, pint reverts to the base definition</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">)</span>
+<span class="go">1055.056 joule</span>
+</pre></div>
+</div>
+<p>Or with a definitions file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@context</span> <span class="n">somecontract</span>
+    <span class="n">BTU</span> <span class="o">=</span> <span class="mi">1055</span> <span class="n">J</span>
+<span class="nd">@end</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">load_definitions</span><span class="p">(</span><span class="s2">&quot;somefile.txt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;1 BTU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">)</span>
+<span class="go">1055.056 joule</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;somecontract&quot;</span><span class="p">)</span>
+<span class="go">1055.0 joule</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Redefinitions are transitive; if the registry defines B as a function of A
+and C as a function of B, redefining B will also impact the conversion from C to A.</p>
+</div>
+<p><strong>Limitations</strong></p>
+<ul class="simple">
+<li><p>You can’t create brand new units ; all units must be defined outside of the context
+first.</p></li>
+<li><p>You can’t change the dimensionality of a unit within a context. For example, you
+can’t define a context that redefines grams as a force instead of a mass (but see
+the unit <code class="docutils literal notranslate"><span class="pre">force_gram</span></code> in default_en.txt).</p></li>
+<li><p>You can’t redefine a unit with a prefix; e.g. you can redefine a liter, but not a
+decaliter.</p></li>
+<li><p>You can’t redefine a base unit, such as grams.</p></li>
+<li><p>You can’t add or remove aliases, or change the symbol. Symbol and aliases are
+automatically inherited from the UnitRegistry.</p></li>
+<li><p>You can’t redefine dimensions or prefixes.</p></li>
+</ul>
+</section>
+<section id="working-without-a-default-definition">
+<h2>Working without a default definition<a class="headerlink" href="#working-without-a-default-definition" title="Permalink to this heading">¶</a></h2>
+<p>In some cases, the definition of a certain unit may be so volatile to make it unwise to
+define a default conversion rate in the UnitRegistry.</p>
+<p>This can be solved by using ‘NaN’ (any capitalization) instead of a conversion rate rate
+in the UnitRegistry, and then override it in contexts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">truckload</span> <span class="o">=</span> <span class="n">nan</span> <span class="n">kg</span>
+
+<span class="nd">@context</span> <span class="n">Euro_TIR</span>
+    <span class="n">truckload</span> <span class="o">=</span> <span class="mi">2000</span> <span class="n">kg</span>
+<span class="nd">@end</span>
+
+<span class="nd">@context</span> <span class="n">British_grocer</span>
+    <span class="n">truckload</span> <span class="o">=</span> <span class="mi">500</span> <span class="n">lb</span>
+<span class="nd">@end</span>
+</pre></div>
+</div>
+<p>This allows you, before any context is activated, to define quantities and perform
+dimensional analysis:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">truckload</span><span class="o">.</span><span class="n">dimensionality</span>
+<span class="go">[mass]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="s2">&quot;2 truckloads&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+<span class="go">nan kg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">,</span> <span class="s2">&quot;Euro_TIR&quot;</span><span class="p">)</span>
+<span class="go">4000 kilogram</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">,</span> <span class="s2">&quot;British_grocer&quot;</span><span class="p">)</span>
+<span class="go">453.59237 kilogram</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Contexts</a><ul>
+<li><a class="reference internal" href="#enabling-multiple-contexts">Enabling multiple contexts</a></li>
+<li><a class="reference internal" href="#parameterized-contexts">Parameterized contexts</a></li>
+<li><a class="reference internal" href="#ensuring-context-when-calling-a-function">Ensuring context when calling a function</a></li>
+<li><a class="reference internal" href="#defining-contexts-in-a-file">Defining contexts in a file</a></li>
+<li><a class="reference internal" href="#defining-contexts-programmatically">Defining contexts programmatically</a></li>
+<li><a class="reference internal" href="#using-contexts-for-unit-redefinition">Using contexts for unit redefinition</a></li>
+<li><a class="reference internal" href="#working-without-a-default-definition">Working without a default definition</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="pitheorem.html" title="previous chapter">Buckingham Pi Theorem</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="measurement.html" title="next chapter">Using Measurements</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/contexts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

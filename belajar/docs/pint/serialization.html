@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Serialization &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Buckingham Pi Theorem" href="pitheorem.html" />
+    <link rel="prev" title="Plotting with Matplotlib" href="plotting.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pitheorem.html" title="Buckingham Pi Theorem"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plotting.html" title="Plotting with Matplotlib"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Serialization</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="serialization">
+<span id="id1"></span><h1>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">¶</a></h1>
+<p>In order to dump a <strong>Quantity</strong> to disk, store it in a database or
+transmit it over the wire you need to be able to serialize and then
+deserialize the object.</p>
+<p>The easiest way to do this is by converting the quantity to a string:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">duration</span> <span class="o">=</span> <span class="mf">24.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">years</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">duration</span>
+<span class="go">&lt;Quantity(24.2, &#39;year&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serialized</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+<span class="go">24.2 year</span>
+</pre></div>
+</div>
+<p>Remember that you can easily control the number of digits in the representation
+as shown in <a class="reference internal" href="tutorial.html#sec-string-formatting"><span class="std std-ref">String formatting</span></a>.</p>
+<p>You dump/store/transmit the content of serialized (‘24.2 year’). When you want
+to recover it in another process/machine, you just:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">duration</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;24.2 year&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+<span class="go">24.2 year</span>
+</pre></div>
+</div>
+<p>Notice that the serialized quantity is likely to be parsed in <strong>another</strong> registry
+as shown in this example. Pint Quantities do not exist on their own but they are
+always related to a <strong>UnitRegistry</strong>. Everything will work as expected if both registries,
+are compatible (e.g. they were created using the same definition file). However, things
+could go wrong if the registries are incompatible. For example, <strong>year</strong> could not be
+defined in the target registry. Or what is even worse, it could be defined in a different
+way. Always have to keep in mind that the interpretation and conversion of Quantities are
+UnitRegistry dependent.</p>
+<p>In certain cases, you want a binary representation of the data. Python’s standard algorithm
+for serialization is called <a class="reference external" href="http://docs.python.org/3/library/pickle.html">Pickle</a>. Pint quantities implement the magic <cite>__reduce__</cite>
+method and therefore can be <em>Pickled</em> and <em>Unpickled</em>. However, you have to bear in mind, that
+the <strong>application registry</strong> is used for unpickling and this might be different from the one
+that was used during pickling.</p>
+<p>By default, the application registry is one initialized with <code class="file docutils literal notranslate"><span class="pre">defaults_en.txt</span></code>; in
+other words, the same as what you get when creating a <a class="reference internal" href="developers_reference.html#pint.UnitRegistry" title="pint.UnitRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">pint.UnitRegistry</span></code></a> without
+arguments and without adding any definitions afterwards.</p>
+<p>If your application is fine just using <code class="file docutils literal notranslate"><span class="pre">defaults_en.txt</span></code>, you don’t need to worry
+further.</p>
+<p>If your application needs a single, global registry with custom definitions, you must
+make sure that it is registered using <a class="reference internal" href="developers_reference.html#pint.set_application_registry" title="pint.set_application_registry"><code class="xref py py-func docutils literal notranslate"><span class="pre">pint.set_application_registry()</span></code></a> before
+unpickling anything. You may use <a class="reference internal" href="developers_reference.html#pint.get_application_registry" title="pint.get_application_registry"><code class="xref py py-func docutils literal notranslate"><span class="pre">pint.get_application_registry()</span></code></a> to get the
+current instance of the application registry.</p>
+<p>Finally, if you need multiple custom registries, it’s impossible to correctly unpickle
+<a class="reference internal" href="developers_reference.html#pint.Quantity" title="pint.Quantity"><code class="xref py py-class docutils literal notranslate"><span class="pre">pint.Quantity</span></code></a> or <a class="reference internal" href="developers_reference.html#pint.Unit" title="pint.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">pint.Unit</span></code></a> objects.The best way is to create a tuple
+with the magnitude and the units:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">to_serialize</span> <span class="o">=</span> <span class="n">duration</span><span class="o">.</span><span class="n">to_tuple</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">to_serialize</span><span class="p">)</span>
+<span class="go">(24.2, ((&#39;year&#39;, 1),))</span>
+</pre></div>
+</div>
+<p>And then you can just pickle that:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serialized</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">to_serialize</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To unpickle, just</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="o">.</span><span class="n">from_tuple</span><span class="p">(</span><span class="n">loaded</span><span class="p">)</span>
+<span class="go">&lt;Quantity(24.2, &#39;year&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>(To pickle to and from a file just use the dump and load method as described in _Pickle)</p>
+<p>You can use the same mechanism with any serialization protocol, not only with binary ones.
+(In fact, version 0 of the Pickle protocol is ASCII). Other common serialization protocols/packages
+are <a class="reference external" href="http://docs.python.org/3/library/json.html">json</a>, <a class="reference external" href="http://pyyaml.org/">yaml</a>, <a class="reference external" href="http://docs.python.org/3.6/library/shelve.html">shelve</a>, <a class="reference external" href="http://www.h5py.org/">hdf5</a> (or via <a class="reference external" href="http://www.pytables.org">PyTables</a>) and <a class="reference external" href="https://pypi.python.org/pypi/dill">dill</a>.
+Notice that not all of these packages will serialize properly the magnitude (which can be any
+numerical type such as <cite>numpy.ndarray</cite>).</p>
+<p>Using the <a class="reference external" href="https://github.com/hgrecco/serialize">serialize</a> package you can load and read from multiple formats:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">serialize</span> <span class="kn">import</span> <span class="n">dump</span><span class="p">,</span> <span class="n">load</span><span class="p">,</span> <span class="n">register_class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register_class</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="o">.</span><span class="n">to_tuple</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="o">.</span><span class="n">from_tuple</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dump</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="s1">&#39;output.yaml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;output.yaml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(Check out the <a class="reference external" href="https://github.com/hgrecco/serialize">serialize</a> docs for more information)</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="plotting.html" title="previous chapter">Plotting with Matplotlib</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="pitheorem.html" title="next chapter">Buckingham Pi Theorem</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/serialization.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

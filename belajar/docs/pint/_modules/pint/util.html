@@ -1,0 +1,1207 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.util &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.util</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.util</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.util</span>
+<span class="sd">    ~~~~~~~~~</span>
+
+<span class="sd">    Miscellaneous functions for pint.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">fractions</span> <span class="kn">import</span> <span class="n">Fraction</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">NullHandler</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+<span class="kn">from</span> <span class="nn">token</span> <span class="kn">import</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NUMBER</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">.compat</span> <span class="kn">import</span> <span class="n">NUMERIC_TYPES</span><span class="p">,</span> <span class="n">tokenizer</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">DefinitionSyntaxError</span>
+<span class="kn">from</span> <span class="nn">.formatting</span> <span class="kn">import</span> <span class="n">format_unit</span>
+<span class="kn">from</span> <span class="nn">.pint_eval</span> <span class="kn">import</span> <span class="n">build_eval_tree</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">._typing</span> <span class="kn">import</span> <span class="n">UnitLike</span>
+    <span class="kn">from</span> <span class="nn">.quantity</span> <span class="kn">import</span> <span class="n">Quantity</span>
+    <span class="kn">from</span> <span class="nn">.registry</span> <span class="kn">import</span> <span class="n">BaseRegistry</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">NullHandler</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="matrix_to_string"><a class="viewcode-back" href="../../developers_reference.html#pint.matrix_to_string">[docs]</a><span class="k">def</span> <span class="nf">matrix_to_string</span><span class="p">(</span>
+    <span class="n">matrix</span><span class="p">,</span> <span class="n">row_headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">col_headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmtfun</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes a 2D matrix (as nested list) and returns a string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    matrix :</span>
+
+<span class="sd">    row_headers :</span>
+<span class="sd">         (Default value = None)</span>
+<span class="sd">    col_headers :</span>
+<span class="sd">         (Default value = None)</span>
+<span class="sd">    fmtfun :</span>
+<span class="sd">         (Default value = lambda x: str(int(x)))</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">col_headers</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">row_headers</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">col_headers</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">row_headers</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="n">rh</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fmtfun</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">rh</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row_headers</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fmtfun</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matrix</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../developers_reference.html#pint.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes a 2D matrix (as nested list) and returns the transposed version.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    matrix :</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">matrix</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="column_echelon_form"><a class="viewcode-back" href="../../developers_reference.html#pint.column_echelon_form">[docs]</a><span class="k">def</span> <span class="nf">column_echelon_form</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="n">Fraction</span><span class="p">,</span> <span class="n">transpose_result</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the column echelon form using Gaussian elimination.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    matrix :</span>
+<span class="sd">        a 2D matrix as nested list.</span>
+<span class="sd">    ntype :</span>
+<span class="sd">        the numerical type to use in the calculation. (Default value = Fraction)</span>
+<span class="sd">    transpose_result :</span>
+<span class="sd">        indicates if the returned matrix should be transposed. (Default value = False)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        column echelon form, transformed identity matrix, swapped rows</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lead</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+    <span class="n">_transpose</span> <span class="o">=</span> <span class="n">transpose</span> <span class="k">if</span> <span class="n">transpose_result</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">new_M</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">M</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">ntype</span><span class="o">.</span><span class="n">from_float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">ntype</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">new_M</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">new_M</span>
+
+    <span class="c1"># M = [[ntype(x) for x in row] for row in M]</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="p">[</span>  <span class="c1"># noqa: E741</span>
+        <span class="p">[</span><span class="n">ntype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">nc</span> <span class="k">else</span> <span class="n">ntype</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">nc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">)]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">swapped</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lead</span> <span class="o">&gt;=</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">swapped</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">while</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">lead</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">rows</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="n">lead</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">cols</span> <span class="o">==</span> <span class="n">lead</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">swapped</span>
+
+        <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">I</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">swapped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">lv</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">lead</span><span class="p">]</span>
+        <span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mrx</span> <span class="o">/</span> <span class="n">lv</span> <span class="k">for</span> <span class="n">mrx</span> <span class="ow">in</span> <span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span>
+        <span class="n">I</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mrx</span> <span class="o">/</span> <span class="n">lv</span> <span class="k">for</span> <span class="n">mrx</span> <span class="ow">in</span> <span class="n">I</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">r</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">lv</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">lead</span><span class="p">]</span>
+            <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">iv</span> <span class="o">-</span> <span class="n">lv</span> <span class="o">*</span> <span class="n">rv</span> <span class="k">for</span> <span class="n">rv</span><span class="p">,</span> <span class="n">iv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">iv</span> <span class="o">-</span> <span class="n">lv</span> <span class="o">*</span> <span class="n">rv</span> <span class="k">for</span> <span class="n">rv</span><span class="p">,</span> <span class="n">iv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+
+        <span class="n">lead</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="n">_transpose</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">swapped</span></div>
+
+
+<div class="viewcode-block" id="pi_theorem"><a class="viewcode-back" href="../../developers_reference.html#pint.pi_theorem">[docs]</a><span class="k">def</span> <span class="nf">pi_theorem</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Builds dimensionless quantities using the Buckingham π theorem</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    quantities : dict</span>
+<span class="sd">        mapping between variable name and units</span>
+<span class="sd">    registry :</span>
+<span class="sd">         (Default value = None)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        a list of dimensionless quantities expressed as dicts</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Preprocess input and build the dimensionality Matrix</span>
+    <span class="n">quant</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">getdim</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+        <span class="n">non_int_type</span> <span class="o">=</span> <span class="nb">float</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">getdim</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_dimensionality</span>
+        <span class="n">non_int_type</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">non_int_type</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">quantities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">getdim</span><span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">UnitsContainer</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;dimensionality&quot;</span><span class="p">):</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">getdim</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">dimensionality</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">registry</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;A non dimension was found and a registry was not provided. &quot;</span>
+                <span class="s2">&quot;Assuming that it is a dimension name: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">quant</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">dims</span><span class="p">))</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="n">dimensions</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">dims</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
+
+    <span class="c1"># Calculate dimensionless  quantities</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="n">dimensionality</span><span class="p">[</span><span class="n">dimension</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">dimensionality</span> <span class="ow">in</span> <span class="n">quant</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="n">dimensions</span>
+    <span class="p">]</span>
+
+    <span class="n">M</span><span class="p">,</span> <span class="n">identity</span><span class="p">,</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">column_echelon_form</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">transpose_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Collect results</span>
+    <span class="c1"># Make all numbers integers and minimize the number of negative exponents.</span>
+    <span class="c1"># Remove zeros</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">rowm</span><span class="p">,</span> <span class="n">rowi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">identity</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">el</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">rowm</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">max_den</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">denominator</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rowi</span><span class="p">)</span>
+        <span class="n">neg</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">f</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rowi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">sum</span><span class="p">(</span><span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rowi</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">neg</span> <span class="o">*</span> <span class="n">f</span><span class="o">.</span><span class="n">numerator</span> <span class="o">*</span> <span class="n">max_den</span> <span class="o">/</span> <span class="n">f</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">quant</span><span class="p">,</span> <span class="n">rowi</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">numerator</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="solve_dependencies"><a class="viewcode-back" href="../../developers_reference.html#pint.solve_dependencies">[docs]</a><span class="k">def</span> <span class="nf">solve_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve a dependency graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dependencies :</span>
+<span class="sd">        dependency dictionary. For each key, the value is an iterable indicating its</span>
+<span class="sd">        dependencies.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        iterator of sets, each containing keys of independents tasks dependent only of</span>
+<span class="sd">        the previous tasks in the list.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">dependencies</span><span class="p">:</span>
+        <span class="c1"># values not in keys (items without dep)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">}</span> <span class="o">-</span> <span class="n">dependencies</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="c1"># and keys without value (items without dep)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">)</span>
+        <span class="c1"># can be done right away</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Cyclic dependencies exist among these items: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># and cleaned up</span>
+        <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">-</span> <span class="n">t</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">}</span>
+        <span class="k">yield</span> <span class="n">t</span></div>
+
+
+<span class="k">def</span> <span class="nf">find_shortest_path</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">end</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">shortest</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">start</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">newpath</span> <span class="o">=</span> <span class="n">find_shortest_path</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">newpath</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">shortest</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">newpath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">shortest</span><span class="p">):</span>
+                    <span class="n">shortest</span> <span class="o">=</span> <span class="n">newpath</span>
+    <span class="k">return</span> <span class="n">shortest</span>
+
+
+<span class="k">def</span> <span class="nf">find_connected_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">visited</span> <span class="o">=</span> <span class="n">visited</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">start</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">visited</span>
+
+
+<div class="viewcode-block" id="udict"><a class="viewcode-back" href="../../developers_reference.html#pint.udict">[docs]</a><span class="k">class</span> <span class="nc">udict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom dict implementing __missing__.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="udict.copy"><a class="viewcode-back" href="../../developers_reference.html#pint.udict.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">udict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="UnitsContainer"><a class="viewcode-back" href="../../developers_reference.html#pint.UnitsContainer">[docs]</a><span class="k">class</span> <span class="nc">UnitsContainer</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The UnitsContainer stores the product of units and their respective</span>
+<span class="sd">    exponent and implements the corresponding operations.</span>
+
+<span class="sd">    UnitsContainer is a read-only mapping. All operations (even in place ones)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_d&quot;</span><span class="p">,</span> <span class="s2">&quot;_hash&quot;</span><span class="p">,</span> <span class="s2">&quot;_one&quot;</span><span class="p">,</span> <span class="s2">&quot;_non_int_type&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">UnitsContainer</span><span class="p">):</span>
+            <span class="n">default_non_int_type</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_non_int_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_non_int_type</span> <span class="o">=</span> <span class="nb">float</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;non_int_type&quot;</span><span class="p">,</span> <span class="n">default_non_int_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_one</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_one</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">udict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;key must be a str, not </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;value must be a number, not </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">newval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">newval</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">newval</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+<div class="viewcode-block" id="UnitsContainer.remove"><a class="viewcode-back" href="../../developers_reference.html#pint.UnitsContainer.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new UnitsContainer purged from given keys.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keys :</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+<div class="viewcode-block" id="UnitsContainer.rename"><a class="viewcode-back" href="../../developers_reference.html#pint.UnitsContainer.rename">[docs]</a>    <span class="k">def</span> <span class="nf">rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldkey</span><span class="p">,</span> <span class="n">newkey</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new UnitsContainer in which an entry has been renamed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        oldkey :</span>
+
+<span class="sd">        newkey :</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">oldkey</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
+
+    <span class="c1"># Only needed by pickle protocol 0 and 1 (used by pytables)</span>
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">UnitsContainer</span><span class="p">):</span>
+            <span class="c1"># UnitsContainer.__hash__(self) is not the same as hash(self); see</span>
+            <span class="c1"># ParserHelper.__hash__ and __eq__.</span>
+            <span class="c1"># Different hashes guarantee that the actual contents are different, but</span>
+            <span class="c1"># identical hashes give no guarantee of equality.</span>
+            <span class="c1"># e.g. in CPython, hash(-1) == hash(-2)</span>
+            <span class="k">if</span> <span class="n">UnitsContainer</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="n">UnitsContainer</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DefinitionSyntaxError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_d</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;UnitsContainer(</span><span class="si">{}</span><span class="s2">)&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">format_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">format_babel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwspec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">format_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">,</span> <span class="o">**</span><span class="n">kwspec</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Skip expensive health checks performed by __init__</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">_non_int_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">_one</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Cannot multiply UnitsContainer by </span><span class="si">{}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="fm">__rmul__</span> <span class="o">=</span> <span class="fm">__mul__</span>
+
+    <span class="k">def</span> <span class="fm">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">NUMERIC_TYPES</span><span class="p">):</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Cannot power UnitsContainer by </span><span class="si">{}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*=</span> <span class="n">other</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Cannot divide UnitsContainer by </span><span class="si">{}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">new</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">new</span><span class="o">.</span><span class="n">_hash</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="fm">__rtruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s2">&quot;Cannot divide </span><span class="si">{}</span><span class="s2"> by UnitsContainer&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">**-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="ParserHelper"><a class="viewcode-back" href="../../developers_reference.html#pint.ParserHelper">[docs]</a><span class="k">class</span> <span class="nc">ParserHelper</span><span class="p">(</span><span class="n">UnitsContainer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ParserHelper stores in place the product of variables and</span>
+<span class="sd">    their respective exponent and implements the corresponding operations.</span>
+
+<span class="sd">    ParserHelper is a read-only mapping. All operations (even in place ones)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    type</span>
+<span class="sd">        WARNING : The hash value used does not take into account the scale</span>
+<span class="sd">        attribute so be careful if you use it as a dict key and then two unequal</span>
+<span class="sd">        object can have the same hash.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+
+<div class="viewcode-block" id="ParserHelper.from_word"><a class="viewcode-back" href="../../developers_reference.html#pint.ParserHelper.from_word">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_word</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_word</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a ParserHelper object with a single variable with exponent one.</span>
+
+<span class="sd">        Equivalent to: ParserHelper({&#39;word&#39;: 1})</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        input_word :</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">non_int_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[(</span><span class="n">input_word</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ONE</span> <span class="o">=</span> <span class="n">non_int_type</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ONE</span><span class="p">,</span> <span class="p">[(</span><span class="n">input_word</span><span class="p">,</span> <span class="n">ONE</span><span class="p">)],</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">eval_token</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">use_decimal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+
+        <span class="c1"># TODO: remove this code when use_decimal is deprecated</span>
+        <span class="k">if</span> <span class="n">use_decimal</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;`use_decimal` is deprecated, use `non_int_type` keyword argument when instantiating the registry.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;&gt;&gt;&gt; from decimal import Decimal</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;&gt;&gt;&gt; ureg = UnitRegistry(non_int_type=Decimal)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">token_type</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">type</span>
+        <span class="n">token_text</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">string</span>
+        <span class="k">if</span> <span class="n">token_type</span> <span class="o">==</span> <span class="n">NUMBER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">non_int_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">token_text</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">token_text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">non_int_type</span><span class="p">(</span><span class="n">token_text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">token_type</span> <span class="o">==</span> <span class="n">NAME</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_word</span><span class="p">(</span><span class="n">token_text</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unknown token type&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ParserHelper.from_string"><a class="viewcode-back" href="../../developers_reference.html#pint.ParserHelper.from_string">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_string</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse linear expression mathematical units and return a quantity object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        input_string :</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">input_string</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+
+        <span class="n">input_string</span> <span class="o">=</span> <span class="n">string_preprocessor</span><span class="p">(</span><span class="n">input_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;[&quot;</span> <span class="ow">in</span> <span class="n">input_string</span><span class="p">:</span>
+            <span class="n">input_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;__obra__&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="s2">&quot;__cbra__&quot;</span>
+            <span class="p">)</span>
+            <span class="n">reps</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reps</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">input_string</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">build_eval_tree</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+            <span class="n">partial</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">eval_token</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ParserHelper</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reps</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">ParserHelper</span><span class="p">(</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__obra__&quot;</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__cbra__&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">):</span> <span class="n">value</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ret</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">},</span>
+                <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nan&quot;</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">ret</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mess</span> <span class="o">=</span> <span class="s2">&quot;Only scale 1 ParserHelper instance should be considered hashable&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">mess</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+
+    <span class="c1"># Only needed by pickle protocol 0 and 1 (used by pytables)</span>
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__setstate__</span><span class="p">(</span><span class="n">state</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ParserHelper</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">scale</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">operate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">iadd</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">udict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;{</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ParserHelper(</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">*=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">*=</span> <span class="n">other</span><span class="o">.</span><span class="n">scale</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="fm">__rmul__</span> <span class="o">=</span> <span class="fm">__mul__</span>
+
+    <span class="k">def</span> <span class="fm">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*=</span> <span class="n">other</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">**</span><span class="n">other</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_non_int_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">/=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">/=</span> <span class="n">other</span><span class="o">.</span><span class="n">scale</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="fm">__floordiv__</span> <span class="o">=</span> <span class="fm">__truediv__</span>
+
+    <span class="k">def</span> <span class="fm">__rtruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__pow__</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">*=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">)</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">scale</span> <span class="o">*=</span> <span class="n">other</span><span class="o">.</span><span class="n">scale</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
+<span class="c1">#: List of regex substitution pairs.</span>
+<span class="n">_subs_re_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;</span><span class="se">\N{DEGREE SIGN}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; degree&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([\w\.\-\+\*</span><span class="se">\\</span><span class="s2">\^])\s+&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1 &quot;</span><span class="p">),</span>  <span class="c1"># merge multiple spaces</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">) squared&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1**2&quot;</span><span class="p">),</span>  <span class="c1"># Handle square and cube</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">) cubed&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1**3&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;cubic (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1**3&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;square (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1**2&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;sq (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1**2&quot;</span><span class="p">),</span>
+    <span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;\b([0-9]+\.?[0-9]*)(?=[e|E][a-zA-Z]|[a-df-zA-DF-Z])&quot;</span><span class="p">,</span>
+        <span class="sa">r</span><span class="s2">&quot;\1*&quot;</span><span class="p">,</span>
+    <span class="p">),</span>  <span class="c1"># Handle numberLetter for multiplication</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([\w\.\-])\s+(?=\w)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1*&quot;</span><span class="p">),</span>  <span class="c1"># Handle space for multiplication</span>
+<span class="p">]</span>
+
+<span class="c1">#: Compiles the regex and replace {} by a regex that matches an identifier.</span>
+<span class="n">_subs_re</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[_a-zA-Z][_a-zA-Z0-9]*&quot;</span><span class="p">)),</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_subs_re_list</span>
+<span class="p">]</span>
+<span class="n">_pretty_table</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s2">&quot;⁰¹²³⁴⁵⁶⁷⁸⁹·⁻&quot;</span><span class="p">,</span> <span class="s2">&quot;0123456789*-&quot;</span><span class="p">)</span>
+<span class="n">_pretty_exp_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+(?:\.[⁰¹²³⁴⁵⁶⁷⁸⁹]*)?)&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">string_preprocessor</span><span class="p">(</span><span class="n">input_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">input_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">input_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; per &quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_subs_re</span><span class="p">:</span>
+        <span class="n">input_string</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">input_string</span><span class="p">)</span>
+
+    <span class="n">input_string</span> <span class="o">=</span> <span class="n">_pretty_exp_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;**(\1)&quot;</span><span class="p">,</span> <span class="n">input_string</span><span class="p">)</span>
+    <span class="c1"># Replace pretty format characters</span>
+    <span class="n">input_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">_pretty_table</span><span class="p">)</span>
+
+    <span class="c1"># Handle caret exponentiation</span>
+    <span class="n">input_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;**&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">input_string</span>
+
+
+<span class="k">def</span> <span class="nf">_is_dim</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;[&quot;</span> <span class="ow">and</span> <span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;]&quot;</span>
+
+
+<div class="viewcode-block" id="SharedRegistryObject"><a class="viewcode-back" href="../../developers_reference.html#pint.SharedRegistryObject">[docs]</a><span class="k">class</span> <span class="nc">SharedRegistryObject</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for object keeping a reference to the registree.</span>
+
+<span class="sd">    Such object are for now Quantity and Unit, in a number of places it is</span>
+<span class="sd">    that an object from this class has a &#39;_units&#39; attribute.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_REGISTRY</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">BaseRegistry</span><span class="p">]</span>
+    <span class="n">_units</span><span class="p">:</span> <span class="n">UnitsContainer</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_REGISTRY&quot;</span><span class="p">):</span>
+            <span class="c1"># Base class, not subclasses dynamically by</span>
+            <span class="c1"># UnitRegistry._init_dynamic_classes</span>
+            <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">application_registry</span>
+
+            <span class="n">inst</span><span class="o">.</span><span class="n">_REGISTRY</span> <span class="o">=</span> <span class="n">application_registry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">inst</span>
+
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the other object use a registry and if so that it is the</span>
+<span class="sd">        same registry.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other :</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        type</span>
+<span class="sd">            other don&#39;t use a registry and raise ValueError if other don&#39;t use the</span>
+<span class="sd">            same unit registry.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span> <span class="ow">is</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;_REGISTRY&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SharedRegistryObject</span><span class="p">):</span>
+            <span class="n">mess</span> <span class="o">=</span> <span class="s2">&quot;Cannot operate with </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> of different registries.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">mess</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="PrettyIPython"><a class="viewcode-back" href="../../developers_reference.html#pint.PrettyIPython">[docs]</a><span class="k">class</span> <span class="nc">PrettyIPython</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin to add pretty-printers for IPython&quot;&quot;&quot;</span>
+
+    <span class="n">default_format</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;~&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;{:~H}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;{:H}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_repr_latex_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;~&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;${:~L}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;${:L}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_repr_pretty_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">cycle</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;~&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_format</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;{:~P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;{:P}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="to_units_container"><a class="viewcode-back" href="../../developers_reference.html#pint.to_units_container">[docs]</a><span class="k">def</span> <span class="nf">to_units_container</span><span class="p">(</span>
+    <span class="n">unit_like</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">UnitLike</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">],</span> <span class="n">registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseRegistry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitsContainer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a unit compatible type to a UnitsContainer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    unit_like :</span>
+
+<span class="sd">    registry :</span>
+<span class="sd">         (Default value = None)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mro</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">unit_like</span><span class="p">)</span><span class="o">.</span><span class="n">mro</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">UnitsContainer</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">unit_like</span>
+    <span class="k">elif</span> <span class="n">SharedRegistryObject</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">unit_like</span><span class="o">.</span><span class="n">_units</span>
+    <span class="k">elif</span> <span class="nb">str</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">unit_like</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">unit_like</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">dict</span> <span class="ow">in</span> <span class="n">mro</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">UnitsContainer</span><span class="p">(</span><span class="n">unit_like</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UnitsContainer</span><span class="p">(</span><span class="n">unit_like</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="infer_base_unit"><a class="viewcode-back" href="../../developers_reference.html#pint.infer_base_unit">[docs]</a><span class="k">def</span> <span class="nf">infer_base_unit</span><span class="p">(</span>
+    <span class="n">unit_like</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">UnitLike</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">],</span> <span class="n">registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseRegistry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitsContainer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a Quantity or UnitLike, give the UnitsContainer for it&#39;s base units.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    unit_like : Union[UnitLike, Quantity]</span>
+<span class="sd">        Quantity or Unit to infer the base units from.</span>
+
+<span class="sd">    registry: Optional[BaseRegistry]</span>
+<span class="sd">        If provided, uses the registry&#39;s UnitsContainer and parse_unit_name.  If None,</span>
+<span class="sd">        uses the registry attached to unit_like.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    UnitsContainer</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        The unit_like did not reference a registry, and no registry was provided.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">udict</span><span class="p">()</span>
+
+    <span class="n">original_units</span> <span class="o">=</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">unit_like</span><span class="p">,</span> <span class="n">registry</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">unit_like</span><span class="p">,</span> <span class="s2">&quot;_REGISTRY&quot;</span><span class="p">):</span>
+        <span class="n">registry</span> <span class="o">=</span> <span class="n">unit_like</span><span class="o">.</span><span class="n">_REGISTRY</span>
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No registry provided.&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">unit_name</span><span class="p">,</span> <span class="n">power</span> <span class="ow">in</span> <span class="n">original_units</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">parse_unit_name</span><span class="p">(</span><span class="n">unit_name</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">base_unit</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">base_unit</span><span class="p">]</span> <span class="o">+=</span> <span class="n">power</span>
+
+    <span class="c1"># remove values that resulted in a power of 0</span>
+    <span class="n">nonzero_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">UnitsContainer</span><span class="p">(</span><span class="n">nonzero_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="getattr_maybe_raise"><a class="viewcode-back" href="../../developers_reference.html#pint.getattr_maybe_raise">[docs]</a><span class="k">def</span> <span class="nf">getattr_maybe_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function invoked at start of all overridden ``__getattr__``.</span>
+
+<span class="sd">    Raise AttributeError if the user tries to ask for a _ or __ attribute,</span>
+<span class="sd">    *unless* it is immediately followed by a number, to enable units</span>
+<span class="sd">    encompassing constants, such as ``L / _100km``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    item : string</span>
+<span class="sd">        Item to be found.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Double-underscore attributes are tricky to detect because they are</span>
+    <span class="c1"># automatically prefixed with the class name - which may be a subclass of self</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> object has no attribute </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SourceIterator"><a class="viewcode-back" href="../../developers_reference.html#pint.SourceIterator">[docs]</a><span class="k">class</span> <span class="nc">SourceIterator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterator to facilitate reading the definition files.</span>
+
+<span class="sd">    Accepts any sequence (like a list of lines, a file or another SourceIterator)</span>
+
+<span class="sd">    The iterator yields the line number and line (skipping comments and empty lines)</span>
+<span class="sd">    and stripping white spaces.</span>
+
+<span class="sd">    for lineno, line in SourceIterator(sequence):</span>
+<span class="sd">        # do something here</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_resource</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">SourceIterator</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">sequence</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sequence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">internal</span> <span class="o">=</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">is_resource</span> <span class="o">=</span> <span class="n">is_resource</span>
+
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">internal</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span>
+        <span class="k">return</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span>
+
+    <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span>
+
+<div class="viewcode-block" id="SourceIterator.block_iter"><a class="viewcode-back" href="../../developers_reference.html#pint.SourceIterator.block_iter">[docs]</a>    <span class="k">def</span> <span class="nf">block_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate block including header.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BlockIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BlockIterator"><a class="viewcode-back" href="../../developers_reference.html#pint.BlockIterator">[docs]</a><span class="k">class</span> <span class="nc">BlockIterator</span><span class="p">(</span><span class="n">SourceIterator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like SourceIterator but stops when it finds &#39;@end&#39;</span>
+<span class="sd">    It also raises an error if another &#39;@&#39; directive is found inside.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">line_iterator</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">SourceIterator</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">internal</span> <span class="o">=</span> <span class="n">line_iterator</span><span class="o">.</span><span class="n">internal</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">line_iterator</span><span class="o">.</span><span class="n">last</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">done_last</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">done_last</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">done_last</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span>
+
+        <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">SourceIterator</span><span class="o">.</span><span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@end&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+        <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s2">&quot;cannot nest @ directives&quot;</span><span class="p">,</span> <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span>
+
+    <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span></div>
+
+
+<div class="viewcode-block" id="iterable"><a class="viewcode-back" href="../../developers_reference.html#pint.iterable">[docs]</a><span class="k">def</span> <span class="nf">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether or not an object can be iterated over.</span>
+
+<span class="sd">    Vendored from numpy under the terms of the BSD 3-Clause License. (Copyright</span>
+<span class="sd">    (c) 2005-2019, NumPy Developers.)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value :</span>
+<span class="sd">        Input object.</span>
+<span class="sd">    type :</span>
+<span class="sd">        object</span>
+<span class="sd">    y :</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">iter</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="sized"><a class="viewcode-back" href="../../developers_reference.html#pint.sized">[docs]</a><span class="k">def</span> <span class="nf">sized</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether or not an object has a defined length.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value :</span>
+<span class="sd">        Input object.</span>
+<span class="sd">    type :</span>
+<span class="sd">        object</span>
+<span class="sd">    y :</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Imageio Usage Examples &#8212; imageio 2.34.0 documentation</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/css/blank.css?v=c4c5097c" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="_static/documentation_options.js?v=f4216541"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ImageResources" href="user_guide/requests.html" />
+    <link rel="prev" title="Installing imageio" href="user_guide/installation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="index.html">
+<p class="title">imageio</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="formats/index.html">
+  Supported Formats
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="reference/index.html">
+  API Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="development/index.html">
+  Contributing
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/imageio/imageio" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/imageio/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fas fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Examples
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/requests.html">
+   Requesting Images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/overview.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/standardimages.html">
+   Standard images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/cmdlinescripts.html">
+   Command Line Scripts
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/envvariables.html">
+   Environment Variables
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/scipy.html">
+   Transitioning from Scipy
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/drop27.html">
+   Depreciating Python 2.7
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="user_guide/freezing.html">
+   Freezing ImageIO
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-an-image-of-a-cat">
+   Read an image of a cat
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-from-fancy-sources">
+   Read from fancy sources
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-all-images-in-a-folder">
+   Read all Images in a Folder
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#grab-screenshot-or-image-from-the-clipboard">
+   Grab screenshot or image from the clipboard
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#grab-frames-from-your-webcam">
+   Grab frames from your webcam
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-a-short-movie-to-grayscale">
+   Convert a short movie to grayscale
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-or-iterate-frames-in-a-video">
+   Read or iterate frames in a video
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#re-encode-a-large-video">
+   Re-encode a (large) video
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#read-medical-data-dicom">
+   Read medical data (DICOM)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#volume-data">
+   Volume data
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-videos-with-ffmpeg-and-vaapi">
+   Writing videos with FFMPEG and vaapi
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-bytes-encoding">
+   Writing to Bytes (Encoding)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#writing-to-bytesio">
+   Writing to BytesIO
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#optimizing-a-gif-using-pygifsicle">
+   Optimizing a GIF using pygifsicle
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reading-images-from-zip-archives">
+   Reading Images from ZIP archives
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reading-multiple-files-from-a-zip-archive">
+   Reading Multiple Files from a ZIP archive
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reading-metadata">
+   Reading Metadata
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/imageio/imageio/edit/master/docs/examples.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="imageio-usage-examples">
+<h1>Imageio Usage Examples<a class="headerlink" href="#imageio-usage-examples" title="Link to this heading">¶</a></h1>
+<p>Some of these examples use Visvis to visualize the image data,
+but one can also use Matplotlib to show the images.</p>
+<p>Imageio provides a range of <a class="reference internal" href="user_guide/standardimages.html"><span class="doc">example images</span></a>,
+which can be used by using a URI like <code class="docutils literal notranslate"><span class="pre">'imageio:chelsea.png'</span></code>. The images
+are automatically downloaded if not already present on your system.
+Therefore most examples below should just work.</p>
+<section id="read-an-image-of-a-cat">
+<h2>Read an image of a cat<a class="headerlink" href="#read-an-image-of-a-cat" title="Link to this heading">¶</a></h2>
+<p>Probably the most important thing you’ll ever need.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:chelsea.png&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (300, 451, 3)</span>
+</pre></div>
+</div>
+<p>If the image is a GIF:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="c1"># index=None means: read all images in the file and stack along first axis</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;imageio:newtonscradle.gif&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="c1"># ndarray with (num_frames, height, width, channel)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">frames</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (36, 150, 200, 3)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-from-fancy-sources">
+<h2>Read from fancy sources<a class="headerlink" href="#read-from-fancy-sources" title="Link to this heading">¶</a></h2>
+<p>Imageio can read from filenames, file objects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+
+<span class="c1"># from HTTPS</span>
+<span class="n">web_image</span> <span class="o">=</span> <span class="s2">&quot;https://upload.wikimedia.org/wikipedia/commons/d/d3/Newtons_cradle_animation_book_2.gif&quot;</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">web_image</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># from bytes</span>
+<span class="n">bytes_image</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;&lt;bytes&gt;&quot;</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.gif&quot;</span><span class="p">)</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">bytes_image</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># from byte streams</span>
+<span class="n">byte_stream</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">bytes_image</span><span class="p">)</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">byte_stream</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># from file objects</span>
+<span class="k">class</span> <span class="nc">MyFileObject</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">size</span><span class="p">:</span><span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">bytes_image</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">():</span>
+        <span class="k">return</span>  <span class="c1"># nothing to do</span>
+
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">MyFileObject</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="read-all-images-in-a-folder">
+<h2>Read all Images in a Folder<a class="headerlink" href="#read-all-images-in-a-folder" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;path/to/folder&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">continue</span>
+
+    <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note, however, that <code class="docutils literal notranslate"><span class="pre">Path().iterdir()</span></code> does not guarantees the order in which
+files are read.</p>
+</section>
+<section id="grab-screenshot-or-image-from-the-clipboard">
+<h2>Grab screenshot or image from the clipboard<a class="headerlink" href="#grab-screenshot-or-image-from-the-clipboard" title="Link to this heading">¶</a></h2>
+<p>(Screenshots are supported on Windows and OS X, clipboard on Windows only.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">im_screen</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;&lt;screen&gt;&#39;</span><span class="p">)</span>
+<span class="n">im_clipboard</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;&lt;clipboard&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="grab-frames-from-your-webcam">
+<h2>Grab frames from your webcam<a class="headerlink" href="#grab-frames-from-your-webcam" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For this to work, you need to install the ffmpeg backend:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">imageio</span><span class="p">[</span><span class="n">ffmpeg</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iio</span><span class="o">.</span><span class="n">imiter</span><span class="p">(</span><span class="s2">&quot;&lt;video0&gt;&quot;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frame </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">: avg. color </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note: You can replace the zero with another index in case you have multiple
+devices attached.</p>
+</section>
+<section id="convert-a-short-movie-to-grayscale">
+<h2>Convert a short movie to grayscale<a class="headerlink" href="#convert-a-short-movie-to-grayscale" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For this to work, you need to install the ffmpeg backend:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">imageio</span><span class="p">[</span><span class="n">ffmpeg</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># read the video (it fits into memory)</span>
+<span class="c1"># Note: this will open the image twice. Check the docs (advanced usage) if</span>
+<span class="c1"># this is an issue for your use-case</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">immeta</span><span class="p">(</span><span class="s2">&quot;imageio:cockatoo.mp4&quot;</span><span class="p">,</span> <span class="n">exclude_applied</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;imageio:cockatoo.mp4&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># manually convert the video</span>
+<span class="n">gray_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2989</span><span class="p">,</span> <span class="mf">0.5870</span><span class="p">,</span> <span class="mf">0.1140</span><span class="p">])</span>
+<span class="n">gray_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">gray_frames</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">gray_frames_as_rgb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">gray_frames</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># write the video</span>
+<span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;cockatoo_gray.mp4&quot;</span><span class="p">,</span> <span class="n">gray_frames_as_rgb</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;fps&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="read-or-iterate-frames-in-a-video">
+<h2>Read or iterate frames in a video<a class="headerlink" href="#read-or-iterate-frames-in-a-video" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For this to work, you need to install the pyav backend:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">av</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="c1"># read a single frame</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span>
+    <span class="s2">&quot;imageio:cockatoo.mp4&quot;</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># bulk read all frames</span>
+<span class="c1"># Warning: large videos will consume a lot of memory (RAM)</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;imageio:cockatoo.mp4&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">)</span>
+
+<span class="c1"># iterate over large videos</span>
+<span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">iio</span><span class="o">.</span><span class="n">imiter</span><span class="p">(</span><span class="s2">&quot;imageio:cockatoo.mp4&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="re-encode-a-large-video">
+<h2>Re-encode a (large) video<a class="headerlink" href="#re-encode-a-large-video" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For this to work, you need to install the pyav backend:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">av</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="c1"># assume this is too large to keep all frames in memory</span>
+<span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;imageio:cockatoo.mp4&quot;</span>
+<span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;reencoded_cockatoo.mkv&quot;</span>
+
+<span class="n">fps</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">immeta</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">)[</span><span class="s2">&quot;fps&quot;</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="n">iio</span><span class="o">.</span><span class="n">imopen</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+    <span class="n">out_file</span><span class="o">.</span><span class="n">init_video_stream</span><span class="p">(</span><span class="s2">&quot;vp9&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">iio</span><span class="o">.</span><span class="n">imiter</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pyav&quot;</span><span class="p">):</span>
+        <span class="n">out_file</span><span class="o">.</span><span class="n">write_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-medical-data-dicom">
+<h2>Read medical data (DICOM)<a class="headerlink" href="#read-medical-data-dicom" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;path/to/dicom/files&#39;</span>
+
+<span class="c1"># Read multiple images of different shape</span>
+<span class="n">ims</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">iio</span><span class="o">.</span><span class="n">imiter</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;DICOM&#39;</span><span class="p">)]</span>
+<span class="c1"># Read as volume</span>
+<span class="n">vol</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;DICOM&#39;</span><span class="p">)</span>
+<span class="c1"># Read multiple volumes of different shape</span>
+<span class="n">vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">iio</span><span class="o">.</span><span class="n">imiter</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;DICOM&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="volume-data">
+<h2>Volume data<a class="headerlink" href="#volume-data" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">visvis</span> <span class="k">as</span> <span class="nn">vv</span>
+
+<span class="n">vol</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:stent.npz&#39;</span><span class="p">)</span>
+<span class="n">vv</span><span class="o">.</span><span class="n">volshow</span><span class="p">(</span><span class="n">vol</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="writing-videos-with-ffmpeg-and-vaapi">
+<h2>Writing videos with FFMPEG and vaapi<a class="headerlink" href="#writing-videos-with-ffmpeg-and-vaapi" title="Link to this heading">¶</a></h2>
+<p>Using vaapi can help free up CPU time on your device while you are encoding
+videos. One notable difference between vaapi and x264 is that vaapi doesn’t
+support the color format yuv420p.</p>
+<p>Note, you will need ffmpeg compiled with vaapi for this to work.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v2</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># All images must be of the same size</span>
+<span class="n">image1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:camera.png&#39;</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">image2</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:astronaut.png&#39;</span><span class="p">)</span>
+<span class="n">image3</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:immunohistochemistry.png&#39;</span><span class="p">)</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">get_writer</span><span class="p">(</span><span class="s1">&#39;my_video.mp4&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;FFMPEG&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">codec</span><span class="o">=</span><span class="s1">&#39;h264_vaapi&#39;</span><span class="p">,</span>
+                       <span class="n">output_params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-vaapi_device&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;/dev/dri/renderD128&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;-vf&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;format=gray|nv12,hwupload&#39;</span><span class="p">],</span>
+                       <span class="n">pixelformat</span><span class="o">=</span><span class="s1">&#39;vaapi_vld&#39;</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">image1</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">image2</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">image3</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A little bit of explanation:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output_params</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">vaapi_device</span></code> specifies the encoding device that will be used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vf</span></code> and <code class="docutils literal notranslate"><span class="pre">format</span></code> tell ffmpeg that it must upload to the dedicated
+hardware. Since vaapi only supports a subset of color formats, we ensure
+that the video is in either gray or nv12 before uploading it. The <code class="docutils literal notranslate"><span class="pre">or</span></code>
+operation is achieved with <code class="docutils literal notranslate"><span class="pre">|</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pixelformat</span></code>: set to <code class="docutils literal notranslate"><span class="pre">'vaapi_vld'</span></code> to avoid a warning in ffmpeg.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">codec</span></code>: the code you wish to use to encode the video. Make sure your
+hardware supports the chosen codec. If your hardware supports h265, you may
+be able to encode using <code class="docutils literal notranslate"><span class="pre">'hevc_vaapi'</span></code></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="writing-to-bytes-encoding">
+<h2>Writing to Bytes (Encoding)<a class="headerlink" href="#writing-to-bytes-encoding" title="Link to this heading">¶</a></h2>
+<p>You can convert ndimages into byte strings. For this, you have to hint the
+desired extension (using <code class="docutils literal notranslate"><span class="pre">extension=</span></code>), as a byte string doesn’t specify any
+information about the format or color space to use. Note that, if the backend
+supports writing to file-like objects, the entire process will happen without
+touching your file-system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="c1"># load an example image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:astronaut.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># png-encoded bytes string</span>
+<span class="n">png_encoded</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;&lt;bytes&gt;&quot;</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+
+<span class="c1"># jpg-encoded bytes string</span>
+<span class="n">jpg_encoded</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;&lt;bytes&gt;&quot;</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.jpeg&quot;</span><span class="p">)</span>
+
+<span class="c1"># RGBA bytes string</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:astronaut.png&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
+<span class="n">png_encoded</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;&lt;bytes&gt;&quot;</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="writing-to-bytesio">
+<h2>Writing to BytesIO<a class="headerlink" href="#writing-to-bytesio" title="Link to this heading">¶</a></h2>
+<p>Similar to writing to byte strings, you can also write to BytesIO directly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+<span class="c1"># load an example image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;imageio:astronaut.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># write as PNG</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+<span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pillow&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+
+<span class="c1"># write as JPG</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+<span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;pillow&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.jpeg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="optimizing-a-gif-using-pygifsicle">
+<h2>Optimizing a GIF using pygifsicle<a class="headerlink" href="#optimizing-a-gif-using-pygifsicle" title="Link to this heading">¶</a></h2>
+<p>When creating a <a class="reference external" href="https://it.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a> using <a class="reference external" href="https://imageio.readthedocs.io/en/stable/">imageio</a> the resulting images can get quite
+heavy, as the created GIF is not optimized. This can be useful when the
+elaboration process for the GIF is not finished yet (for instance if some
+elaboration on specific frames stills need to happen), but it can be an issue
+when the process is finished and the GIF is unexpectedly big.</p>
+<p>GIF files can be compressed in several ways, the most common one method (the one
+used here) is saving just the differences between the following frames. In this
+example, we apply the described method to a given GIF <cite>my_gif</cite> using <a class="reference external" href="https://github.com/LucaCappelletti94/pygifsicle">pygifsicle</a>, a porting of the
+general-purpose GIF editing command-line library <a class="reference external" href="https://www.lcdf.org/gifsicle/">gifsicle</a>. To install pygifsicle and gifsicle, <a class="reference external" href="https://github.com/LucaCappelletti94/pygifsicle">read
+the setup on the project page</a>: it boils down to installing
+the package using pip and following the console instructions:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pygifsicle
+</pre></div>
+</div>
+<p>Now, let’s start by creating a gif using imageio:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">gif_path</span> <span class="o">=</span> <span class="s2">&quot;test.gif&quot;</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+
+<span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">gif_path</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This way we obtain a 2.5MB gif.</p>
+<p>We now want to compress the created GIF.
+We can either overwrite the initial one or create a new optimized one:
+We start by importing the library method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygifsicle</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="n">optimize</span><span class="p">(</span><span class="n">gif_path</span><span class="p">,</span> <span class="s2">&quot;optimized.gif&quot;</span><span class="p">)</span> <span class="c1"># For creating a new one</span>
+<span class="n">optimize</span><span class="p">(</span><span class="n">gif_path</span><span class="p">)</span> <span class="c1"># For overwriting the original one</span>
+</pre></div>
+</div>
+<p>The new optimized GIF now weights 870KB, almost 3 times less.</p>
+<p>Putting everything together:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pygifsicle</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">gif_path</span> <span class="o">=</span> <span class="s2">&quot;test.gif&quot;</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span> <span class="n">x</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+
+<span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">iio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">gif_path</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span>
+<span class="n">optimize</span><span class="p">(</span><span class="n">gif_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-images-from-zip-archives">
+<h2>Reading Images from ZIP archives<a class="headerlink" href="#reading-images-from-zip-archives" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the future, this syntax will change to better match the URI standard by
+using fragments. The updated syntax will be
+<code class="docutils literal notranslate"><span class="pre">&quot;Path/to/file.zip#path/inside/zip/to/image.png&quot;</span></code>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;Path/to/file.zip/path/inside/zip/to/image.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-multiple-files-from-a-zip-archive">
+<h2>Reading Multiple Files from a ZIP archive<a class="headerlink" href="#reading-multiple-files-from-a-zip-archive" title="Link to this heading">¶</a></h2>
+<p>Assuming there are only image files in the ZIP archive you can iterate over
+them with a simple script like the one below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ZipFile</span><span class="p">(</span><span class="s2">&quot;imageio.zip&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">zf</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-metadata">
+<h2>Reading Metadata<a class="headerlink" href="#reading-metadata" title="Link to this heading">¶</a></h2>
+<p>ImageIO differentiates between two types of metadata: format-specific metadata
+and standardized metadata.</p>
+<p>Format-specific metadata comes in the form of a python dict and aims to expose
+all the metadata contained in the image using the containers/plugins key and
+format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">immeta</span><span class="p">(</span><span class="s2">&quot;imageio:chelsea.png&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">])</span>  <span class="c1"># &quot;RGB&quot;</span>
+</pre></div>
+</div>
+<p>Standardized metadata, on the other hand, comes in the form of the
+<a class="reference internal" href="_autosummary/imageio.core.v3_plugin_api.ImageProperties.html#imageio.core.v3_plugin_api.ImageProperties" title="imageio.core.v3_plugin_api.ImageProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageProperties</span></code></a> dataclass
+and aims to expose a curated set of metadata using a standardized name and
+format independent of the underlying container or plugin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v3</span> <span class="k">as</span> <span class="nn">iio</span>
+
+<span class="n">props</span> <span class="o">=</span> <span class="n">iio</span><span class="o">.</span><span class="n">improps</span><span class="p">(</span><span class="s2">&quot;imageio:chelsea.png&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">props</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (300, 451, 3)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">props</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># dtype(&#39;uint8&#39;)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="user_guide/installation.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Installing imageio</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="user_guide/requests.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">ImageResources</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2014-2024, imageio contributors.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

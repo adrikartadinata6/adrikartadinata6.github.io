@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Temperature conversion &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Logarithmic Units" href="log_units.html" />
+    <link rel="prev" title="NumPy Support" href="numpy.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="log_units.html" title="Logarithmic Units"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="numpy.html" title="NumPy Support"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Temperature conversion</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="temperature-conversion">
+<span id="nonmult"></span><h1>Temperature conversion<a class="headerlink" href="#temperature-conversion" title="Permalink to this heading">¶</a></h1>
+<p>Unlike meters and seconds, the temperature units fahrenheits and
+celsius are non-multiplicative units. These temperature units are
+expressed in a system with a reference point, and relations between
+temperature units include not only a scaling factor but also an offset.
+Pint supports these type of units and conversions between them.
+The default definition file includes fahrenheits, celsius,
+kelvin and rankine abbreviated as degF, degC, degK, and degR.</p>
+<p>For example, to convert from celsius to fahrenheit:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">default_format</span> <span class="o">=</span> <span class="s1">&#39;.3f&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">25.4</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">home</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;degF&#39;</span><span class="p">))</span>
+<span class="go">77.720 degree_Fahrenheit</span>
+</pre></div>
+</div>
+<p>or to other kelvin or rankine:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">home</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;kelvin&#39;</span><span class="p">))</span>
+<span class="go">298.550 kelvin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">home</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;degR&#39;</span><span class="p">))</span>
+<span class="go">537.390 degree_Rankine</span>
+</pre></div>
+</div>
+<p>Additionally, for every non-multiplicative temperature unit
+in the registry, there is also a <em>delta</em> counterpart to specify
+differences. Absolute units have no <em>delta</em> counterpart.
+For example, the change in celsius is equal to the change
+in kelvin, but not in fahrenheit (as the scaling factor
+is different).</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">increase</span> <span class="o">=</span> <span class="mf">12.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">delta_degC</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">increase</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">kelvin</span><span class="p">))</span>
+<span class="go">12.300 kelvin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">increase</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">delta_degF</span><span class="p">))</span>
+<span class="go">22.140 delta_degree_Fahrenheit</span>
+</pre></div>
+</div>
+<p>Subtraction of two temperatures given in offset units yields a <em>delta</em> unit:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">25.4</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span> <span class="o">-</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span>
+<span class="go">&lt;Quantity(15.4, &#39;delta_degree_Celsius&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>You can add or subtract a quantity with <em>delta</em> unit and a quantity with
+offset unit:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">25.4</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span> <span class="o">+</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">delta_degC</span><span class="p">)</span>
+<span class="go">&lt;Quantity(35.4, &#39;degree_Celsius&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">25.4</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span> <span class="o">-</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">delta_degC</span><span class="p">)</span>
+<span class="go">&lt;Quantity(15.4, &#39;degree_Celsius&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>If you want to add a quantity with absolute unit to one with offset unit, like here</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">heating_rate</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">kelvin</span><span class="o">/</span><span class="n">ureg</span><span class="o">.</span><span class="n">min</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span> <span class="o">+</span> <span class="n">heating_rate</span> <span class="o">*</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span>    <span class="o">...</span>
+<span class="gr">OffsetUnitCalculusError</span>: <span class="n">Ambiguous operation with offset unit (degC, kelvin).</span>
+</pre></div>
+</div>
+<p>you have to avoid the ambiguity by either converting the offset unit to the
+absolute unit before addition</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">kelvin</span><span class="p">)</span> <span class="o">+</span> <span class="n">heating_rate</span> <span class="o">*</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+<span class="go">&lt;Quantity(298.15, &#39;kelvin&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or convert the absolute unit to a <em>delta</em> unit:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span> <span class="o">+</span> <span class="n">heating_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;delta_degC/min&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+<span class="go">&lt;Quantity(25.0, &#39;degree_Celsius&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>In contrast to subtraction, the addition of quantities with offset units
+is ambiguous, e.g. for <em>10 degC + 100 degC</em> two different result are reasonable
+depending on the context, <em>110 degC</em> or <em>383.15 °C (= 283.15 K + 373.15 K)</em>.
+Because of this ambiguity pint raises an error for the addition of two
+quantities with offset units (since pint-0.6).</p>
+<p>Quantities with <em>delta</em> units are multiplicative:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span> <span class="o">=</span> <span class="mf">60.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">delta_degC</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">min</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">speed</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;delta_degC/second&#39;</span><span class="p">))</span>
+<span class="go">1.000 delta_degree_Celsius / second</span>
+</pre></div>
+</div>
+<p>However, multiplication, division and exponentiation of quantities with
+offset units is problematic just like addition. Pint (since version 0.6)
+will by default raise an error when a quantity with offset unit is used in
+these operations. Due to this quantities with offset units cannot be created
+like other quantities by multiplication of magnitude and unit but have
+to be explicitly created:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="mf">25.4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">OffsetUnitCalculusError</span>: <span class="n">Ambiguous operation with offset unit (degC).</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">25.4</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span>
+<span class="go">&lt;Quantity(25.4, &#39;degree_Celsius&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>As an alternative to raising an error, pint can be configured to work more
+relaxed via setting the UnitRegistry parameter <em>autoconvert_offset_to_baseunit</em>
+to true. In this mode, pint behaves differently:</p>
+<ul class="simple">
+<li><p>Multiplication of a quantity with a single offset unit with order +1 by
+a number or ndarray yields the quantity in the given unit.</p></li>
+</ul>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">(</span><span class="n">autoconvert_offset_to_baseunit</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="mf">25.4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degC</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">&lt;Quantity(25.4, &#39;degree_Celsius&#39;)&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Before all other multiplications, all divisions and in case of
+exponentiation <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> involving quantities with offset-units, pint
+will convert the quantities with offset units automatically to the
+corresponding base unit before performing the operation.</p></li>
+</ul>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span><span class="o">/</span><span class="n">T</span>
+<span class="go">&lt;Quantity(0.0033495..., &#39;1 / kelvin&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="go">&lt;Quantity(527.15, &#39;kelvin * meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>You can change the behaviour at any time:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">autoconvert_offset_to_baseunit</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">1</span><span class="o">/</span><span class="n">T</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">OffsetUnitCalculusError</span>: <span class="n">Ambiguous operation with offset unit (degC).</span>
+</pre></div>
+</div>
+<p>The parser knows about <em>delta</em> units and uses them when a temperature unit
+is found in a multiplicative context. For example, here:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_units</span><span class="p">(</span><span class="s1">&#39;degC/meter&#39;</span><span class="p">))</span>
+<span class="go">delta_degree_Celsius / meter</span>
+</pre></div>
+</div>
+<p>but not here:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_units</span><span class="p">(</span><span class="s1">&#39;degC&#39;</span><span class="p">))</span>
+<span class="go">degree_Celsius</span>
+</pre></div>
+</div>
+<p>You can override this behaviour:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_units</span><span class="p">(</span><span class="s1">&#39;degC/meter&#39;</span><span class="p">,</span> <span class="n">as_delta</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="go">degree_Celsius / meter</span>
+</pre></div>
+</div>
+<p>Note that the magnitude is left unchanged:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;degC/meter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(10, &#39;delta_degree_Celsius / meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>To define a new temperature, you need to specify the offset. For example,
+this is the definition of the celsius and fahrenheit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">degC</span> <span class="o">=</span> <span class="n">degK</span><span class="p">;</span> <span class="n">offset</span><span class="p">:</span> <span class="mf">273.15</span> <span class="o">=</span> <span class="n">celsius</span>
+<span class="n">degF</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">/</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">degK</span><span class="p">;</span> <span class="n">offset</span><span class="p">:</span> <span class="mf">255.372222</span> <span class="o">=</span> <span class="n">fahrenheit</span>
+</pre></div>
+</div>
+<p>You do not need to define <em>delta</em> units, as they are defined automatically.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>If the exponent is +1, the quantity will not be converted to base
+unit but remains unchanged.</p>
+</aside>
+</aside>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="numpy.html" title="previous chapter">NumPy Support</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="log_units.html" title="next chapter">Logarithmic Units</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nonmult.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

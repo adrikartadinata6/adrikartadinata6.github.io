@@ -1,0 +1,698 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Error Handling" href="errors.html" /><link rel="prev" title="Asyncio support" href="asyncio.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>Broadcast Manager - python-can 4.3.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=0f5ed9ba" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=e61b947c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">python-can 4.3.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">python-can 4.3.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="api.html">Library API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Library API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bus.html">Bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="listeners.html">Reading and Writing Messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncio.html">Asyncio support</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Broadcast Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="errors.html">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bit_timing.html">Bit Timing Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal-api.html">Internal API</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="interfaces.html">Hardware Interfaces</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Hardware Interfaces</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/canalystii.html">CANalyst-II</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/cantact.html">CANtact CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/etas.html">ETAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/gs_usb.html">Geschwister Schneider and candleLight</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/iscan.html">isCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/ixxat.html">IXXAT Virtual Communication Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/kvaser.html">Kvaser’s CANLIB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/neousys.html">Neousys CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/neovi.html">Intrepid Control Systems neoVI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/nican.html">National Instruments NI-CAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/nixnet.html">National Instruments NI-XNET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/pcan.html">PCAN Basic API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/robotell.html">Robotell CAN-USB interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/seeedstudio.html">Seeed Studio USB-CAN Analyzer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/serial.html">CAN over Serial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/slcan.html">CAN over Serial / SLCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/socketcan.html">SocketCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/socketcand.html">socketcand Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/systec.html">SYSTEC interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/usb2can.html">USB2CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/vector.html">Vector</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="virtual-interfaces.html">Virtual Interfaces</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Virtual Interfaces</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/virtual.html">Virtual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces/udp_multicast.html">Multicast IP Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-interface.html">Plugin Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other-tools.html">Other CAN bus tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Developer’s Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-can.broadcastmanager">
+<span id="broadcast-manager"></span><span id="bcm"></span><h1>Broadcast Manager<a class="headerlink" href="#module-can.broadcastmanager" title="Link to this heading">#</a></h1>
+<p>The broadcast manager allows the user to setup periodic message jobs.
+For example sending a particular message at a given period. The broadcast
+manager supported natively by several interfaces and a software thread
+based scheduler is used as a fallback.</p>
+<p>This example shows the socketcan backend using the broadcast manager:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="ch">#!/usr/bin/env python3</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  4</span><span class="sd">This example exercises the periodic sending capabilities.</span>
+<span class="linenos">  5</span>
+<span class="linenos">  6</span><span class="sd">Expects a vcan0 interface:</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="sd">    python3 -m examples.cyclic</span>
+<span class="linenos">  9</span>
+<span class="linenos"> 10</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="linenos"> 13</span><span class="kn">import</span> <span class="nn">time</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="kn">import</span> <span class="nn">can</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="k">def</span> <span class="nf">simple_periodic_send</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span>
+<span class="linenos"> 21</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 22</span><span class="sd">    Sends a message every 20ms with no explicit timeout</span>
+<span class="linenos"> 23</span><span class="sd">    Sleeps for 2 seconds then stops the task.</span>
+<span class="linenos"> 24</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 25</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting to send a message every 200ms for 2s&quot;</span><span class="p">)</span>
+<span class="linenos"> 26</span>    <span class="n">msg</span> <span class="o">=</span> <span class="n">can</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span>
+<span class="linenos"> 27</span>        <span class="n">arbitration_id</span><span class="o">=</span><span class="mh">0x123</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">is_extended_id</span><span class="o">=</span><span class="kc">False</span>
+<span class="linenos"> 28</span>    <span class="p">)</span>
+<span class="linenos"> 29</span>    <span class="n">task</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">send_periodic</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">)</span>
+<span class="linenos"> 30</span>    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">can</span><span class="o">.</span><span class="n">CyclicSendTaskABC</span><span class="p">)</span>
+<span class="linenos"> 31</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 32</span>    <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos"> 33</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stopped cyclic send&quot;</span><span class="p">)</span>
+<span class="linenos"> 34</span>
+<span class="linenos"> 35</span>
+<span class="linenos"> 36</span><span class="k">def</span> <span class="nf">limited_periodic_send</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span>
+<span class="linenos"> 37</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Send using LimitedDurationCyclicSendTaskABC.&quot;&quot;&quot;</span>
+<span class="linenos"> 38</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting to send a message every 200ms for 1s&quot;</span><span class="p">)</span>
+<span class="linenos"> 39</span>    <span class="n">msg</span> <span class="o">=</span> <span class="n">can</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span>
+<span class="linenos"> 40</span>        <span class="n">arbitration_id</span><span class="o">=</span><span class="mh">0x12345678</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">is_extended_id</span><span class="o">=</span><span class="kc">True</span>
+<span class="linenos"> 41</span>    <span class="p">)</span>
+<span class="linenos"> 42</span>    <span class="n">task</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">send_periodic</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">store_task</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 43</span>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">can</span><span class="o">.</span><span class="n">LimitedDurationCyclicSendTaskABC</span><span class="p">):</span>
+<span class="linenos"> 44</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This interface doesn&#39;t seem to support LimitedDurationCyclicSendTaskABC&quot;</span><span class="p">)</span>
+<span class="linenos"> 45</span>        <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos"> 46</span>        <span class="k">return</span>
+<span class="linenos"> 47</span>
+<span class="linenos"> 48</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 49</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cyclic send should have stopped as duration expired&quot;</span><span class="p">)</span>
+<span class="linenos"> 50</span>    <span class="c1"># Note the (finished) task will still be tracked by the Bus</span>
+<span class="linenos"> 51</span>    <span class="c1"># unless we pass `store_task=False` to bus.send_periodic</span>
+<span class="linenos"> 52</span>    <span class="c1"># alternatively calling stop removes the task from the bus</span>
+<span class="linenos"> 53</span>    <span class="c1"># task.stop()</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span>
+<span class="linenos"> 56</span><span class="k">def</span> <span class="nf">test_periodic_send_with_modifying_data</span><span class="p">(</span><span class="n">bus</span><span class="p">):</span>
+<span class="linenos"> 57</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Send using ModifiableCyclicTaskABC.&quot;&quot;&quot;</span>
+<span class="linenos"> 58</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting to send a message every 200ms. Initial data is four consecutive 1s&quot;</span><span class="p">)</span>
+<span class="linenos"> 59</span>    <span class="n">msg</span> <span class="o">=</span> <span class="n">can</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">arbitration_id</span><span class="o">=</span><span class="mh">0x0CF02200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="linenos"> 60</span>    <span class="n">task</span> <span class="o">=</span> <span class="n">bus</span><span class="o">.</span><span class="n">send_periodic</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">)</span>
+<span class="linenos"> 61</span>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">can</span><span class="o">.</span><span class="n">ModifiableCyclicTaskABC</span><span class="p">):</span>
+<span class="linenos"> 62</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This interface doesn&#39;t seem to support modification&quot;</span><span class="p">)</span>
+<span class="linenos"> 63</span>        <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos"> 64</span>        <span class="k">return</span>
+<span class="linenos"> 65</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 66</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changing data of running task to begin with 99&quot;</span><span class="p">)</span>
+<span class="linenos"> 67</span>    <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x99</span>
+<span class="linenos"> 68</span>    <span class="n">task</span><span class="o">.</span><span class="n">modify_data</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="linenos"> 69</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span>    <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos"> 72</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stopped cyclic send&quot;</span><span class="p">)</span>
+<span class="linenos"> 73</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Changing data of stopped task to single ff byte&quot;</span><span class="p">)</span>
+<span class="linenos"> 74</span>    <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">([</span><span class="mh">0xFF</span><span class="p">])</span>
+<span class="linenos"> 75</span>    <span class="n">msg</span><span class="o">.</span><span class="n">dlc</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="linenos"> 76</span>    <span class="n">task</span><span class="o">.</span><span class="n">modify_data</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="linenos"> 77</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos"> 78</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;starting again&quot;</span><span class="p">)</span>
+<span class="linenos"> 79</span>    <span class="n">task</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="linenos"> 80</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos"> 81</span>    <span class="n">task</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="linenos"> 82</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
+<span class="linenos"> 83</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="c1"># Will have to consider how to expose items like this. The socketcan</span>
+<span class="linenos"> 86</span><span class="c1"># interfaces will continue to support it... but the top level api won&#39;t.</span>
+<span class="linenos"> 87</span><span class="c1"># def test_dual_rate_periodic_send():</span>
+<span class="linenos"> 88</span><span class="c1">#     &quot;&quot;&quot;Send a message 10 times at 1ms intervals, then continue to send every 500ms&quot;&quot;&quot;</span>
+<span class="linenos"> 89</span><span class="c1">#     msg = can.Message(arbitration_id=0x123, data=[0, 1, 2, 3, 4, 5])</span>
+<span class="linenos"> 90</span><span class="c1">#     print(&quot;Creating cyclic task to send message 10 times at 1ms, then every 500ms&quot;)</span>
+<span class="linenos"> 91</span><span class="c1">#     task = can.interface.MultiRateCyclicSendTask(&#39;vcan0&#39;, msg, 10, 0.001, 0.50)</span>
+<span class="linenos"> 92</span><span class="c1">#     time.sleep(2)</span>
+<span class="linenos"> 93</span><span class="c1">#</span>
+<span class="linenos"> 94</span><span class="c1">#     print(&quot;Changing data[0] = 0x42&quot;)</span>
+<span class="linenos"> 95</span><span class="c1">#     msg.data[0] = 0x42</span>
+<span class="linenos"> 96</span><span class="c1">#     task.modify_data(msg)</span>
+<span class="linenos"> 97</span><span class="c1">#     time.sleep(2)</span>
+<span class="linenos"> 98</span><span class="c1">#</span>
+<span class="linenos"> 99</span><span class="c1">#     task.stop()</span>
+<span class="linenos">100</span><span class="c1">#     print(&quot;stopped cyclic send&quot;)</span>
+<span class="linenos">101</span><span class="c1">#</span>
+<span class="linenos">102</span><span class="c1">#     time.sleep(2)</span>
+<span class="linenos">103</span><span class="c1">#</span>
+<span class="linenos">104</span><span class="c1">#     task.start()</span>
+<span class="linenos">105</span><span class="c1">#     print(&quot;starting again&quot;)</span>
+<span class="linenos">106</span><span class="c1">#     time.sleep(2)</span>
+<span class="linenos">107</span><span class="c1">#     task.stop()</span>
+<span class="linenos">108</span><span class="c1">#     print(&quot;done&quot;)</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">112</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test different cyclic sending tasks.&quot;&quot;&quot;</span>
+<span class="linenos">113</span>    <span class="n">reset_msg</span> <span class="o">=</span> <span class="n">can</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span>
+<span class="linenos">114</span>        <span class="n">arbitration_id</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">is_extended_id</span><span class="o">=</span><span class="kc">False</span>
+<span class="linenos">115</span>    <span class="p">)</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span>    <span class="c1"># this uses the default configuration (for example from environment variables, or a</span>
+<span class="linenos">118</span>    <span class="c1"># config file) see https://python-can.readthedocs.io/en/stable/configuration.html</span>
+<span class="linenos">119</span>    <span class="k">with</span> <span class="n">can</span><span class="o">.</span><span class="n">Bus</span><span class="p">()</span> <span class="k">as</span> <span class="n">bus</span><span class="p">:</span>
+<span class="linenos">120</span>        <span class="n">bus</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">reset_msg</span><span class="p">)</span>
+<span class="linenos">121</span>
+<span class="linenos">122</span>        <span class="n">simple_periodic_send</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+<span class="linenos">123</span>
+<span class="linenos">124</span>        <span class="n">bus</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">reset_msg</span><span class="p">)</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span>        <span class="n">limited_periodic_send</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+<span class="linenos">127</span>
+<span class="linenos">128</span>        <span class="n">test_periodic_send_with_modifying_data</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+<span class="linenos">129</span>
+<span class="linenos">130</span>        <span class="c1"># print(&quot;Carrying out multirate cyclic test for {} interface&quot;.format(interface))</span>
+<span class="linenos">131</span>        <span class="c1"># can.rc[&#39;interface&#39;] = interface</span>
+<span class="linenos">132</span>        <span class="c1"># test_dual_rate_periodic_send()</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos">135</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">138</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="message-sending-tasks">
+<h2>Message Sending Tasks<a class="headerlink" href="#message-sending-tasks" title="Link to this heading">#</a></h2>
+<p>The class based api for the broadcast manager uses a series of
+<a class="reference external" href="https://www.ianlewis.org/en/mixins-and-python">mixin classes</a>.
+All mixins inherit from <a class="reference internal" href="#can.broadcastmanager.CyclicSendTaskABC" title="can.broadcastmanager.CyclicSendTaskABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">CyclicSendTaskABC</span></code></a>
+which inherits from <a class="reference internal" href="#can.broadcastmanager.CyclicTask" title="can.broadcastmanager.CyclicTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">CyclicTask</span></code></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="can.broadcastmanager.CyclicTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.broadcastmanager.</span></span><span class="sig-name descname"><span class="pre">CyclicTask</span></span><a class="reference internal" href="_modules/can/broadcastmanager.html#CyclicTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.CyclicTask" title="Link to this definition">#</a></dt>
+<dd><p>Abstract Base for all cyclic tasks.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="can.broadcastmanager.CyclicTask.stop">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#CyclicTask.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.CyclicTask.stop" title="Link to this definition">#</a></dt>
+<dd><p>Cancel this periodic task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="errors.html#can.exceptions.CanError" title="can.exceptions.CanError"><strong>CanError</strong></a> – If stop is called on an already stopped task.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.broadcastmanager.CyclicSendTaskABC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.broadcastmanager.</span></span><span class="sig-name descname"><span class="pre">CyclicSendTaskABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#CyclicSendTaskABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.CyclicSendTaskABC" title="Link to this definition">#</a></dt>
+<dd><p>Message send task with defined period</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – The messages to be sent periodically.</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – The rate in seconds at which to send the messages.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.broadcastmanager.LimitedDurationCyclicSendTaskABC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.broadcastmanager.</span></span><span class="sig-name descname"><span class="pre">LimitedDurationCyclicSendTaskABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#LimitedDurationCyclicSendTaskABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.LimitedDurationCyclicSendTaskABC" title="Link to this definition">#</a></dt>
+<dd><p>Message send task with a defined duration and period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – The messages to be sent periodically.</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – The rate in seconds at which to send the messages.</p></li>
+<li><p><strong>duration</strong> (<em>float</em><em> | </em><em>None</em>) – Approximate duration in seconds to continue sending messages. If
+no duration is provided, the task will continue indefinitely.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.broadcastmanager.MultiRateCyclicSendTaskABC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.broadcastmanager.</span></span><span class="sig-name descname"><span class="pre">MultiRateCyclicSendTaskABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsequent_period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#MultiRateCyclicSendTaskABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.MultiRateCyclicSendTaskABC" title="Link to this definition">#</a></dt>
+<dd><p>A Cyclic send task that supports switches send frequency after a set time.</p>
+<p>Transmits a message <cite>count</cite> times at <cite>initial_period</cite> then continues to
+transmit messages at <cite>subsequent_period</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em><em> | </em><em>str</em>) – See interface specific documentation.</p></li>
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – </p></li>
+<li><p><strong>count</strong> (<em>int</em>) – </p></li>
+<li><p><strong>initial_period</strong> (<em>float</em>) – </p></li>
+<li><p><strong>subsequent_period</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.ModifiableCyclicTaskABC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.</span></span><span class="sig-name descname"><span class="pre">ModifiableCyclicTaskABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#ModifiableCyclicTaskABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.ModifiableCyclicTaskABC" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – The messages to be sent periodically.</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – The rate in seconds at which to send the messages.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="can.ModifiableCyclicTaskABC.modify_data">
+<span class="sig-name descname"><span class="pre">modify_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#ModifiableCyclicTaskABC.modify_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.ModifiableCyclicTaskABC.modify_data" title="Link to this definition">#</a></dt>
+<dd><p>Update the contents of the periodically sent messages, without
+altering the timing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – <p>The messages with the new <a class="reference internal" href="message.html#can.Message.data" title="can.Message.data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Message.data</span></code></a>.</p>
+<p>Note: The arbitration ID cannot be changed.</p>
+<p>Note: The number of new cyclic messages to be sent must be equal
+to the original number of messages originally specified for this
+task.</p>
+</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.RestartableCyclicTaskABC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.</span></span><span class="sig-name descname"><span class="pre">RestartableCyclicTaskABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#RestartableCyclicTaskABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.RestartableCyclicTaskABC" title="Link to this definition">#</a></dt>
+<dd><p>Adds support for restarting a stopped cyclic task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – The messages to be sent periodically.</p></li>
+<li><p><strong>period</strong> (<em>float</em>) – The rate in seconds at which to send the messages.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="can.RestartableCyclicTaskABC.start">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#RestartableCyclicTaskABC.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.RestartableCyclicTaskABC.start" title="Link to this definition">#</a></dt>
+<dd><p>Restart a stopped periodic task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="can.broadcastmanager.ThreadBasedCyclicSendTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">can.broadcastmanager.</span></span><span class="sig-name descname"><span class="pre">ThreadBasedCyclicSendTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modifier_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#ThreadBasedCyclicSendTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.ThreadBasedCyclicSendTask" title="Link to this definition">#</a></dt>
+<dd><p>Fallback cyclic send task using daemon thread.</p>
+<p>Transmits <cite>messages</cite> with a <cite>period</cite> seconds for <cite>duration</cite> seconds on a <cite>bus</cite>.</p>
+<p>The <cite>on_error</cite> is called if any error happens on <cite>bus</cite> while sending <cite>messages</cite>.
+If <cite>on_error</cite> present, and returns <code class="docutils literal notranslate"><span class="pre">False</span></code> when invoked, thread is
+stopped immediately, otherwise, thread continuously tries to send <cite>messages</cite>
+ignoring errors on a <cite>bus</cite>. Absence of <cite>on_error</cite> means that thread exits immediately
+on error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_error</strong> (<em>Callable</em><em>[</em><em>[</em><em>Exception</em><em>]</em><em>, </em><em>bool</em><em>] </em><em>| </em><em>None</em>) – The callable that accepts an exception if any
+error happened on a <cite>bus</cite> while sending <cite>messages</cite>,
+it shall return either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> depending
+on desired behaviour of <cite>ThreadBasedCyclicSendTask</cite>.</p></li>
+<li><p><strong>bus</strong> (<a class="reference internal" href="bus.html#can.BusABC" title="can.BusABC"><em>BusABC</em></a>) – </p></li>
+<li><p><strong>lock</strong> (<em>allocate_lock</em>) – </p></li>
+<li><p><strong>messages</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>] </em><em>| </em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a>) – </p></li>
+<li><p><strong>period</strong> (<em>float</em>) – </p></li>
+<li><p><strong>duration</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>modifier_callback</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="message.html#can.Message" title="can.message.Message"><em>Message</em></a><em>]</em><em>, </em><em>None</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the given messages are invalid</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="can.broadcastmanager.ThreadBasedCyclicSendTask.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#ThreadBasedCyclicSendTask.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.ThreadBasedCyclicSendTask.start" title="Link to this definition">#</a></dt>
+<dd><p>Restart a stopped periodic task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="can.broadcastmanager.ThreadBasedCyclicSendTask.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/can/broadcastmanager.html#ThreadBasedCyclicSendTask.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#can.broadcastmanager.ThreadBasedCyclicSendTask.stop" title="Link to this definition">#</a></dt>
+<dd><p>Cancel this periodic task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="errors.html#can.exceptions.CanError" title="can.exceptions.CanError"><strong>CanError</strong></a> – If stop is called on an already stopped task.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="errors.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Error Handling</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="asyncio.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Asyncio support</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Broadcast Manager</a><ul>
+<li><a class="reference internal" href="#message-sending-tasks">Message Sending Tasks</a><ul>
+<li><a class="reference internal" href="#can.broadcastmanager.CyclicTask"><code class="docutils literal notranslate"><span class="pre">CyclicTask</span></code></a><ul>
+<li><a class="reference internal" href="#can.broadcastmanager.CyclicTask.stop"><code class="docutils literal notranslate"><span class="pre">CyclicTask.stop()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#can.broadcastmanager.CyclicSendTaskABC"><code class="docutils literal notranslate"><span class="pre">CyclicSendTaskABC</span></code></a></li>
+<li><a class="reference internal" href="#can.broadcastmanager.LimitedDurationCyclicSendTaskABC"><code class="docutils literal notranslate"><span class="pre">LimitedDurationCyclicSendTaskABC</span></code></a></li>
+<li><a class="reference internal" href="#can.broadcastmanager.MultiRateCyclicSendTaskABC"><code class="docutils literal notranslate"><span class="pre">MultiRateCyclicSendTaskABC</span></code></a></li>
+<li><a class="reference internal" href="#can.ModifiableCyclicTaskABC"><code class="docutils literal notranslate"><span class="pre">ModifiableCyclicTaskABC</span></code></a><ul>
+<li><a class="reference internal" href="#can.ModifiableCyclicTaskABC.modify_data"><code class="docutils literal notranslate"><span class="pre">ModifiableCyclicTaskABC.modify_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#can.RestartableCyclicTaskABC"><code class="docutils literal notranslate"><span class="pre">RestartableCyclicTaskABC</span></code></a><ul>
+<li><a class="reference internal" href="#can.RestartableCyclicTaskABC.start"><code class="docutils literal notranslate"><span class="pre">RestartableCyclicTaskABC.start()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#can.broadcastmanager.ThreadBasedCyclicSendTask"><code class="docutils literal notranslate"><span class="pre">ThreadBasedCyclicSendTask</span></code></a><ul>
+<li><a class="reference internal" href="#can.broadcastmanager.ThreadBasedCyclicSendTask.start"><code class="docutils literal notranslate"><span class="pre">ThreadBasedCyclicSendTask.start()</span></code></a></li>
+<li><a class="reference internal" href="#can.broadcastmanager.ThreadBasedCyclicSendTask.stop"><code class="docutils literal notranslate"><span class="pre">ThreadBasedCyclicSendTask.stop()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=0503a316"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=3e7832f7"></script>
+    <script src="_static/tabs.js?v=3ee01567"></script>
+    <script src="_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="_static/copybutton.js?v=71494f10"></script>
+    </body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImageFile Module &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ImageFilter Module" href="ImageFilter.html" />
+    <link rel="prev" title="ImageEnhance Module" href="ImageEnhance.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageFilter.html" title="ImageFilter Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImageEnhance.html" title="ImageEnhance Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFile</span></code> Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagefile-module">
+<span id="module-PIL.ImageFile"></span><h1><a class="reference internal" href="#module-PIL.ImageFile" title="PIL.ImageFile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFile</span></code></a> Module<a class="headerlink" href="#imagefile-module" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImageFile" title="PIL.ImageFile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFile</span></code></a> module provides support functions for the image open
+and save functions.</p>
+<p>In addition, it provides a <a class="reference internal" href="#PIL.ImageFile.Parser" title="PIL.ImageFile.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a> class which can be used to decode
+an image piece by piece (e.g. while receiving it over a network connection).
+This class implements the same consumer interface as the standard <strong>sgmllib</strong>
+and <strong>xmllib</strong> modules.</p>
+<section id="example-parse-an-image">
+<h2>Example: Parse an image<a class="headerlink" href="#example-parse-an-image" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageFile</span>
+
+<span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hopper.pgm&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">ImageFile</span><span class="o">.</span><span class="n">Parser</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;copy.jpg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.Parser" title="Link to this definition">¶</a></dt>
+<dd><p>Incremental image parser.  This class implements the standard
+feed/close consumer interface.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.Parser.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#Parser.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.Parser.close" title="Link to this definition">¶</a></dt>
+<dd><p>(Consumer) Close the stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An image object.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the parser failed to parse the image file either
+because it cannot be identified or cannot be
+decoded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.Parser.feed">
+<span class="sig-name descname"><span class="pre">feed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#Parser.feed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.Parser.feed" title="Link to this definition">¶</a></dt>
+<dd><p>(Consumer) Feed data to the parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – A string buffer.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the parser failed to parse the image file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.Parser.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#Parser.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.Parser.reset" title="Link to this definition">¶</a></dt>
+<dd><p>(Consumer) Reset the parser.  Note that you can only call this
+method immediately after you’ve created a parser; parser
+instances cannot be reused.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyCodec">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">PyCodec</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyCodec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyCodec" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyCodec.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyCodec.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyCodec.cleanup" title="Link to this definition">¶</a></dt>
+<dd><p>Override to perform codec specific cleanup</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyCodec.init">
+<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyCodec.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyCodec.init" title="Link to this definition">¶</a></dt>
+<dd><p>Override to perform codec specific initialization</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Array of args items from the tile entry</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyCodec.setfd">
+<span class="sig-name descname"><span class="pre">setfd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyCodec.setfd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyCodec.setfd" title="Link to this definition">¶</a></dt>
+<dd><p>Called from ImageFile to set the Python file-like object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fd</strong> – A Python file-like object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyCodec.setimage">
+<span class="sig-name descname"><span class="pre">setimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyCodec.setimage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyCodec.setimage" title="Link to this definition">¶</a></dt>
+<dd><p>Called from ImageFile to set the core output image for the codec</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> – A core image object</p></li>
+<li><p><strong>extents</strong> – a 4 tuple of (x0, y0, x1, y1) defining the rectangle
+for this tile</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyDecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">PyDecoder</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyDecoder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PIL.ImageFile.PyCodec" title="PIL.ImageFile.PyCodec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyCodec</span></code></a></p>
+<p>Python implementation of a format decoder. Override this class and
+add the decoding logic in the <a class="reference internal" href="#PIL.ImageFile.PyDecoder.decode" title="PIL.ImageFile.PyDecoder.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> method.</p>
+<p>See <a class="reference internal" href="../handbook/writing-your-own-image-plugin.html#file-codecs-py"><span class="std std-ref">Writing Your Own File Codec in Python</span></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyDecoder.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyDecoder.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyDecoder.decode" title="Link to this definition">¶</a></dt>
+<dd><p>Override to perform the decoding process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>buffer</strong> – A bytes object with the data to be decoded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of <code class="docutils literal notranslate"><span class="pre">(bytes</span> <span class="pre">consumed,</span> <span class="pre">errcode)</span></code>.
+If finished with decoding return -1 for the bytes consumed.
+Err codes are from <a class="reference internal" href="#PIL.ImageFile.ERRORS" title="PIL.ImageFile.ERRORS"><code class="xref py py-data docutils literal notranslate"><span class="pre">ImageFile.ERRORS</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyDecoder.set_as_raw">
+<span class="sig-name descname"><span class="pre">set_as_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rawmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyDecoder.set_as_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyDecoder.set_as_raw" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience method to set the internal image from a stream of raw data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Bytes to be set</p></li>
+<li><p><strong>rawmode</strong> – The rawmode to be used for the decoder.
+If not specified, it will default to the mode of the image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">PyEncoder</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyEncoder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PIL.ImageFile.PyCodec" title="PIL.ImageFile.PyCodec"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyCodec</span></code></a></p>
+<p>Python implementation of a format encoder. Override this class and
+add the decoding logic in the <a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode" title="PIL.ImageFile.PyEncoder.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode()</span></code></a> method.</p>
+<p>See <a class="reference internal" href="../handbook/writing-your-own-image-plugin.html#file-codecs-py"><span class="std std-ref">Writing Your Own File Codec in Python</span></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyEncoder.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bufsize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyEncoder.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyEncoder.encode" title="Link to this definition">¶</a></dt>
+<dd><p>Override to perform the encoding process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bufsize</strong> – Buffer size.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of <code class="docutils literal notranslate"><span class="pre">(bytes</span> <span class="pre">encoded,</span> <span class="pre">errcode,</span> <span class="pre">bytes)</span></code>.
+If finished with encoding return 1 for the error code.
+Err codes are from <a class="reference internal" href="#PIL.ImageFile.ERRORS" title="PIL.ImageFile.ERRORS"><code class="xref py py-data docutils literal notranslate"><span class="pre">ImageFile.ERRORS</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyEncoder.encode_to_file">
+<span class="sig-name descname"><span class="pre">encode_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bufsize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyEncoder.encode_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyEncoder.encode_to_file" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fh</strong> – File handle.</p></li>
+<li><p><strong>bufsize</strong> – Buffer size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If finished successfully, return 0.
+Otherwise, return an error code. Err codes are from
+<a class="reference internal" href="#PIL.ImageFile.ERRORS" title="PIL.ImageFile.ERRORS"><code class="xref py py-data docutils literal notranslate"><span class="pre">ImageFile.ERRORS</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.PyEncoder.encode_to_pyfd">
+<span class="sig-name descname"><span class="pre">encode_to_pyfd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#PyEncoder.encode_to_pyfd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.PyEncoder.encode_to_pyfd" title="Link to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">pushes_fd</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then this method will be used,
+and <code class="docutils literal notranslate"><span class="pre">encode()</span></code> will only be called once.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of <code class="docutils literal notranslate"><span class="pre">(bytes</span> <span class="pre">consumed,</span> <span class="pre">errcode)</span></code>.
+Err codes are from <a class="reference internal" href="#PIL.ImageFile.ERRORS" title="PIL.ImageFile.ERRORS"><code class="xref py py-data docutils literal notranslate"><span class="pre">ImageFile.ERRORS</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">ImageFile</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Image.html#PIL.Image.Image" title="PIL.Image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a></p>
+<p>Base class for image file format handlers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.tile">
+<span class="sig-name descname"><span class="pre">tile</span></span><a class="headerlink" href="#PIL.ImageFile.ImageFile.tile" title="Link to this definition">¶</a></dt>
+<dd><p>A list of tile descriptors, or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.get_format_mimetype">
+<span class="sig-name descname"><span class="pre">get_format_mimetype</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile.get_format_mimetype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile.get_format_mimetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile.verify" title="Link to this definition">¶</a></dt>
+<dd><p>Check file integrity</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile.load" title="Link to this definition">¶</a></dt>
+<dd><p>Load image data based on tile list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.load_prepare">
+<span class="sig-name descname"><span class="pre">load_prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile.load_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile.load_prepare" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.ImageFile.load_end">
+<span class="sig-name descname"><span class="pre">load_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#ImageFile.load_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.ImageFile.load_end" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFile.StubImageFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">StubImageFile</span></span><a class="reference internal" href="../_modules/PIL/ImageFile.html#StubImageFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.StubImageFile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PIL.ImageFile.ImageFile" title="PIL.ImageFile.ImageFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageFile</span></code></a></p>
+<p>Base class for stub image loaders.</p>
+<p>A stub loader is an image loader that can identify files of a
+certain format, but relies on external code to load the file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFile.StubImageFile.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFile.html#StubImageFile.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFile.StubImageFile.load" title="Link to this definition">¶</a></dt>
+<dd><p>Load image data based on tile list</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="PIL.ImageFile.LOAD_TRUNCATED_IMAGES">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">LOAD_TRUNCATED_IMAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#PIL.ImageFile.LOAD_TRUNCATED_IMAGES" title="Link to this definition">¶</a></dt>
+<dd><p>Whether or not to load truncated image files. User code may change this.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PIL.ImageFile.ERRORS">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFile.</span></span><span class="sig-name descname"><span class="pre">ERRORS</span></span><a class="headerlink" href="#PIL.ImageFile.ERRORS" title="Link to this definition">¶</a></dt>
+<dd><p>Dict of known error codes returned from <a class="reference internal" href="#PIL.ImageFile.PyDecoder.decode" title="PIL.ImageFile.PyDecoder.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyDecoder.decode()</span></code></a>,
+<a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode" title="PIL.ImageFile.PyEncoder.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyEncoder.encode()</span></code></a> <a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode_to_pyfd" title="PIL.ImageFile.PyEncoder.encode_to_pyfd"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyEncoder.encode_to_pyfd()</span></code></a> and
+<a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode_to_file" title="PIL.ImageFile.PyEncoder.encode_to_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyEncoder.encode_to_file()</span></code></a>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFile</span></code> Module</a><ul>
+<li><a class="reference internal" href="#example-parse-an-image">Example: Parse an image</a></li>
+<li><a class="reference internal" href="#classes">Classes</a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.Parser.close"><code class="docutils literal notranslate"><span class="pre">Parser.close()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.Parser.feed"><code class="docutils literal notranslate"><span class="pre">Parser.feed()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.Parser.reset"><code class="docutils literal notranslate"><span class="pre">Parser.reset()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyCodec"><code class="docutils literal notranslate"><span class="pre">PyCodec</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.PyCodec.cleanup"><code class="docutils literal notranslate"><span class="pre">PyCodec.cleanup()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyCodec.init"><code class="docutils literal notranslate"><span class="pre">PyCodec.init()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyCodec.setfd"><code class="docutils literal notranslate"><span class="pre">PyCodec.setfd()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyCodec.setimage"><code class="docutils literal notranslate"><span class="pre">PyCodec.setimage()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyDecoder"><code class="docutils literal notranslate"><span class="pre">PyDecoder</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.PyDecoder.decode"><code class="docutils literal notranslate"><span class="pre">PyDecoder.decode()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyDecoder.set_as_raw"><code class="docutils literal notranslate"><span class="pre">PyDecoder.set_as_raw()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyEncoder"><code class="docutils literal notranslate"><span class="pre">PyEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode"><code class="docutils literal notranslate"><span class="pre">PyEncoder.encode()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode_to_file"><code class="docutils literal notranslate"><span class="pre">PyEncoder.encode_to_file()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.PyEncoder.encode_to_pyfd"><code class="docutils literal notranslate"><span class="pre">PyEncoder.encode_to_pyfd()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile"><code class="docutils literal notranslate"><span class="pre">ImageFile</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.tile"><code class="docutils literal notranslate"><span class="pre">ImageFile.tile</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.get_format_mimetype"><code class="docutils literal notranslate"><span class="pre">ImageFile.get_format_mimetype()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.verify"><code class="docutils literal notranslate"><span class="pre">ImageFile.verify()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.load"><code class="docutils literal notranslate"><span class="pre">ImageFile.load()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.load_prepare"><code class="docutils literal notranslate"><span class="pre">ImageFile.load_prepare()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ImageFile.load_end"><code class="docutils literal notranslate"><span class="pre">ImageFile.load_end()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFile.StubImageFile"><code class="docutils literal notranslate"><span class="pre">StubImageFile</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.StubImageFile.load"><code class="docutils literal notranslate"><span class="pre">StubImageFile.load()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#constants">Constants</a><ul>
+<li><a class="reference internal" href="#PIL.ImageFile.LOAD_TRUNCATED_IMAGES"><code class="docutils literal notranslate"><span class="pre">LOAD_TRUNCATED_IMAGES</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFile.ERRORS"><code class="docutils literal notranslate"><span class="pre">ERRORS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImageEnhance.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageEnhance</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ImageFilter.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFilter</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImageFile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageFilter.html" title="ImageFilter Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImageEnhance.html" title="ImageEnhance Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFile</span></code> Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

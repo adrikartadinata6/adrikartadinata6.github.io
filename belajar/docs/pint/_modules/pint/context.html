@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.context &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.context</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.context</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.context</span>
+<span class="sd">    ~~~~~~~~~~~~</span>
+
+<span class="sd">    Functions and classes related to context definitions and application.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details..</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">ChainMap</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">.definitions</span> <span class="kn">import</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">UnitDefinition</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">DefinitionSyntaxError</span><span class="p">,</span> <span class="n">RedefinitionError</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">ParserHelper</span><span class="p">,</span> <span class="n">SourceIterator</span><span class="p">,</span> <span class="n">to_units_container</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.quantity</span> <span class="kn">import</span> <span class="n">Quantity</span>
+    <span class="kn">from</span> <span class="nn">.registry</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+    <span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">UnitsContainer</span>
+
+<span class="c1">#: Regex to match the header parts of a context.</span>
+<span class="n">_header_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s2">&quot;@context\s*(?P&lt;defaults&gt;\(.*\))?\s+(?P&lt;name&gt;\w+)\s*(=(?P&lt;aliases&gt;.*))*&quot;</span>
+<span class="p">)</span>
+
+<span class="c1">#: Regex to match variable names in an equation.</span>
+<span class="n">_varname_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Za-z_][A-Za-z0-9_]*&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Expression</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eq</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eq</span> <span class="o">=</span> <span class="n">eq</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ureg</span><span class="p">:</span> <span class="n">UnitRegistry</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eq</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Relation"><a class="viewcode-back" href="../../developers_reference.html#pint.Relation">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Relation</span><span class="p">:</span>
+
+    <span class="n">bidirectional</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="n">src</span><span class="p">:</span> <span class="n">ParserHelper</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="n">ParserHelper</span>
+    <span class="n">tranformation</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="ContextDefinition"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ContextDefinition</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Definition of a Context</span>
+
+<span class="sd">        @context[(defaults)] &lt;canonical name&gt; [= &lt;alias&gt;] [= &lt;alias&gt;]</span>
+<span class="sd">            # units can be redefined within the context</span>
+<span class="sd">            &lt;redefined unit&gt; = &lt;relation to another unit&gt;</span>
+
+<span class="sd">            # can establish unidirectional relationships between dimensions</span>
+<span class="sd">            &lt;dimension 1&gt; -&gt; &lt;dimension 2&gt;: &lt;transformation function&gt;</span>
+
+<span class="sd">            # can establish bidirectionl relationships between dimensions</span>
+<span class="sd">            &lt;dimension 3&gt; &lt;-&gt; &lt;dimension 4&gt;: &lt;transformation function&gt;</span>
+<span class="sd">        @end</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        @context(n=1) spectroscopy = sp</span>
+<span class="sd">            # n index of refraction of the medium.</span>
+<span class="sd">            [length] &lt;-&gt; [frequency]: speed_of_light / n / value</span>
+<span class="sd">            [frequency] -&gt; [energy]: planck_constant * value</span>
+<span class="sd">            [energy] -&gt; [frequency]: value / planck_constant</span>
+<span class="sd">            # allow wavenumber / kayser</span>
+<span class="sd">            [wavenumber] &lt;-&gt; [length]: 1 / value</span>
+<span class="sd">        @end</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">aliases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">defaults</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">]</span>
+
+    <span class="c1"># Each element indicates: line number, is_bidirectional, src, dst, transformation func</span>
+    <span class="n">relations</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Relation</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">redefinitions</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnitDefinition</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_definition</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitDefinition</span><span class="p">:</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="n">Definition</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">UnitDefinition</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected &lt;unit&gt; = &lt;converter&gt;; got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">symbol</span> <span class="o">!=</span> <span class="n">definition</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">definition</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                <span class="s2">&quot;Can&#39;t change a unit&#39;s symbol or aliases within a context&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">is_base</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t define base units within a context&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">definition</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContextDefinition</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">SourceIterator</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="n">lineno</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">_header_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">aliases</span><span class="p">:</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;aliases&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="p">()</span>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;defaults&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                <span class="s2">&quot;Could not parse the Context header &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">,</span> <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+        <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">to_num</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">complex</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="o">.</span><span class="n">imag</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">real</span>
+                <span class="k">return</span> <span class="n">val</span>
+
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">defaults</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+                <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span> <span class="n">to_num</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">defaults</span><span class="p">}</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not parse Context definition defaults: &#39;</span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">variables</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">redefitions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">relations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">definition</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">parse_definition</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span>
+                    <span class="n">redefitions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lineno</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">rel</span><span class="p">,</span> <span class="n">eq</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                    <span class="n">variables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_varname_re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">eq</span><span class="p">))</span>
+
+                    <span class="n">func</span> <span class="o">=</span> <span class="n">Expression</span><span class="p">(</span><span class="n">eq</span><span class="p">)</span>
+
+                    <span class="n">bidir</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&lt;-&gt;&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">bidir</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">parts</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">Exception</span>
+
+                    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">ParserHelper</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">parts</span>
+                    <span class="p">)</span>
+                    <span class="n">relation</span> <span class="o">=</span> <span class="n">Relation</span><span class="p">(</span><span class="n">bidir</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+                    <span class="n">relations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lineno</span><span class="p">,</span> <span class="n">relation</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not parse Context </span><span class="si">%s</span><span class="s2"> relation &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">exc</span><span class="p">),</span>
+                    <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+        <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="n">missing_pars</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">missing_pars</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Context parameters </span><span class="si">{</span><span class="n">missing_pars</span><span class="si">}</span><span class="s2"> not found in any equation&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">aliases</span><span class="p">,</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">variables</span><span class="p">),</span>
+            <span class="n">defaults</span><span class="p">,</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">relations</span><span class="p">),</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">redefitions</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Context"><a class="viewcode-back" href="../../developers_reference.html#pint.Context">[docs]</a><span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A specialized container that defines transformation functions from one</span>
+<span class="sd">    dimension to another. Each Dimension are specified using a UnitsContainer.</span>
+<span class="sd">    Simple transformation are given with a function taking a single parameter.</span>
+
+<span class="sd">    Conversion functions may take optional keyword arguments and the context</span>
+<span class="sd">    can have default values for these arguments.</span>
+
+<span class="sd">    Additionally, a context may host redefinitions.</span>
+
+<span class="sd">    A redefinition must be performed among units that already exist in the registry. It</span>
+<span class="sd">    cannot change the dimensionality of a unit. The symbol and aliases are automatically</span>
+<span class="sd">    inherited from the registry.</span>
+
+<span class="sd">    See ContextDefinition for the definition file syntax.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str or None, optional</span>
+<span class="sd">        Name of the context (must be unique within the registry).</span>
+<span class="sd">        Use None for anonymous Context. (Default value = None).</span>
+<span class="sd">    aliases : iterable of str</span>
+<span class="sd">        Other names for the context.</span>
+<span class="sd">    defaults : None or dict</span>
+<span class="sd">        Maps variable names to values.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &gt;&gt;&gt; from pint.util import UnitsContainer</span>
+<span class="sd">    &gt;&gt;&gt; from pint import Context, UnitRegistry</span>
+<span class="sd">    &gt;&gt;&gt; ureg = UnitRegistry()</span>
+<span class="sd">    &gt;&gt;&gt; timedim = UnitsContainer({&#39;[time]&#39;: 1})</span>
+<span class="sd">    &gt;&gt;&gt; spacedim = UnitsContainer({&#39;[length]&#39;: 1})</span>
+<span class="sd">    &gt;&gt;&gt; def time_to_len(ureg, time):</span>
+<span class="sd">    ...     &#39;Time to length converter&#39;</span>
+<span class="sd">    ...     return 3. * time</span>
+<span class="sd">    &gt;&gt;&gt; c = Context()</span>
+<span class="sd">    &gt;&gt;&gt; c.add_transformation(timedim, spacedim, time_to_len)</span>
+<span class="sd">    &gt;&gt;&gt; c.transform(timedim, spacedim, ureg, 2)</span>
+<span class="sd">    6.0</span>
+<span class="sd">    &gt;&gt;&gt; def time_to_len_indexed(ureg, time, n=1):</span>
+<span class="sd">    ...     &#39;Time to length converter, n is the index of refraction of the material&#39;</span>
+<span class="sd">    ...     return 3. * time / n</span>
+<span class="sd">    &gt;&gt;&gt; c = Context(defaults={&#39;n&#39;:3})</span>
+<span class="sd">    &gt;&gt;&gt; c.add_transformation(timedim, spacedim, time_to_len_indexed)</span>
+<span class="sd">    &gt;&gt;&gt; c.transform(timedim, spacedim, ureg, 2)</span>
+<span class="sd">    2.0</span>
+<span class="sd">    &gt;&gt;&gt; c.redefine(&quot;pound = 0.5 kg&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">defaults</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span> <span class="o">=</span> <span class="n">aliases</span>
+
+        <span class="c1">#: Maps (src, dst) -&gt; transformation function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1">#: Maps defaults variable names to values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="c1"># Store Definition objects that are context-specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redefinitions</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Flag set to True by the Registry the first time the context is enabled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checked</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1">#: Maps (src, dst) -&gt; self</span>
+        <span class="c1">#: Used as a convenience dictionary to be composed by ContextChain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relation_to_context</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Context.from_context"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.from_context">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_context</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Context</span><span class="p">,</span> <span class="o">**</span><span class="n">defaults</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new context that shares the funcs dictionary with the</span>
+<span class="sd">        original context. The default values are copied from the original</span>
+<span class="sd">        context and updated with the new defaults.</span>
+
+<span class="sd">        If defaults is empty, return the same context.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        context : pint.Context</span>
+<span class="sd">            Original context.</span>
+<span class="sd">        **defaults</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pint.Context</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="n">newdef</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">defaults</span><span class="p">,</span> <span class="o">**</span><span class="n">defaults</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="n">newdef</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">funcs</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">funcs</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">redefinitions</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">redefinitions</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">funcs</span><span class="p">:</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">relation_to_context</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+            <span class="k">return</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">to_base_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
+        <span class="n">cd</span> <span class="o">=</span> <span class="n">ContextDefinition</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_definition</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="n">to_base_func</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">ContextDefinition</span><span class="p">,</span> <span class="n">to_base_func</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Context</span><span class="p">:</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">cd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cd</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span> <span class="n">cd</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">cd</span><span class="o">.</span><span class="n">redefinitions</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">_redefine</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">RedefinitionError</span><span class="p">,</span> <span class="n">DefinitionSyntaxError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">lineno</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ex</span><span class="o">.</span><span class="n">lineno</span> <span class="o">=</span> <span class="n">lineno</span>
+                <span class="k">raise</span> <span class="n">ex</span>
+
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">cd</span><span class="o">.</span><span class="n">relations</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">to_base_func</span><span class="p">:</span>
+                    <span class="n">src</span> <span class="o">=</span> <span class="n">to_base_func</span><span class="p">(</span><span class="n">relation</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+                    <span class="n">dst</span> <span class="o">=</span> <span class="n">to_base_func</span><span class="p">(</span><span class="n">relation</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">relation</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="n">relation</span><span class="o">.</span><span class="n">dst</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">relation</span><span class="o">.</span><span class="n">tranformation</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">relation</span><span class="o">.</span><span class="n">bidirectional</span><span class="p">:</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">add_transformation</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">relation</span><span class="o">.</span><span class="n">tranformation</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not add Context </span><span class="si">%s</span><span class="s2"> relation on line &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">cd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">lineno</span><span class="p">),</span>
+                    <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">,</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+        <span class="k">return</span> <span class="n">ctx</span>
+
+<div class="viewcode-block" id="Context.add_transformation"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.add_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">add_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a transformation function to the context.&quot;&quot;&quot;</span>
+
+        <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keytransform__</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relation_to_context</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Context.remove_transformation"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.remove_transformation">[docs]</a>    <span class="k">def</span> <span class="nf">remove_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a transformation function to the context.&quot;&quot;&quot;</span>
+
+        <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keytransform__</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_to_context</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__keytransform__</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">UnitsContainer</span><span class="p">,</span> <span class="n">UnitsContainer</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Context.transform"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform a value.&quot;&quot;&quot;</span>
+
+        <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keytransform__</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="n">_key</span><span class="p">](</span><span class="n">registry</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Context.redefine"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.redefine">[docs]</a>    <span class="k">def</span> <span class="nf">redefine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override the definition of a unit in the registry.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        definition : str</span>
+<span class="sd">            &lt;unit&gt; = &lt;new definition&gt;``, e.g. ``pound = 0.5 kg``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">definition</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="c1"># TODO: What is the right non_int_type value.</span>
+            <span class="n">definition</span> <span class="o">=</span> <span class="n">ContextDefinition</span><span class="o">.</span><span class="n">parse_definition</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redefine</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_redefine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">UnitDefinition</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redefinitions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Context.hashable"><a class="viewcode-back" href="../../developers_reference.html#pint.Context.hashable">[docs]</a>    <span class="k">def</span> <span class="nf">hashable</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">frozenset</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a unique hashable and comparable representation of self, which can</span>
+<span class="sd">        be used as a key in a dict. This class cannot define ``__hash__`` because it is</span>
+<span class="sd">        mutable, and the Python interpreter does cache the output of ``__hash__``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">),</span>
+            <span class="nb">frozenset</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+            <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redefinitions</span><span class="p">),</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ContextChain"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextChain">[docs]</a><span class="k">class</span> <span class="nc">ContextChain</span><span class="p">(</span><span class="n">ChainMap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A specialized ChainMap for contexts that simplifies finding rules</span>
+<span class="sd">    to transform from one dimension to another.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># Remove default empty map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ContextChain.insert_contexts"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextChain.insert_contexts">[docs]</a>    <span class="k">def</span> <span class="nf">insert_contexts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">contexts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert one or more contexts in reversed order the chained map.</span>
+<span class="sd">        (A rule in last context will take precedence)</span>
+
+<span class="sd">        To facilitate the identification of the context with the matching rule,</span>
+<span class="sd">        the *relation_to_context* dictionary of the context is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">contexts</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maps</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">relation_to_context</span> <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">contexts</span><span class="p">)]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ContextChain.remove_contexts"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextChain.remove_contexts">[docs]</a>    <span class="k">def</span> <span class="nf">remove_contexts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the last n inserted contexts from the chain.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n: int</span>
+<span class="sd">            (Default value = None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">maps</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">defaults</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The graph relating&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fr_</span><span class="p">,</span> <span class="n">to_</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">fr_</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">to_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span>
+
+<div class="viewcode-block" id="ContextChain.transform"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextChain.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform the value, finding the rule in the chained context.</span>
+<span class="sd">        (A rule in last context will take precedence)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">registry</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ContextChain.hashable"><a class="viewcode-back" href="../../developers_reference.html#pint.ContextChain.hashable">[docs]</a>    <span class="k">def</span> <span class="nf">hashable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a unique hashable and comparable representation of self, which can</span>
+<span class="sd">        be used as a key in a dict. This class cannot define ``__hash__`` because it is</span>
+<span class="sd">        mutable, and the Python interpreter does cache the output of ``__hash__``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">hashable</span><span class="p">()</span> <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

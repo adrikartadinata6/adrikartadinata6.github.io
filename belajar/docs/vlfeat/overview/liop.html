@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Tutorials > LIOP local descriptor</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="tut.html">Tutorials</a></span><span class='separator'>></span><span class='page'><a href="liop.html">LIOP local descriptor</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+    
+
+<div class='toc'>
+<h3>Table of Contents</h3><ul><li class="level1"><a href="#tut.liop.computation">LIOP descriptor computation</a></li>
+</ul>
+</div><!-- Table of contents -->
+
+
+<p>This tutorial shows how to extract <a href="../api/liop.html">Local
+Intensity Order Pattern</a> (LIOP) deascriptors using VLFeat. LIOP is
+implemented in the <code/><a href=../matlab/vl_liop.html>vl_liop</a></code> as well as
+in <code/><a href=../matlab/vl_covdet.html>vl_covdet</a></code>.</p>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.liop.computation">LIOP descriptor computation</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>A LIOP descriptor can be computed from a square, gray scale image
+with and odd side length <code/>patch</code>. This is usually not a
+restriction since local patches are obtained by cropping and warpinig
+an input image. The descriptor is computed using
+the <code/><a href=../matlab/vl_liop.html>vl_liop</a></code> function:</p>
+
+<div class="highlight"><pre><span></span><span class="n">descr</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_covdet</span><span class="p">(</span><span class="nb">patch</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p>You can use the verbose option <code/>verbose</code> if you wish to
+see the parametr and descriptor details.</p>
+
+<div class="highlight"><pre><span></span><span class="n">descr</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_covdet</span><span class="p">(</span><span class="nb">patch</span><span class="p">,</span><span class="s">&#39;Verbose&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p><code/>patch</code> can be a 3D array, with one image per 2D
+layer. In this case, <code/>descr</code> is a matrix with as many
+columns as images. LIOP is also integrated
+into <code/><a href=../matlab/vl_covdet.html>vl_covdet</a></code>.</p>
+
+<p><code/><a href=../matlab/vl_liop.html>vl_liop</a></code> allows full customization of the LIOP
+descriptor parameters. These are
+discussed <a href="../api/liop-fundamentals.html">here</a>. A parameter that
+is commonly tweaked is the <em>intensity threshold</em> to downweight
+unstalbe intensity order patterns in the descriptor computation. For
+example</p>
+
+<div class="highlight"><pre><span></span><span class="n">descr</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_covdet</span><span class="p">(</span><span class="nb">patch</span><span class="p">,</span><span class="s">&#39;IntensityThreshold&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p>set this threshold to 0.1.</p>
+
+  
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

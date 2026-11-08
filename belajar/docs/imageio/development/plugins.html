@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The ImageIO Plugin API &#8212; imageio 2.34.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css?v=c4c5097c" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="../_static/documentation_options.js?v=f4216541"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="imageio.core.Format" href="../_autosummary/imageio.core.Format.html" />
+    <link rel="prev" title="Contributing" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">imageio</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../examples.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../formats/index.html">
+  Supported Formats
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../reference/index.html">
+  API Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Contributing
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/imageio/imageio" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/imageio/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fas fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="current reference internal" href="#">
+   Writing v2 Plugins
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../_autosummary/imageio.core.Format.html">
+     imageio.core.Format
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../_autosummary/imageio.core.Request.html">
+     imageio.core.Request
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../_autosummary/imageio.core.Format.__init__.html">
+     imageio.core.Format.__init__
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../_autosummary/imageio.core.Format._can_read.html">
+     imageio.core.Format._can_read
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../_autosummary/imageio.core.Format._can_write.html">
+     imageio.core.Format._can_write
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../_autosummary/imageio.core.v3_plugin_api.PluginV3.html">
+   imageio.core.v3_plugin_api.PluginV3
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../_autosummary/imageio.core.v3_plugin_api.ImageProperties.html">
+   imageio.core.v3_plugin_api.ImageProperties
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-methods-to-implement">
+   What methods to implement
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-template-plugin">
+   Example / template plugin
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/imageio/imageio/edit/master/docs/development/plugins.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="module-imageio.plugins">
+<span id="the-imageio-plugin-api"></span><h1>The ImageIO Plugin API<a class="headerlink" href="#module-imageio.plugins" title="Link to this heading">¶</a></h1>
+<p>Here you can find documentation on how to write your own plugin to allow
+ImageIO to access a new backend. Plugins are quite object oriented, and
+the relevant classes and their interaction are documented here:</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../_autosummary/imageio.core.Format.html#imageio.core.Format" title="imageio.core.Format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imageio.core.Format</span></code></a>(name, description[, ...])</p></td>
+<td><p>Represents an implementation to read/write a particular file format</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../_autosummary/imageio.core.Request.html#imageio.core.Request" title="imageio.core.Request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imageio.core.Request</span></code></a>(uri, mode, *[, ...])</p></td>
+<td><p>ImageResource handling utility.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can always check existing plugins if you want to see examples.</p>
+</div>
+<section id="what-methods-to-implement">
+<h2>What methods to implement<a class="headerlink" href="#what-methods-to-implement" title="Link to this heading">¶</a></h2>
+<p>To implement a new plugin, create a new class that inherits from
+<a class="reference internal" href="../_autosummary/imageio.core.Format.html#imageio.core.Format" title="imageio.core.Format"><code class="xref py py-class docutils literal notranslate"><span class="pre">imageio.core.Format</span></code></a>. and implement the following functions:</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../_autosummary/imageio.core.Format.__init__.html#imageio.core.Format.__init__" title="imageio.core.Format.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imageio.core.Format.__init__</span></code></a>(name, description)</p></td>
+<td><p>Initialize the Plugin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../_autosummary/imageio.core.Format._can_read.html#imageio.core.Format._can_read" title="imageio.core.Format._can_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imageio.core.Format._can_read</span></code></a>(request)</p></td>
+<td><p>Check if Plugin can read from ImageResource.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../_autosummary/imageio.core.Format._can_write.html#imageio.core.Format._can_write" title="imageio.core.Format._can_write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imageio.core.Format._can_write</span></code></a>(request)</p></td>
+<td><p>Check if Plugin can write to ImageResource.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Further, each format contains up to two nested classes; one for reading and
+one for writing. To support reading and/or writing, the respective classes
+need to be defined.</p>
+<p>For reading, create a nested class that inherits from
+<code class="docutils literal notranslate"><span class="pre">imageio.core.Format.Reader</span></code> and that implements the following functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Implement <code class="docutils literal notranslate"><span class="pre">_open(**kwargs)</span></code> to initialize the reader. Deal with the</dt><dd><p>user-provided keyword arguments here.</p>
+</dd>
+</dl>
+</li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">_close()</span></code> to clean up.</p></li>
+<li><dl class="simple">
+<dt>Implement <code class="docutils literal notranslate"><span class="pre">_get_length()</span></code> to provide a suitable length based on what</dt><dd><p>the user expects. Can be <code class="docutils literal notranslate"><span class="pre">inf</span></code> for streaming data.</p>
+</dd>
+</dl>
+</li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">_get_data(index)</span></code> to return an array and a meta-data dict.</p></li>
+<li><dl class="simple">
+<dt>Implement <code class="docutils literal notranslate"><span class="pre">_get_meta_data(index)</span></code> to return a meta-data dict. If index</dt><dd><p>is None, it should return the ‘global’ meta-data.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>For writing, create a nested class that inherits from
+<code class="docutils literal notranslate"><span class="pre">imageio.core.Format.Writer</span></code> and implement the following functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Implement <code class="docutils literal notranslate"><span class="pre">_open(**kwargs)</span></code> to initialize the writer. Deal with the</dt><dd><p>user-provided keyword arguments here.</p>
+</dd>
+</dl>
+</li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">_close()</span></code> to clean up.</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">_append_data(im,</span> <span class="pre">meta)</span></code> to add data (and meta-data).</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">_set_meta_data(meta)</span></code> to set the global meta-data.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-template-plugin">
+<h2>Example / template plugin<a class="headerlink" href="#example-template-plugin" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="c1"># imageio is distributed under the terms of the (new) BSD License.</span>
+<span class="linenos">  4</span>
+<span class="linenos">  5</span>
+<span class="linenos">  6</span>
+<span class="linenos">  7</span><span class="sd">&quot;&quot;&quot; Example plugin. You can use this as a template for your own plugin.</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 10</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">formats</span>
+<span class="linenos"> 18</span>
+<span class="linenos"> 19</span><span class="kn">from</span> <span class="nn">..core</span> <span class="kn">import</span> <span class="n">Format</span>
+<span class="linenos"> 20</span>
+<span class="linenos"> 21</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span>
+<span class="linenos"> 25</span><span class="k">class</span> <span class="nc">DummyFormat</span><span class="p">(</span><span class="n">Format</span><span class="p">):</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;The dummy format is an example format that does nothing.</span>
+<span class="linenos"> 28</span>
+<span class="linenos"> 29</span><span class="sd">    It will never indicate that it can read or write a file. When</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="sd">    explicitly asked to read, it will simply read the bytes. When</span>
+<span class="linenos"> 32</span>
+<span class="linenos"> 33</span><span class="sd">    explicitly asked to write, it will raise an error.</span>
+<span class="linenos"> 34</span>
+<span class="linenos"> 35</span>
+<span class="linenos"> 36</span>
+<span class="linenos"> 37</span><span class="sd">    This documentation is shown when the user does ``help(&#39;thisformat&#39;)``.</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span>
+<span class="linenos"> 41</span><span class="sd">    Parameters for reading</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span><span class="sd">    ----------------------</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="sd">    Specify arguments in numpy doc style here.</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span>
+<span class="linenos"> 48</span>
+<span class="linenos"> 49</span><span class="sd">    Parameters for saving</span>
+<span class="linenos"> 50</span>
+<span class="linenos"> 51</span><span class="sd">    ---------------------</span>
+<span class="linenos"> 52</span>
+<span class="linenos"> 53</span><span class="sd">    Specify arguments in numpy doc style here.</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos"> 58</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span>
+<span class="linenos"> 61</span>    <span class="k">def</span> <span class="nf">_can_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span>        <span class="c1"># This method is called when the format manager is searching</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span>        <span class="c1"># for a format to read a certain image. Return True if this format</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span>        <span class="c1"># can do it.</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span>        <span class="c1">#</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span>        <span class="c1"># The format manager is aware of the extensions and the modes</span>
+<span class="linenos"> 72</span>
+<span class="linenos"> 73</span>        <span class="c1"># that each format can handle. It will first ask all formats</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>        <span class="c1"># that *seem* to be able to read it whether they can. If none</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span>        <span class="c1"># can, it will ask the remaining formats if they can: the</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span>        <span class="c1"># extension might be missing, and this allows formats to provide</span>
+<span class="linenos"> 80</span>
+<span class="linenos"> 81</span>        <span class="c1"># functionality for certain extensions, while giving preference</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span>        <span class="c1"># to other plugins.</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span>        <span class="c1">#</span>
+<span class="linenos"> 86</span>
+<span class="linenos"> 87</span>        <span class="c1"># If a format says it can, it should live up to it. The format</span>
+<span class="linenos"> 88</span>
+<span class="linenos"> 89</span>        <span class="c1"># would ideally check the request.firstbytes and look for a</span>
+<span class="linenos"> 90</span>
+<span class="linenos"> 91</span>        <span class="c1"># header of some kind.</span>
+<span class="linenos"> 92</span>
+<span class="linenos"> 93</span>        <span class="c1">#</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span>        <span class="c1"># The request object has:</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span>        <span class="c1"># request.filename: a representation of the source (only for reporting)</span>
+<span class="linenos"> 98</span>
+<span class="linenos"> 99</span>        <span class="c1"># request.firstbytes: the first 256 bytes of the file.</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span>        <span class="c1"># request.mode[0]: read or write mode</span>
+<span class="linenos">102</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span>        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">:</span>
+<span class="linenos">106</span>
+<span class="linenos">107</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>
+<span class="linenos">111</span>    <span class="k">def</span> <span class="nf">_can_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="linenos">112</span>
+<span class="linenos">113</span>        <span class="c1"># This method is called when the format manager is searching</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>        <span class="c1"># for a format to write a certain image. It will first ask all</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span>        <span class="c1"># formats that *seem* to be able to write it whether they can.</span>
+<span class="linenos">118</span>
+<span class="linenos">119</span>        <span class="c1"># If none can, it will ask the remaining formats if they can.</span>
+<span class="linenos">120</span>
+<span class="linenos">121</span>        <span class="c1">#</span>
+<span class="linenos">122</span>
+<span class="linenos">123</span>        <span class="c1"># Return True if the format can do it.</span>
+<span class="linenos">124</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span>
+<span class="linenos">127</span>        <span class="c1"># In most cases, this code does suffice:</span>
+<span class="linenos">128</span>
+<span class="linenos">129</span>        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">:</span>
+<span class="linenos">130</span>
+<span class="linenos">131</span>            <span class="k">return</span> <span class="kc">True</span>
+<span class="linenos">132</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span>
+<span class="linenos">135</span>    <span class="c1"># -- reader</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span>
+<span class="linenos">138</span>
+<span class="linenos">139</span>    <span class="k">class</span> <span class="nc">Reader</span><span class="p">(</span><span class="n">Format</span><span class="o">.</span><span class="n">Reader</span><span class="p">):</span>
+<span class="linenos">140</span>
+<span class="linenos">141</span>        <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">some_option</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="linenos">142</span>
+<span class="linenos">143</span>            <span class="c1"># Specify kwargs here. Optionally, the user-specified kwargs</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span>            <span class="c1"># can also be accessed via the request.kwargs object.</span>
+<span class="linenos">146</span>
+<span class="linenos">147</span>            <span class="c1">#</span>
+<span class="linenos">148</span>
+<span class="linenos">149</span>            <span class="c1"># The request object provides two ways to get access to the</span>
+<span class="linenos">150</span>
+<span class="linenos">151</span>            <span class="c1"># data. Use just one:</span>
+<span class="linenos">152</span>
+<span class="linenos">153</span>            <span class="c1">#  - Use request.get_file() for a file object (preferred)</span>
+<span class="linenos">154</span>
+<span class="linenos">155</span>            <span class="c1">#  - Use request.get_local_filename() for a file on the system</span>
+<span class="linenos">156</span>
+<span class="linenos">157</span>            <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get_file</span><span class="p">()</span>
+<span class="linenos">158</span>
+<span class="linenos">159</span>            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="n">length</span>  <span class="c1"># passed as an arg in this case for testing</span>
+<span class="linenos">160</span>
+<span class="linenos">161</span>            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">162</span>
+<span class="linenos">163</span>
+<span class="linenos">164</span>
+<span class="linenos">165</span>        <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">166</span>
+<span class="linenos">167</span>            <span class="c1"># Close the reader.</span>
+<span class="linenos">168</span>
+<span class="linenos">169</span>            <span class="c1"># Note that the request object will close self._fp</span>
+<span class="linenos">170</span>
+<span class="linenos">171</span>            <span class="k">pass</span>
+<span class="linenos">172</span>
+<span class="linenos">173</span>
+<span class="linenos">174</span>
+<span class="linenos">175</span>        <span class="k">def</span> <span class="nf">_get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">176</span>
+<span class="linenos">177</span>            <span class="c1"># Return the number of images. Can be np.inf</span>
+<span class="linenos">178</span>
+<span class="linenos">179</span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span>
+<span class="linenos">180</span>
+<span class="linenos">181</span>
+<span class="linenos">182</span>
+<span class="linenos">183</span>        <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="linenos">184</span>
+<span class="linenos">185</span>            <span class="c1"># Return the data and meta data for the given index</span>
+<span class="linenos">186</span>
+<span class="linenos">187</span>            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span>                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Image index </span><span class="si">%i</span><span class="s2"> &gt; </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">))</span>
+<span class="linenos">190</span>
+<span class="linenos">191</span>            <span class="c1"># Read all bytes</span>
+<span class="linenos">192</span>
+<span class="linenos">193</span>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">194</span>
+<span class="linenos">195</span>                <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="linenos">196</span>
+<span class="linenos">197</span>            <span class="c1"># Put in a numpy array</span>
+<span class="linenos">198</span>
+<span class="linenos">199</span>            <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">)</span>
+<span class="linenos">200</span>
+<span class="linenos">201</span>            <span class="n">im</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="p">),</span> <span class="mi">1</span>
+<span class="linenos">202</span>
+<span class="linenos">203</span>            <span class="c1"># Return array and dummy meta data</span>
+<span class="linenos">204</span>
+<span class="linenos">205</span>            <span class="k">return</span> <span class="n">im</span><span class="p">,</span> <span class="p">{}</span>
+<span class="linenos">206</span>
+<span class="linenos">207</span>
+<span class="linenos">208</span>
+<span class="linenos">209</span>        <span class="k">def</span> <span class="nf">_get_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="linenos">210</span>
+<span class="linenos">211</span>            <span class="c1"># Get the meta data for the given index. If index is None, it</span>
+<span class="linenos">212</span>
+<span class="linenos">213</span>            <span class="c1"># should return the global meta data.</span>
+<span class="linenos">214</span>
+<span class="linenos">215</span>            <span class="k">return</span> <span class="p">{}</span>  <span class="c1"># This format does not support meta data</span>
+<span class="linenos">216</span>
+<span class="linenos">217</span>
+<span class="linenos">218</span>
+<span class="linenos">219</span>    <span class="c1"># -- writer</span>
+<span class="linenos">220</span>
+<span class="linenos">221</span>
+<span class="linenos">222</span>
+<span class="linenos">223</span>    <span class="k">class</span> <span class="nc">Writer</span><span class="p">(</span><span class="n">Format</span><span class="o">.</span><span class="n">Writer</span><span class="p">):</span>
+<span class="linenos">224</span>
+<span class="linenos">225</span>        <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="linenos">226</span>
+<span class="linenos">227</span>            <span class="c1"># Specify kwargs here. Optionally, the user-specified kwargs</span>
+<span class="linenos">228</span>
+<span class="linenos">229</span>            <span class="c1"># can also be accessed via the request.kwargs object.</span>
+<span class="linenos">230</span>
+<span class="linenos">231</span>            <span class="c1">#</span>
+<span class="linenos">232</span>
+<span class="linenos">233</span>            <span class="c1"># The request object provides two ways to write the data.</span>
+<span class="linenos">234</span>
+<span class="linenos">235</span>            <span class="c1"># Use just one:</span>
+<span class="linenos">236</span>
+<span class="linenos">237</span>            <span class="c1">#  - Use request.get_file() for a file object (preferred)</span>
+<span class="linenos">238</span>
+<span class="linenos">239</span>            <span class="c1">#  - Use request.get_local_filename() for a file on the system</span>
+<span class="linenos">240</span>
+<span class="linenos">241</span>            <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">get_file</span><span class="p">()</span>
+<span class="linenos">242</span>
+<span class="linenos">243</span>
+<span class="linenos">244</span>
+<span class="linenos">245</span>        <span class="k">def</span> <span class="nf">_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">246</span>
+<span class="linenos">247</span>            <span class="c1"># Close the reader.</span>
+<span class="linenos">248</span>
+<span class="linenos">249</span>            <span class="c1"># Note that the request object will close self._fp</span>
+<span class="linenos">250</span>
+<span class="linenos">251</span>            <span class="k">pass</span>
+<span class="linenos">252</span>
+<span class="linenos">253</span>
+<span class="linenos">254</span>
+<span class="linenos">255</span>        <span class="k">def</span> <span class="nf">_append_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+<span class="linenos">256</span>
+<span class="linenos">257</span>            <span class="c1"># Process the given data and meta data.</span>
+<span class="linenos">258</span>
+<span class="linenos">259</span>            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The dummy format cannot write image data.&quot;</span><span class="p">)</span>
+<span class="linenos">260</span>
+<span class="linenos">261</span>
+<span class="linenos">262</span>
+<span class="linenos">263</span>        <span class="k">def</span> <span class="nf">set_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+<span class="linenos">264</span>
+<span class="linenos">265</span>            <span class="c1"># Process the given meta data (global for all images)</span>
+<span class="linenos">266</span>
+<span class="linenos">267</span>            <span class="c1"># It is not mandatory to support this.</span>
+<span class="linenos">268</span>
+<span class="linenos">269</span>            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The dummy format cannot write meta data.&quot;</span><span class="p">)</span>
+<span class="linenos">270</span>
+<span class="linenos">271</span>
+<span class="linenos">272</span>
+<span class="linenos">273</span>
+<span class="linenos">274</span>
+<span class="linenos">275</span><span class="c1"># Register. You register an *instance* of a Format class. Here specify:</span>
+<span class="linenos">276</span>
+<span class="linenos">277</span><span class="nb">format</span> <span class="o">=</span> <span class="n">DummyFormat</span><span class="p">(</span>
+<span class="linenos">278</span>
+<span class="linenos">279</span>    <span class="s2">&quot;dummy&quot;</span><span class="p">,</span>  <span class="c1"># short name</span>
+<span class="linenos">280</span>
+<span class="linenos">281</span>    <span class="s2">&quot;An example format that does nothing.&quot;</span><span class="p">,</span>  <span class="c1"># one line descr.</span>
+<span class="linenos">282</span>
+<span class="linenos">283</span>    <span class="s2">&quot;.foobar .nonexistentext&quot;</span><span class="p">,</span>  <span class="c1"># list of extensions</span>
+<span class="linenos">284</span>
+<span class="linenos">285</span>    <span class="s2">&quot;iI&quot;</span><span class="p">,</span>  <span class="c1"># modes, characters in iIvV</span>
+<span class="linenos">286</span>
+<span class="linenos">287</span><span class="p">)</span>
+<span class="linenos">288</span>
+<span class="linenos">289</span><span class="n">formats</span><span class="o">.</span><span class="n">add_format</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Contributing</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../_autosummary/imageio.core.Format.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">imageio.core.Format</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2014-2024, imageio contributors.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -387,7 +387,7 @@
   const grps = $$("[data-nx-grp]");
   if (grps.length) {
     const syncGroups = () => grps.forEach((g) => {
-      const tl = g.nextElementSibling, any = !!tl && $$(".timeline-item", tl).some((i) => !i.hidden);
+      const tl = g.nextElementSibling, any = !!tl && $$(".timeline-item, .project-card", tl).some((i) => !i.hidden);
       if (g.hidden === any) g.hidden = !any; /* only write on change: writing the same value still fires the observer */
       if (tl && tl.hidden === any) tl.hidden = !any;
     });

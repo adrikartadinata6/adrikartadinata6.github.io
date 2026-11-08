@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Core Developer Guide &#8212; skimage 0.22.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css?v=c4c5097c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=4340df76" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="../_static/documentation_options.js?v=25b4b00c"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/design-tabs.js?v=70e5c12e"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="scikit-image proposals (SKIPS)" href="../skips/index.html" />
+    <link rel="prev" title="git resources" href="../gitwash/git_resources.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">skimage</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide/index.html">
+  User guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/api.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../release_notes/index.html">
+  Release notes
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Development
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../about/index.html">
+  About
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/scikit-image/scikit-image" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/scikit-image/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="contribute.html">
+   How to contribute to scikit-image
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../gitwash/index.html">
+   Working with
+   <em>
+    scikit-image
+   </em>
+   source code
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../gitwash/git_intro.html">
+     Introduction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../gitwash/git_install.html">
+     Install git
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../gitwash/following_latest.html">
+     Following the latest source
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../gitwash/patching.html">
+     Making a patch
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../gitwash/git_development.html">
+     Git for development
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gitwash/forking_hell.html">
+       Making your own copy (fork) of scikit-image
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gitwash/set_up_fork.html">
+       Set up your fork
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gitwash/configure_git.html">
+       Configure git
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gitwash/development_workflow.html">
+       Development workflow
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../gitwash/maintainer_workflow.html">
+       Maintainer workflow
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../gitwash/git_resources.html">
+     git resources
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Core Developer Guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../skips/index.html">
+   scikit-image proposals (SKIPS)
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#all-contributors-are-treated-the-same">
+   All Contributors Are Treated The Same
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#reviewing">
+   Reviewing
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#how-to-conduct-a-good-review">
+     How to Conduct A Good Review
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#merge-only-changes-you-understand">
+     Merge Only Changes You Understand
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#closing-issues-and-pull-requests">
+   Closing issues and pull requests
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#further-resources">
+   Further resources
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#inviting-new-core-members">
+   Inviting New Core Members
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contribute-to-this-guide">
+   Contribute To This Guide!
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusion">
+   Conclusion
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <p>(core_dev)=</p>
+<section id="core-developer-guide">
+<h1>Core Developer Guide<a class="headerlink" href="#core-developer-guide" title="Link to this heading">¶</a></h1>
+<p>Welcome, new core developer! The core team appreciate the quality of
+your work, and enjoy working with you; we have therefore invited you
+to join us. Thank you for your numerous contributions to the project
+so far.</p>
+<p>This document offers guidelines for your new role. First and
+foremost, you should familiarize yourself with the project’s
+{doc}<code class="docutils literal notranslate"><span class="pre">mission,</span> <span class="pre">vision,</span> <span class="pre">and</span> <span class="pre">values</span> <span class="pre">&lt;../about/values&gt;</span></code>. When in
+doubt, always refer back here.</p>
+<p>As a core team member, you gain the responsibility of shepherding
+other contributors through the review process; here are some
+guidelines.</p>
+<section id="all-contributors-are-treated-the-same">
+<h2>All Contributors Are Treated The Same<a class="headerlink" href="#all-contributors-are-treated-the-same" title="Link to this heading">¶</a></h2>
+<p>You now have the ability to push changes directly to the main
+branch, but should never do so; instead, continue making pull requests
+as before and in accordance with the
+{doc}<code class="docutils literal notranslate"><span class="pre">general</span> <span class="pre">contributor</span> <span class="pre">guide</span> <span class="pre">&lt;contribute&gt;</span></code>.</p>
+<p>As a core contributor, you gain the ability to merge or approve
+other contributors’ pull requests. Much like nuclear launch keys, it
+is a shared power: you must merge <em>only after</em> another core has
+approved the pull request, <em>and</em> after you yourself have carefully
+reviewed it. (See {ref}<code class="docutils literal notranslate"><span class="pre">sec:reviewing</span></code> and especially
+{ref}<code class="docutils literal notranslate"><span class="pre">sec:understand</span></code> below.) To ensure a clean git history,
+use GitHub’s <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request#merging-a-pull-request-on-github">Squash and Merge</a>
+feature to merge, unless you have a good reason not to do so.</p>
+<p>(sec:reviewing)=</p>
+</section>
+<section id="reviewing">
+<h2>Reviewing<a class="headerlink" href="#reviewing" title="Link to this heading">¶</a></h2>
+<section id="how-to-conduct-a-good-review">
+<h3>How to Conduct A Good Review<a class="headerlink" href="#how-to-conduct-a-good-review" title="Link to this heading">¶</a></h3>
+<p><em>Always</em> be kind to contributors. Nearly all of <code class="docutils literal notranslate"><span class="pre">scikit-image</span></code> is
+volunteer work, for which we are tremendously grateful. Provide
+constructive criticism on ideas and implementations, and remind
+yourself of how it felt when your own work was being evaluated as a
+novice.</p>
+<p><code class="docutils literal notranslate"><span class="pre">scikit-image</span></code> strongly values mentorship in code review. New users
+often need more handholding, having little to no git
+experience. Repeat yourself liberally, and, if you don’t recognize a
+contributor, point them to our development guide, or other GitHub
+workflow tutorials around the web. Do not assume that they know how
+GitHub works (e.g., many don’t realize that adding a commit
+automatically updates a pull request). Gentle, polite, kind
+encouragement can make the difference between a new core developer and
+an abandoned pull request.</p>
+<p>When reviewing, focus on the following:</p>
+<ol class="simple">
+<li><p><strong>API:</strong> The API is what users see when they first use
+<code class="docutils literal notranslate"><span class="pre">scikit-image</span></code>. APIs are difficult to change once released, so
+should be simple, <a class="reference external" href="https://en.wikipedia.org/wiki/Functional_programming">functional</a> (i.e. not
+carry state), consistent with other parts of the library, and
+should avoid modifying input variables. Please familiarize
+yourself with the project’s <a class="reference external" href="https://scikit-image.org/docs/dev/development/contribute.html#deprecation-cycle">deprecation policy</a></p></li>
+<li><p><strong>Documentation:</strong> Any new feature should have a gallery
+example, that not only illustrates but explains it.</p></li>
+<li><p><strong>The algorithm:</strong> You should understand the code being modified or
+added before approving it. (See {ref}<code class="docutils literal notranslate"><span class="pre">sec:understand</span></code>
+below.) Implementations should do what they claim,
+and be simple, readable, and efficient.</p></li>
+<li><p><strong>Tests:</strong> All contributions to the library <em>must</em> be tested, and
+each added line of code should be covered by at least one test. Good
+tests not only execute the code, but explores corner cases. It is tempting
+not to review tests, but please do so.</p></li>
+<li><p><strong>Licensing:</strong> New contributions should be available under the same license
+as or be compatible with {doc}<code class="docutils literal notranslate"><span class="pre">scikit-image's</span> <span class="pre">license</span> <span class="pre">&lt;../license&gt;</span></code>.
+Examples of BSD-compatible licenses are the <a class="reference external" href="https://spdx.org/licenses/MIT.html">MIT License</a> and
+<a class="reference external" href="https://spdx.org/licenses/Apache-2.0.html">Apache License 2.0</a>. When in doubt, ask the team for help.
+If you, the contributor, are not the copyright holder of the submitted
+code, please ask the original authors for approval and include their names
+in <code class="docutils literal notranslate"><span class="pre">LICENSE.txt</span></code>. You can use the other entries in that file as templates.</p></li>
+<li><p><strong>Established methods:</strong> In general, we are looking to include algorithms
+and methods which are established, well documented in the literature and
+widely used by the imaging community. While this is not a hard requirement,
+new contributions should be consistent with {doc}<code class="docutils literal notranslate"><span class="pre">our</span> <span class="pre">mission</span> <span class="pre">&lt;../about/values&gt;</span></code>.</p></li>
+</ol>
+<p>Other changes may be <em>nitpicky</em>: spelling mistakes, formatting,
+etc. Do not ask contributors to make these changes, and instead
+make the changes by <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/committing-changes-to-a-pull-request-branch-created-from-a-fork">pushing to their branch</a>
+or using GitHub’s <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request">suggestion</a> <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/incorporating-feedback-in-your-pull-request">feature</a>.
+(The latter is preferred because it gives the contributor a choice in
+whether to accept the changes.)</p>
+<p>Our default merge policy is to squash all PR commits into a single
+commit. Users who wish to bring the latest changes from <code class="docutils literal notranslate"><span class="pre">main</span></code>
+into their branch should be advised to merge, not to rebase. Even
+when merge conflicts arise, don’t ask for a rebase unless you know
+that a contributor is experienced with git. Instead, rebase the branch
+yourself, force-push to their branch, and advise the contributor on
+how to force-pull. If the contributor is no longer active, you may
+take over their branch by submitting a new pull request and closing
+the original. In doing so, ensure you communicate that you are not
+throwing the contributor’s work away!</p>
+<p>Please add a note to a pull request after you push new changes; GitHub
+does not send out notifications for these.</p>
+<p>(sec:understand)=</p>
+</section>
+<section id="merge-only-changes-you-understand">
+<h3>Merge Only Changes You Understand<a class="headerlink" href="#merge-only-changes-you-understand" title="Link to this heading">¶</a></h3>
+<p><em>Long-term maintainability</em> is an important concern. Code doesn’t
+merely have to <em>work</em>, but should be <em>understood</em> by multiple core
+developers. Changes will have to be made in the future, and the
+original contributor may have moved on.</p>
+<p>Therefore, <em>do not merge a code change unless you understand it</em>. Ask
+for help freely: we have a long history of consulting community
+members, or even external developers, for added insight where needed,
+and see this as a great learning opportunity.</p>
+<p>While we collectively “own” any patches (and bugs!) that become part
+of the code base, you are vouching for changes you merge. Please take
+that responsibility seriously.</p>
+<p>In practice, if you are the second core developer reviewing and approving a
+given pull request, you typically merge it (again, using GitHub’s Squash and
+Merge feature) in the wake of your approval. What are the exceptions to this
+process? If the pull request has been particularly controversial or the
+subject of much debate (e.g., involving API changes), then you would want to
+wait a few days before merging. This waiting time gives others a chance to
+speak up in case they are not fine with the current state of the pull request.
+Another exceptional situation is one where the first approving review happened
+a long time ago and many changes have taken place in the meantime.</p>
+<p>When squashing commits GitHub concatenates all commit messages.
+Please edit the resulting message so that it gives a concise, tidy
+overview of changes. For example, you may want to grab the
+description from the PR itself, and delete lines such as “pep8 fix”,
+“apply review comments”, etc. Please retain all Co-authored-by
+entries.</p>
+</section>
+</section>
+<section id="closing-issues-and-pull-requests">
+<h2>Closing issues and pull requests<a class="headerlink" href="#closing-issues-and-pull-requests" title="Link to this heading">¶</a></h2>
+<p>Sometimes, an issue must be closed that was not fully resolved. This can be
+for a number of reasons:</p>
+<ul class="simple">
+<li><p>the person behind the original post has not responded to calls for
+clarification, and none of the core developers have been able to reproduce
+their issue;</p></li>
+<li><p>fixing the issue is difficult, and it is deemed too niche a use case to
+devote sustained effort or prioritize over other issues; or</p></li>
+<li><p>the use case or feature request is something that core developers feel
+does not belong in scikit-image,</p></li>
+</ul>
+<p>among others. Similarly, pull requests sometimes need to be closed without
+merging, because:</p>
+<ul class="simple">
+<li><p>the pull request implements a niche feature that we consider not worth the
+added maintenance burden;</p></li>
+<li><p>the pull request implements a useful feature, but requires significant
+effort to bring up to scikit-image’s standards, and the original
+contributor has moved on, and no other developer can be found to make the
+necessary changes; or</p></li>
+<li><p>the pull request makes changes that do not align with our values, such as
+increasing the code complexity of a function significantly to implement a
+marginal speedup,</p></li>
+</ul>
+<p>among others.</p>
+<p>All these may be valid reasons for closing, but we must be wary not to alienate
+contributors by closing an issue or pull request without an explanation. When
+closing, your message should:</p>
+<ul class="simple">
+<li><p>explain clearly how the decision was made to close. This is particularly
+important when the decision was made in a community meeting, which does not
+have as visible a record as the comments thread on the issue itself;</p></li>
+<li><p>thank the contributor(s) for their work; and</p></li>
+<li><p>provide a clear path for the contributor or anyone else to appeal the
+decision.</p></li>
+</ul>
+<p>These points help ensure that all contributors feel welcome and empowered to
+keep contributing, regardless of the outcome of past contributions.</p>
+</section>
+<section id="further-resources">
+<h2>Further resources<a class="headerlink" href="#further-resources" title="Link to this heading">¶</a></h2>
+<p>As a core member, you should be familiar with community and developer
+resources such as:</p>
+<ul class="simple">
+<li><p>Our {doc}<code class="docutils literal notranslate"><span class="pre">contributor</span> <span class="pre">guide</span> <span class="pre">&lt;contribute&gt;</span></code></p></li>
+<li><p>Our <a class="reference external" href="https://scikit-image.org/community_guidelines.html">community guidelines</a></p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">PEP8</a> for Python style</p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0257/">PEP257</a> and the
+<a class="reference external" href="https://docs.scipy.org/doc/numpy/docs/howto_document.html">NumPy documentation guide</a>
+for docstrings. (NumPy docstrings are a superset of PEP257. You
+should read both.)</p></li>
+<li><p>The scikit-image <a class="reference external" href="https://stackoverflow.com/questions/tagged/scikit-image">tag on StackOverflow</a></p></li>
+<li><p>The scikit-image <a class="reference external" href="https://forum.image.sc/tags/scikit-image">tag on forum.image.sc</a></p></li>
+<li><p>Our <a class="reference external" href="https://discuss.scientific-python.org/c/contributor/skimage">developer forum</a></p></li>
+<li><p>Our <a class="reference external" href="https://skimage.zulipchat.com/">chat room</a></p></li>
+</ul>
+<p>You are not required to monitor all of the social resources.</p>
+</section>
+<section id="inviting-new-core-members">
+<h2>Inviting New Core Members<a class="headerlink" href="#inviting-new-core-members" title="Link to this heading">¶</a></h2>
+<p>Any core member may nominate other contributors to join the core team.
+Nominations happen on a private email list,
+<a class="reference external" href="mailto:skimage-core&#37;&#52;&#48;discuss&#46;scientific-python&#46;org">skimage-core<span>&#64;</span>discuss<span>&#46;</span>scientific-python<span>&#46;</span>org</a>. As of this writing, there is no hard-and-fast
+rule about who can be nominated; at a minimum, they should have: been
+part of the project for at least six months, contributed
+significant changes of their own, contributed to the discussion and
+review of others’ work, and collaborated in a way befitting our
+community values.</p>
+</section>
+<section id="contribute-to-this-guide">
+<h2>Contribute To This Guide!<a class="headerlink" href="#contribute-to-this-guide" title="Link to this heading">¶</a></h2>
+<p>This guide reflects the experience of the current core developers. We
+may well have missed things that, by now, have become second
+nature—things that you, as a new team member, will spot more easily.
+Please ask the other core developers if you have any questions, and
+submit a pull request with insights gained.</p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<p>We are excited to have you on board! We look forward to your
+contributions to the code base and the community. Thank you in
+advance!</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2013-2024, the scikit-image team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

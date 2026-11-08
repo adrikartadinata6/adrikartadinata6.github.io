@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpiozero.internal_devices &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpiozero.internal_devices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpiozero.internal_devices</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: set fileencoding=utf-8:</span>
+<span class="c1">#</span>
+<span class="c1"># GPIO Zero: a library for controlling the Raspberry Pi&#39;s GPIO pins</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2016-2023 Dave Jones &lt;dave@waveform.org.uk&gt;</span>
+<span class="c1"># Copyright (c) 2017-2021 Ben Nuttall &lt;ben@bennuttall.com&gt;</span>
+<span class="c1"># Copyright (c) 2019 Jeevan M R &lt;14.jeevan@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2019 Andrew Scheller &lt;github@loowis.durge.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span>
+
+<span class="kn">from</span> <span class="nn">.devices</span> <span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">EventsMixin</span><span class="p">,</span> <span class="n">event</span>
+<span class="kn">from</span> <span class="nn">.threads</span> <span class="kn">import</span> <span class="n">GPIOThread</span>
+<span class="kn">from</span> <span class="nn">.exc</span> <span class="kn">import</span> <span class="n">ThresholdOutOfRange</span><span class="p">,</span> <span class="n">DeviceClosed</span>
+
+
+<div class="viewcode-block" id="InternalDevice">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.InternalDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">InternalDevice</span><span class="p">(</span><span class="n">EventsMixin</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`Device` to provide a basis for devices which have no</span>
+<span class="sd">    specific hardware representation. These are effectively pseudo-devices and</span>
+<span class="sd">    usually represent operating system services like the internal clock, file</span>
+<span class="sd">    systems or network facilities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object&gt;&quot;</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object closed&gt;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="PolledInternalDevice">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.PolledInternalDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">PolledInternalDevice</span><span class="p">(</span><span class="n">InternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`InternalDevice` to provide a background thread to poll</span>
+<span class="sd">    internal devices that lack any other mechanism to inform the instance of</span>
+<span class="sd">    changes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_delay</span> <span class="o">=</span> <span class="n">event_delay</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_stop_events</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># pragma: no cover</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">event_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The delay between sampling the device&#39;s value for the purposes of</span>
+<span class="sd">        firing events.</span>
+
+<span class="sd">        Note that this only applies to events assigned to attributes like</span>
+<span class="sd">        :attr:`~EventsMixin.when_activated` and</span>
+<span class="sd">        :attr:`~EventsMixin.when_deactivated`. When using the</span>
+<span class="sd">        :attr:`~SourceMixin.source` and :attr:`~ValuesMixin.values` properties,</span>
+<span class="sd">        the sampling rate is controlled by the</span>
+<span class="sd">        :attr:`~SourceMixin.source_delay` property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_delay</span>
+
+    <span class="nd">@event_delay</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">event_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_delay</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wait_for_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_stop_events</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">wait_for_active</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_stop_events</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">when_activated</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_deactivated</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wait_for_inactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_stop_events</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">wait_for_inactive</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_stop_events</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">when_activated</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_deactivated</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_watch_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span><span class="o">.</span><span class="n">stopping</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event_delay</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_start_stop_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span> <span class="ow">and</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span> <span class="o">=</span> <span class="n">GPIOThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_watch_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="PingServer">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.PingServer">[docs]</a>
+<span class="k">class</span> <span class="nc">PingServer</span><span class="p">(</span><span class="n">PolledInternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`PolledInternalDevice` to provide a device which is active</span>
+<span class="sd">    when a *host* (domain name or IP address) can be pinged.</span>
+
+<span class="sd">    The following example lights an LED while ``google.com`` is reachable::</span>
+
+<span class="sd">        from gpiozero import PingServer, LED</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        google = PingServer(&#39;google.com&#39;)</span>
+<span class="sd">        led = LED(4)</span>
+
+<span class="sd">        google.when_activated = led.on</span>
+<span class="sd">        google.when_deactivated = led.off</span>
+
+<span class="sd">        pause()</span>
+
+<span class="sd">    :param str host:</span>
+<span class="sd">        The hostname or IP address to attempt to ping.</span>
+
+<span class="sd">    :type event_delay: float</span>
+<span class="sd">    :param event_delay:</span>
+<span class="sd">        The number of seconds between pings (defaults to 10 seconds).</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event_delay</span><span class="o">=</span><span class="n">event_delay</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;gpiozero.PingServer object host=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The hostname or IP address to test whenever :attr:`value` is queried.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`1` if the host returned a single ping, and :data:`0`</span>
+<span class="sd">        otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># XXX This is doing a DNS lookup every time it&#39;s queried; should we</span>
+        <span class="c1"># call gethostbyname in the constructor and ping that instead (good</span>
+        <span class="c1"># for consistency, but what if the user *expects* the host to change</span>
+        <span class="c1"># address?)</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">devnull</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s1">&#39;ping&#39;</span><span class="p">,</span> <span class="s1">&#39;-c1&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">],</span>
+                    <span class="n">stdout</span><span class="o">=</span><span class="n">devnull</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">devnull</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">when_activated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive</span>
+<span class="sd">        (host unresponsive) to active (host responsive).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive</span>
+<span class="sd">        (host responsive) to active (host unresponsive).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CPUTemperature">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.CPUTemperature">[docs]</a>
+<span class="k">class</span> <span class="nc">CPUTemperature</span><span class="p">(</span><span class="n">PolledInternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`PolledInternalDevice` to provide a device which is active</span>
+<span class="sd">    when the CPU temperature exceeds the *threshold* value.</span>
+
+<span class="sd">    The following example plots the CPU&#39;s temperature on an LED bar graph::</span>
+
+<span class="sd">        from gpiozero import LEDBarGraph, CPUTemperature</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        # Use minimums and maximums that are closer to &quot;normal&quot; usage so the</span>
+<span class="sd">        # bar graph is a bit more &quot;lively&quot;</span>
+<span class="sd">        cpu = CPUTemperature(min_temp=50, max_temp=90)</span>
+
+<span class="sd">        print(f&#39;Initial temperature: {cpu.temperature}C&#39;)</span>
+
+<span class="sd">        graph = LEDBarGraph(5, 6, 13, 19, 25, pwm=True)</span>
+<span class="sd">        graph.source = cpu</span>
+
+<span class="sd">        pause()</span>
+
+<span class="sd">    :param str sensor_file:</span>
+<span class="sd">        The file from which to read the temperature. This defaults to the</span>
+<span class="sd">        sysfs file :file:`/sys/class/thermal/thermal_zone0/temp`. Whatever</span>
+<span class="sd">        file is specified is expected to contain a single line containing the</span>
+<span class="sd">        temperature in milli-degrees celsius.</span>
+
+<span class="sd">    :param float min_temp:</span>
+<span class="sd">        The temperature at which :attr:`value` will read 0.0. This defaults to</span>
+<span class="sd">        0.0.</span>
+
+<span class="sd">    :param float max_temp:</span>
+<span class="sd">        The temperature at which :attr:`value` will read 1.0. This defaults to</span>
+<span class="sd">        100.0.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        The temperature above which the device will be considered &quot;active&quot;.</span>
+<span class="sd">        (see :attr:`is_active`). This defaults to 80.0.</span>
+
+<span class="sd">    :type event_delay: float</span>
+<span class="sd">    :param event_delay:</span>
+<span class="sd">        The number of seconds between file reads (defaults to 5 seconds).</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensor_file</span><span class="o">=</span><span class="s1">&#39;/sys/class/thermal/thermal_zone0/temp&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+            <span class="n">min_temp</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_temp</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">80.0</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+            <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_file</span> <span class="o">=</span> <span class="n">sensor_file</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event_delay</span><span class="o">=</span><span class="n">event_delay</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">min_temp</span> <span class="o">&gt;=</span> <span class="n">max_temp</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;max_temp must be greater than min_temp&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_temp</span> <span class="o">=</span> <span class="n">min_temp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_temp</span> <span class="o">=</span> <span class="n">max_temp</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">min_temp</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="n">max_temp</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">ThresholdOutOfRange</span><span class="p">(</span>
+                    <span class="s1">&#39;threshold is outside of the range (min_temp, max_temp)&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> object &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;temperature=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current CPU temperature in degrees celsius.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensor_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">/</span> <span class="mi">1000</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current CPU temperature as a value between 0.0</span>
+<span class="sd">        (representing the *min_temp* value) and 1.0 (representing the</span>
+<span class="sd">        *max_temp* value). These default to 0.0 and 100.0 respectively, hence</span>
+<span class="sd">        :attr:`value` is :attr:`temperature` divided by 100 by default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_temp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_temp</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_temp</span><span class="p">)</span> <span class="o">/</span> <span class="n">temp_range</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`True` when the CPU :attr:`temperature` exceeds the</span>
+<span class="sd">        *threshold*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+    <span class="n">when_activated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive to</span>
+<span class="sd">        active (temperature reaches *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from active to</span>
+<span class="sd">        inactive (temperature drops below *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="LoadAverage">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.LoadAverage">[docs]</a>
+<span class="k">class</span> <span class="nc">LoadAverage</span><span class="p">(</span><span class="n">PolledInternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`PolledInternalDevice` to provide a device which is active</span>
+<span class="sd">    when the CPU load average exceeds the *threshold* value.</span>
+
+<span class="sd">    The following example plots the load average on an LED bar graph::</span>
+
+<span class="sd">        from gpiozero import LEDBarGraph, LoadAverage</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        la = LoadAverage(min_load_average=0, max_load_average=2)</span>
+<span class="sd">        graph = LEDBarGraph(5, 6, 13, 19, 25, pwm=True)</span>
+
+<span class="sd">        graph.source = la</span>
+
+<span class="sd">        pause()</span>
+
+<span class="sd">    :param str load_average_file:</span>
+<span class="sd">        The file from which to read the load average. This defaults to the</span>
+<span class="sd">        proc file :file:`/proc/loadavg`. Whatever file is specified is expected</span>
+<span class="sd">        to contain three space-separated load averages at the beginning of the</span>
+<span class="sd">        file, representing 1 minute, 5 minute and 15 minute averages</span>
+<span class="sd">        respectively.</span>
+
+<span class="sd">    :param float min_load_average:</span>
+<span class="sd">        The load average at which :attr:`value` will read 0.0. This defaults to</span>
+<span class="sd">        0.0.</span>
+
+<span class="sd">    :param float max_load_average:</span>
+<span class="sd">        The load average at which :attr:`value` will read 1.0. This defaults to</span>
+<span class="sd">        1.0.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        The load average above which the device will be considered &quot;active&quot;.</span>
+<span class="sd">        (see :attr:`is_active`). This defaults to 0.8.</span>
+
+<span class="sd">    :param int minutes:</span>
+<span class="sd">        The number of minutes over which to average the load. Must be 1, 5 or</span>
+<span class="sd">        15. This defaults to 5.</span>
+
+<span class="sd">    :type event_delay: float</span>
+<span class="sd">    :param event_delay:</span>
+<span class="sd">        The number of seconds between file reads (defaults to 10 seconds).</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_average_file</span><span class="o">=</span><span class="s1">&#39;/proc/loadavg&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">min_load_average</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_load_average</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                 <span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">min_load_average</span> <span class="o">&gt;=</span> <span class="n">max_load_average</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;max_load_average must be greater than min_load_average&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_average_file</span> <span class="o">=</span> <span class="n">load_average_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_load_average</span> <span class="o">=</span> <span class="n">min_load_average</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_load_average</span> <span class="o">=</span> <span class="n">max_load_average</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">min_load_average</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="n">max_load_average</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">ThresholdOutOfRange</span><span class="p">(</span>
+                <span class="s1">&#39;threshold is outside of the range (min_load_average, &#39;</span>
+                <span class="s1">&#39;max_load_average)&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+        <span class="k">if</span> <span class="n">minutes</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;minutes must be 1, 5 or 15&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_average_file_column</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">15</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">minutes</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event_delay</span><span class="o">=</span><span class="n">event_delay</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> object &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;load average=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">load_average</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">load_average</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current load average.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_average_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">file_columns</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">file_columns</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_average_file_column</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current load average as a value between 0.0 (representing</span>
+<span class="sd">        the *min_load_average* value) and 1.0 (representing the</span>
+<span class="sd">        *max_load_average* value). These default to 0.0 and 1.0 respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">load_average_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_load_average</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_load_average</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_average</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_load_average</span><span class="p">)</span> <span class="o">/</span> <span class="n">load_average_range</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`True` when the :attr:`load_average` exceeds the</span>
+<span class="sd">        *threshold*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_average</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+    <span class="n">when_activated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive to</span>
+<span class="sd">        active (load average reaches *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from active to</span>
+<span class="sd">        inactive (load average drops below *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TimeOfDay">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.TimeOfDay">[docs]</a>
+<span class="k">class</span> <span class="nc">TimeOfDay</span><span class="p">(</span><span class="n">PolledInternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`PolledInternalDevice` to provide a device which is active</span>
+<span class="sd">    when the computer&#39;s clock indicates that the current time is between</span>
+<span class="sd">    *start_time* and *end_time* (inclusive) which are :class:`~datetime.time`</span>
+<span class="sd">    instances.</span>
+
+<span class="sd">    The following example turns on a lamp attached to an :class:`Energenie`</span>
+<span class="sd">    plug between 07:00AM and 08:00AM::</span>
+
+<span class="sd">        from gpiozero import TimeOfDay, Energenie</span>
+<span class="sd">        from datetime import time</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        lamp = Energenie(1)</span>
+<span class="sd">        morning = TimeOfDay(time(7), time(8))</span>
+
+<span class="sd">        morning.when_activated = lamp.on</span>
+<span class="sd">        morning.when_deactivated = lamp.off</span>
+
+<span class="sd">        pause()</span>
+
+<span class="sd">    Note that *start_time* may be greater than *end_time*, indicating a time</span>
+<span class="sd">    period which crosses midnight.</span>
+
+<span class="sd">    :param ~datetime.time start_time:</span>
+<span class="sd">        The time from which the device will be considered active.</span>
+
+<span class="sd">    :param ~datetime.time end_time:</span>
+<span class="sd">        The time after which the device will be considered inactive.</span>
+
+<span class="sd">    :param bool utc:</span>
+<span class="sd">        If :data:`True` (the default), a naive UTC time will be used for the</span>
+<span class="sd">        comparison rather than a local time-zone reading.</span>
+
+<span class="sd">    :type event_delay: float</span>
+<span class="sd">    :param event_delay:</span>
+<span class="sd">        The number of seconds between file reads (defaults to 10 seconds).</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utc</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event_delay</span><span class="o">=</span><span class="n">event_delay</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;end_time cannot equal start_time&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utc</span> <span class="o">=</span> <span class="n">utc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> object active between &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="si">}</span><span class="s1"> &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;UTC&quot;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">utc</span><span class="p">]</span><span class="si">}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_validate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;start_time and end_time must be a datetime, or time instance&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The time of day after which the device will be considered active.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The time of day after which the device will be considered inactive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">utc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :data:`True`, use a naive UTC time reading for comparison instead of</span>
+<span class="sd">        a local timezone reading.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`1` when the system clock reads between :attr:`start_time`</span>
+<span class="sd">        and :attr:`end_time`, and :data:`0` otherwise. If :attr:`start_time` is</span>
+<span class="sd">        greater than :attr:`end_time` (indicating a period that crosses</span>
+<span class="sd">        midnight), then this returns :data:`1` when the current time is</span>
+<span class="sd">        greater than :attr:`start_time` or less than :attr:`end_time`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">utc</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">&lt;=</span> <span class="n">now</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">&lt;</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span>
+
+    <span class="n">when_activated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive to</span>
+<span class="sd">        active (time reaches *start_time*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from active to</span>
+<span class="sd">        inactive (time reaches *end_time*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DiskUsage">
+<a class="viewcode-back" href="../../api_internal.html#gpiozero.DiskUsage">[docs]</a>
+<span class="k">class</span> <span class="nc">DiskUsage</span><span class="p">(</span><span class="n">PolledInternalDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`PolledInternalDevice` to provide a device which is active</span>
+<span class="sd">    when the disk space used exceeds the *threshold* value.</span>
+
+<span class="sd">    The following example plots the disk usage on an LED bar graph::</span>
+
+<span class="sd">        from gpiozero import LEDBarGraph, DiskUsage</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        disk = DiskUsage()</span>
+
+<span class="sd">        print(f&#39;Current disk usage: {disk.usage}%&#39;)</span>
+
+<span class="sd">        graph = LEDBarGraph(5, 6, 13, 19, 25, pwm=True)</span>
+<span class="sd">        graph.source = disk</span>
+
+<span class="sd">        pause()</span>
+
+<span class="sd">    :param str filesystem:</span>
+<span class="sd">        A path within the filesystem for which the disk usage needs to be</span>
+<span class="sd">        computed. This defaults to :file:`/`, which is the root filesystem.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        The disk usage percentage above which the device will be considered</span>
+<span class="sd">        &quot;active&quot; (see :attr:`is_active`). This defaults to 90.0.</span>
+
+<span class="sd">    :type event_delay: float</span>
+<span class="sd">    :param event_delay:</span>
+<span class="sd">        The number of seconds between file reads (defaults to 30 seconds).</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filesystem</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span> <span class="n">event_delay</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">event_delay</span><span class="o">=</span><span class="n">event_delay</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">statvfs</span><span class="p">(</span><span class="n">filesystem</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">ThresholdOutOfRange</span><span class="p">(</span>
+                <span class="s1">&#39;threshold is outside of the range (0, 100)&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filesystem</span> <span class="o">=</span> <span class="n">filesystem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> object &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;usage=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current disk usage in percentage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">100</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current disk usage as a value between 0.0 and 1.0 by</span>
+<span class="sd">        dividing :attr:`usage` by 100.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This slightly convoluted calculation is equivalent to df&#39;s &quot;Use%&quot;;</span>
+        <span class="c1"># it calculates the percentage of FS usage as a proportion of the</span>
+        <span class="c1"># space available to *non-root users*. Technically this means it can</span>
+        <span class="c1"># exceed 100% (when FS is filled to the point that only root can write</span>
+        <span class="c1"># to it), hence the clamp.</span>
+        <span class="n">vfs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">statvfs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filesystem</span><span class="p">)</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="n">vfs</span><span class="o">.</span><span class="n">f_blocks</span> <span class="o">-</span> <span class="n">vfs</span><span class="o">.</span><span class="n">f_bfree</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">used</span> <span class="o">+</span> <span class="n">vfs</span><span class="o">.</span><span class="n">f_bavail</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">used</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`True` when the disk :attr:`usage` exceeds the</span>
+<span class="sd">        *threshold*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+    <span class="n">when_activated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from inactive to</span>
+<span class="sd">        active (disk usage reaches *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_deactivated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to run when the device changes state from active to</span>
+<span class="sd">        inactive (disk usage drops below *threshold*).</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory)</span>
+<span class="sd">        parameters, or a Python function which accepts a single mandatory</span>
+<span class="sd">        parameter (with as many optional parameters as you like). If the</span>
+<span class="sd">        function accepts a single mandatory parameter, the device that</span>
+<span class="sd">        activated it will be passed as that parameter.</span>
+
+<span class="sd">        Set this property to ``None`` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

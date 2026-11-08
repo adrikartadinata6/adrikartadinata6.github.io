@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5.2.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5.1.0" href="5.1.0.html" />
+    <link rel="prev" title="5.3.0" href="5.3.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="5.1.0.html" title="5.1.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="5.3.0.html" title="5.3.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">5.2.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>5.2.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading">¶</a></h2>
+<section id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h3>
+<p>These version constants have been deprecated. <code class="docutils literal notranslate"><span class="pre">VERSION</span></code> will be removed in
+Pillow 6.0.0, and <code class="docutils literal notranslate"><span class="pre">PILLOW_VERSION</span></code> will be removed after that.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PIL.VERSION</span></code> (old PIL version 1.1.7)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PIL.PILLOW_VERSION</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PIL.Image.VERSION</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PIL.Image.PILLOW_VERSION</span></code></p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">PIL.__version__</span></code> instead.</p>
+</section>
+</section>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="d-color-lookup-tables">
+<h3>3D color lookup tables<a class="headerlink" href="#d-color-lookup-tables" title="Link to this heading">¶</a></h3>
+<p>Support for 3D color lookup table transformations has been added.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/3D_lookup_table">https://en.wikipedia.org/wiki/3D_lookup_table</a></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Color3DLUT.generate</span></code> transforms 3-channel pixels using the values of the
+channels as coordinates in the 3D lookup table and interpolating the nearest
+elements.</p>
+<p>It allows you to apply almost any color transformation in constant time by
+using pre-calculated decimated tables.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Color3DLUT.transform()</span></code> allows altering table values with a callback.</p>
+<p>If NumPy is installed, the performance of argument conversion is dramatically
+improved when a source table supports buffer interface (NumPy &amp;&amp; arrays in
+Python &gt;= 3).</p>
+</section>
+<section id="imagecolor-getrgb">
+<h3>ImageColor.getrgb<a class="headerlink" href="#imagecolor-getrgb" title="Link to this heading">¶</a></h3>
+<p>Previously <code class="docutils literal notranslate"><span class="pre">Image.rotate</span></code> only supported HSL color strings. Now HSB and HSV
+strings are also supported, as well as float values. For example,
+<code class="docutils literal notranslate"><span class="pre">ImageColor.getrgb(&quot;hsv(180,100%,99.5%)&quot;)</span></code>.</p>
+</section>
+<section id="imagefile-get-format-mimetype">
+<h3>ImageFile.get_format_mimetype<a class="headerlink" href="#imagefile-get-format-mimetype" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ImageFile.get_format_mimetype</span></code> has been added to return the MIME type of an
+image file, where available. For example,
+<code class="docutils literal notranslate"><span class="pre">Image.open(&quot;hopper.jpg&quot;).get_format_mimetype()</span></code> returns <code class="docutils literal notranslate"><span class="pre">&quot;image/jpeg&quot;</span></code>.</p>
+</section>
+<section id="imagefont-getsize-multiline">
+<h3>ImageFont.getsize_multiline<a class="headerlink" href="#imagefont-getsize-multiline" title="Link to this heading">¶</a></h3>
+<p>A new method to return the size of multiline text, for example
+<code class="docutils literal notranslate"><span class="pre">font.getsize_multiline(&quot;ABC\nAaaa&quot;)</span></code></p>
+</section>
+<section id="image-rotate">
+<h3>Image.rotate<a class="headerlink" href="#image-rotate" title="Link to this heading">¶</a></h3>
+<p>A new named parameter, <code class="docutils literal notranslate"><span class="pre">fillcolor</span></code>, has been added to <code class="docutils literal notranslate"><span class="pre">Image.rotate</span></code>. This
+color specifies the background color to use in the area outside the rotated
+image. This parameter takes the same color specifications as used in
+<code class="docutils literal notranslate"><span class="pre">Image.new</span></code>.</p>
+</section>
+<section id="tga-file-format">
+<h3>TGA file format<a class="headerlink" href="#tga-file-format" title="Link to this heading">¶</a></h3>
+<p>Pillow can now read and write LA data (in addition to L, P, RGB and RGBA), and
+write RLE data (in addition to uncompressed).</p>
+</section>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="support-added-for-python-3-7">
+<h3>Support added for Python 3.7<a class="headerlink" href="#support-added-for-python-3-7" title="Link to this heading">¶</a></h3>
+<p>Pillow 5.2 supports Python 3.7.</p>
+</section>
+<section id="build-macos-wheels-with-xcode-6-4-supporting-older-macos-versions">
+<h3>Build macOS wheels with Xcode 6.4, supporting older macOS versions<a class="headerlink" href="#build-macos-wheels-with-xcode-6-4-supporting-older-macos-versions" title="Link to this heading">¶</a></h3>
+<p>The macOS wheels for Pillow 5.1.0 were built with Xcode 9.2, meaning 10.12
+Sierra was the lowest supported version.</p>
+<p>Prior to Pillow 5.1.0, Xcode 8 was used, supporting El Capitan 10.11.</p>
+<p>Instead, Pillow 5.2.0 is built with the oldest available Xcode 6.4 to support
+at least 10.10 Yosemite.</p>
+</section>
+<section id="fix-i2f-compilation-with-some-gcc-versions">
+<h3>Fix _i2f compilation with some GCC versions<a class="headerlink" href="#fix-i2f-compilation-with-some-gcc-versions" title="Link to this heading">¶</a></h3>
+<p>For example, this allows compilation with GCC 4.8 on NetBSD.</p>
+</section>
+<section id="resolve-confusion-getting-pil-pillow-version-string">
+<h3>Resolve confusion getting PIL / Pillow version string<a class="headerlink" href="#resolve-confusion-getting-pil-pillow-version-string" title="Link to this heading">¶</a></h3>
+<p>Re: “version constants deprecated” listed above, as user gnbl notes in #3082:</p>
+<ul class="simple">
+<li><p>it’s confusing that PIL.VERSION returns the version string of the former PIL instead of Pillow’s</p></li>
+<li><p>ReadTheDocs documentation is missing for some version branches (why is this, will it ever change, …)</p></li>
+<li><p>it’s confusing that PIL.version is a module and does not return the version information directly or hints on how to get it</p></li>
+<li><p>the package information header is essentially useless (placeholder, does not even mention Pillow, nor the version)</p></li>
+<li><p>PIL._version module documentation comment could explain how to access the version information</p></li>
+</ul>
+<p>We have attempted to resolve these issues in #3083, #3090 and #3218.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">5.2.0</a><ul>
+<li><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li><a class="reference internal" href="#deprecations">Deprecations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#d-color-lookup-tables">3D color lookup tables</a></li>
+<li><a class="reference internal" href="#imagecolor-getrgb">ImageColor.getrgb</a></li>
+<li><a class="reference internal" href="#imagefile-get-format-mimetype">ImageFile.get_format_mimetype</a></li>
+<li><a class="reference internal" href="#imagefont-getsize-multiline">ImageFont.getsize_multiline</a></li>
+<li><a class="reference internal" href="#image-rotate">Image.rotate</a></li>
+<li><a class="reference internal" href="#tga-file-format">TGA file format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#support-added-for-python-3-7">Support added for Python 3.7</a></li>
+<li><a class="reference internal" href="#build-macos-wheels-with-xcode-6-4-supporting-older-macos-versions">Build macOS wheels with Xcode 6.4, supporting older macOS versions</a></li>
+<li><a class="reference internal" href="#fix-i2f-compilation-with-some-gcc-versions">Fix _i2f compilation with some GCC versions</a></li>
+<li><a class="reference internal" href="#resolve-confusion-getting-pil-pillow-version-string">Resolve confusion getting PIL / Pillow version string</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="5.3.0.html"
+                          title="previous chapter">5.3.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="5.1.0.html"
+                          title="next chapter">5.1.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/5.2.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="5.1.0.html" title="5.1.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="5.3.0.html" title="5.3.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">5.2.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > MATLAB API > KMEANS - vl_kmeans</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="matlab.html">MATLAB API</a></span><span class='separator'>></span><span class='page'><a href="vl_kmeans.html">KMEANS - vl_kmeans</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        <div class="mdoc">
+<ul class="breadcrumb"><li><a href="matlab.html">Index</a></li><li><a href="vl_ikmeanspush.html">Prev</a></li><li><a href="vl_erfill.html">Next</a></li></ul><div class="documentation"><p>
+[C, A] = <a href="vl_kmeans.html">VL_KMEANS</a>(X, NUMCENTERS) clusters the columns of the
+matrix X in NUMCENTERS centers C using k-means. X may be either
+SINGLE or DOUBLE. C has the same number of rows of X and NUMCENTER
+columns, with one column per center. A is a UINT32 row vector
+specifying the assignments of the data X to the NUMCENTER
+centers.
+</p><p>
+[C, A, ENERGY] = <a href="vl_kmeans.html">VL_KMEANS</a>(...) returns the energy of the solution
+(or an upper bound for the ELKAN algorithm) as well.
+</p><p>
+KMEANS() supports different initialization and optimization
+methods and different clustering distances. Specifically, the
+following options are supported:
+</p><dl><dt>
+Verbose
+</dt><dd><p>
+Increase the verbosity level (may be specified multiple times).
+</p></dd><dt>
+Distance
+<span class="defaults">[L2]</span></dt><dd><p>
+Use either L1 or L2 distance.
+</p></dd><dt>
+Initialization
+</dt><dd><p>
+Use either random data points (RANDSEL) or k-means++ (PLUSPLUS)
+to initialize the centers.
+</p></dd><dt>
+Algorithm
+<span class="defaults">[LLOYD]</span></dt><dd><p>
+One of LLOYD, ELKAN, or ANN. LLOYD is the standard Lloyd
+algorithm (similar to expectation maximisation). ELKAN is a
+faster version of LLOYD using triangular inequalities to cut
+down significantly the number of sample-to-center
+comparisons. ANN is the same as Lloyd, but uses an approximated
+nearest neighbours (ANN) algorithm to accelerate the
+sample-to-center comparisons. The latter is particularly
+suitable for very large problems.
+</p></dd><dt>
+NumRepetitions
+<span class="defaults">[1]</span></dt><dd><p>
+Number of time to restart k-means. The solution with minimal
+energy is returned.
+</p></dd></dl><p>
+The following options tune the KD-Tree forest used for ANN
+computations in the ANN algorithm (see also <a href="vl_kdtreebuild.html">VL_KDTREEBUILD</a>()
+and<a href="vl_kdtreequery.html">VL_KDTREEQUERY</a>()).
+</p><dl><dt>
+NumTrees
+<span class="defaults">[3]</span></dt><dd><p>
+The number of trees int the randomized KD-Tree forest.
+</p></dd><dt>
+MaxNumComparisons
+<span class="defaults">[100]</span></dt><dd><p>
+Maximum number of sample-to-center comparisons when searching
+for the closest center.
+</p></dd><dt>
+MaxNumIterations
+<span class="defaults">[100]</span></dt><dd><p>
+Maximum number of iterations allowed for the kmeans algorithm
+to converge.
+</p></dd><dt>
+Example
+</dt><dd><p>
+<a href="vl_kmeans.html">VL_KMEANS</a>(X, 10, 'verbose', 'distance', 'l1', 'algorithm',
+'elkan') clusters the data point X using 10 centers, l1
+distance, and the Elkan's algorithm.
+</p></dd></dl><p>
+See also: <a href="vl_help.html">VL_HELP</a>().
+</p></div></div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

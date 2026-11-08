@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Using Measurements &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Defining units" href="defining.html" />
+    <link rel="prev" title="Contexts" href="contexts.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="defining.html" title="Defining units"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contexts.html" title="Contexts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using Measurements</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="using-measurements">
+<span id="measurement"></span><h1>Using Measurements<a class="headerlink" href="#using-measurements" title="Permalink to this heading">¶</a></h1>
+<p>If you have the <a class="reference external" href="https://uncertainties-python-package.readthedocs.io/en/latest/">Uncertainties package</a> installed, you can use Pint to keep
+track of measurements with specified uncertainty, and not just exact physical
+quantities.</p>
+<p>Measurements are the combination of two quantities: the mean value and the error
+(or uncertainty). The easiest ways to generate a measurement object is from a
+quantity using the <code class="docutils literal notranslate"><span class="pre">plus_minus()</span></code> method.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">book_length</span> <span class="o">=</span> <span class="p">(</span><span class="mf">20.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">centimeter</span><span class="p">)</span><span class="o">.</span><span class="n">plus_minus</span><span class="p">(</span><span class="mf">2.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">book_length</span><span class="p">)</span>
+<span class="go">(20.0 +/- 2.0) centimeter</span>
+</pre></div>
+</div>
+<p>You can inspect the mean value, the absolute error and the relative error:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">book_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="go">20.0 centimeter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">book_length</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+<span class="go">2.0 centimeter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">book_length</span><span class="o">.</span><span class="n">rel</span><span class="p">)</span>
+<span class="go">0.1</span>
+</pre></div>
+</div>
+<p>You can also create a Measurement object giving the relative error:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">book_length</span> <span class="o">=</span> <span class="p">(</span><span class="mf">20.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">centimeter</span><span class="p">)</span><span class="o">.</span><span class="n">plus_minus</span><span class="p">(</span><span class="mf">.1</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">book_length</span><span class="p">)</span>
+<span class="go">(20.0 +/- 2.0) centimeter</span>
+</pre></div>
+</div>
+<p>Measurements support the same formatting codes as Quantity. For example, to pretty
+print a measurement with 2 decimal positions:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;{:.02fP}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">book_length</span><span class="p">))</span>
+<span class="go">(20.00 ± 2.00) centimeter</span>
+</pre></div>
+</div>
+<p>Mathematical operations with Measurements, return new measurements following
+the <a class="reference external" href="http://en.wikipedia.org/wiki/Propagation_of_uncertainty">Propagation of uncertainty</a> rules.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">book_length</span><span class="p">)</span>
+<span class="go">(40 +/- 4) centimeter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">centimeter</span><span class="p">)</span><span class="o">.</span><span class="n">plus_minus</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.02f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">book_length</span> <span class="o">+</span> <span class="n">width</span><span class="p">))</span>
+<span class="go">(30.00 +/- 2.24) centimeter</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only linear combinations are currently supported.</p>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="contexts.html" title="previous chapter">Contexts</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="defining.html" title="next chapter">Defining units</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/measurement.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

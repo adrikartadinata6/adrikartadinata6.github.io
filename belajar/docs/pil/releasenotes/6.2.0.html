@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6.2.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6.1.0" href="6.1.0.html" />
+    <link rel="prev" title="6.2.1" href="6.2.1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="6.1.0.html" title="6.1.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="6.2.1.html" title="6.2.1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">6.2.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>6.2.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="text-stroking">
+<h3>Text stroking<a class="headerlink" href="#text-stroking" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">stroke_width</span></code> and <code class="docutils literal notranslate"><span class="pre">stroke_fill</span></code> arguments have been added to text drawing
+operations. They allow text to be outlined, setting the width of the stroke and
+and the color respectively. If not provided, <code class="docutils literal notranslate"><span class="pre">stroke_fill</span></code> will default to
+the <code class="docutils literal notranslate"><span class="pre">fill</span></code> parameter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+
+<span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/FreeMono.ttf&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">font</span><span class="o">.</span><span class="n">getsize_multiline</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">font</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="s2">&quot;ABC</span><span class="se">\n</span><span class="s2">Aaaa&quot;</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">textsize</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">multiline_textsize</span><span class="p">(</span><span class="s2">&quot;ABC</span><span class="se">\n</span><span class="s2">Aaaa&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;#f00&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stroke_fill</span><span class="o">=</span><span class="s2">&quot;#0f0&quot;</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">multiline_text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;A</span><span class="se">\n</span><span class="s2">B&quot;</span><span class="p">,</span> <span class="s2">&quot;#f00&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span>
+                    <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stroke_fill</span><span class="o">=</span><span class="s2">&quot;#0f0&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">130</span><span class="p">))</span>
+<span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/FreeMono.ttf&quot;</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;#f00&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stroke_fill</span><span class="o">=</span><span class="s2">&quot;#0f0&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>creates the following image:</p>
+<img alt="../_images/imagedraw_stroke_different.png" src="../_images/imagedraw_stroke_different.png" />
+</section>
+<section id="imagegrab-on-multi-monitor-windows">
+<h3>ImageGrab on multi-monitor Windows<a class="headerlink" href="#imagegrab-on-multi-monitor-windows" title="Link to this heading">¶</a></h3>
+<p>An <code class="docutils literal notranslate"><span class="pre">all_screens</span></code> argument has been added to <code class="docutils literal notranslate"><span class="pre">ImageGrab.grab</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+all monitors will be included in the created image.</p>
+</section>
+</section>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading">¶</a></h2>
+<section id="image-getexif">
+<h3>Image.getexif<a class="headerlink" href="#image-getexif" title="Link to this heading">¶</a></h3>
+<p>To allow for lazy loading of Exif data, <code class="docutils literal notranslate"><span class="pre">Image.getexif()</span></code> now returns a
+shared instance of <code class="docutils literal notranslate"><span class="pre">Image.Exif</span></code>.</p>
+</section>
+<section id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h3>
+<section id="image-frombuffer">
+<h4>Image.frombuffer<a class="headerlink" href="#image-frombuffer" title="Link to this heading">¶</a></h4>
+<p>There has been a longstanding warning that the defaults of <code class="docutils literal notranslate"><span class="pre">Image.frombuffer</span></code>
+may change in the future for the “raw” decoder. The change will now take place
+in Pillow 7.0.</p>
+</section>
+</section>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Link to this heading">¶</a></h2>
+<p>This release catches several buffer overruns, as well as addressing
+<a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16865">CVE-2019-16865</a>. The CVE is regarding DOS problems, such as consuming large
+amounts of memory, or taking a large amount of time to process an image.</p>
+<p>In RawDecode.c, an error is now thrown if skip is calculated to be less than
+zero. It is intended to skip padding between lines, not to go backwards.</p>
+<p>In PsdImagePlugin, if the combined sizes of the individual parts is larger than
+the declared size of the extra data field, then it looked for the next layer by
+seeking backwards. This is now corrected by seeking to (the start of the layer
++ the size of the extra data field) instead of (the read parts of the layer +
+the rest of the layer).</p>
+<p>Decompression bomb checks have been added to GIF and ICO formats.</p>
+<p>An error is now raised if a TIFF dimension is a string, rather than trying to
+perform operations on it.</p>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="removed-bdist-wininst-exe-installers">
+<h3>Removed bdist_wininst .exe installers<a class="headerlink" href="#removed-bdist-wininst-exe-installers" title="Link to this heading">¶</a></h3>
+<p>.exe installers fell out of favour with <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0527/"><strong>PEP 527</strong></a>, and will be deprecated in
+Python 3.8. Pillow will no longer be distributing them. Wheels should be used
+instead.</p>
+</section>
+<section id="flags-for-libwebp-in-wheels">
+<h3>Flags for libwebp in wheels<a class="headerlink" href="#flags-for-libwebp-in-wheels" title="Link to this heading">¶</a></h3>
+<p>When building libwebp for inclusion in wheels, Pillow now adds the <code class="docutils literal notranslate"><span class="pre">-O3</span></code> and
+<code class="docutils literal notranslate"><span class="pre">-DNDEBUG</span></code> CFLAGS. These flags would be used by default if building libwebp
+without debugging, and using them fixes a significant decrease in speed when
+a wheel-installed copy of Pillow performs libwebp operations.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">6.2.0</a><ul>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#text-stroking">Text stroking</a></li>
+<li><a class="reference internal" href="#imagegrab-on-multi-monitor-windows">ImageGrab on multi-monitor Windows</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li><a class="reference internal" href="#image-getexif">Image.getexif</a></li>
+<li><a class="reference internal" href="#deprecations">Deprecations</a><ul>
+<li><a class="reference internal" href="#image-frombuffer">Image.frombuffer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#removed-bdist-wininst-exe-installers">Removed bdist_wininst .exe installers</a></li>
+<li><a class="reference internal" href="#flags-for-libwebp-in-wheels">Flags for libwebp in wheels</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="6.2.1.html"
+                          title="previous chapter">6.2.1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="6.1.0.html"
+                          title="next chapter">6.1.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/6.2.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="6.1.0.html" title="6.1.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="6.2.1.html" title="6.2.1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">6.2.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

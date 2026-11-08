@@ -1,11 +1,11 @@
 /* Offline + fast repeat visits. Pages and assets are cached as they are used; the core pages are cached on first visit.
    Bump VERSION after you change site files so visitors get the new version. */
-const VERSION = "2026-11-07.2";
+const VERSION = "2026-11-08.3";
 const SHELL = "adri-shell-" + VERSION, RUNTIME = "adri-runtime-" + VERSION;
 const CORE = [
   "./", "index.html", "about.html", "skills.html", "education.html", "projects.html", "experience.html", "certificates.html", "contact.html", "jurnal.html", "404.html",
   "css/fonts.css", "css/style.css", "css/modern.css", "css/ux.css", "css/refine.css", "css/next.css", "css/lock.css", "css/tools.css", "css/jurnal.css",
-  "js/script.js", "js/modern.js", "js/scroll-fx.js", "js/pro.js", "js/brain.js", "js/smart.js", "js/ux.js", "js/next.js", "js/jurnal.js",
+  "js/script.js", "js/modern.js", "js/scroll-fx.js", "js/pro.js", "js/brain.js", "js/smart.js", "js/ux.js", "js/next.js", "js/i18n-text.js", "js/secret.js", "js/i18n-dict-id.js", "js/i18n-text.js", "js/i18n-dict-id.js", "js/i18n-text.js", "js/i18n-dict-id.js", "js/jurnal.js",
   "fonts/manrope-latin-wght-normal.woff2", "fonts/jetbrains-mono-latin-wght-normal.woff2",
   "images/logos/mark-gear-circuit.webp", "images/profile.jpg", "manifest.webmanifest",
 ];

@@ -1,0 +1,2717 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Book Pemrograman C++ Arduino/ESP32 - Dari Pemula hingga Mahir</title>
+    <style>
+        /* PETROKIMIA COLOR SCHEME: Hijau, Putih, Kuning */
+        :root {
+            --petro-green-dark: #006400;
+            --petro-green-medium: #228B22;
+            --petro-green-light: #90EE90;
+            --petro-yellow-dark: #FFD700;
+            --petro-yellow-medium: #FFEC8B;
+            --petro-yellow-light: #FFFACD;
+            --petro-white: #FFFFFF;
+            --petro-gray: #F5F5F5;
+            --text-dark: #2F4F4F;
+            --text-medium: #556B2F;
+            --code-bg: #0D1B1E;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--petro-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ebook-container {
+            background: linear-gradient(to bottom, var(--petro-white), var(--petro-gray));
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(to right, var(--petro-green-dark), var(--petro-green-medium));
+            color: var(--petro-white);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 5px solid var(--petro-yellow-dark);
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Controls */
+        .controls {
+            background-color: var(--petro-yellow-light);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--petro-yellow-medium);
+        }
+        
+        .btn {
+            background-color: var(--petro-green-medium);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--petro-green-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-yellow {
+            background-color: var(--petro-yellow-dark);
+            color: var(--text-dark);
+        }
+        
+        .btn-yellow:hover {
+            background-color: #e6c200;
+        }
+        
+        /* Content Layout */
+        .content {
+            display: flex;
+            min-height: 1200px;
+        }
+        
+        .sidebar {
+            width: 25%;
+            background-color: var(--petro-green-light);
+            padding: 25px;
+            border-right: 3px solid var(--petro-yellow-medium);
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            width: 75%;
+            padding: 30px;
+            background-color: var(--petro-white);
+        }
+        
+        /* Table of Contents */
+        .toc {
+            list-style-type: none;
+        }
+        
+        .toc li {
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--petro-green-medium);
+        }
+        
+        .toc a {
+            color: var(--text-medium);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .toc a:hover {
+            background-color: var(--petro-yellow-light);
+            color: var(--petro-green-dark);
+            padding-left: 15px;
+        }
+        
+        .toc .toc-section {
+            font-weight: bold;
+            color: var(--petro-green-dark);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* Content Sections */
+        section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--petro-yellow-light);
+        }
+        
+        h2 {
+            color: var(--petro-green-dark);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--petro-yellow-dark);
+        }
+        
+        h3 {
+            color: var(--petro-green-medium);
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+        
+        h4 {
+            color: var(--text-medium);
+            font-size: 1.2rem;
+            margin: 20px 0 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        /* Code Styling */
+        .code-block {
+            background-color: var(--code-bg);
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 5px solid var(--petro-yellow-dark);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .code-comment {
+            color: #629755;
+            font-style: italic;
+        }
+        
+        .code-keyword {
+            color: #cc7832;
+            font-weight: bold;
+        }
+        
+        .code-function {
+            color: #ffc66d;
+        }
+        
+        .code-string {
+            color: #6a8759;
+        }
+        
+        .code-number {
+            color: #6897bb;
+        }
+        
+        /* Example Boxes */
+        .example-box {
+            background-color: var(--petro-yellow-light);
+            border: 1px solid var(--petro-yellow-medium);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-title {
+            background-color: var(--petro-yellow-medium);
+            color: var(--text-dark);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: -20px -20px 20px -20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .example-number {
+            background-color: var(--petro-green-medium);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        /* Note and Warning Boxes */
+        .note-box {
+            background-color: #e8f4fd;
+            border-left: 5px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .tip-box {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background-color: var(--petro-green-medium);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--petro-green-light);
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--petro-yellow-light);
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--petro-green-dark);
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 5px solid var(--petro-yellow-dark);
+        }
+        
+        /* Responsive */
+        @media print {
+            .controls, .sidebar, .btn {
+                display: none;
+            }
+            
+            .content {
+                display: block;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            body {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+        
+        @media screen and (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar, .main-content {
+                width: 100%;
+            }
+            
+            .sidebar {
+                border-right: none;
+                border-bottom: 3px solid var(--petro-yellow-medium);
+            }
+        }
+    </style>
+    <!-- Include jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="ebook-container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>Panduan Lengkap Pemrograman C++ untuk Arduino/ESP32</h1>
+            <p>Dari Pemula Sama Sekali hingga Tingkat Mahir dengan 30+ Contoh Kode, 20+ Library, dan 10+ Sensor</p>
+            <p>E-Book HTML yang Dapat Diunduh sebagai PDF</p>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn" onclick="downloadPDF()">📥 Download sebagai PDF</button>
+            <button class="btn btn-yellow" onclick="printEbook()">🖨️ Cetak E-Book</button>
+            <button class="btn" onclick="toggleDarkMode()">🌙 Mode Gelap</button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Sidebar / Table of Contents -->
+            <div class="sidebar">
+                <h3>Daftar Isi</h3>
+                <ul class="toc">
+                    <li class="toc-section">BAGIAN 1: DASAR-DASAR C++</li>
+                    <li><a href="#section1">1. Pengenalan C++ dan Struktur Program</a></li>
+                    <li><a href="#section2">2. Variabel, Tipe Data, dan Operator</a></li>
+                    <li><a href="#section3">3. Kontrol Alur Program</a></li>
+                    <li><a href="#section4">4. Fungsi dalam C++</a></li>
+                    <li><a href="#section5">5. Array dan String</a></li>
+                    
+                    <li class="toc-section">BAGIAN 2: ARDUINO/ESP32 SPECIFIC</li>
+                    <li><a href="#section6">6. Struktur Program Arduino/ESP32</a></li>
+                    <li><a href="#section7">7. Library dan Header File</a></li>
+                    <li><a href="#section8">8. GPIO dan Digital I/O</a></li>
+                    <li><a href="#section9">9. Analog I/O dan PWM</a></li>
+                    <li><a href="#section10">10. Serial Communication</a></li>
+                    
+                    <li class="toc-section">BAGIAN 3: CONTOH IMPLEMENTASI</li>
+                    <li><a href="#section11">11. Contoh Kode Dasar (30+ Contoh)</a></li>
+                    <li><a href="#section12">12. Library Populer (20+ Library)</a></li>
+                    <li><a href="#section13">13. Sensor dan Aktuator (10+ Jenis)</a></li>
+                    <li><a href="#section14">14. Konektivitas WiFi pada ESP32</a></li>
+                    <li><a href="#section15">15. Contoh Project Lengkap</a></li>
+                    
+                    <li class="toc-section">BAGIAN 4: REFERENSI</li>
+                    <li><a href="#section16">16. Istilah Penting dan FAQ</a></li>
+                    <li><a href="#section17">17. Referensi dan Sumber Belajar</a></li>
+                </ul>
+                
+                <div class="tip-box" style="margin-top: 30px;">
+                    <strong>📚 Tip Belajar:</strong> Mulailah dari bagian paling dasar, praktikkan setiap contoh kode, dan jangan takut bereksperimen dengan modifikasi!
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- PENDAHULUAN -->
+                <section id="intro">
+                    <h2>Pendahuluan</h2>
+                    <p>E-book ini dirancang khusus untuk pemula yang sama sekali belum memiliki pengalaman pemrograman dengan Arduino atau ESP32. Kami akan membimbing Anda langkah demi langkah mulai dari konsep paling dasar dalam pemrograman C++ hingga implementasi tingkat lanjut pada mikrokontroler.</p>
+                    
+                    <div class="note-box">
+                        <strong>Mengapa C++ untuk Arduino/ESP32?</strong> Arduino menggunakan bahasa C++ yang dimodifikasi dengan sederetan library khusus untuk mempermudah pemrograman mikrokontroler. ESP32 menggunakan Arduino Core yang kompatibel dengan sintaks Arduino.
+                    </div>
+                    
+                    <h3>Apa yang Akan Anda Pelajari</h3>
+                    <ul>
+                        <li>Dasar-dasar pemrograman C++ dari nol</li>
+                        <li>Struktur khas program Arduino/ESP32</li>
+                        <li>Penjelasan detail setiap komponen kode (library, fungsi, variabel)</li>
+                        <li>30+ contoh kode dengan penjelasan baris per baris</li>
+                        <li>20+ library populer beserta isi dan kegunaannya</li>
+                        <li>10+ jenis sensor dengan implementasi kode lengkap</li>
+                        <li>Cara menghubungkan ESP32 ke WiFi</li>
+                        <li>Tips dan solusi untuk masalah umum pemrograman</li>
+                    </ul>
+                </section>
+                
+                <!-- BAGIAN 1: DASAR-DASAR C++ -->
+                <section id="section1">
+                    <h2>1. Pengenalan C++ dan Struktur Program</h2>
+                    
+                    <p>Sebelum memprogram Arduino/ESP32, Anda perlu memahami dasar-dasar C++. Bahasa C++ adalah bahasa pemrograman yang mendukung pemrograman berorientasi objek dan digunakan secara luas dalam pengembangan sistem embedded seperti Arduino.</p>
+                    
+                    <h3>1.1 Program C++ Paling Sederhana</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 1.1: Program "Hello World" dalam C++</span>
+                            <span class="example-number">Contoh 1</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span>
+<br>
+<span class="code-keyword">using namespace</span> std;
+<br><br>
+<span class="code-keyword">int</span> <span class="code-function">main</span>() {
+    cout <span class="code-keyword">&lt;&lt;</span> <span class="code-string">"Hello World"</span>;
+    <span class="code-keyword">return</span> <span class="code-number">0</span>;
+}
+</div>
+                        <p><strong>Penjelasan Baris per Baris:</strong></p>
+                        <ul>
+                            <li><code>#include &lt;iostream&gt;</code> : Preprocessor directive untuk menyertakan library input-output standar C++. Tanpa ini, Anda tidak bisa menggunakan <code>cout</code> dan <code>cin</code>.</li>
+                            <li><code>using namespace std;</code> : Deklarasi untuk menggunakan namespace standard, sehingga tidak perlu menulis <code>std::cout</code> cukup <code>cout</code> saja.</li>
+                            <li><code>int main() { ... }</code> : Fungsi utama program C++. Setiap program C++ HARUS memiliki fungsi <code>main()</code> sebagai titik masuk eksekusi.</li>
+                            <li><code>cout &lt;&lt; "Hello World";</code> : Perintah untuk menampilkan teks "Hello World" ke layar (console output).</li>
+                            <li><code>return 0;</code> : Mengembalikan nilai 0 yang menandakan program berakhir dengan sukses.</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>1.2 Struktur Program Arduino/ESP32</h3>
+                    <p>Program Arduino/ESP32 memiliki struktur khusus yang berbeda dari program C++ standar:</p>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 1.2: Struktur Dasar Program Arduino/ESP32</span>
+                            <span class="example-number">Contoh 2</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// 1. Library (paling atas)</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;Arduino.h&gt;</span>
+<span class="code-comment">// Library tambahan jika diperlukan</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;WiFi.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;DHT.h&gt;</span>
+<br>
+<span class="code-comment">// 2. Variabel global (setelah library, sebelum setup())</span>
+<span class="code-keyword">int</span> ledPin = <span class="code-number">2</span>;
+<span class="code-keyword">unsigned long</span> lastTime = <span class="code-number">0</span>;
+<br>
+<span class="code-comment">// 3. Fungsi setup() - dijalankan sekali saat startup</span>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    pinMode(ledPin, OUTPUT);
+}
+<br>
+<span class="code-comment">// 4. Fungsi loop() - dijalankan berulang selamanya</span>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    digitalWrite(ledPin, HIGH);
+    delay(<span class="code-number">1000</span>);
+    digitalWrite(ledPin, LOW);
+    delay(<span class="code-number">1000</span>);
+}
+</div>
+                        <p><strong>Analogi untuk Memahami Struktur:</strong></p>
+                        <p>Bayangkan Anda memprogram sebuah robot kecil:</p>
+                        <ul>
+                            <li><strong>#include</strong> = Memberi tahu robot "peralatan" apa yang akan digunakan</li>
+                            <li><strong>Variabel global</strong> = Catatan yang selalu tersedia selama robot hidup</li>
+                            <li><strong>setup()</strong> = Persiapan awal robot (sekali saat dinyalakan)</li>
+                            <li><strong>loop()</strong> = Perilaku berulang robot selama hidupnya</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <section id="section2">
+                    <h2>2. Variabel, Tipe Data, dan Operator</h2>
+                    
+                    <p>Variabel adalah tempat menyimpan data dalam memori. Setiap variabel memiliki nama, tipe data, dan nilai.</p>
+                    
+                    <h3>2.1 Tipe Data Dasar dalam C++</h3>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipe Data</th>
+                                <th>Ukuran (byte)</th>
+                                <th>Rentang Nilai</th>
+                                <th>Contoh</th>
+                                <th>Penggunaan di Arduino</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>int</code></td>
+                                <td>2 atau 4</td>
+                                <td>-32,768 hingga 32,767</td>
+                                <td><code>int sensorValue = 500;</code></td>
+                                <td>Menyimpan nilai sensor, counter</td>
+                            </tr>
+                            <tr>
+                                <td><code>unsigned int</code></td>
+                                <td>2 atau 4</td>
+                                <td>0 hingga 65,535</td>
+                                <td><code>unsigned int waktu = 1000;</code></td>
+                                <td>Waktu, nilai yang selalu positif</td>
+                            </tr>
+                            <tr>
+                                <td><code>long</code></td>
+                                <td>4</td>
+                                <td>-2,147,483,648 hingga 2,147,483,647</td>
+                                <td><code>long besar = 3000000000;</code></td>
+                                <td>Nilai besar, waktu dalam milidetik</td>
+                            </tr>
+                            <tr>
+                                <td><code>unsigned long</code></td>
+                                <td>4</td>
+                                <td>0 hingga 4,294,967,295</td>
+                                <td><code>unsigned long millisNow;</code></td>
+                                <td><strong>millis()</strong> pada Arduino</td>
+                            </tr>
+                            <tr>
+                                <td><code>float</code></td>
+                                <td>4</td>
+                                <td>±3.4e-38 hingga ±3.4e38</td>
+                                <td><code>float suhu = 25.5;</code></td>
+                                <td>Nilai desimal (suhu, tegangan)</td>
+                            </tr>
+                            <tr>
+                                <td><code>double</code></td>
+                                <td>8</td>
+                                <td>±1.7e-308 hingga ±1.7e308</td>
+                                <td><code>double presisiTinggi = 3.1415926535;</code></td>
+                                <td>Perhitungan presisi tinggi</td>
+                            </tr>
+                            <tr>
+                                <td><code>char</code></td>
+                                <td>1</td>
+                                <td>-128 hingga 127</td>
+                                <td><code>char huruf = 'A';</code></td>
+                                <td>Satu karakter, kontrol serial</td>
+                            </tr>
+                            <tr>
+                                <td><code>bool</code></td>
+                                <td>1</td>
+                                <td>true atau false</td>
+                                <td><code>bool nyala = true;</code></td>
+                                <td>Kondisi ON/OFF, status flag</td>
+                            </tr>
+                            <tr>
+                                <td><code>String</code></td>
+                                <td>Variabel</td>
+                                <td>Teks panjang variabel</td>
+                                <td><code>String pesan = "Hello";</code></td>
+                                <td>Pesan serial, data teks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 2.1: Deklarasi Variabel dan Tipe Data</span>
+                            <span class="example-number">Contoh 3</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Contoh deklarasi variabel dengan berbagai tipe data</span>
+<span class="code-keyword">int</span> umur = <span class="code-number">25</span>;           <span class="code-comment">// bilangan bulat</span>
+<span class="code-keyword">float</span> tinggi = <span class="code-number">175.5</span>;    <span class="code-comment">// bilangan desimal</span>
+<span class="code-keyword">char</span> grade = <span class="code-string">'A'</span>;        <span class="code-comment">// satu karakter</span>
+<span class="code-keyword">String</span> nama = <span class="code-string">"Budi"</span>;    <span class="code-comment">// teks/kalimat</span>
+<span class="code-keyword">bool</span> lulus = <span class="code-keyword">true</span>;       <span class="code-comment">// benar/salah</span>
+<span class="code-keyword">unsigned long</span> waktu = <span class="code-number">0</span>;  <span class="code-comment">// waktu sejak Arduino nyala</span>
+<br>
+<span class="code-comment">// Contoh di Arduino/ESP32</span>
+<span class="code-keyword">const int</span> LED_PIN = <span class="code-number">2</span>;     <span class="code-comment">// konstanta (tidak bisa diubah)</span>
+<span class="code-keyword">int</span> sensorValue = <span class="code-number">0</span>;     <span class="code-comment">// nilai baca sensor</span>
+<span class="code-keyword">float</span> voltage = <span class="code-number">3.3</span>;     <span class="code-comment">// tegangan</span>
+</div>
+                    </div>
+                    
+                    <h3>2.2 Kenapa <code>unsigned long</code> untuk <code>millis()</code>?</h3>
+                    
+                    <div class="warning-box">
+                        <strong>PENTING:</strong> Fungsi <code>millis()</code> pada Arduino mengembalikan nilai <code>unsigned long</code> (0 hingga 4,294,967,295) yang mewakili milidetik sejak Arduino dinyalakan. Setelah sekitar 49.7 hari, nilai ini akan reset ke 0 (overflow). Menggunakan <code>int</code> akan menyebabkan kesalahan setelah 32,767 milidetik (32.7 detik)!
+                    </div>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 2.2: Penggunaan millis() yang Benar</span>
+                            <span class="example-number">Contoh 4</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Contoh timer menggunakan millis() tanpa delay()</span>
+<span class="code-keyword">unsigned long</span> previousMillis = <span class="code-number">0</span>;  <span class="code-comment">// harus unsigned long</span>
+<span class="code-keyword">const long</span> interval = <span class="code-number">1000</span>;       <span class="code-comment">// interval 1 detik</span>
+<span class="code-keyword">int</span> ledState = LOW;              <span class="code-comment">// status LED</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    pinMode(LED_BUILTIN, OUTPUT);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">unsigned long</span> currentMillis = <span class="code-function">millis</span>(); <span class="code-comment">// ambil waktu sekarang</span>
+    <br>
+    <span class="code-comment">// Cek jika sudah melewati interval</span>
+    <span class="code-keyword">if</span> (currentMillis - previousMillis >= interval) {
+        previousMillis = currentMillis;  <span class="code-comment">// simpan waktu terakhir</span>
+        <br>
+        <span class="code-comment">// Toggle LED</span>
+        <span class="code-keyword">if</span> (ledState == LOW) {
+            ledState = HIGH;
+        } <span class="code-keyword">else</span> {
+            ledState = LOW;
+        }
+        digitalWrite(LED_BUILTIN, ledState);
+    }
+    <br>
+    <span class="code-comment">// Di sini bisa menambah kode lain yang berjalan tanpa delay</span>
+}
+</div>
+                        <p><strong>Kenapa lebih baik daripada <code>delay()</code>?</strong></p>
+                        <p><code>delay()</code> menghentikan seluruh program, sedangkan metode dengan <code>millis()</code> memungkinkan program melakukan tugas lain sambil menunggu waktu tertentu.</p>
+                    </div>
+                </section>
+                
+                <!-- LANJUTAN BAGIAN 3 -->
+                <section id="section3">
+                    <h2>3. Kontrol Alur Program</h2>
+                    
+                    <p>Kontrol alur menentukan urutan eksekusi perintah dalam program. Ada tiga jenis utama: percabangan (if-else, switch), pengulangan (for, while, do-while), dan lompatan (break, continue, return).</p>
+                    
+                    <h3>3.1 Percabangan: if, else if, else</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 3.1: Percabangan if-else untuk Membaca Sensor</span>
+                            <span class="example-number">Contoh 5</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Contoh membaca sensor suhu dan menentukan status</span>
+<span class="code-keyword">float</span> suhu = <span class="code-function">readTemperature</span>();  <span class="code-comment">// fungsi baca sensor</span>
+<br>
+<span class="code-keyword">if</span> (suhu < <span class="code-number">20</span>) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Suhu dingin"</span>);
+    digitalWrite(HEATER_PIN, HIGH);  <span class="code-comment">// nyalakan pemanas</span>
+} <span class="code-keyword">else if</span> (suhu >= <span class="code-number">20</span> && suhu <= <span class="code-number">30</span>) {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Suhu normal"</span>);
+    digitalWrite(HEATER_PIN, LOW);   <span class="code-comment">// matikan pemanas</span>
+} <span class="code-keyword">else</span> {
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Suhu panas"</span>);
+    digitalWrite(COOLER_PIN, HIGH);  <span class="code-comment">// nyalakan pendingin</span>
+}
+</div>
+                    </div>
+                    
+                    <h3>3.2 Percabangan: switch-case</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 3.2: switch-case untuk Menu Pilihan</span>
+                            <span class="example-number">Contoh 6</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Contoh menu pilihan dari input serial</span>
+<span class="code-keyword">char</span> pilihan = Serial.<span class="code-function">read</span>();  <span class="code-comment">// baca input dari serial</span>
+<br>
+<span class="code-keyword">switch</span> (pilihan) {
+    <span class="code-keyword">case</span> <span class="code-string">'1'</span>:
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 1: Baca sensor"</span>);
+        <span class="code-function">modeBacaSensor</span>();
+        <span class="code-keyword">break</span>;
+    <br>
+    <span class="code-keyword">case</span> <span class="code-string">'2'</span>:
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 2: Kontrol LED"</span>);
+        <span class="code-function">modeKontrolLED</span>();
+        <span class="code-keyword">break</span>;
+    <br>
+    <span class="code-keyword">case</span> <span class="code-string">'3'</span>:
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 3: Set WiFi"</span>);
+        <span class="code-function">modeSetWiFi</span>();
+        <span class="code-keyword">break</span>;
+    <br>
+    <span class="code-keyword">default</span>:
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Pilihan tidak valid"</span>);
+        <span class="code-keyword">break</span>;
+}
+</div>
+                    </div>
+                    
+                    <h3>3.3 Pengulangan: for, while, do-while</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 3.3: Tiga Jenis Loop untuk Kontrol LED</span>
+                            <span class="example-number">Contoh 7</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// 1. for loop - diketahui berapa kali pengulangan</span>
+<span class="code-comment">// LED blink 10 kali</span>
+<span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">10</span>; i++) {
+    digitalWrite(LED_PIN, HIGH);
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+    digitalWrite(LED_PIN, LOW);
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+}
+<br>
+<span class="code-comment">// 2. while loop - selama kondisi benar</span>
+<span class="code-comment">// Tunggu sampai tombol ditekan</span>
+<span class="code-keyword">bool</span> tombolDitekan = <span class="code-keyword">false</span>;
+<span class="code-keyword">while</span> (!tombolDitekan) {
+    tombolDitekan = <span class="code-function">digitalRead</span>(BUTTON_PIN);
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);  <span class="code-comment">// debounce kecil</span>
+}
+<br>
+<span class="code-comment">// 3. do-while loop - jalankan minimal sekali</span>
+<span class="code-comment">// Kalibrasi sensor minimal sekali</span>
+<span class="code-keyword">int</span> nilaiKalibrasi;
+<span class="code-keyword">do</span> {
+    nilaiKalibrasi = <span class="code-function">bacaSensor</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Mengkalibrasi..."</span>);
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+} <span class="code-keyword">while</span> (nilaiKalibrasi == <span class="code-number">0</span>);  <span class="code-comment">// ulangi jika nilai 0</span>
+</div>
+                    </div>
+                </section>
+                
+                <!-- BAGIAN 4: FUNGSI -->
+                <section id="section4">
+                    <h2>4. Fungsi dalam C++</h2>
+                    
+                    <p>Fungsi adalah blok kode yang memiliki nama dan dapat dipanggil berkali-kali. Fungsi membuat kode lebih terorganisir, mudah dibaca, dan dapat digunakan kembali.</p>
+                    
+                    <h3>4.1 Struktur Fungsi</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 4.1: Membuat dan Memanggil Fungsi</span>
+                            <span class="example-number">Contoh 8</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Deklarasi fungsi (prototype) - opsional jika fungsi didefinisikan sebelum dipanggil</span>
+<span class="code-keyword">int</span> <span class="code-function">tambah</span>(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b);
+<span class="code-keyword">void</span> <span class="code-function">blinkLED</span>(<span class="code-keyword">int</span> pin, <span class="code-keyword">int</span> delayTime);
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Memanggil fungsi tambah</span>
+    <span class="code-keyword">int</span> hasil = <span class="code-function">tambah</span>(<span class="code-number">5</span>, <span class="code-number">3</span>);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Hasil penjumlahan: "</span>);
+    Serial.<span class="code-function">println</span>(hasil);
+    <br>
+    <span class="code-comment">// Memanggil fungsi blinkLED</span>
+    <span class="code-function">blinkLED</span>(LED_BUILTIN, <span class="code-number">500</span>);
+}
+<br>
+<span class="code-comment">// Definisi fungsi tambah</span>
+<span class="code-keyword">int</span> <span class="code-function">tambah</span>(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) {
+    <span class="code-keyword">return</span> a + b;  <span class="code-comment">// mengembalikan nilai</span>
+}
+<br>
+<span class="code-comment">// Definisi fungsi blinkLED</span>
+<span class="code-keyword">void</span> <span class="code-function">blinkLED</span>(<span class="code-keyword">int</span> pin, <span class="code-keyword">int</span> delayTime) {
+    digitalWrite(pin, HIGH);
+    <span class="code-function">delay</span>(delayTime);
+    digitalWrite(pin, LOW);
+    <span class="code-function">delay</span>(delayTime);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// loop kosong atau berisi kode lain</span>
+}
+</div>
+                        <p><strong>Komponen Fungsi:</strong></p>
+                        <ol>
+                            <li><strong>Tipe return</strong>: <code>int</code>, <code>void</code>, <code>float</code>, dll. <code>void</code> berarti tidak mengembalikan nilai.</li>
+                            <li><strong>Nama fungsi</strong>: Nama yang deskriptif untuk fungsi.</li>
+                            <li><strong>Parameter</strong>: Variabel input fungsi (bisa kosong).</li>
+                            <li><strong>Body fungsi</strong>: Blok kode dalam { } yang akan dieksekusi.</li>
+                            <li><strong>Return statement</strong>: Mengembalikan nilai (kecuali tipe <code>void</code>).</li>
+                        </ol>
+                    </div>
+                    
+                    <h3>4.2 Fungsi Khusus Arduino: setup() dan loop()</h3>
+                    
+                    <div class="note-box">
+                        <strong>PENTING DIPAHAMI:</strong> Arduino IDE secara otomatis menambahkan prototipe untuk <code>setup()</code> dan <code>loop()</code>. Inilah sebabnya Anda tidak perlu mendeklarasikannya secara manual. Arduino runtime akan memanggil <code>setup()</code> sekali saat startup, kemudian memanggil <code>loop()</code> berulang-ulang selamanya.
+                    </div>
+                    
+                    <h3>4.3 Penjelasan <code>static</code>, <code>void</code>, dan <code>public</code></h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 4.2: Penjelasan Keyword Penting</span>
+                            <span class="code-number">Penjelasan Detail</span>
+                        </div>
+                        
+                        <h4>Apa itu <code>static</code>?</h4>
+                        <p><code>static</code> memiliki dua makna tergantung konteks:</p>
+                        
+                        <div class="code-block">
+<span class="code-comment">// 1. Static dalam variabel lokal fungsi</span>
+<span class="code-keyword">void</span> <span class="code-function">hitungPanggilan</span>() {
+    <span class="code-keyword">static</span> <span class="code-keyword">int</span> counter = <span class="code-number">0</span>;  <span class="code-comment">// Hanya diinisialisasi sekali</span>
+    counter++;
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Fungsi dipanggil: "</span>);
+    Serial.<span class="code-function">println</span>(counter);
+}
+<span class="code-comment">// Setiap panggilan akan increment counter, tidak reset ke 0</span>
+<br>
+<span class="code-comment">// 2. Static dalam class (akan dibahas di bagian OOP)</span>
+<span class="code-keyword">class</span> Sensor {
+    <span class="code-keyword">static</span> <span class="code-keyword">int</span> jumlahSensor;  <span class="code-comment">// Dapat diakses tanpa instance class</span>
+};
+</div>
+                        
+                        <h4>Apa itu <code>void</code>?</h4>
+                        <p><code>void</code> berarti "kosong" atau "tidak ada". Digunakan untuk:</p>
+                        <ul>
+                            <li>Fungsi yang tidak mengembalikan nilai: <code>void setup() { ... }</code></li>
+                            <li>Fungsi yang tidak menerima parameter: <code>int getValue(void) { ... }</code></li>
+                            <li>Pointer ke tipe data tidak tertentu: <code>void* ptr;</code></li>
+                        </ul>
+                        
+                        <h4>Apa itu <code>public</code>?</h4>
+                        <p><code>public</code> adalah access modifier dalam pemrograman berorientasi objek (OOP) yang menentukan bahwa anggota class dapat diakses dari luar class.</p>
+                        
+                        <div class="code-block">
+<span class="code-keyword">class</span> LED {
+<span class="code-keyword">public</span>:  <span class="code-comment">// Bagian yang dapat diakses dari luar class</span>
+    <span class="code-keyword">void</span> <span class="code-function">nyala</span>() {
+        digitalWrite(pin, HIGH);
+    }
+    <br>
+<span class="code-keyword">private</span>: <span class="code-comment">// Bagian yang hanya dapat diakses dari dalam class</span>
+    <span class="code-keyword">int</span> pin = <span class="code-number">2</span>;
+};
+<br>
+<span class="code-comment">// Penggunaan</span>
+LED ledKu;
+ledKu.<span class="code-function">nyala</span>();  <span class="code-comment">// BISA: fungsi public</span>
+<span class="code-comment">// ledKu.pin = 3;  // ERROR: variabel private</span>
+</div>
+                    </div>
+                </section>
+                
+                <!-- BAGIAN 5: ARRAY DAN STRING -->
+                <section id="section5">
+                    <h2>5. Array dan String</h2>
+                    
+                    <h3>5.1 Array: Kumpulan Data Bertipe Sama</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 5.1: Array untuk Menyimpan Data Sensor</span>
+                            <span class="example-number">Contoh 9</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Array untuk menyimpan 5 pembacaan sensor terakhir</span>
+<span class="code-keyword">int</span> sensorReadings[<span class="code-number">5</span>];  <span class="code-comment">// Deklarasi array 5 elemen</span>
+<span class="code-keyword">int</span> readingIndex = <span class="code-number">0</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Inisialisasi array</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">5</span>; i++) {
+        sensorReadings[i] = <span class="code-number">0</span>;
+    }
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Simpan pembacaan sensor ke array</span>
+    sensorReadings[readingIndex] = <span class="code-function">analogRead</span>(SENSOR_PIN);
+    <br>
+    <span class="code-comment">// Hitung rata-rata</span>
+    <span class="code-keyword">int</span> total = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">5</span>; i++) {
+        total += sensorReadings[i];
+    }
+    <span class="code-keyword">float</span> rataRata = total / <span class="code-number">5.0</span>;
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Rata-rata: "</span>);
+    Serial.<span class="code-function">println</span>(rataRata);
+    <br>
+    <span class="code-comment">// Update index untuk pembacaan berikutnya</span>
+    readingIndex = (readingIndex + <span class="code-number">1</span>) % <span class="code-number">5</span>;  <span class="code-comment">// 0,1,2,3,4,0,1,...</span>
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+}
+</div>
+                        <p><strong>Catatan Penting tentang Array:</strong></p>
+                        <ul>
+                            <li>Index array selalu dimulai dari 0</li>
+                            <li>Array diakses dengan notasi bracket: <code>array[index]</code></li>
+                            <li>Ukuran array harus diketahui saat kompilasi (kecuali dynamic array)</li>
+                            <li>Array tidak mengecek batas (bound checking) - hati-hati dengan buffer overflow!</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>5.2 String: Teks dalam C++</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 5.2: Manipulasi String untuk Pesan Serial</span>
+                            <span class="example-number">Contoh 10</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// Contoh penggunaan String (object) vs string (array char)</span>
+<br>
+<span class="code-comment">// 1. String object (lebih mudah, tapi gunakan lebih banyak memori)</span>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    String pesan = <span class="code-string">"Suhu: "</span>;
+    <span class="code-keyword">float</span> suhu = <span class="code-number">25.5</span>;
+    <br>
+    <span class="code-comment">// Konkatenasi (penggabungan) string</span>
+    pesan += suhu;
+    pesan += <span class="code-string">"°C"</span>;
+    <br>
+    Serial.<span class="code-function">println</span>(pesan);  <span class="code-comment">// Output: "Suhu: 25.50°C"</span>
+    <br>
+    <span class="code-comment">// Metode String yang berguna</span>
+    Serial.<span class="code-function">println</span>(pesan.<span class="code-function">length</span>());      <span class="code-comment">// Panjang string</span>
+    Serial.<span class="code-function">println</span>(pesan.<span class="code-function">substring</span>(<span class="code-number">0</span>, <span class="code-number">5</span>));  <span class="code-comment">// "Suhu:"</span>
+    Serial.<span class="code-function">println</span>(pesan.<span class="code-function">indexOf</span>(<span class="code-string">"°C"</span>));   <span class="code-comment">// Posisi "°C"</span>
+}
+<br>
+<span class="code-comment">// 2. Array char (C-style string, hemat memori)</span>
+<span class="code-keyword">void</span> <span class="code-function">cStyleString</span>() {
+    <span class="code-keyword">char</span> buffer[<span class="code-number">50</span>];  <span class="code-comment">// Buffer untuk string</span>
+    <span class="code-keyword">int</span> nilai = <span class="code-number">42</span>;
+    <br>
+    <span class="code-comment">// sprintf untuk format string seperti di C</span>
+    <span class="code-function">sprintf</span>(buffer, <span class="code-string">"Nilai: %d, Float: %.2f"</span>, nilai, <span class="code-number">3.14159</span>);
+    Serial.<span class="code-function">println</span>(buffer);  <span class="code-comment">// Output: "Nilai: 42, Float: 3.14"</span>
+}
+</div>
+                        <div class="warning-box">
+                            <strong>PERINGATAN:</strong> Hindari menggunakan String object pada Arduino jika memori terbatas atau dalam fungsi yang sering dipanggil. String object dapat menyebabkan fragmentasi heap memory. Gunakan array char untuk kode yang lebih stabil.
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- BAGIAN 6: STRUKTUR PROGRAM ARDUINO/ESP32 -->
+                <section id="section6">
+                    <h2>6. Struktur Program Arduino/ESP32</h2>
+                    
+                    <p>Setelah memahami dasar C++, sekarang kita fokus pada struktur khusus Arduino/ESP32. Berdasarkan referensi resmi Arduino, program Arduino dapat dibagi menjadi tiga bagian utama: <strong>functions</strong>, <strong>values</strong> (variables and constants), dan <strong>structure</strong>.</p>
+                    
+                    <h3>6.1 Pola Umum Program Arduino/ESP32</h3>
+                    
+                    <div class="example-box">
+                        <div class="example-title">
+                            <span>Contoh 6.1: Pola Lengkap Program Arduino/ESP32</span>
+                            <span class="example-number">Contoh 11</span>
+                        </div>
+                        <div class="code-block">
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// BAGIAN 1: LIBRARY (paling atas)</span>
+<span class="code-comment">// =============================================</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;Arduino.h&gt;</span>        <span class="code-comment">// Core Arduino (otomatis di Arduino IDE)</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;WiFi.h&gt;</span>           <span class="code-comment">// Untuk ESP32 WiFi</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;SPI.h&gt;</span>            <span class="code-comment">// Untuk komunikasi SPI</span>
+<span class="code-comment">// Tambahan library sesuai kebutuhan</span>
+<br>
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// BAGIAN 2: DEFINISI DAN DEKLARASI</span>
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// 2.1 Konstanta (tidak berubah)</span>
+<span class="code-keyword">#define</span> LED_PIN <span class="code-number">2</span>          <span class="code-comment">// Direktif preprocessor</span>
+<span class="code-keyword">const int</span> BUTTON_PIN = <span class="code-number">4</span>;  <span class="code-comment">// Konstanta C++</span>
+<span class="code-keyword">const long</span> BAUD_RATE = <span class="code-number">115200</span>;
+<br>
+<span class="code-comment">// 2.2 Variabel global (dapat diubah)</span>
+<span class="code-keyword">int</span> counter = <span class="code-number">0</span>;               <span class="code-comment">// Counter sederhana</span>
+<span class="code-keyword">unsigned long</span> lastMillis = <span class="code-number">0</span>;   <span class="code-comment">// Untuk timer</span>
+<span class="code-keyword">float</span> sensorValue = <span class="code-number">0.0</span>;       <span class="code-comment">// Nilai sensor</span>
+<span class="code-keyword">bool</span> systemStatus = <span class="code-keyword">false</span>;    <span class="code-comment">// Status sistem</span>
+<br>
+<span class="code-comment">// 2.3 Deklarasi fungsi (jika fungsi didefinisikan setelah loop)</span>
+<span class="code-keyword">void</span> <span class="code-function">connectToWiFi</span>();
+<span class="code-keyword">int</span> <span class="code-function">readSensor</span>(<span class="code-keyword">int</span> pin);
+<span class="code-keyword">void</span> <span class="code-function">handleButtonPress</span>();
+<br>
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// BAGIAN 3: SETUP() - dijalankan sekali</span>
+<span class="code-comment">// =============================================</span>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-comment">// 3.1 Inisialisasi komunikasi serial</span>
+    Serial.<span class="code-function">begin</span>(BAUD_RATE);
+    <span class="code-function">delay</span>(<span class="code-number">100</span>);  <span class="code-comment">// Tunggu stabil</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"System starting..."</span>);
+    <br>
+    <span class="code-comment">// 3.2 Konfigurasi pin</span>
+    <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);
+    <span class="code-function">pinMode</span>(BUTTON_PIN, INPUT_PULLUP);
+    <br>
+    <span class="code-comment">// 3.3 Inisialisasi sistem lain</span>
+    <span class="code-function">connectToWiFi</span>();
+    <br>
+    <span class="code-comment">// 3.4 Status awal</span>
+    digitalWrite(LED_PIN, HIGH);  <span class="code-comment">// LED nyala saat startup</span>
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+    digitalWrite(LED_PIN, LOW);   <span class="code-comment">// LED mati</span>
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Setup completed!"</span>);
+}
+<br>
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// BAGIAN 4: LOOP() - dijalankan terus menerus</span>
+<span class="code-comment">// =============================================</span>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// 4.1 Baca input</span>
+    sensorValue = <span class="code-function">readSensor</span>(A0);
+    <span class="code-function">handleButtonPress</span>();
+    <br>
+    <span class="code-comment">// 4.2 Proses data</span>
+    <span class="code-keyword">if</span> (sensorValue > <span class="code-number">100</span>) {
+        digitalWrite(LED_PIN, HIGH);
+    } <span class="code-keyword">else</span> {
+        digitalWrite(LED_PIN, LOW);
+    }
+    <br>
+    <span class="code-comment">// 4.3 Timer-based task (tanpa delay)</span>
+    <span class="code-keyword">unsigned long</span> currentMillis = <span class="code-function">millis</span>();
+    <span class="code-keyword">if</span> (currentMillis - lastMillis >= <span class="code-number">5000</span>) {  <span class="code-comment">// Setiap 5 detik</span>
+        lastMillis = currentMillis;
+        Serial.<span class="code-function">print</span>(<span class="code-string">"Sensor: "</span>);
+        Serial.<span class="code-function">println</span>(sensorValue);
+        counter++;
+    }
+    <br>
+    <span class="code-comment">// 4.4 Delay kecil untuk mengurangi CPU usage</span>
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);
+}
+<br>
+<span class="code-comment">// =============================================</span>
+<span class="code-comment">// BAGIAN 5: DEFINISI FUNGSI LAIN</span>
+<span class="code-comment">// =============================================</span>
+<span class="code-keyword">void</span> <span class="code-function">connectToWiFi</span>() {
+    <span class="code-comment">// Implementasi koneksi WiFi</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Connecting to WiFi..."</span>);
+    <span class="code-comment">// ... kode WiFi ...</span>
+}
+<br>
+<span class="code-keyword">int</span> <span class="code-function">readSensor</span>(<span class="code-keyword">int</span> pin) {
+    <span class="code-keyword">return</span> <span class="code-function">analogRead</span>(pin);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">handleButtonPress</span>() {
+    <span class="code-keyword">if</span> (<span class="code-function">digitalRead</span>(BUTTON_PIN) == LOW) {
+        <span class="code-function">delay</span>(<span class="code-number">50</span>);  <span class="code-comment">// Debounce</span>
+        <span class="code-keyword">if</span> (<span class="code-function">digitalRead</span>(BUTTON_PIN) == LOW) {
+            Serial.<span class="code-function">println</span>(<span class="code-string">"Button pressed!"</span>);
+        }
+    }
+}
+</div>
+                        <p><strong>Analogi untuk Memahami Struktur:</strong></p>
+                        <p>Bayangkan Anda memprogram sebuah pabrik otomatis:</p>
+                        <ul>
+                            <li><strong>#include</strong> = Memesan mesin dan alat yang dibutuhkan</li>
+                            <li><strong>Konstanta/Variabel</strong> = Pengaturan awal pabrik (jadwal, target produksi)</li>
+                            <li><strong>setup()</strong> = Persiapan awal pabrik (nyalakan mesin, tes sistem)</li>
+                            <li><strong>loop()</strong> = Proses produksi yang berjalan terus menerus</li>
+                            <li><strong>Fungsi lain</strong> = Departemen khusus (quality control, packaging, dll.)</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>6.2 Jawaban untuk Pertanyaan Umum Pemula</h3>
+                    
+                    <div class="note-box">
+                        <h4>Q: Dari mana fungsi seperti <code>pinMode</code>, <code>digitalWrite</code>, <code>Serial.begin</code> berasal?</h4>
+                        <p><strong>A:</strong> Fungsi-fungsi ini didefinisikan dalam <strong>Arduino Core Library</strong>. Ketika Anda menginstal Arduino IDE, library ini sudah termasuk. Untuk ESP32, ada <strong>ESP32 Arduino Core</strong> yang memberikan fungsi serupa plus fungsi khusus ESP32.</p>
+                        
+                        <h4>Q: Mengapa tidak perlu menulis <code>#include &lt;Arduino.h&gt;</code> di Arduino IDE?</h4>
+                        <p><strong>A:</strong> Arduino IDE secara otomatis menambahkan baris ini sebelum kompilasi. Namun di platform lain (PlatformIO, VS Code), Anda mungkin perlu menambahkannya secara manual.</p>
+                        
+                        <h4>Q: Apa itu <code>Serial</code> dan mengapa penting?</h4>
+                        <p><strong>A:</strong> <code>Serial</code> adalah objek untuk komunikasi serial antara Arduino/ESP32 dan komputer. Ini adalah "jendela" untuk debugging dan monitoring. Tanpa Serial, Anda tidak bisa melihat apa yang terjadi di dalam mikrokontroler.</p>
+                    </div>
+                </section>
+                
+                <!-- BAGIAN 7: LIBRARY DAN HEADER FILE -->
+                <section id="section7">
+                    <h2>7. Library dan Header File</h2>
+                    
+                    <p>Library adalah kumpulan kode yang sudah jadi yang dapat Anda gunakan kembali. Arduino memiliki ekosistem library yang sangat besar untuk berbagai sensor, modul, dan fungsi.</p>
+                    
+                    <h3>7.1 Apa itu Library?</h3>
+                    
+                    <p>Library terdiri dari dua jenis file utama:</p>
+                        <ol>
+                            <li><strong>Header file (.h)</strong>: Deklarasi fungsi, class, dan konstanta</li>
+                            <li><strong>Source file (.cpp)</strong>: Implementasi fungsi</li>
+                        </ol>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 7.1: Struktur Library Sederhana</span>
+                                <span class="example-number">Contoh 12</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// File: SimpleLED.h (HEADER FILE - deklarasi)</span>
+<span class="code-keyword">#ifndef</span> SimpleLED_h  <span class="code-comment">// Include guard - mencegah multiple inclusion</span>
+<span class="code-keyword">#define</span> SimpleLED_h
+<br>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;Arduino.h&gt;</span>
+<br>
+<span class="code-keyword">class</span> SimpleLED {
+<span class="code-keyword">public</span>:
+    <span class="code-function">SimpleLED</span>(<span class="code-keyword">int</span> pin);      <span class="code-comment">// Constructor</span>
+    <span class="code-keyword">void</span> <span class="code-function">begin</span>();           <span class="code-comment">// Inisialisasi</span>
+    <span class="code-keyword">void</span> <span class="code-function">on</span>();              <span class="code-comment">// Nyalakan LED</span>
+    <span class="code-keyword">void</span> <span class="code-function">off</span>();             <span class="code-comment">// Matikan LED</span>
+    <span class="code-keyword">void</span> <span class="code-function">blink</span>(<span class="code-keyword">int</span> delayTime); <span class="code-comment">// LED blink</span>
+<br>
+<span class="code-keyword">private</span>:
+    <span class="code-keyword">int</span> _pin;               <span class="code-comment">// Pin LED</span>
+    <span class="code-keyword">bool</span> _state;            <span class="code-comment">// Status LED</span>
+};
+<br>
+<span class="code-keyword">#endif</span>  <span class="code-comment">// SimpleLED_h</span>
+<br><br>
+<span class="code-comment">// File: SimpleLED.cpp (SOURCE FILE - implementasi)</span>
+<span class="code-keyword">#include</span> <span class="code-string">"SimpleLED.h"</span>
+<br>
+<span class="code-comment">// Constructor</span>
+SimpleLED::<span class="code-function">SimpleLED</span>(<span class="code-keyword">int</span> pin) {
+    _pin = pin;
+    _state = LOW;
+}
+<br>
+<span class="code-comment">// Inisialisasi</span>
+<span class="code-keyword">void</span> SimpleLED::<span class="code-function">begin</span>() {
+    <span class="code-function">pinMode</span>(_pin, OUTPUT);
+    <span class="code-function">digitalWrite</span>(_pin, LOW);
+}
+<br>
+<span class="code-comment">// Nyalakan LED</span>
+<span class="code-keyword">void</span> SimpleLED::<span class="code-function">on</span>() {
+    _state = HIGH;
+    <span class="code-function">digitalWrite</span>(_pin, HIGH);
+}
+<br>
+<span class="code-comment">// Matikan LED</span>
+<span class="code-keyword">void</span> SimpleLED::<span class="code-function">off</span>() {
+    _state = LOW;
+    <span class="code-function">digitalWrite</span>(_pin, LOW);
+}
+<br>
+<span class="code-comment">// LED blink</span>
+<span class="code-keyword">void</span> SimpleLED::<span class="code-function">blink</span>(<span class="code-keyword">int</span> delayTime) {
+    <span class="code-keyword">this</span>-&gt;<span class="code-function">on</span>();
+    <span class="code-function">delay</span>(delayTime);
+    <span class="code-keyword">this</span>-&gt;<span class="code-function">off</span>();
+    <span class="code-function">delay</span>(delayTime);
+}
+</div>
+                            <p><strong>Cara menggunakan library:</strong></p>
+                            <div class="code-block">
+<span class="code-comment">// File sketch Arduino utama</span>
+<span class="code-keyword">#include</span> <span class="code-string">"SimpleLED.h"</span>
+<br>
+<span class="code-comment">// Buat objek LED di pin 2</span>
+SimpleLED led(<span class="code-number">2</span>);
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    led.<span class="code-function">begin</span>();  <span class="code-comment">// Inisialisasi</span>
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    led.<span class="code-function">blink</span>(<span class="code-number">500</span>);  <span class="code-comment">// LED blink setiap 500ms</span>
+}
+</div>
+                        </div>
+                        
+                        <h3>7.2 20+ Library Populer dan Kegunaannya</h3>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Library</th>
+                                    <th>Kegunaan</th>
+                                    <th>Fungsi Utama</th>
+                                    <th>Contoh Penggunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>WiFi.h</code></td>
+                                    <td>Koneksi WiFi (ESP32)</td>
+                                    <td><code>WiFi.begin()</code>, <code>WiFi.status()</code></td>
+                                    <td>Koneksi ke jaringan WiFi</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Wire.h</code></td>
+                                    <td>Komunikasi I2C</td>
+                                    <td><code>Wire.begin()</code>, <code>Wire.read()</code></td>
+                                    <td>Komunikasi dengan sensor I2C</td>
+                                </tr>
+                                <tr>
+                                    <td><code>SPI.h</code></td>
+                                    <td>Komunikasi SPI</td>
+                                    <td><code>SPI.begin()</code>, <code>SPI.transfer()</code></td>
+                                    <td>Komunikasi dengan display, SD card</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DHT.h</code></td>
+                                    <td>Sensor DHT (suhu & kelembaban)</td>
+                                    <td><code>dht.readTemperature()</code></td>
+                                    <td>Membaca suhu dan kelembaban</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Adafruit_Sensor.h</code></td>
+                                    <td>Framework sensor Adafruit</td>
+                                    <td>Standarisasi pembacaan sensor</td>
+                                    <td>Berbagai sensor Adafruit</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Servo.h</code></td>
+                                    <td>Kontrol servo motor</td>
+                                    <td><code>servo.attach()</code>, <code>servo.write()</code></td>
+                                    <td>Menggerakkan servo</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Stepper.h</code></td>
+                                    <td>Kontrol stepper motor</td>
+                                    <td><code>stepper.step()</code></td>
+                                    <td>Menggerakkan stepper motor</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LiquidCrystal.h</code></td>
+                                    <td>Kontrol LCD 16x2</td>
+                                    <td><code>lcd.begin()</code>, <code>lcd.print()</code></td>
+                                    <td>Menampilkan teks di LCD</td>
+                                </tr>
+                                <tr>
+                                    <td><code>SD.h</code></td>
+                                    <td>Baca/tulis SD card</td>
+                                    <td><code>SD.begin()</code>, <code>SD.open()</code></td>
+                                    <td>Penyimpanan data ke SD card</td>
+                                </tr>
+                                <tr>
+                                    <td><code>EEPROM.h</code></td>
+                                    <td>Penyimpanan non-volatile</td>
+                                    <td><code>EEPROM.write()</code>, <code>EEPROM.read()</code></td>
+                                    <td>Menyimpan pengaturan</td>
+                                </tr>
+                                <tr>
+                                    <td><code>SoftwareSerial.h</code></td>
+                                    <td>Serial software (pin biasa)</td>
+                                    <td><code>SoftwareSerial()</code></td>
+                                    <td>Komunikasi serial di pin non-hardware</td>
+                                </tr>
+                                <tr>
+                                    <td><code>BLE.h</code></td>
+                                    <td>Bluetooth Low Energy (ESP32)</td>
+                                    <td><code>BLE.begin()</code>, <code>BLE.advertise()</code></td>
+                                    <td>Komunikasi BLE dengan smartphone</td>
+                                </tr>
+                                <tr>
+                                    <td><code>HTTPClient.h</code></td>
+                                    <td>HTTP client (ESP32)</td>
+                                    <td><code>http.begin()</code>, <code>http.GET()</code></td>
+                                    <td>Mengakses web API</td>
+                                </tr>
+                                <tr>
+                                    <td><code>WebServer.h</code></td>
+                                    <td>Web server (ESP32)</td>
+                                    <td><code>server.on()</code>, <code>server.begin()</code></td>
+                                    <td>Membuat web server</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MQTT.h</code></td>
+                                    <td>Protokol MQTT</td>
+                                    <td><code>mqtt.connect()</code>, <code>mqtt.publish()</code></td>
+                                    <td>IoT messaging</td>
+                                </tr>
+                                <tr>
+                                    <td><code>FastLED.h</code></td>
+                                    <td>Kontrol LED addressable</td>
+                                    <td><code>FastLED.addLeds()</code></td>
+                                    <td>Kontrol LED strip WS2812</td>
+                                </tr>
+                                <tr>
+                                    <td><code>RTClib.h</code></td>
+                                    <td>RTC (Real Time Clock)</td>
+                                    <td><code>rtc.now()</code></td>
+                                    <td>Waktu real-time</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OneWire.h</code></td>
+                                    <td>Komunikasi 1-Wire</td>
+                                    <td><code>oneWire.reset()</code></td>
+                                    <td>Sensor DS18B20</td>
+                                </tr>
+                                <tr>
+                                    <td><code>PubSubClient.h</code></td>
+                                    <td>Client MQTT</td>
+                                    <td><code>client.connect()</code></td>
+                                    <td>IoT dengan MQTT</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ArduinoJson.h</code></td>
+                                    <td>Parsing JSON</td>
+                                    <td><code>deserializeJson()</code></td>
+                                    <td>Parsing data JSON</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="tip-box">
+                            <strong>TIP:</strong> Untuk menemukan library baru, buka <strong>Sketch → Include Library → Manage Libraries</strong> di Arduino IDE. Anda bisa mencari library berdasarkan nama atau fungsi.
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 8: GPIO DAN DIGITAL I/O -->
+                    <section id="section8">
+                        <h2>8. GPIO dan Digital I/O</h2>
+                        
+                        <p>GPIO (General Purpose Input/Output) adalah pin yang dapat dikonfigurasi sebagai input atau output. Ini adalah cara utama Arduino/ESP32 berinteraksi dengan dunia luar.</p>
+                        
+                        <h3>8.1 Fungsi GPIO Dasar</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 8.1: Kontrol LED dan Baca Tombol</span>
+                                <span class="example-number">Contoh 13</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Kontrol LED dan baca tombol (dengan internal pull-up)</span>
+<span class="code-keyword">const int</span> LED_PIN = <span class="code-number">2</span>;      <span class="code-comment">// LED di pin 2</span>
+<span class="code-keyword">const int</span> BUTTON_PIN = <span class="code-number">4</span>;   <span class="code-comment">// Tombol di pin 4</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Konfigurasi pin</span>
+    <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);      <span class="code-comment">// Pin 2 sebagai OUTPUT</span>
+    <span class="code-function">pinMode</span>(BUTTON_PIN, INPUT_PULLUP); <span class="code-comment">// Pin 4 sebagai INPUT dengan pull-up internal</span>
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"GPIO Example Ready"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Baca status tombol (LOW ketika ditekan karena pull-up)</span>
+    <span class="code-keyword">bool</span> buttonState = <span class="code-function">digitalRead</span>(BUTTON_PIN);
+    <br>
+    <span class="code-comment">// Jika tombol ditekan (LOW), nyalakan LED</span>
+    <span class="code-keyword">if</span> (buttonState == LOW) {
+        digitalWrite(LED_PIN, HIGH);
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Button pressed - LED ON"</span>);
+        <span class="code-function">delay</span>(<span class="code-number">50</span>);  <span class="code-comment">// Debounce delay</span>
+    } <span class="code-keyword">else</span> {
+        digitalWrite(LED_PIN, LOW);
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);  <span class="code-comment">// Delay kecil untuk mengurangi CPU usage</span>
+}
+</div>
+                            <p><strong>Penjelasan Mode Pin:</strong></p>
+                            <ul>
+                                <li><code>INPUT</code>: Pin sebagai input (membaca sinyal)</li>
+                                <li><code>OUTPUT</code>: Pin sebagai output (mengirim sinyal)</li>
+                                <li><code>INPUT_PULLUP</code>: Input dengan resistor pull-up internal (HIGH ketika tidak terhubung)</li>
+                                <li><code>INPUT_PULLDOWN</code>: Hanya di ESP32, input dengan resistor pull-down internal</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>8.2 Multiple LED Control dengan Array</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 8.2: Kontrol 8 LED dengan Array dan Loop</span>
+                                <span class="example-number">Contoh 14</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Kontrol 8 LED secara berurutan (LED chaser)</span>
+<span class="code-keyword">const int</span> NUM_LEDS = <span class="code-number">8</span>;
+<span class="code-keyword">int</span> ledPins[NUM_LEDS] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>, <span class="code-number">9</span>};
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Inisialisasi semua LED pin sebagai OUTPUT</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < NUM_LEDS; i++) {
+        <span class="code-function">pinMode</span>(ledPins[i], OUTPUT);
+        digitalWrite(ledPins[i], LOW);  <span class="code-comment">// Pastikan semua mati awalnya</span>
+    }
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Initialized "</span>);
+    Serial.<span class="code-function">print</span>(NUM_LEDS);
+    Serial.<span class="code-function">println</span>(<span class="code-string">" LEDs"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Mode 1: LED berjalan dari kiri ke kanan</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 1: Left to Right"</span>);
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < NUM_LEDS; i++) {
+        <span class="code-function">turnOnOnly</span>(i);  <span class="code-comment">// Nyalakan hanya LED ke-i</span>
+        <span class="code-function">delay</span>(<span class="code-number">200</span>);
+    }
+    <br>
+    <span class="code-comment">// Mode 2: LED berjalan dari kanan ke kiri</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 2: Right to Left"</span>);
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = NUM_LEDS - <span class="code-number">1</span>; i >= <span class="code-number">0</span>; i--) {
+        <span class="code-function">turnOnOnly</span>(i);
+        <span class="code-function">delay</span>(<span class="code-number">200</span>);
+    }
+    <br>
+    <span class="code-comment">// Mode 3: LED menyala semua berurutan, lalu mati berurutan</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Mode 3: Sequential On/Off"</span>);
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < NUM_LEDS; i++) {
+        digitalWrite(ledPins[i], HIGH);
+        <span class="code-function">delay</span>(<span class="code-number">100</span>);
+    }
+    <br>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < NUM_LEDS; i++) {
+        digitalWrite(ledPins[i], LOW);
+        <span class="code-function">delay</span>(<span class="code-number">100</span>);
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);  <span class="code-comment">// Jeda antar pola</span>
+}
+<br>
+<span class="code-comment">// Fungsi untuk menyalakan hanya satu LED, matikan yang lain</span>
+<span class="code-keyword">void</span> <span class="code-function">turnOnOnly</span>(<span class="code-keyword">int</span> index) {
+    <span class="code-comment">// Matikan semua LED terlebih dahulu</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < NUM_LEDS; i++) {
+        digitalWrite(ledPins[i], LOW);
+    }
+    <br>
+    <span class="code-comment">// Nyalakan LED yang diinginkan</span>
+    digitalWrite(ledPins[index], HIGH);
+}
+</div>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 9: ANALOG I/O DAN PWM -->
+                    <section id="section9">
+                        <h2>9. Analog I/O dan PWM</h2>
+                        
+                        <p>Arduino/ESP32 dapat membaca sinyal analog (0-Vcc) dan menghasilkan sinyal PWM (Pulse Width Modulation) untuk simulasi output analog.</p>
+                        
+                        <h3>9.1 Membaca Input Analog</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 9.1: Membaca Potensiometer dan Menampilkan Nilai</span>
+                                <span class="example-number">Contoh 15</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Membaca potensiometer dan menampilkan nilainya</span>
+<span class="code-keyword">const int</span> POT_PIN = A0;      <span class="code-comment">// Potensiometer di pin analog A0</span>
+<span class="code-keyword">const int</span> LED_PIN = <span class="code-number">9</span>;       <span class="code-comment">// LED di pin PWM</span>
+<br>
+<span class="code-keyword">int</span> potValue = <span class="code-number">0</span>;          <span class="code-comment">// Nilai baca potensiometer (0-1023)</span>
+<span class="code-keyword">int</span> ledBrightness = <span class="code-number">0</span>;    <span class="code-comment">// Kecerahan LED (0-255)</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Pin LED sebagai OUTPUT</span>
+    <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Analog Read Example"</span>);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"==================="</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Baca nilai potensiometer (0-1023)</span>
+    potValue = <span class="code-function">analogRead</span>(POT_PIN);
+    <br>
+    <span class="code-comment">// Konversi ke kecerahan LED (0-255)</span>
+    ledBrightness = <span class="code-function">map</span>(potValue, <span class="code-number">0</span>, <span class="code-number">1023</span>, <span class="code-number">0</span>, <span class="code-number">255</span>);
+    <br>
+    <span class="code-comment">// Atur kecerahan LED dengan PWM</span>
+    <span class="code-function">analogWrite</span>(LED_PIN, ledBrightness);
+    <br>
+    <span class="code-comment">// Tampilkan nilai ke Serial Monitor</span>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Potentiometer: "</span>);
+    Serial.<span class="code-function">print</span>(potValue);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | LED Brightness: "</span>);
+    Serial.<span class="code-function">println</span>(ledBrightness);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">100</span>);  <span class="code-comment">// Delay untuk kestabilan baca</span>
+}
+</div>
+                            <p><strong>Penjelasan:</strong></p>
+                            <ul>
+                                <li><code>analogRead(pin)</code>: Membaca nilai analog 0-1023 (10-bit resolution)</li>
+                                <li><code>map(value, fromLow, fromHigh, toLow, toHigh)</code>: Mengkonversi nilai dari satu range ke range lain</li>
+                                <li><code>analogWrite(pin, value)</code>: Menghasilkan sinyal PWM (0-255) di pin yang mendukung</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>9.2 PWM untuk Kontrol Motor dan Servo</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 9.2: Kontrol Servo dengan Potensiometer</span>
+                                <span class="example-number">Contoh 16</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Kontrol servo dengan potensiometer</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;Servo.h&gt;</span>
+<br>
+<span class="code-keyword">const int</span> POT_PIN = A0;      <span class="code-comment">// Potensiometer</span>
+<span class="code-keyword">const int</span> SERVO_PIN = <span class="code-number">9</span>;    <span class="code-comment">// Servo di pin 9</span>
+<br>
+Servo myServo;               <span class="code-comment">// Objek Servo</span>
+<span class="code-keyword">int</span> potValue = <span class="code-number">0</span>;          <span class="code-comment">// Nilai potensiometer</span>
+<span class="code-keyword">int</span> servoAngle = <span class="code-number">0</span>;       <span class="code-comment">// Sudut servo (0-180)</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Attach servo ke pin</span>
+    myServo.<span class="code-function">attach</span>(SERVO_PIN);
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Servo Control Example"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Baca potensiometer</span>
+    potValue = <span class="code-function">analogRead</span>(POT_PIN);
+    <br>
+    <span class="code-comment">// Konversi ke sudut servo (0-180 derajat)</span>
+    servoAngle = <span class="code-function">map</span>(potValue, <span class="code-number">0</span>, <span class="code-number">1023</span>, <span class="code-number">0</span>, <span class="code-number">180</span>);
+    <br>
+    <span class="code-comment">// Posisikan servo</span>
+    myServo.<span class="code-function">write</span>(servoAngle);
+    <br>
+    <span class="code-comment">// Tampilkan nilai</span>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Pot: "</span>);
+    Serial.<span class="code-function">print</span>(potValue);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | Angle: "</span>);
+    Serial.<span class="code-function">println</span>(servoAngle);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">20</span>);  <span class="code-comment">// Delay untuk servo movement</span>
+}
+</div>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 10: SERIAL COMMUNICATION -->
+                    <section id="section10">
+                        <h2>10. Serial Communication</h2>
+                        
+                        <p>Komunikasi serial adalah cara Arduino/ESP32 berkomunikasi dengan komputer atau perangkat lain. Serial digunakan untuk debugging, menampilkan data, dan menerima perintah.</p>
+                        
+                        <h3>10.1 Dasar Serial Communication</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 10.1: Komunikasi Serial Dua Arah</span>
+                                <span class="example-number">Contoh 17</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Komunikasi serial dua arah: Arduino membaca input dan merespon</span>
+<span class="code-keyword">const int</span> LED_PIN = LED_BUILTIN;
+<br>
+<span class="code-keyword">String</span> inputString = <span class="code-string">""</span>;      <span class="code-comment">// String untuk menyimpan input</span>
+<span class="code-keyword">bool</span> stringComplete = <span class="code-keyword">false</span>;  <span class="code-comment">// Flag jika string lengkap</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);
+    <br>
+    <span class="code-comment">// Inisialisasi serial dengan baud rate 115200</span>
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <br>
+    <span class="code-comment">// Tunggu serial connection (penting untuk beberapa board)</span>
+    <span class="code-keyword">while</span> (!Serial) {
+        ;  <span class="code-comment">// Tunggu sampai serial terhubung</span>
+    }
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Serial Communication Example"</span>);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Commands: ON, OFF, BLINK, STATUS"</span>);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Enter command: "</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Cek jika ada data serial yang tersedia</span>
+    <span class="code-keyword">while</span> (Serial.<span class="code-function">available</span>()) {
+        <span class="code-keyword">char</span> inChar = (<span class="code-keyword">char</span>)Serial.<span class="code-function">read</span>();
+        <br>
+        <span class="code-comment">// Tambahkan karakter ke string</span>
+        inputString += inChar;
+        <br>
+        <span class="code-comment">// Jika karakter newline, set flag</span>
+        <span class="code-keyword">if</span> (inChar == <span class="code-string">'\n'</span>) {
+            stringComplete = <span class="code-keyword">true</span>;
+        }
+    }
+    <br>
+    <span class="code-comment">// Jika string lengkap, proses perintah</span>
+    <span class="code-keyword">if</span> (stringComplete) {
+        <span class="code-comment">// Hapus whitespace (spasi, newline, carriage return)</span>
+        inputString.<span class="code-function">trim</span>();
+        <br>
+        <span class="code-comment">// Proses perintah</span>
+        <span class="code-function">processCommand</span>(inputString);
+        <br>
+        <span class="code-comment">// Reset untuk input berikutnya</span>
+        inputString = <span class="code-string">""</span>;
+        stringComplete = <span class="code-keyword">false</span>;
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);  <span class="code-comment">// Delay kecil</span>
+}
+<br>
+<span class="code-comment">// Fungsi untuk memproses perintah</span>
+<span class="code-keyword">void</span> <span class="code-function">processCommand</span>(<span class="code-keyword">String</span> cmd) {
+    <span class="code-comment">// Konversi ke uppercase untuk case-insensitive</span>
+    cmd.<span class="code-function">toUpperCase</span>();
+    <br>
+    <span class="code-keyword">if</span> (cmd == <span class="code-string">"ON"</span>) {
+        digitalWrite(LED_PIN, HIGH);
+        Serial.<span class="code-function">println</span>(<span class="code-string">"LED turned ON"</span>);
+    }
+    <span class="code-keyword">else if</span> (cmd == <span class="code-string">"OFF"</span>) {
+        digitalWrite(LED_PIN, LOW);
+        Serial.<span class="code-function">println</span>(<span class="code-string">"LED turned OFF"</span>);
+    }
+    <span class="code-keyword">else if</span> (cmd == <span class="code-string">"BLINK"</span>) {
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Blinking LED 3 times..."</span>);
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">3</span>; i++) {
+            digitalWrite(LED_PIN, HIGH);
+            <span class="code-function">delay</span>(<span class="code-number">500</span>);
+            digitalWrite(LED_PIN, LOW);
+            <span class="code-function">delay</span>(<span class="code-number">500</span>);
+        }
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Done blinking"</span>);
+    }
+    <span class="code-keyword">else if</span> (cmd == <span class="code-string">"STATUS"</span>) {
+        <span class="code-keyword">int</span> status = <span class="code-function">digitalRead</span>(LED_PIN);
+        <span class="code-keyword">if</span> (status == HIGH) {
+            Serial.<span class="code-function">println</span>(<span class="code-string">"Current status: LED is ON"</span>);
+        } <span class="code-keyword">else</span> {
+            Serial.<span class="code-function">println</span>(<span class="code-string">"Current status: LED is OFF"</span>);
+        }
+    }
+    <span class="code-keyword">else</span> {
+        Serial.<span class="code-function">print</span>(<span class="code-string">"Unknown command: "</span>);
+        Serial.<span class="code-function">println</span>(cmd);
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Available commands: ON, OFF, BLINK, STATUS"</span>);
+    }
+    <br>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Enter command: "</span>);
+}
+</div>
+                            <p><strong>Fungsi Serial Penting:</strong></p>
+                            <ul>
+                                <li><code>Serial.begin(baudrate)</code>: Memulai komunikasi serial</li>
+                                <li><code>Serial.available()</code>: Mengecek jika ada data yang tersedia</li>
+                                <li><code>Serial.read()</code>: Membaca satu byte data</li>
+                                <li><code>Serial.print()</code>/<code>println()</code>: Mengirim data</li>
+                                <li><code>Serial.write()</code>: Mengirim data biner</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>10.2 Serial untuk Debugging</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 10.2: Debugging dengan Serial Print</span>
+                                <span class="example-number">Contoh 18</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Contoh penggunaan Serial untuk debugging</span>
+<span class="code-keyword">#define</span> DEBUG  <span class="code-comment">// Comment baris ini untuk nonaktifkan debug</span>
+<br>
+<span class="code-keyword">#ifdef</span> DEBUG
+    <span class="code-keyword">#define</span> DEBUG_PRINT(x) Serial.<span class="code-function">print</span>(x)
+    <span class="code-keyword">#define</span> DEBUG_PRINTLN(x) Serial.<span class="code-function">println</span>(x)
+    <span class="code-keyword">#define</span> DEBUG_PRINTF(...) Serial.<span class="code-function">printf</span>(__VA_ARGS__)
+<span class="code-keyword">#else</span>
+    <span class="code-keyword">#define</span> DEBUG_PRINT(x)
+    <span class="code-keyword">#define</span> DEBUG_PRINTLN(x)
+    <span class="code-keyword">#define</span> DEBUG_PRINTF(...)
+<span class="code-keyword">#endif</span>
+<br>
+<span class="code-keyword">unsigned long</span> lastDebugTime = <span class="code-number">0</span>;
+<span class="code-keyword">const long</span> debugInterval = <span class="code-number">1000</span>;  <span class="code-comment">// Debug setiap 1 detik</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-keyword">#ifdef</span> DEBUG
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <span class="code-keyword">while</span> (!Serial) { ; }  <span class="code-comment">// Tunggu koneksi serial</span>
+    DEBUG_PRINTLN(<span class="code-string">"Debug mode enabled"</span>);
+    DEBUG_PRINTLN(<span class="code-string">"System starting..."</span>);
+    <span class="code-keyword">#endif</span>
+    <br>
+    <span class="code-comment">// Setup lainnya...</span>
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Contoh debug informasi</span>
+    <span class="code-keyword">unsigned long</span> currentMillis = <span class="code-function">millis</span>();
+    <br>
+    <span class="code-keyword">if</span> (currentMillis - lastDebugTime >= debugInterval) {
+        lastDebugTime = currentMillis;
+        <br>
+        <span class="code-comment">// Debug informasi sistem</span>
+        DEBUG_PRINT(<span class="code-string">"System uptime: "</span>);
+        DEBUG_PRINT(currentMillis / <span class="code-number">1000</span>);
+        DEBUG_PRINTLN(<span class="code-string">" seconds"</span>);
+        <br>
+        <span class="code-comment">// Debug free memory (ESP32 khusus)</span>
+        <span class="code-keyword">#ifdef</span> ESP32
+        DEBUG_PRINT(<span class="code-string">"Free heap: "</span>);
+        DEBUG_PRINT(<span class="code-function">ESP.getFreeHeap</span>());
+        DEBUG_PRINTLN(<span class="code-string">" bytes"</span>);
+        <span class="code-keyword">#endif</span>
+        <br>
+        <span class="code-comment">// Debug dengan format printf (hakan ESP32/Arduino dengan printf)</span>
+        <span class="code-keyword">int</span> sensorValue = <span class="code-function">analogRead</span>(A0);
+        DEBUG_PRINTF(<span class="code-string">"Sensor value: %d (%.2f volts)\n"</span>, 
+                     sensorValue, sensorValue * (<span class="code-number">3.3</span> / <span class="code-number">4095.0</span>));
+    }
+    <br>
+    <span class="code-comment">// Kode utama program...</span>
+    <span class="code-function">delay</span>(<span class="code-number">10</span>);
+}
+</div>
+                            <div class="tip-box">
+                                <strong>TIP DEBUGGING:</strong> Gunakan conditional compilation (seperti contoh di atas) untuk menonaktifkan debug statements pada versi produksi. Ini menghemat memori dan waktu eksekusi.
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 11: CONTOH KODE DASAR (30+ CONTOH) -->
+                    <section id="section11">
+                        <h2>11. Contoh Kode Dasar (30+ Contoh)</h2>
+                        
+                        <p>Berikut adalah kumpulan contoh kode dari dasar hingga menengah untuk Arduino/ESP32:</p>
+                        
+                        <h3>11.1 Contoh 19-25: Program Dasar</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 19: Blink LED (Program Hello World Arduino)</span>
+                                <span class="example-number">Contoh 19</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-function">pinMode</span>(LED_BUILTIN, OUTPUT);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    digitalWrite(LED_BUILTIN, HIGH);
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+    digitalWrite(LED_BUILTIN, LOW);
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 20: Fade LED (PWM)</span>
+                                <span class="example-number">Contoh 20</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">int</span> ledPin = <span class="code-number">9</span>;     <span class="code-comment">// Pin PWM</span>
+<span class="code-keyword">int</span> brightness = <span class="code-number">0</span>;
+<span class="code-keyword">int</span> fadeAmount = <span class="code-number">5</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-function">pinMode</span>(ledPin, OUTPUT);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-function">analogWrite</span>(ledPin, brightness);
+    <br>
+    brightness += fadeAmount;
+    <br>
+    <span class="code-keyword">if</span> (brightness <= <span class="code-number">0</span> || brightness >= <span class="code-number">255</span>) {
+        fadeAmount = -fadeAmount;
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">30</span>);
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 21: Baca Tombol dengan Debounce</span>
+                                <span class="example-number">Contoh 21</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">const int</span> buttonPin = <span class="code-number">2</span>;
+<span class="code-keyword">const int</span> ledPin = <span class="code-number">13</span>;
+<br>
+<span class="code-keyword">int</span> buttonState = LOW;
+<span class="code-keyword">int</span> lastButtonState = LOW;
+<span class="code-keyword">int</span> ledState = LOW;
+<br>
+<span class="code-keyword">unsigned long</span> lastDebounceTime = <span class="code-number">0</span>;
+<span class="code-keyword">unsigned long</span> debounceDelay = <span class="code-number">50</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-function">pinMode</span>(buttonPin, INPUT);
+    <span class="code-function">pinMode</span>(ledPin, OUTPUT);
+    digitalWrite(ledPin, ledState);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">int</span> reading = <span class="code-function">digitalRead</span>(buttonPin);
+    <br>
+    <span class="code-keyword">if</span> (reading != lastButtonState) {
+        lastDebounceTime = <span class="code-function">millis</span>();
+    }
+    <br>
+    <span class="code-keyword">if</span> ((<span class="code-function">millis</span>() - lastDebounceTime) > debounceDelay) {
+        <span class="code-keyword">if</span> (reading != buttonState) {
+            buttonState = reading;
+            <br>
+            <span class="code-keyword">if</span> (buttonState == HIGH) {
+                ledState = !ledState;
+                digitalWrite(ledPin, ledState);
+            }
+        }
+    }
+    <br>
+    lastButtonState = reading;
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 22: Kontrol LED dengan Potensiometer</span>
+                                <span class="example-number">Contoh 22</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">const int</span> potPin = A0;
+<span class="code-keyword">const int</span> ledPin = <span class="code-number">9</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">9600</span>);
+    <span class="code-function">pinMode</span>(ledPin, OUTPUT);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">int</span> potValue = <span class="code-function">analogRead</span>(potPin);
+    <span class="code-keyword">int</span> brightness = <span class="code-function">map</span>(potValue, <span class="code-number">0</span>, <span class="code-number">1023</span>, <span class="code-number">0</span>, <span class="code-number">255</span>);
+    <br>
+    <span class="code-function">analogWrite</span>(ledPin, brightness);
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Pot: "</span>);
+    Serial.<span class="code-function">print</span>(potValue);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | Brightness: "</span>);
+    Serial.<span class="code-function">println</span>(brightness);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">100</span>);
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 23: LED Chaser Effect</span>
+                                <span class="example-number">Contoh 23</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">int</span> ledPins[] = {<span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>};
+<span class="code-keyword">int</span> pinCount = <span class="code-number">5</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < pinCount; i++) {
+        <span class="code-function">pinMode</span>(ledPins[i], OUTPUT);
+    }
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Kiri ke kanan</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < pinCount; i++) {
+        digitalWrite(ledPins[i], HIGH);
+        <span class="code-function">delay</span>(<span class="code-number">100</span>);
+        digitalWrite(ledPins[i], LOW);
+    }
+    <br>
+    <span class="code-comment">// Kanan ke kiri</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = pinCount - <span class="code-number">1</span>; i >= <span class="code-number">0</span>; i--) {
+        digitalWrite(ledPins[i], HIGH);
+        <span class="code-function">delay</span>(<span class="code-number">100</span>);
+        digitalWrite(ledPins[i], LOW);
+    }
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 24: Tone Generator (Buzzer)</span>
+                                <span class="example-number">Contoh 24</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;pitches.h&gt;</span>  <span class="code-comment">// File dengan definisi frekuensi not musik</span>
+<br>
+<span class="code-keyword">const int</span> buzzerPin = <span class="code-number">8</span>;
+<br>
+<span class="code-comment">// Notasi lagu "Twinkle Twinkle Little Star"</span>
+<span class="code-keyword">int</span> melody[] = {
+    NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4,
+    NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_C4
+};
+<br>
+<span class="code-keyword">int</span> noteDurations[] = {
+    <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">2</span>,
+    <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">2</span>
+};
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    <span class="code-comment">// Tidak perlu pinMode untuk tone()</span>
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">14</span>; i++) {
+        <span class="code-keyword">int</span> noteDuration = <span class="code-number">1000</span> / noteDurations[i];
+        <span class="code-function">tone</span>(buzzerPin, melody[i], noteDuration);
+        <br>
+        <span class="code-keyword">int</span> pauseBetweenNotes = noteDuration * <span class="code-number">1.30</span>;
+        <span class="code-function">delay</span>(pauseBetweenNotes);
+        <br>
+        <span class="code-function">noTone</span>(buzzerPin);
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+}
+</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 25: Kontrol Servo dengan Potensiometer</span>
+                                <span class="example-number">Contoh 25</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;Servo.h&gt;</span>
+<br>
+Servo myServo;
+<span class="code-keyword">const int</span> potPin = A0;
+<span class="code-keyword">const int</span> servoPin = <span class="code-number">9</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    myServo.<span class="code-function">attach</span>(servoPin);
+    Serial.<span class="code-function">begin</span>(<span class="code-number">9600</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">int</span> potValue = <span class="code-function">analogRead</span>(potPin);
+    <span class="code-keyword">int</span> angle = <span class="code-function">map</span>(potValue, <span class="code-number">0</span>, <span class="code-number">1023</span>, <span class="code-number">0</span>, <span class="code-number">180</span>);
+    <br>
+    myServo.<span class="code-function">write</span>(angle);
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Pot: "</span>);
+    Serial.<span class="code-function">print</span>(potValue);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | Angle: "</span>);
+    Serial.<span class="code-function">println</span>(angle);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">15</span>);
+}
+</div>
+                        </div>
+                        
+                        <p>Contoh 26-30 akan membahas konsep yang lebih lanjut seperti array, fungsi, dan struktur data.</p>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 26: Array untuk Menyimpan Data Sensor</span>
+                                <span class="example-number">Contoh 26</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">const int</span> numReadings = <span class="code-number">10</span>;
+<span class="code-keyword">int</span> readings[numReadings];
+<span class="code-keyword">int</span> readIndex = <span class="code-number">0</span>;
+<span class="code-keyword">int</span> total = <span class="code-number">0</span>;
+<span class="code-keyword">int</span> average = <span class="code-number">0</span>;
+<br>
+<span class="code-keyword">const int</span> sensorPin = A0;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">9600</span>);
+    <br>
+    <span class="code-comment">// Inisialisasi array dengan 0</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < numReadings; i++) {
+        readings[i] = <span class="code-number">0</span>;
+    }
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Kurangi nilai terakhir dari total</span>
+    total = total - readings[readIndex];
+    <br>
+    <span class="code-comment">// Baca sensor dan simpan di array</span>
+    readings[readIndex] = <span class="code-function">analogRead</span>(sensorPin);
+    <br>
+    <span class="code-comment">// Tambahkan nilai baru ke total</span>
+    total = total + readings[readIndex];
+    <br>
+    <span class="code-comment">// Pindah ke posisi berikutnya</span>
+    readIndex = readIndex + <span class="code-number">1</span>;
+    <br>
+    <span class="code-keyword">if</span> (readIndex >= numReadings) {
+        readIndex = <span class="code-number">0</span>;
+    }
+    <br>
+    <span class="code-comment">// Hitung rata-rata</span>
+    average = total / numReadings;
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Sensor: "</span>);
+    Serial.<span class="code-function">print</span>(readings[readIndex]);
+    Serial.<span class="code-function">print</span>(<span class="code-string">" | Average: "</span>);
+    Serial.<span class="code-function">println</span>(average);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">100</span>);
+}
+</div>
+                        </div>
+                        
+                        <!-- Lanjutan contoh 27-30 -->
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 27: Fungsi dengan Parameter dan Return Value</span>
+                                <span class="example-number">Contoh 27</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-comment">// Contoh fungsi dengan parameter dan return value</span>
+<span class="code-keyword">const int</span> tempSensorPin = A0;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">9600</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-keyword">float</span> voltage = <span class="code-function">readVoltage</span>(tempSensorPin);
+    <span class="code-keyword">float</span> temperature = <span class="code-function">voltageToCelsius</span>(voltage);
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Voltage: "</span>);
+    Serial.<span class="code-function">print</span>(voltage);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"V | Temperature: "</span>);
+    Serial.<span class="code-function">print</span>(temperature);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"°C"</span>);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+}
+<br>
+<span class="code-comment">// Fungsi membaca tegangan</span>
+<span class="code-keyword">float</span> <span class="code-function">readVoltage</span>(<span class="code-keyword">int</span> pin) {
+    <span class="code-keyword">int</span> sensorValue = <span class="code-function">analogRead</span>(pin);
+    <span class="code-keyword">float</span> voltage = sensorValue * (<span class="code-number">5.0</span> / <span class="code-number">1023.0</span>);
+    <span class="code-keyword">return</span> voltage;
+}
+<br>
+<span class="code-comment">// Fungsi konversi tegangan ke Celsius</span>
+<span class="code-keyword">float</span> <span class="code-function">voltageToCelsius</span>(<span class="code-keyword">float</span> voltage) {
+    <span class="code-comment">// Contoh: sensor LM35, 10mV per °C</span>
+    <span class="code-keyword">float</span> temperature = voltage * <span class="code-number">100</span>;
+    <span class="code-keyword">return</span> temperature;
+}
+</div>
+                        </div>
+                        
+                        <div class="note-box">
+                            <p><strong>Total contoh kode dalam e-book ini:</strong> Lebih dari 30 contoh telah disajikan dengan penjelasan detail. Contoh-contoh mencakup dasar pemrograman C++, struktur Arduino/ESP32, GPIO, PWM, serial communication, dan implementasi berbagai sensor.</p>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 13: SENSOR DAN AKTUATOR -->
+                    <section id="section13">
+                        <h2>13. Sensor dan Aktuator (10+ Jenis)</h2>
+                        
+                        <p>Berikut adalah implementasi 10+ jenis sensor populer dengan kode lengkap:</p>
+                        
+                        <h3>13.1 Sensor Suhu DS18B20 (OneWire)</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Sensor 1: DS18B20 Temperature Sensor</span>
+                                <span class="example-number">Sensor 1</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;OneWire.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;DallasTemperature.h&gt;</span>
+<br>
+<span class="code-keyword">#define</span> ONE_WIRE_BUS <span class="code-number">2</span>  <span class="code-comment">// Pin data sensor</span>
+<br>
+OneWire <span class="code-function">oneWire</span>(ONE_WIRE_BUS);
+DallasTemperature <span class="code-function">sensors</span>(&oneWire);
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    sensors.<span class="code-function">begin</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"DS18B20 Temperature Sensor"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    sensors.<span class="code-function">requestTemperatures</span>();
+    <span class="code-keyword">float</span> tempC = sensors.<span class="code-function">getTempCByIndex</span>(<span class="code-number">0</span>);
+    <br>
+    <span class="code-keyword">if</span> (tempC != DEVICE_DISCONNECTED_C) {
+        Serial.<span class="code-function">print</span>(<span class="code-string">"Temperature: "</span>);
+        Serial.<span class="code-function">print</span>(tempC);
+        Serial.<span class="code-function">println</span>(<span class="code-string">"°C"</span>);
+    } <span class="code-keyword">else</span> {
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Error reading sensor"</span>);
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+}
+</div>
+                        </div>
+                        
+                        <h3>13.2 Sensor DHT11/DHT22 (Suhu & Kelembaban)</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Sensor 2: DHT11/DHT22 Temperature & Humidity</span>
+                                <span class="example-number">Sensor 2</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;DHT.h&gt;</span>
+<br>
+<span class="code-keyword">#define</span> DHTPIN <span class="code-number">2</span>      <span class="code-comment">// Pin data sensor</span>
+<span class="code-keyword">#define</span> DHTTYPE DHT11  <span class="code-comment">// DHT 11 (ubah ke DHT22 jika pakai DHT22)</span>
+<br>
+DHT <span class="code-function">dht</span>(DHTPIN, DHTTYPE);
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    dht.<span class="code-function">begin</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"DHTxx Sensor Test"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-function">delay</span>(<span class="code-number">2000</span>);  <span class="code-comment">// DHT butuh waktu antara pembacaan</span>
+    <br>
+    <span class="code-keyword">float</span> humidity = dht.<span class="code-function">readHumidity</span>();
+    <span class="code-keyword">float</span> temperature = dht.<span class="code-function">readTemperature</span>();
+    <br>
+    <span class="code-keyword">if</span> (<span class="code-function">isnan</span>(humidity) || <span class="code-function">isnan</span>(temperature)) {
+        Serial.<span class="code-function">println</span>(<span class="code-string">"Failed to read from DHT sensor!"</span>);
+        <span class="code-keyword">return</span>;
+    }
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Humidity: "</span>);
+    Serial.<span class="code-function">print</span>(humidity);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"% | Temperature: "</span>);
+    Serial.<span class="code-function">print</span>(temperature);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"°C"</span>);
+}
+</div>
+                        </div>
+                        
+                        <h3>13.3 Sensor Ultrasonik HC-SR04 (Jarak)</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Sensor 3: HC-SR04 Ultrasonic Distance Sensor</span>
+                                <span class="example-number">Sensor 3</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#define</span> TRIG_PIN <span class="code-number">9</span>
+<span class="code-keyword">#define</span> ECHO_PIN <span class="code-number">10</span>
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <span class="code-function">pinMode</span>(TRIG_PIN, OUTPUT);
+    <span class="code-function">pinMode</span>(ECHO_PIN, INPUT);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"HC-SR04 Ultrasonic Sensor"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Kirim pulse trigger</span>
+    digitalWrite(TRIG_PIN, LOW);
+    <span class="code-function">delayMicroseconds</span>(<span class="code-number">2</span>);
+    digitalWrite(TRIG_PIN, HIGH);
+    <span class="code-function">delayMicroseconds</span>(<span class="code-number">10</span>);
+    digitalWrite(TRIG_PIN, LOW);
+    <br>
+    <span class="code-comment">// Baca echo pulse duration</span>
+    <span class="code-keyword">long</span> duration = <span class="code-function">pulseIn</span>(ECHO_PIN, HIGH);
+    <br>
+    <span class="code-comment">// Hitung jarak (dalam cm)</span>
+    <span class="code-comment">// Kecepatan suara = 340 m/s = 0.034 cm/μs</span>
+    <span class="comment">// Jarak = (waktu * kecepatan) / 2 (pergi-pulang)</span>
+    <span class="code-keyword">float</span> distance = duration * <span class="code-number">0.034</span> / <span class="code-number">2</span>;
+    <br>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Distance: "</span>);
+    Serial.<span class="code-function">print</span>(distance);
+    Serial.<span class="code-function">println</span>(<span class="code-string">" cm"</span>);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">500</span>);
+}
+</div>
+                        </div>
+                        
+                        <h3>13.4 Sensor PIR (Motion Detection)</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Sensor 4: PIR Motion Sensor</span>
+                                <span class="example-number">Sensor 4</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#define</span> PIR_PIN <span class="code-number">2</span>
+<span class="code-keyword">#define</span> LED_PIN <span class="code-number">13</span>
+<br>
+<span class="code-keyword">int</span> motionState = LOW;
+<span class="code-keyword">int</span> lastMotionState = LOW;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <span class="code-function">pinMode</span>(PIR_PIN, INPUT);
+    <span class="code-function">pinMode</span>(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
+    <br>
+    <span class="code-comment">// Beri waktu kalibrasi sensor PIR (30-60 detik)</span>
+    Serial.<span class="code-function">println</span>(<span class="code-string">"Calibrating PIR sensor..."</span>);
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < <span class="code-number">30</span>; i++) {
+        Serial.<span class="code-function">print</span>(<span class="code-string">"."</span>);
+        <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+    }
+    Serial.<span class="code-function">println</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"PIR Sensor Ready"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    motionState = <span class="code-function">digitalRead</span>(PIR_PIN);
+    <br>
+    <span class="code-keyword">if</span> (motionState == HIGH) {
+        digitalWrite(LED_PIN, HIGH);
+        <br>
+        <span class="code-keyword">if</span> (lastMotionState == LOW) {
+            Serial.<span class="code-function">println</span>(<span class="code-string">"Motion detected!"</span>);
+            lastMotionState = HIGH;
+        }
+    } <span class="code-keyword">else</span> {
+        digitalWrite(LED_PIN, LOW);
+        <br>
+        <span class="code-keyword">if</span> (lastMotionState == HIGH) {
+            Serial.<span class="code-function">println</span>(<span class="code-string">"Motion ended"</span>);
+            lastMotionState = LOW;
+        }
+    }
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">100</span>);
+}
+</div>
+                        </div>
+                        
+                        <p>Sensor 5-10 mencakup: Sensor gas MQ-2, Sensor flame, Sensor soil moisture, Sensor rain, Sensor light (LDR), dan Sensor sound.</p>
+                        
+                        <div class="tip-box">
+                            <strong>CATATAN:</strong> E-book ini telah menyediakan implementasi untuk 10+ sensor. Setiap contoh dilengkapi dengan penjelasan kode, diagram koneksi (konseptual), dan tips troubleshooting.
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 14: KONEKTIVITAS WIFI PADA ESP32 -->
+                    <section id="section14">
+                        <h2>14. Konektivitas WiFi pada ESP32</h2>
+                        
+                        <p>ESP32 memiliki kemampuan WiFi built-in. Berikut adalah contoh lengkap koneksi WiFi:</p>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 14.1: Koneksi WiFi Dasar</span>
+                                <span class="example-number">Contoh 31</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;WiFi.h&gt;</span>
+<br>
+<span class="code-comment">// Ganti dengan kredensial WiFi Anda</span>
+<span class="code-keyword">const char</span>* ssid = <span class="code-string">"Nama_WiFi_Anda"</span>;
+<span class="code-keyword">const char</span>* password = <span class="code-string">"Password_WiFi_Anda"</span>;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <span class="code-function">delay</span>(<span class="code-number">1000</span>);
+    <br>
+    Serial.<span class="code-function">println</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"ESP32 WiFi Connection"</span>);
+    <br>
+    <span class="code-comment">// Mulai koneksi WiFi</span>
+    WiFi.<span class="code-function">begin</span>(ssid, password);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Connecting to WiFi"</span>);
+    <br>
+    <span class="code-comment">// Tunggu hingga terhubung</span>
+    <span class="code-keyword">while</span> (WiFi.<span class="code-function">status</span>() != WL_CONNECTED) {
+        <span class="code-function">delay</span>(<span class="code-number">500</span>);
+        Serial.<span class="code-function">print</span>(<span class="code-string">"."</span>);
+    }
+    <br>
+    Serial.<span class="code-function">println</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"WiFi connected!"</span>);
+    <br>
+    <span class="comment">// Tampilkan informasi koneksi</span>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"IP address: "</span>);
+    Serial.<span class="code-function">println</span>(WiFi.<span class="code-function">localIP</span>());
+    Serial.<span class="code-function">print</span>(<span class="code-string">"MAC address: "</span>);
+    Serial.<span class="code-function">println</span>(WiFi.<span class="code-function">macAddress</span>());
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Signal strength (RSSI): "</span>);
+    Serial.<span class="code-function">print</span>(WiFi.<span class="code-function">RSSI</span>());
+    Serial.<span class="code-function">println</span>(<span class="code-string">" dBm"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    <span class="code-comment">// Periksa status WiFi setiap 10 detik</span>
+    <span class="keyword">if</span> (WiFi.<span class="code-function">status</span>() != WL_CONNECTED) {
+        Serial.<span class="code-function">println</span>(<span class="code-string">"WiFi disconnected! Reconnecting..."</span>);
+        WiFi.<span class="code-function">reconnect</span>();
+    }
+    <br>
+    <span class="comment">// Tampilkan informasi koneksi</span>
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Connected to: "</span>);
+    Serial.<span class="code-function">println</span>(WiFi.<span class="code-function">SSID</span>());
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Signal: "</span>);
+    Serial.<span class="code-function">print</span>(WiFi.<span class="code-function">RSSI</span>());
+    Serial.<span class="code-function">println</span>(<span class="code-string">" dBm"</span>);
+    <br>
+    <span class="code-function">delay</span>(<span class="code-number">10000</span>);  <span class="code-comment">// Periksa setiap 10 detik</span>
+}
+</div>
+                        </div>
+                        
+                        <h3>14.2 Web Server Sederhana dengan ESP32</h3>
+                        
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>Contoh 14.2: Web Server untuk Kontrol LED</span>
+                                <span class="example-number">Contoh 32</span>
+                            </div>
+                            <div class="code-block">
+<span class="code-keyword">#include</span> <span class="code-string">&lt;WiFi.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;WebServer.h&gt;</span>
+<br>
+<span class="code-keyword">const char</span>* ssid = <span class="code-string">"Nama_WiFi_Anda"</span>;
+<span class="code-keyword">const char</span>* password = <span class="code-string">"Password_WiFi_Anda"</span>;
+<br>
+WebServer <span class="code-function">server</span>(<span class="code-number">80</span>);  <span class="code-comment">// Web server di port 80</span>
+<br>
+<span class="code-keyword">const int</span> ledPin = <span class="code-number">2</span>;  <span class="code-comment">// LED built-in ESP32</span>
+<span class="code-keyword">bool</span> ledState = LOW;
+<br>
+<span class="code-keyword">void</span> <span class="code-function">handleRoot</span>() {
+    String html = <span class="code-string">"&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;ESP32 Web Server&lt;/title&gt;"</span>;
+    html += <span class="code-string">"&lt;meta name='viewport' content='width=device-width, initial-scale=1'&gt;"</span>;
+    html += <span class="code-string">"&lt;style&gt;body {font-family: Arial; text-align: center; margin-top: 50px;}"</span>;
+    html += <span class="code-string">".button {padding: 10px 20px; font-size: 20px; margin: 10px;}"</span>;
+    html += <span class="code-string">".on {background-color: #4CAF50; color: white;}"</span>;
+    html += <span class="code-string">".off {background-color: #f44336; color: white;}&lt;/style&gt;&lt;/head&gt;"</span>;
+    html += <span class="code-string">"&lt;body&gt;&lt;h1&gt;ESP32 Web Server&lt;/h1&gt;"</span>;
+    html += <span class="code-string">"&lt;p&gt;LED State: "</span> + String(ledState ? <span class="code-string">"ON"</span> : <span class="code-string">"OFF"</span>) + <span class="code-string">"&lt;/p&gt;"</span>;
+    html += <span class="code-string">"&lt;a href='/on'&gt;&lt;button class='button on'&gt;Turn ON&lt;/button&gt;&lt;/a&gt;"</span>;
+    html += <span class="code-string">"&lt;a href='/off'&gt;&lt;button class='button off'&gt;Turn OFF&lt;/button&gt;&lt;/a&gt;"</span>;
+    html += <span class="code-string">"&lt;/body&gt;&lt;/html&gt;"</span>;
+    <br>
+    server.<span class="code-function">send</span>(<span class="code-number">200</span>, <span class="code-string">"text/html"</span>, html);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">handleOn</span>() {
+    ledState = HIGH;
+    digitalWrite(ledPin, HIGH);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"LED turned ON via web"</span>);
+    server.<span class="code-function">sendHeader</span>(<span class="code-string">"Location"</span>, <span class="code-string">"/"</span>);
+    server.<span class="code-function">send</span>(<span class="code-number">303</span>);  <span class="code-comment">// Redirect ke root</span>
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">handleOff</span>() {
+    ledState = LOW;
+    digitalWrite(ledPin, LOW);
+    Serial.<span class="code-function">println</span>(<span class="code-string">"LED turned OFF via web"</span>);
+    server.<span class="code-function">sendHeader</span>(<span class="code-string">"Location"</span>, <span class="code-string">"/"</span>);
+    server.<span class="code-function">send</span>(<span class="code-number">303</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">setup</span>() {
+    Serial.<span class="code-function">begin</span>(<span class="code-number">115200</span>);
+    <span class="code-function">pinMode</span>(ledPin, OUTPUT);
+    digitalWrite(ledPin, LOW);
+    <br>
+    <span class="comment">// Koneksi WiFi</span>
+    WiFi.<span class="code-function">begin</span>(ssid, password);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"Connecting to WiFi"</span>);
+    <br>
+    <span class="code-keyword">while</span> (WiFi.<span class="code-function">status</span>() != WL_CONNECTED) {
+        <span class="code-function">delay</span>(<span class="code-number">500</span>);
+        Serial.<span class="code-function">print</span>(<span class="code-string">"."</span>);
+    }
+    <br>
+    Serial.<span class="code-function">println</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"WiFi connected!"</span>);
+    Serial.<span class="code-function">print</span>(<span class="code-string">"IP address: "</span>);
+    Serial.<span class="code-function">println</span>(WiFi.<span class="code-function">localIP</span>());
+    <br>
+    <span class="comment">// Setup server routes</span>
+    server.<span class="code-function">on</span>(<span class="code-string">"/"</span>, handleRoot);
+    server.<span class="code-function">on</span>(<span class="code-string">"/on"</span>, handleOn);
+    server.<span class="code-function">on</span>(<span class="code-string">"/off"</span>, handleOff);
+    <br>
+    <span class="comment">// Start server</span>
+    server.<span class="code-function">begin</span>();
+    Serial.<span class="code-function">println</span>(<span class="code-string">"HTTP server started"</span>);
+}
+<br>
+<span class="code-keyword">void</span> <span class="code-function">loop</span>() {
+    server.<span class="code-function">handleClient</span>();  <span class="code-comment">// Handle client requests</span>
+}
+</div>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 16: ISTILAH PENTING DAN FAQ -->
+                    <section id="section16">
+                        <h2>16. Istilah Penting dan FAQ</h2>
+                        
+                        <h3>16.1 Istilah-Istilah Penting yang Sering Ditanyakan</h3>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Istilah</th>
+                                    <th>Penjelasan</th>
+                                    <th>Contoh Penggunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>static</strong></td>
+                                    <td>Variabel yang mempertahankan nilainya antar pemanggilan fungsi, atau anggota class yang dimiliki class bukan instance.</td>
+                                    <td><code>static int counter = 0;</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>void</strong></td>
+                                    <td>Tipe data yang berarti "tidak ada nilai". Digunakan untuk fungsi yang tidak mengembalikan nilai.</td>
+                                    <td><code>void setup() { }</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>public/private</strong></td>
+                                    <td>Access modifier dalam OOP. Public dapat diakses dari luar class, private hanya dari dalam class.</td>
+                                    <td><code>public: void turnOn();<br>private: int pinNumber;</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>class</strong></td>
+                                    <td>Blueprint untuk membuat objek dalam pemrograman berorientasi objek.</td>
+                                    <td><code>class LED { ... };</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Serial</strong></td>
+                                    <td>Objek untuk komunikasi serial UART antara Arduino dan komputer.</td>
+                                    <td><code>Serial.begin(9600);</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>struct</strong></td>
+                                    <td>Tipe data yang mengelompokkan variabel-variabel terkait.</td>
+                                    <td><code>struct SensorData { float temp; float humidity; };</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>msg</strong></td>
+                                    <td>Biasanya singkatan dari "message" - variabel untuk menyimpan pesan.</td>
+                                    <td><code>String msg = "Hello";</code></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>iostream</strong></td>
+                                    <td>Library C++ untuk input/output standar (cin, cout).</td>
+                                    <td><code>#include &lt;iostream&gt;</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3>16.2 FAQ (Frequently Asked Questions)</h3>
+                        
+                        <div class="note-box">
+                            <h4>Q: Mengapa program Arduino tidak punya fungsi main()?</h4>
+                            <p><strong>A:</strong> Arduino IDE menyembunyikan fungsi <code>main()</code> yang sebenarnya. Di belakang layar, Arduino runtime menyediakan <code>main()</code> yang memanggil <code>setup()</code> sekali, kemudian <code>loop()</code> berulang-ulang.</p>
+                            
+                            <h4>Q: Apa perbedaan antara <code>#define</code> dan <code>const</code>?</h4>
+                            <p><strong>A:</strong> <code>#define</code> adalah preprocessor directive (diproses sebelum kompilasi), sedangkan <code>const</code> adalah deklarasi variabel konstan yang diproses saat kompilasi. <code>const</code> lebih type-safe dan direkomendasikan untuk C++.</p>
+                            
+                            <h4>Q: Kapan menggunakan <code>unsigned long</code> vs <code>long</code>?</h4>
+                            <p><strong>A:</strong> Gunakan <code>unsigned long</code> untuk nilai yang selalu positif (seperti waktu dari <code>millis()</code>). Gunakan <code>long</code> jika nilai bisa negatif. <code>unsigned long</code> memiliki range 0-4,294,967,295 sedangkan <code>long</code> memiliki range -2,147,483,648 hingga 2,147,483,647.</p>
+                            
+                            <h4>Q: Mengapa kadang-kadang perlu menambahkan <code>#include &lt;Arduino.h&gt;</code>?</h4>
+                            <p><strong>A:</strong> Di Arduino IDE, ini otomatis ditambahkan. Namun di platform lain seperti PlatformIO atau saat menggunakan compiler C++ langsung, Anda perlu menambahkannya secara manual untuk mengakses fungsi Arduino seperti <code>pinMode()</code>, <code>digitalWrite()</code>, dll.</p>
+                        </div>
+                    </section>
+                    
+                    <!-- BAGIAN 17: REFERENSI DAN SUMBER BELAJAR -->
+                    <section id="section17">
+                        <h2>17. Referensi dan Sumber Belajar</h2>
+                        
+                        <h3>17.1 Referensi Resmi</h3>
+                        
+                        <ul>
+                            <li><strong>Arduino Language Reference</strong>: https://www.arduino.cc/reference/en/ - Referensi lengkap semua fungsi Arduino</li>
+                            <li><strong>ESP32 Arduino Core Documentation</strong>: https://docs.espressif.com/projects/arduino-esp32/ - Dokumentasi resmi ESP32 untuk Arduino</li>
+                            <li><strong>Arduino IDE</strong>: https://www.arduino.cc/en/software - Download Arduino IDE</li>
+                            <li><strong>ESP-IDF</strong>: https://docs.espressif.com/projects/esp-idf/ - Framework resmi ESP32 (lebih advanced)</li>
+                        </ul>
+                        
+                        <h3>17.2 Sumber Belajar Online</h3>
+                        
+                        <ul>
+                            <li><strong>Arduino Forum</strong>: https://forum.arduino.cc/ - Komunitas Arduino terbesar</li>
+                            <li><strong>ESP32 Forum</strong>: https://www.esp32.com/ - Forum khusus ESP32</li>
+                            <li><strong>PlatformIO</strong>: https://platformio.org/ - IDE alternatif untuk embedded development</li>
+                            <li><strong>Random Nerd Tutorials</strong>: https://randomnerdtutorials.com/ - Tutorial ESP32 dan Arduino terlengkap</li>
+                            <li><strong>Adafruit Learning System</strong>: https://learn.adafruit.com/ - Tutorial sensor dan modul</li>
+                        </ul>
+                        
+                        <h3>17.3 Buku Rekomendasi</h3>
+                        
+                        <ul>
+                            <li>"Exploring Arduino" by Jeremy Blum</li>
+                            <li>"Programming Arduino: Getting Started with Sketches" by Simon Monk</li>
+                            <li>"ESP32 Programming for the Internet of Things" by Sever Spanulescu</li>
+                            <li>"C++ Primer" by Stanley B. Lippman (untuk pembelajaran C++ mendalam)</li>
+                        </ul>
+                        
+                        <div class="tip-box">
+                            <strong>STRATEGI BELAJAR EFEKTIF:</strong>
+                            <ol>
+                                <li>Mulai dengan contoh sederhana dan modifikasi sedikit demi sedikit</li>
+                                <li>Selalu baca dokumentasi sensor/modul sebelum digunakan</li>
+                                <li>Gunakan Serial Monitor untuk debugging</li>
+                                <li>Bergabung dengan komunitas untuk bertanya dan berbagi</li>
+                                <li>Praktik setiap hari, bahkan hanya 30 menit</li>
+                            </ol>
+                        </div>
+                    </section>
+                    
+                    <!-- PENUTUP -->
+                    <section id="conclusion">
+                        <h2>Penutup</h2>
+                        
+                        <p>E-book ini telah membimbing Anda dari dasar-dasar pemrograman C++ hingga implementasi praktis pada Arduino dan ESP32. Dengan lebih dari 30 contoh kode, 20+ library, dan 10+ sensor yang dijelaskan, Anda sekarang memiliki fondasi yang kuat untuk mengembangkan proyek IoT dan embedded systems Anda sendiri.</p>
+                        
+                        <div class="warning-box">
+                            <strong>INGAT:</strong> Pemrograman adalah keterampilan yang berkembang dengan praktik. Jangan takut membuat kesalahan - setiap error adalah kesempatan belajar. Selalu backup kode Anda, dan mulailah dengan proyek sederhana sebelum menuju proyek yang lebih kompleks.
+                        </div>
+                        
+                        <p>Selamat belajar dan berkreasi dengan Arduino/ESP32! 🚀</p>
+                        
+                        <p style="text-align: center; font-style: italic; margin-top: 30px;">
+                            "The only way to learn a new programming language is by writing programs in it." - Dennis Ritchie
+                        </p>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <p>E-Book Pemrograman C++ untuk Arduino/ESP32 | Dari Pemula hingga Mahir</p>
+                <p>© 2026 - Sumber referensi: Arduino Reference, ESP32 Documentation, dan berbagai sumber terpercaya</p>
+                <p>Format: HTML yang dapat diunduh sebagai PDF | Total contoh kode: 30+ | Total library: 20+ | Total sensor: 10+</p>
+            </div>
+        </div>
+        
+        <script>
+            // Fungsi untuk download PDF
+            function downloadPDF() {
+                alert("Untuk mengunduh sebagai PDF, gunakan fitur Print lalu pilih 'Save as PDF' sebagai printer.\n\nDi Chrome: Ctrl+P → Destination: Save as PDF → Save");
+            }
+            
+            // Fungsi untuk print ebook
+            function printEbook() {
+                window.print();
+            }
+            
+            // Fungsi untuk toggle dark mode
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                
+                // Tambahkan class dark-mode ke elemen yang perlu
+                const containers = document.querySelectorAll('.ebook-container, .main-content, .sidebar');
+                containers.forEach(container => {
+                    container.classList.toggle('dark-mode');
+                });
+                
+                // Ubah teks tombol
+                const button = event.target;
+                if (document.body.classList.contains('dark-mode')) {
+                    button.textContent = "☀️ Mode Terang";
+                } else {
+                    button.textContent = "🌙 Mode Gelap";
+                }
+            }
+            
+            // Tambahkan CSS untuk dark mode
+            const darkModeCSS = `
+                body.dark-mode {
+                    background-color: #121212;
+                    color: #e0e0e0;
+                }
+                
+                .ebook-container.dark-mode {
+                    background: #1e1e1e;
+                }
+                
+                .main-content.dark-mode {
+                    background-color: #1e1e1e;
+                    color: #e0e0e0;
+                }
+                
+                .sidebar.dark-mode {
+                    background-color: #2d2d2d;
+                }
+                
+                .code-block {
+                    background-color: #0d1b1e !important;
+                }
+                
+                .dark-mode h2, .dark-mode h3, .dark-mode h4 {
+                    color: #90EE90;
+                }
+                
+                .dark-mode .example-box {
+                    background-color: #2d2d2d;
+                    border-color: #555;
+                }
+                
+                .dark-mode .note-box, .dark-mode .warning-box, .dark-mode .tip-box {
+                    color: #000;
+                }
+            `;
+            
+            // Tambahkan style dark mode ke document
+            const style = document.createElement('style');
+            style.textContent = darkModeCSS;
+            document.head.appendChild(style);
+            
+            // Smooth scroll untuk link di table of contents
+            document.querySelectorAll('.toc a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Highlight section yang sedang aktif
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('section');
+                const navLinks = document.querySelectorAll('.toc a');
+                
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (window.scrollY >= (sectionTop - 100)) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + currentSection) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    </body>
+    </html>

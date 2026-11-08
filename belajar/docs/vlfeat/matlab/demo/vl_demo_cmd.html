@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > vl_demo_cmd</title>
+
+  <!-- Stylesheets -->
+  <link href="../../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="vl_demo_cmd.html">vl_demo_cmd</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+<h1 id="id-5885">Source code for <code/>vl_demo_cmd.m</code></h1><p>This file is located in the <code/>toolbox/demo</code> folder in VLFeat package.</p>
+<div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span>[err,msg]<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">vl_demo_cmd</span><span class="p">(</span>name, args<span class="p">)</span>
+<span class="c">% DEMO_CMD: Demo: Command line utility</span>
+
+<span class="n">ext</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="k">switch</span><span class="w"> </span><span class="nb">mexext</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexmac&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;mac&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexmaci&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;maci&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexmaci64&#39;</span>
+<span class="w">  </span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;maci64&#39;</span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexglx&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;glnx86&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexa64&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;glnxa64&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;dll&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;win32&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">	</span><span class="n">ext</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;.exe&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexw32&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;win32&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">	</span><span class="n">ext</span><span class="w"> </span><span class="p">=</span><span class="s">&#39;.exe&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&#39;mexw64&#39;</span>
+<span class="w">	</span><span class="n">arch</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;win64&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">	</span><span class="n">ext</span><span class="w"> </span><span class="p">=</span><span class="s">&#39;.exe&#39;</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="n">cmd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">fullfile</span><span class="p">(</span><span class="n">vl_root</span><span class="p">,</span><span class="s">&#39;bin&#39;</span><span class="p">,</span><span class="n">arch</span><span class="p">,[</span><span class="n">name</span><span class="w"> </span><span class="n">ext</span><span class="p">])</span><span class="w"> </span><span class="p">;</span>
+<span class="n">str</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s">&#39;&quot;&#39;</span><span class="w"> </span><span class="n">cmd</span><span class="w"> </span><span class="s">&#39;&quot; &#39;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">disp</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
+<span class="p">[</span><span class="n">err</span><span class="p">,</span><span class="n">msg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">system</span><span class="p">(</span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

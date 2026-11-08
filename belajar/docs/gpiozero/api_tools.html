@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>20. API - Device Source Tools &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="21. API - Fonts" href="api_fonts.html" />
+    <link rel="prev" title="19. API - Generic Classes" href="api_generic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">20. API - Device Source Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-source-conversions">20.1. Single source conversions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.absoluted"><code class="docutils literal notranslate"><span class="pre">absoluted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.booleanized"><code class="docutils literal notranslate"><span class="pre">booleanized()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.clamped"><code class="docutils literal notranslate"><span class="pre">clamped()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.inverted"><code class="docutils literal notranslate"><span class="pre">inverted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.negated"><code class="docutils literal notranslate"><span class="pre">negated()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.post_delayed"><code class="docutils literal notranslate"><span class="pre">post_delayed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.post_periodic_filtered"><code class="docutils literal notranslate"><span class="pre">post_periodic_filtered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.pre_delayed"><code class="docutils literal notranslate"><span class="pre">pre_delayed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.pre_periodic_filtered"><code class="docutils literal notranslate"><span class="pre">pre_periodic_filtered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.quantized"><code class="docutils literal notranslate"><span class="pre">quantized()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.queued"><code class="docutils literal notranslate"><span class="pre">queued()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.smoothed"><code class="docutils literal notranslate"><span class="pre">smoothed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.scaled"><code class="docutils literal notranslate"><span class="pre">scaled()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#combining-sources">20.2. Combining sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.all_values"><code class="docutils literal notranslate"><span class="pre">all_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.any_values"><code class="docutils literal notranslate"><span class="pre">any_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.averaged"><code class="docutils literal notranslate"><span class="pre">averaged()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.multiplied"><code class="docutils literal notranslate"><span class="pre">multiplied()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.summed"><code class="docutils literal notranslate"><span class="pre">summed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.zip_values"><code class="docutils literal notranslate"><span class="pre">zip_values()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#artificial-sources">20.3. Artificial sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.alternating_values"><code class="docutils literal notranslate"><span class="pre">alternating_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.cos_values"><code class="docutils literal notranslate"><span class="pre">cos_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.ramping_values"><code class="docutils literal notranslate"><span class="pre">ramping_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.random_values"><code class="docutils literal notranslate"><span class="pre">random_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.tools.sin_values"><code class="docutils literal notranslate"><span class="pre">sin_values()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">20. </span>API - Device Source Tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_tools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.tools">
+<span id="api-device-source-tools"></span><h1><span class="section-number">20. </span>API - Device Source Tools<a class="headerlink" href="#module-gpiozero.tools" title="Link to this heading"></a></h1>
+<p>GPIO Zero includes several utility routines which are intended to be used with
+the <a class="reference internal" href="source_values.html"><span class="doc">Source/Values</span></a> attributes common to most devices in the library.
+These utility routines are in the <code class="docutils literal notranslate"><span class="pre">tools</span></code> module of GPIO Zero and are
+typically imported as follows:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">scaled</span><span class="p">,</span> <span class="n">negated</span><span class="p">,</span> <span class="n">all_values</span>
+</pre></div>
+</div>
+<p>Given that <a class="reference internal" href="api_generic.html#gpiozero.SourceMixin.source" title="gpiozero.SourceMixin.source"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code></a> and
+<a class="reference internal" href="api_generic.html#gpiozero.ValuesMixin.values" title="gpiozero.ValuesMixin.values"><code class="xref py py-attr docutils literal notranslate"><span class="pre">values</span></code></a> deal with infinite iterators, another
+excellent source of utilities is the <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/itertools.html#module-itertools" title="(in Python v3.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">itertools</span></code></a> module in the standard
+library.</p>
+<section id="single-source-conversions">
+<h2><span class="section-number">20.1. </span>Single source conversions<a class="headerlink" href="#single-source-conversions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.absoluted">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">absoluted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#absoluted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.absoluted" title="Link to this definition"></a></dt>
+<dd><p>Returns <em>values</em> with all negative elements negated (so that they’re
+positive). For example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span><span class="p">,</span> <span class="n">Motor</span><span class="p">,</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">absoluted</span><span class="p">,</span> <span class="n">scaled</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">motor</span> <span class="o">=</span> <span class="n">Motor</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">motor</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">scaled</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">absoluted</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.booleanized">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">booleanized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hysteresis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#booleanized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.booleanized" title="Link to this definition"></a></dt>
+<dd><p>Returns True for each item in <em>values</em> between <em>min_value</em> and
+<em>max_value</em>, and False otherwise. <em>hysteresis</em> can optionally be used to
+add <a class="reference external" href="https://en.wikipedia.org/wiki/Hysteresis">hysteresis</a> which prevents the output value rapidly flipping when
+the input value is fluctuating near the <em>min_value</em> or <em>max_value</em>
+thresholds. For example, to light an LED only when a potentiometer is
+between ¼ and ¾ of its full range:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">booleanized</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">booleanized</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.clamped">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">clamped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#clamped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.clamped" title="Link to this definition"></a></dt>
+<dd><p>Returns <em>values</em> clamped from <em>output_min</em> to <em>output_max</em>, i.e. any items
+less than <em>output_min</em> will be returned as <em>output_min</em> and any items
+larger than <em>output_max</em> will be returned as <em>output_max</em> (these default to
+0 and 1 respectively). For example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span><span class="p">,</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">clamped</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">clamped</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.inverted">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">inverted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#inverted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.inverted" title="Link to this definition"></a></dt>
+<dd><p>Returns the inversion of the supplied values (<em>input_min</em> becomes
+<em>input_max</em>, <em>input_max</em> becomes <em>input_min</em>, <cite>input_min + 0.1</cite> becomes
+<cite>input_max - 0.1</cite>, etc.). All items in <em>values</em> are assumed to be between
+<em>input_min</em> and <em>input_max</em> (which default to 0 and 1 respectively), and
+the output will be in the same range. For example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span><span class="p">,</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">inverted</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">inverted</span><span class="p">(</span><span class="n">pot</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.negated">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">negated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#negated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.negated" title="Link to this definition"></a></dt>
+<dd><p>Returns the negation of the supplied values (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> becomes
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, and <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> becomes <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>). For example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">negated</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">negated</span><span class="p">(</span><span class="n">btn</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.post_delayed">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">post_delayed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#post_delayed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.post_delayed" title="Link to this definition"></a></dt>
+<dd><p>Waits for <em>delay</em> seconds after returning each item from <em>values</em>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.post_periodic_filtered">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">post_periodic_filtered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_after</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#post_periodic_filtered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.post_periodic_filtered" title="Link to this definition"></a></dt>
+<dd><p>After every <em>repeat_after</em> items, blocks the next <em>block</em> items from
+<em>values</em>. Note that unlike <a class="reference internal" href="#gpiozero.tools.pre_periodic_filtered" title="gpiozero.tools.pre_periodic_filtered"><code class="xref py py-func docutils literal notranslate"><span class="pre">pre_periodic_filtered()</span></code></a>, <em>repeat_after</em>
+can’t be 0. For example, to block every tenth item read from an ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">post_periodic_filtered</span>
+
+<span class="n">adc</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">post_periodic_filtered</span><span class="p">(</span><span class="n">adc</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.pre_delayed">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">pre_delayed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#pre_delayed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.pre_delayed" title="Link to this definition"></a></dt>
+<dd><p>Waits for <em>delay</em> seconds before returning each item from <em>values</em>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.pre_periodic_filtered">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">pre_periodic_filtered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat_after</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#pre_periodic_filtered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.pre_periodic_filtered" title="Link to this definition"></a></dt>
+<dd><p>Blocks the first <em>block</em> items from <em>values</em>, repeating the block after
+every <em>repeat_after</em> items, if <em>repeat_after</em> is non-zero. For example, to
+discard the first 50 values read from an ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">pre_periodic_filtered</span>
+
+<span class="n">adc</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pre_periodic_filtered</span><span class="p">(</span><span class="n">adc</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or to only display every even item read from an ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">pre_periodic_filtered</span>
+
+<span class="n">adc</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pre_periodic_filtered</span><span class="p">(</span><span class="n">adc</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.quantized">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">quantized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#quantized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.quantized" title="Link to this definition"></a></dt>
+<dd><p>Returns <em>values</em> quantized to <em>steps</em> increments. All items in <em>values</em> are
+assumed to be between <em>input_min</em> and <em>input_max</em> (which default to 0 and
+1 respectively), and the output will be in the same range.</p>
+<p>For example, to quantize values between 0 and 1 to 5 “steps” (0.0, 0.25,
+0.5, 0.75, 1.0):</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span><span class="p">,</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">quantized</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">quantized</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.queued">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">queued</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qsize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#queued"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.queued" title="Link to this definition"></a></dt>
+<dd><p>Queues up readings from <em>values</em> (the number of readings queued is
+determined by <em>qsize</em>) and begins yielding values only when the queue is
+full. For example, to “cascade” values along a sequence of LEDs:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LEDBoard</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">queued</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">leds</span> <span class="o">=</span> <span class="n">LEDBoard</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">26</span><span class="p">)</span>
+<span class="n">btn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">leds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">queued</span><span class="p">(</span><span class="n">leds</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">leds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+<span class="n">leds</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">btn</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.smoothed">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">smoothed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average=&lt;function</span> <span class="pre">mean&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#smoothed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.smoothed" title="Link to this definition"></a></dt>
+<dd><p>Queues up readings from <em>values</em> (the number of readings queued is
+determined by <em>qsize</em>) and begins yielding the <em>average</em> of the last
+<em>qsize</em> values when the queue is full. The larger the <em>qsize</em>, the more the
+values are smoothed. For example, to smooth the analog values read from an
+ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">smoothed</span>
+
+<span class="n">adc</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">smoothed</span><span class="p">(</span><span class="n">adc</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.scaled">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">scaled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#scaled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.scaled" title="Link to this definition"></a></dt>
+<dd><p>Returns <em>values</em> scaled from <em>output_min</em> to <em>output_max</em>, assuming that
+all items in <em>values</em> lie between <em>input_min</em> and <em>input_max</em> (which
+default to 0 and 1 respectively). For example, to control the direction of
+a motor (which is represented as a value between -1 and 1) using a
+potentiometer (which typically provides values between 0 and 1):</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Motor</span><span class="p">,</span> <span class="n">MCP3008</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">scaled</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">motor</span> <span class="o">=</span> <span class="n">Motor</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">motor</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">scaled</span><span class="p">(</span><span class="n">pot</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <em>values</em> contains elements that lie outside <em>input_min</em> to
+<em>input_max</em> (inclusive) then the function will not produce values that
+lie within <em>output_min</em> to <em>output_max</em> (inclusive).</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="combining-sources">
+<h2><span class="section-number">20.2. </span>Combining sources<a class="headerlink" href="#combining-sources" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.all_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">all_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#all_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.all_values" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference external" href="https://en.wikipedia.org/wiki/Logical_conjunction">logical conjunction</a> of all supplied values (the result is
+only <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if and only if all input values are simultaneously
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>). One or more <em>values</em> can be specified. For example, to light
+an <a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> only when <em>both</em> buttons are pressed:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">all_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">btn1</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">btn2</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">all_values</span><span class="p">(</span><span class="n">btn1</span><span class="p">,</span> <span class="n">btn2</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.any_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">any_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#any_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.any_values" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference external" href="https://en.wikipedia.org/wiki/Logical_disjunction">logical disjunction</a> of all supplied values (the result is
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if any of the input values are currently <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>). One or
+more <em>values</em> can be specified. For example, to light an
+<a class="reference internal" href="api_output.html#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> when <em>any</em> button is pressed:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">any_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">btn1</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">btn2</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">any_values</span><span class="p">(</span><span class="n">btn1</span><span class="p">,</span> <span class="n">btn2</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.averaged">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">averaged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#averaged"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.averaged" title="Link to this definition"></a></dt>
+<dd><p>Returns the mean of all supplied values. One or more <em>values</em> can be
+specified. For example, to light a <a class="reference internal" href="api_output.html#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> as the average
+of several potentiometers connected to an <a class="reference internal" href="api_spi.html#gpiozero.MCP3008" title="gpiozero.MCP3008"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCP3008</span></code></a> ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span><span class="p">,</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">averaged</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">pot1</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pot2</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pot3</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">averaged</span><span class="p">(</span><span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.multiplied">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">multiplied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#multiplied"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.multiplied" title="Link to this definition"></a></dt>
+<dd><p>Returns the product of all supplied values. One or more <em>values</em> can be
+specified. For example, to light a <a class="reference internal" href="api_output.html#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> as the product
+(i.e. multiplication) of several potentiometers connected to an
+<a class="reference internal" href="api_spi.html#gpiozero.MCP3008" title="gpiozero.MCP3008"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCP3008</span></code></a>
+ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span><span class="p">,</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">multiplied</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">pot1</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pot2</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pot3</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">multiplied</span><span class="p">(</span><span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.summed">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">summed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#summed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.summed" title="Link to this definition"></a></dt>
+<dd><p>Returns the sum of all supplied values. One or more <em>values</em> can be
+specified. For example, to light a <a class="reference internal" href="api_output.html#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> as the
+(scaled) sum of several potentiometers connected to an
+<a class="reference internal" href="api_spi.html#gpiozero.MCP3008" title="gpiozero.MCP3008"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCP3008</span></code></a> ADC:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span><span class="p">,</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">summed</span><span class="p">,</span> <span class="n">scaled</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">pot1</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pot2</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pot3</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">scaled</span><span class="p">(</span><span class="n">summed</span><span class="p">(</span><span class="n">pot1</span><span class="p">,</span> <span class="n">pot2</span><span class="p">,</span> <span class="n">pot3</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.zip_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">zip_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">devices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#zip_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.zip_values" title="Link to this definition"></a></dt>
+<dd><p>Provides a source constructed from the values of each item, for example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">MCP3008</span><span class="p">,</span> <span class="n">Robot</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">zip_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">right</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">))</span>
+
+<span class="n">left</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">right</span> <span class="o">=</span> <span class="n">MCP3008</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">robot</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">zip_values</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">zip_values(left,</span> <span class="pre">right)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">zip(left.values,</span>
+<span class="pre">right.values)</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="artificial-sources">
+<h2><span class="section-number">20.3. </span>Artificial sources<a class="headerlink" href="#artificial-sources" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.alternating_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">alternating_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#alternating_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.alternating_values" title="Link to this definition"></a></dt>
+<dd><p>Provides an infinite source of values alternating between <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, starting wth <em>initial_value</em> (which defaults to
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>). For example, to produce a flashing LED:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">alternating_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">red</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">red</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">alternating_values</span><span class="p">()</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.cos_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">cos_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">360</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#cos_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.cos_values" title="Link to this definition"></a></dt>
+<dd><p>Provides an infinite source of values representing a cosine wave (from -1
+to +1) which repeats every <em>period</em> values. For example, to produce a
+“siren” effect with a couple of LEDs that repeats once a second:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">cos_values</span><span class="p">,</span> <span class="n">scaled_half</span><span class="p">,</span> <span class="n">inverted</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">blue</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">red</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">blue</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="n">red</span><span class="o">.</span><span class="n">source_delay</span>
+<span class="n">red</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">scaled_half</span><span class="p">(</span><span class="n">cos_values</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">blue</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">inverted</span><span class="p">(</span><span class="n">red</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you require a different range than -1 to +1, see <a class="reference internal" href="#gpiozero.tools.scaled" title="gpiozero.tools.scaled"><code class="xref py py-func docutils literal notranslate"><span class="pre">scaled()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.ramping_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">ramping_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">360</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#ramping_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.ramping_values" title="Link to this definition"></a></dt>
+<dd><p>Provides an infinite source of values representing a triangle wave (from 0
+to 1 and back again) which repeats every <em>period</em> values. For example, to
+pulse an LED once a second:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">ramping_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">red</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">red</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">ramping_values</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you require a wider range than 0 to 1, see <a class="reference internal" href="#gpiozero.tools.scaled" title="gpiozero.tools.scaled"><code class="xref py py-func docutils literal notranslate"><span class="pre">scaled()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.random_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">random_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#random_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.random_values" title="Link to this definition"></a></dt>
+<dd><p>Provides an infinite source of random values between 0 and 1. For example,
+to produce a “flickering candle” effect with an LED:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">random_values</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">led</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">random_values</span><span class="p">()</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you require a wider range than 0 to 1, see <a class="reference internal" href="#gpiozero.tools.scaled" title="gpiozero.tools.scaled"><code class="xref py py-func docutils literal notranslate"><span class="pre">scaled()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gpiozero.tools.sin_values">
+<span class="sig-prename descclassname"><span class="pre">gpiozero.tools.</span></span><span class="sig-name descname"><span class="pre">sin_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">360</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/tools.html#sin_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.tools.sin_values" title="Link to this definition"></a></dt>
+<dd><p>Provides an infinite source of values representing a sine wave (from -1 to
++1) which repeats every <em>period</em> values. For example, to produce a “siren”
+effect with a couple of LEDs that repeats once a second:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PWMLED</span>
+<span class="kn">from</span> <span class="nn">gpiozero.tools</span> <span class="kn">import</span> <span class="n">sin_values</span><span class="p">,</span> <span class="n">scaled_half</span><span class="p">,</span> <span class="n">inverted</span>
+<span class="kn">from</span> <span class="nn">signal</span> <span class="kn">import</span> <span class="n">pause</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">blue</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">red</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">blue</span><span class="o">.</span><span class="n">source_delay</span> <span class="o">=</span> <span class="n">red</span><span class="o">.</span><span class="n">source_delay</span>
+<span class="n">red</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">scaled_half</span><span class="p">(</span><span class="n">sin_values</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">blue</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">inverted</span><span class="p">(</span><span class="n">red</span><span class="p">)</span>
+
+<span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you require a different range than -1 to +1, see <a class="reference internal" href="#gpiozero.tools.scaled" title="gpiozero.tools.scaled"><code class="xref py py-func docutils literal notranslate"><span class="pre">scaled()</span></code></a>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_generic.html" class="btn btn-neutral float-left" title="19. API - Generic Classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_fonts.html" class="btn btn-neutral float-right" title="21. API - Fonts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

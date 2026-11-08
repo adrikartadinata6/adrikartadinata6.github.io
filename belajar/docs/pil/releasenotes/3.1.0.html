@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.1.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.0.0" href="3.0.0.html" />
+    <link rel="prev" title="3.1.1" href="3.1.1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="3.0.0.html" title="3.0.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="3.1.1.html" title="3.1.1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.1.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>3.1.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="imagedraw-arc-chord-and-pieslice-can-now-use-floats">
+<h2>ImageDraw arc, chord and pieslice can now use floats<a class="headerlink" href="#imagedraw-arc-chord-and-pieslice-can-now-use-floats" title="Link to this heading">¶</a></h2>
+<p>There is no longer a need to ensure that the start and end arguments for <code class="docutils literal notranslate"><span class="pre">arc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chord</span></code> and <code class="docutils literal notranslate"><span class="pre">pieslice</span></code> are integers.</p>
+<p>Note that these numbers are not simply rounded internally, but are actually
+utilised in the drawing process.</p>
+</section>
+<section id="consistent-multiline-text-spacing">
+<h2>Consistent multiline text spacing<a class="headerlink" href="#consistent-multiline-text-spacing" title="Link to this heading">¶</a></h2>
+<p>When using the <code class="docutils literal notranslate"><span class="pre">ImageDraw</span></code> multiline methods, the spacing between
+lines was inconsistent, based on the combination on ascenders and
+descenders.</p>
+<p>This has now been fixed, so that lines are offset by their baselines,
+not the absolute height of each line.</p>
+<p>There is also now a default spacing of 4px between lines.</p>
+</section>
+<section id="exif-jpeg-and-tiff-metadata">
+<h2>Exif, Jpeg and Tiff Metadata<a class="headerlink" href="#exif-jpeg-and-tiff-metadata" title="Link to this heading">¶</a></h2>
+<p>There were major changes in the TIFF ImageFileDirectory support in
+Pillow 3.0 that led to a number of regressions. Some of them have been
+fixed in Pillow 3.1, and some of them have been extended to have
+different behavior.</p>
+<section id="tiffimageplugin-ifdrational">
+<h3>TiffImagePlugin.IFDRational<a class="headerlink" href="#tiffimageplugin-ifdrational" title="Link to this heading">¶</a></h3>
+<p>Pillow 3.0 changed rational metadata to use a float. In Pillow 3.1,
+this has changed to allow the expression of 0/0 as a valid piece of
+rational metadata to reflect usage in the wild.</p>
+<p>Rational metadata is now encapsulated in an <code class="docutils literal notranslate"><span class="pre">IFDRational</span></code>
+instance. This class extends the Rational class to allow a denominator
+of 0. It compares as a float or a number, but does allow access to the
+raw numerator and denominator values through attributes.</p>
+<p>When used in a <code class="docutils literal notranslate"><span class="pre">ImageFileDirectory_v1</span></code>, a 2 item tuple is returned
+of the numerator and denominator, as was done previously.</p>
+<p>This class should be used when adding a rational value to an
+ImageFileDirectory for saving to image metadata.</p>
+</section>
+<section id="jpegimageplugin-getexif">
+<h3>JpegImagePlugin._getexif<a class="headerlink" href="#jpegimageplugin-getexif" title="Link to this heading">¶</a></h3>
+<p>In Pillow 3.0, the dictionary returned from the private, experimental,
+but generally widely used <code class="docutils literal notranslate"><span class="pre">_getexif</span></code> function changed to reflect the
+ImageFileDirectory_v2 format, without a fallback to the previous format.</p>
+<p>In Pillow 3.1, <code class="docutils literal notranslate"><span class="pre">_getexif</span></code> now returns a dictionary compatible with
+Pillow 2.9 and earlier, built with
+<code class="docutils literal notranslate"><span class="pre">ImageFileDirectory_v1</span></code> instances. Additionally, any
+single item tuples have been unwrapped and return a bare element.</p>
+<p>The format returned by Pillow 3.0 has been abandoned. A more fully
+featured interface for EXIF is anticipated in a future release.</p>
+</section>
+<section id="out-of-spec-metadata">
+<h3>Out of Spec Metadata<a class="headerlink" href="#out-of-spec-metadata" title="Link to this heading">¶</a></h3>
+<p>In Pillow 3.0 and 3.1, images that contain metadata that is internally
+consistent, but not in agreement with the TIFF spec, may cause an
+exception when reading the metadata.  This can happen when a tag that
+is specified to have a single value is stored with an array of values.</p>
+<p>It is anticipated that this behavior will change in future releases.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">3.1.0</a><ul>
+<li><a class="reference internal" href="#imagedraw-arc-chord-and-pieslice-can-now-use-floats">ImageDraw arc, chord and pieslice can now use floats</a></li>
+<li><a class="reference internal" href="#consistent-multiline-text-spacing">Consistent multiline text spacing</a></li>
+<li><a class="reference internal" href="#exif-jpeg-and-tiff-metadata">Exif, Jpeg and Tiff Metadata</a><ul>
+<li><a class="reference internal" href="#tiffimageplugin-ifdrational">TiffImagePlugin.IFDRational</a></li>
+<li><a class="reference internal" href="#jpegimageplugin-getexif">JpegImagePlugin._getexif</a></li>
+<li><a class="reference internal" href="#out-of-spec-metadata">Out of Spec Metadata</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="3.1.1.html"
+                          title="previous chapter">3.1.1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="3.0.0.html"
+                          title="next chapter">3.0.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/3.1.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="3.0.0.html" title="3.0.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="3.1.1.html" title="3.1.1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">3.1.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

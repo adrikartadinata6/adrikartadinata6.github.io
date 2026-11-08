@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The Wavelet object &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Signal Extension Modes" href="modes.html" />
+    <link rel="prev" title="Usage examples" href="index.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modes.html" title="Signal Extension Modes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Usage examples"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Wavelet object</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-wavelet-object">
+<span id="reg-wavelet"></span><h1>The Wavelet object<a class="headerlink" href="#the-wavelet-object" title="Link to this heading">¶</a></h1>
+<section id="wavelet-families-and-builtin-wavelets-names">
+<h2>Wavelet families and builtin Wavelets names<a class="headerlink" href="#wavelet-families-and-builtin-wavelets-names" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> objects are really a handy carriers of a bunch of DWT-specific
+data like <em>quadrature mirror filters</em> and some general properties associated
+with them.</p>
+<p>At first let’s go through the methods of creating a <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object.
+The easiest and the most convenient way is to use builtin named Wavelets.</p>
+<p>These wavelets are organized into groups called wavelet families. The most
+commonly used families are:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pywt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pywt</span><span class="o">.</span><span class="n">families</span><span class="p">()</span>
+<span class="go">[&#39;haar&#39;, &#39;db&#39;, &#39;sym&#39;, &#39;coif&#39;, &#39;bior&#39;, &#39;rbio&#39;, &#39;dmey&#39;, &#39;gaus&#39;, &#39;mexh&#39;, &#39;morl&#39;, &#39;cgau&#39;, &#39;shan&#39;, &#39;fbsp&#39;, &#39;cmor&#39;]</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">wavelist()</span></code> function with family name passed as an argument is used to
+obtain the list of wavelet names in each family.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">family</span> <span class="ow">in</span> <span class="n">pywt</span><span class="o">.</span><span class="n">families</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> family: &quot;</span> <span class="o">%</span> <span class="n">family</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">wavelist</span><span class="p">(</span><span class="n">family</span><span class="p">)))</span>
+<span class="go">haar family: haar</span>
+<span class="go">db family: db1, db2, db3, db4, db5, db6, db7, db8, db9, db10, db11, db12, db13, db14, db15, db16, db17, db18, db19, db20, db21, db22, db23, db24, db25, db26, db27, db28, db29, db30, db31, db32, db33, db34, db35, db36, db37, db38</span>
+<span class="go">sym family: sym2, sym3, sym4, sym5, sym6, sym7, sym8, sym9, sym10, sym11, sym12, sym13, sym14, sym15, sym16, sym17, sym18, sym19, sym20</span>
+<span class="go">coif family: coif1, coif2, coif3, coif4, coif5, coif6, coif7, coif8, coif9, coif10, coif11, coif12, coif13, coif14, coif15, coif16, coif17</span>
+<span class="go">bior family: bior1.1, bior1.3, bior1.5, bior2.2, bior2.4, bior2.6, bior2.8, bior3.1, bior3.3, bior3.5, bior3.7, bior3.9, bior4.4, bior5.5, bior6.8</span>
+<span class="go">rbio family: rbio1.1, rbio1.3, rbio1.5, rbio2.2, rbio2.4, rbio2.6, rbio2.8, rbio3.1, rbio3.3, rbio3.5, rbio3.7, rbio3.9, rbio4.4, rbio5.5, rbio6.8</span>
+<span class="go">dmey family: dmey</span>
+<span class="go">gaus family: gaus1, gaus2, gaus3, gaus4, gaus5, gaus6, gaus7, gaus8</span>
+<span class="go">mexh family: mexh</span>
+<span class="go">morl family: morl</span>
+<span class="go">cgau family: cgau1, cgau2, cgau3, cgau4, cgau5, cgau6, cgau7, cgau8</span>
+<span class="go">shan family: shan</span>
+<span class="go">fbsp family: fbsp</span>
+<span class="go">cmor family: cmor</span>
+</pre></div>
+</div>
+<p>To get the full list of builtin wavelets’ names just use the <code class="xref py py-func docutils literal notranslate"><span class="pre">wavelist()</span></code>
+with no argument.</p>
+</section>
+<section id="creating-wavelet-objects">
+<h2>Creating Wavelet objects<a class="headerlink" href="#creating-wavelet-objects" title="Link to this heading">¶</a></h2>
+<p>Now when we know all the names let’s finally create a <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;db3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>So.. that’s it.</p>
+</section>
+<section id="wavelet-properties">
+<h2>Wavelet properties<a class="headerlink" href="#wavelet-properties" title="Link to this heading">¶</a></h2>
+<p>But what can we do with <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> objects? Well, they carry some
+interesting information.</p>
+<p>First, let’s try printing a <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object. This shows a brief
+information about its name, its family name and some properties like
+orthogonality and symmetry.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+<span class="go">Wavelet db3</span>
+<span class="go">  Family name:    Daubechies</span>
+<span class="go">  Short name:     db</span>
+<span class="go">  Filters length: 6</span>
+<span class="go">  Orthogonal:     True</span>
+<span class="go">  Biorthogonal:   True</span>
+<span class="go">  Symmetry:       asymmetric</span>
+<span class="go">  DWT:            True</span>
+<span class="go">  CWT:            False</span>
+</pre></div>
+</div>
+<p>But the most important information are the wavelet filters coefficients, which
+are used in <a class="reference internal" href="../ref/dwt-discrete-wavelet-transform.html#ref-dwt"><span class="std std-ref">Discrete Wavelet Transform</span></a>. These coefficients can
+be obtained via the <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.dec_lo" title="pywt.Wavelet.dec_lo"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dec_lo</span></code></a>, <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.dec_hi" title="pywt.Wavelet.dec_hi"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Wavelet.dec_hi</span></code></a>,
+<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.rec_lo" title="pywt.Wavelet.rec_lo"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rec_lo</span></code></a> and <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.rec_hi" title="pywt.Wavelet.rec_hi"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rec_hi</span></code></a> attributes, which
+corresponds to lowpass and highpass decomposition filters and lowpass and
+highpass reconstruction filters respectively:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">print_array</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%.14f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>Another way to get the filters data is to use the <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.filter_bank" title="pywt.Wavelet.filter_bank"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filter_bank</span></code></a>
+attribute, which returns all four filters in a tuple:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">filter_bank</span> <span class="o">==</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dec_lo</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">dec_hi</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">rec_lo</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">rec_hi</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Other Wavelet’s properties are:</p>
+<blockquote>
+<div><p>Wavelet <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.name" title="pywt.Wavelet.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>, <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.short_family_name" title="pywt.Wavelet.short_family_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">short_family_name</span></code></a> and <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.family_name" title="pywt.Wavelet.family_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">family_name</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="go">db3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">short_family_name</span><span class="p">)</span>
+<span class="go">db</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">family_name</span><span class="p">)</span>
+<span class="go">Daubechies</span>
+</pre></div>
+</div>
+<ul>
+<li><p>Decomposition (<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.dec_len" title="pywt.Wavelet.dec_len"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dec_len</span></code></a>) and reconstruction
+(<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.rec_len" title="pywt.Wavelet.rec_len"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rec_len</span></code></a>) filter lengths:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">dec_len</span><span class="p">)</span> <span class="c1"># int() is for normalizing longs and ints for doctest</span>
+<span class="go">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">rec_len</span><span class="p">)</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+</li>
+<li><p>Orthogonality (<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.orthogonal" title="pywt.Wavelet.orthogonal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">orthogonal</span></code></a>) and biorthogonality (<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.biorthogonal" title="pywt.Wavelet.biorthogonal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">biorthogonal</span></code></a>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">orthogonal</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">biorthogonal</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</li>
+<li><p>Symmetry (<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.symmetry" title="pywt.Wavelet.symmetry"><code class="xref py py-attr docutils literal notranslate"><span class="pre">symmetry</span></code></a>):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">symmetry</span><span class="p">)</span>
+<span class="go">asymmetric</span>
+</pre></div>
+</div>
+</li>
+<li><p>Number of vanishing moments for the scaling function <code class="docutils literal notranslate"><span class="pre">phi</span></code>
+(<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.vanishing_moments_phi" title="pywt.Wavelet.vanishing_moments_phi"><code class="xref py py-attr docutils literal notranslate"><span class="pre">vanishing_moments_phi</span></code></a>) and the wavelet function <code class="docutils literal notranslate"><span class="pre">psi</span></code>
+(<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.vanishing_moments_psi" title="pywt.Wavelet.vanishing_moments_psi"><code class="xref py py-attr docutils literal notranslate"><span class="pre">vanishing_moments_psi</span></code></a>) associated with the filters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">vanishing_moments_phi</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">vanishing_moments_psi</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+<p>Now when we know a bit about the builtin Wavelets, let’s see how to create
+<a class="reference internal" href="../ref/wavelets.html#custom-wavelets"><span class="std std-ref">custom Wavelets</span></a> objects. These can be done in two ways:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>Passing the filter bank object that implements the <code class="docutils literal notranslate"><span class="pre">filter_bank</span></code>
+attribute. The attribute must return four filters coefficients.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyHaarFilterBank</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">filter_bank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">([</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>                <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_wavelet</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;My Haar Wavelet&#39;</span><span class="p">,</span> <span class="n">filter_bank</span><span class="o">=</span><span class="n">MyHaarFilterBank</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
+<li><p>Passing the filters coefficients directly as the <code class="docutils literal notranslate"><span class="pre">filter_bank</span></code>
+parameter.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_filter_bank</span> <span class="o">=</span> <span class="p">([</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>                  <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_wavelet</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;My Haar Wavelet&#39;</span><span class="p">,</span> <span class="n">filter_bank</span><span class="o">=</span><span class="n">my_filter_bank</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+<p>Note that such custom wavelets <strong>will not</strong> have all the properties set
+to correct values:</p>
+<blockquote>
+<div><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_wavelet</span><span class="p">)</span>
+<span class="go">Wavelet My Haar Wavelet</span>
+<span class="go">  Family name:</span>
+<span class="go">  Short name:</span>
+<span class="go">  Filters length: 2</span>
+<span class="go">  Orthogonal:     False</span>
+<span class="go">  Biorthogonal:   False</span>
+<span class="go">  Symmetry:       unknown</span>
+<span class="go">  DWT:            True</span>
+<span class="go">  CWT:            False</span>
+</pre></div>
+</div>
+<p>You can however set a couple of them on your own:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_wavelet</span><span class="o">.</span><span class="n">orthogonal</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_wavelet</span><span class="o">.</span><span class="n">biorthogonal</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_wavelet</span><span class="p">)</span>
+<span class="go">Wavelet My Haar Wavelet</span>
+<span class="go">  Family name:</span>
+<span class="go">  Short name:</span>
+<span class="go">  Filters length: 2</span>
+<span class="go">  Orthogonal:     True</span>
+<span class="go">  Biorthogonal:   True</span>
+<span class="go">  Symmetry:       unknown</span>
+<span class="go">  DWT:            True</span>
+<span class="go">  CWT:            False</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="and-now-the-wavefun">
+<h2>And now… the <code class="docutils literal notranslate"><span class="pre">wavefun</span></code>!<a class="headerlink" href="#and-now-the-wavefun" title="Link to this heading">¶</a></h2>
+<p>We all know that the fun with wavelets is in wavelet functions.
+Now what would be this package without a tool to compute wavelet
+and scaling functions approximations?</p>
+<p>This is the purpose of the <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.wavefun" title="pywt.Wavelet.wavefun"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wavefun()</span></code></a> method, which is used to
+approximate scaling function (<code class="docutils literal notranslate"><span class="pre">phi</span></code>) and wavelet function (<code class="docutils literal notranslate"><span class="pre">psi</span></code>) at the
+given level of refinement, based on the filters coefficients.</p>
+<p>The number of returned values varies depending on the wavelet’s
+orthogonality property. For orthogonal wavelets the result is tuple
+with scaling function, wavelet function and xgrid coordinates.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;sym3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">orthogonal</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">psi</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">wavefun</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For biorthogonal (non-orthogonal) wavelets different scaling and wavelet
+functions are used for decomposition and reconstruction, and thus five
+elements are returned: decomposition scaling and wavelet functions
+approximations, reconstruction scaling and wavelet functions approximations,
+and the xgrid.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;bior1.3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">orthogonal</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">phi_d</span><span class="p">,</span> <span class="n">psi_d</span><span class="p">,</span> <span class="n">phi_r</span><span class="p">,</span> <span class="n">psi_r</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">wavefun</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>You can find live examples of <a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet.wavefun" title="pywt.Wavelet.wavefun"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wavefun()</span></code></a> usage and
+images of all the built-in wavelets on the
+<a class="reference external" href="http://wavelets.pybytes.com">Wavelet Properties Browser</a> page.
+However, <strong>this website is no longer actively maintained</strong> and does not
+include every wavelet present in PyWavelets. The precision of the wavelet
+coefficients at that site is also lower than those included in
+PyWavelets.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The Wavelet object</a><ul>
+<li><a class="reference internal" href="#wavelet-families-and-builtin-wavelets-names">Wavelet families and builtin Wavelets names</a></li>
+<li><a class="reference internal" href="#creating-wavelet-objects">Creating Wavelet objects</a></li>
+<li><a class="reference internal" href="#wavelet-properties">Wavelet properties</a></li>
+<li><a class="reference internal" href="#and-now-the-wavefun">And now… the <code class="docutils literal notranslate"><span class="pre">wavefun</span></code>!</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Usage examples</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="modes.html"
+                          title="next chapter">Signal Extension Modes</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/regression/wavelet.rst" target="_blank">
+                The Wavelet object
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modes.html" title="Signal Extension Modes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Usage examples"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Wavelet object</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

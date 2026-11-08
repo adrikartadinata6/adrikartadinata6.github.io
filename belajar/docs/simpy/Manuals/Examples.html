@@ -1,0 +1,968 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Additional examples &#8212; SimPy 2.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SimPy Tutorials" href="../SimPy_Tutorials.html" />
+    <link rel="prev" title="Cheatsheets" href="../Cheatsheets.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../SimPy_Tutorials.html" title="SimPy Tutorials"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../Cheatsheets.html" title="Cheatsheets"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Manuals.html" accesskey="U">Manuals</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Additional examples</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="additional-examples">
+<h1>Additional examples<a class="headerlink" href="#additional-examples" title="Permalink to this headline">¶</a></h1>
+<p>The following examples are included in the SimPy source distribution.</p>
+<section id="car">
+<h2>Car<a class="headerlink" href="#car" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-0"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">simulate</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">cc</span>
+
+    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Starting&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">100.0</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Arrived&#39;</span><span class="p">))</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car1&#39;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>                <span class="c1"># a new car</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>    <span class="c1"># activate at time 6.0</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>                <span class="c1"># another new car</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">go</span><span class="p">())</span>                <span class="c1"># activate at time 0</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>    <span class="c1"># will print 106.0</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Car2</span> <span class="n">Starting</span>
+<span class="mf">6.0</span> <span class="n">Car1</span> <span class="n">Starting</span>
+<span class="mf">100.0</span> <span class="n">Car2</span> <span class="n">Arrived</span>
+<span class="mf">106.0</span> <span class="n">Car1</span> <span class="n">Arrived</span>
+<span class="n">Current</span> <span class="n">time</span> <span class="ow">is</span> <span class="mf">106.0</span>
+</pre></div>
+</div>
+</section>
+<section id="cart">
+<h2>CarT<a class="headerlink" href="#cart" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-1"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.SimulationTrace</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span>
+        <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">cc</span>
+
+    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Starting&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">100.0</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Arrived&#39;</span><span class="p">))</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car1&#39;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>                <span class="c1"># a new car</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>    <span class="c1"># activate at time 6.0</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>                <span class="c1"># another new car</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">go</span><span class="p">())</span>                <span class="c1"># activate at time 0</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>    <span class="c1"># will print 106.0</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mf">6.0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">Car2</span> <span class="n">Starting</span>
+<span class="mi">0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">6.0</span> <span class="n">Car1</span> <span class="n">Starting</span>
+<span class="mf">6.0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">100.0</span> <span class="n">Car2</span> <span class="n">Arrived</span>
+<span class="mf">100.0</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="mf">106.0</span> <span class="n">Car1</span> <span class="n">Arrived</span>
+<span class="mf">106.0</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="n">Current</span> <span class="n">time</span> <span class="ow">is</span> <span class="mf">106.0</span>
+</pre></div>
+</div>
+</section>
+<section id="cars">
+<h2>Cars<a class="headerlink" href="#cars" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-2"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span>
+        <span class="n">now</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">cc</span>
+
+    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Starting&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gasstation</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Got a pump&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">100.0</span>
+        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gasstation</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Leaving&#39;</span><span class="p">))</span>
+
+
+<span class="n">gasstation</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gasStation&#39;</span><span class="p">,</span> <span class="n">unitName</span><span class="o">=</span><span class="s1">&#39;pump&#39;</span><span class="p">)</span>
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car1&#39;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car3&#39;</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car4&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>  <span class="c1"># activate at time 4.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">go</span><span class="p">())</span>          <span class="c1"># activate at time 0.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="n">c3</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>  <span class="c1"># activate at time 3.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span> <span class="n">c4</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>  <span class="c1"># activate at time 2.0</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Car2</span> <span class="n">Starting</span>
+<span class="mi">0</span> <span class="n">Car2</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">3.0</span> <span class="n">Car3</span> <span class="n">Starting</span>
+<span class="mf">3.0</span> <span class="n">Car3</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">3.0</span> <span class="n">Car4</span> <span class="n">Starting</span>
+<span class="mf">4.0</span> <span class="n">Car1</span> <span class="n">Starting</span>
+<span class="mf">100.0</span> <span class="n">Car2</span> <span class="n">Leaving</span>
+<span class="mf">100.0</span> <span class="n">Car4</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">103.0</span> <span class="n">Car3</span> <span class="n">Leaving</span>
+<span class="mf">103.0</span> <span class="n">Car1</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">200.0</span> <span class="n">Car4</span> <span class="n">Leaving</span>
+<span class="mf">203.0</span> <span class="n">Car1</span> <span class="n">Leaving</span>
+<span class="n">Current</span> <span class="n">time</span> <span class="ow">is</span> <span class="mf">203.0</span>
+</pre></div>
+</div>
+</section>
+<section id="carst">
+<h2>CarsT<a class="headerlink" href="#carst" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-3"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.SimulationTrace</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span>
+        <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">cc</span>
+
+    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Starting&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gasstation</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Got a pump&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">100.0</span>
+        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gasstation</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Leaving&#39;</span><span class="p">))</span>
+
+
+<span class="n">gasstation</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gasStation&#39;</span><span class="p">,</span> <span class="n">unitName</span><span class="o">=</span><span class="s1">&#39;pump&#39;</span><span class="p">)</span>
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car1&#39;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car3&#39;</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;Car4&#39;</span><span class="p">,</span> <span class="mi">1600</span><span class="p">)</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>  <span class="c1"># activate at time 4.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">go</span><span class="p">())</span>          <span class="c1"># activate at time 0.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="n">c3</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>  <span class="c1"># activate at time 3.0</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span> <span class="n">c4</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>  <span class="c1"># activate at time 2.0</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mf">4.0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mi">0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car3</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mf">3.0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="n">at</span> <span class="n">time</span><span class="p">:</span> <span class="mf">3.0</span> <span class="n">prior</span><span class="p">:</span> <span class="kc">False</span>
+<span class="mi">0</span> <span class="n">Car2</span> <span class="n">Starting</span>
+<span class="mi">0</span> <span class="n">request</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span> <span class="n">priority</span><span class="p">:</span> <span class="n">default</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car2&#39;</span><span class="p">]</span>
+<span class="mi">0</span> <span class="n">Car2</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mi">0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">3.0</span> <span class="n">Car3</span> <span class="n">Starting</span>
+<span class="mf">3.0</span> <span class="n">request</span> <span class="o">&lt;</span><span class="n">Car3</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span> <span class="n">priority</span><span class="p">:</span> <span class="n">default</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="s1">&#39;Car3&#39;</span><span class="p">]</span>
+<span class="mf">3.0</span> <span class="n">Car3</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">3.0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car3</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">3.0</span> <span class="n">Car4</span> <span class="n">Starting</span>
+<span class="mf">3.0</span> <span class="n">request</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span> <span class="n">priority</span><span class="p">:</span> <span class="n">default</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car4&#39;</span><span class="p">]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="s1">&#39;Car3&#39;</span><span class="p">]</span>
+<span class="mf">4.0</span> <span class="n">Car1</span> <span class="n">Starting</span>
+<span class="mf">4.0</span> <span class="n">request</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span> <span class="n">priority</span><span class="p">:</span> <span class="n">default</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car4&#39;</span><span class="p">,</span> <span class="s1">&#39;Car1&#39;</span><span class="p">]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car2&#39;</span><span class="p">,</span> <span class="s1">&#39;Car3&#39;</span><span class="p">]</span>
+<span class="mf">100.0</span> <span class="n">reactivate</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="n">time</span><span class="p">:</span> <span class="mf">100.0</span> <span class="n">prior</span><span class="p">:</span> <span class="mi">1</span>
+<span class="mf">100.0</span> <span class="n">release</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car1&#39;</span><span class="p">]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car3&#39;</span><span class="p">,</span> <span class="s1">&#39;Car4&#39;</span><span class="p">]</span>
+<span class="mf">100.0</span> <span class="n">Car2</span> <span class="n">Leaving</span>
+<span class="mf">100.0</span> <span class="o">&lt;</span><span class="n">Car2</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="mf">100.0</span> <span class="n">Car4</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">100.0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">103.0</span> <span class="n">reactivate</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">time</span><span class="p">:</span> <span class="mf">103.0</span> <span class="n">prior</span><span class="p">:</span> <span class="mi">1</span>
+<span class="mf">103.0</span> <span class="n">release</span> <span class="o">&lt;</span><span class="n">Car3</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car4&#39;</span><span class="p">,</span> <span class="s1">&#39;Car1&#39;</span><span class="p">]</span>
+<span class="mf">103.0</span> <span class="n">Car3</span> <span class="n">Leaving</span>
+<span class="mf">103.0</span> <span class="o">&lt;</span><span class="n">Car3</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="mf">103.0</span> <span class="n">Car1</span> <span class="n">Got</span> <span class="n">a</span> <span class="n">pump</span>
+<span class="mf">103.0</span> <span class="n">hold</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">delay</span><span class="p">:</span> <span class="mf">100.0</span>
+<span class="mf">200.0</span> <span class="n">release</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Car1&#39;</span><span class="p">]</span>
+<span class="mf">200.0</span> <span class="n">Car4</span> <span class="n">Leaving</span>
+<span class="mf">200.0</span> <span class="o">&lt;</span><span class="n">Car4</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="mf">203.0</span> <span class="n">release</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">gasStation</span><span class="o">&gt;</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">waitQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="o">.</span> <span class="o">.</span> <span class="o">.</span><span class="n">activeQ</span><span class="p">:</span> <span class="p">[]</span>
+<span class="mf">203.0</span> <span class="n">Car1</span> <span class="n">Leaving</span>
+<span class="mf">203.0</span> <span class="o">&lt;</span><span class="n">Car1</span><span class="o">&gt;</span> <span class="n">terminated</span>
+<span class="n">Current</span> <span class="n">time</span> <span class="ow">is</span> <span class="mf">203.0</span>
+</pre></div>
+</div>
+</section>
+<section id="carwash">
+<h2>Carwash<a class="headerlink" href="#carwash" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-4"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">SimEvent</span><span class="p">,</span> <span class="n">Store</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span>
+        <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">simulate</span><span class="p">,</span> <span class="n">waitevent</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Carwash is master&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Carwash</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Carwash is master&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">lifecycle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">get</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">waitingCars</span><span class="p">,</span> <span class="mi">1</span>
+            <span class="n">carBeingWashed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">got</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">washtime</span>
+            <span class="n">carBeingWashed</span><span class="o">.</span><span class="n">doneSignal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Car is slave&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doneSignal</span> <span class="o">=</span> <span class="n">SimEvent</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">lifecycle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">put</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">waitingCars</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="n">waitevent</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doneSignal</span>
+        <span class="n">whichWash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doneSignal</span><span class="o">.</span><span class="n">signalparam</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> car </span><span class="si">%s</span><span class="s1"> done by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">whichWash</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">CarGenerator</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mi">2</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">lifecycle</span><span class="p">())</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">washtime</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># put four cars into the queue of waiting cars</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">Car</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="o">-</span><span class="n">j</span><span class="p">)</span>
+        <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">lifecycle</span><span class="p">())</span>
+
+<span class="n">waitingCars</span> <span class="o">=</span> <span class="n">Store</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">cw</span> <span class="o">=</span> <span class="n">Carwash</span><span class="p">(</span><span class="s1">&#39;Carwash </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">activate</span><span class="p">(</span><span class="n">cw</span><span class="p">,</span> <span class="n">cw</span><span class="o">.</span><span class="n">lifecycle</span><span class="p">())</span>
+
+<span class="n">cg</span> <span class="o">=</span> <span class="n">CarGenerator</span><span class="p">()</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">cg</span><span class="p">,</span> <span class="n">cg</span><span class="o">.</span><span class="n">generate</span><span class="p">())</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;waitingCars </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">waitingCars</span><span class="o">.</span><span class="n">theBuffer</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5</span> <span class="n">car</span> <span class="o">-</span><span class="mi">1</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">5</span> <span class="n">car</span> <span class="o">-</span><span class="mi">2</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="mi">10</span> <span class="n">car</span> <span class="o">-</span><span class="mi">3</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">10</span> <span class="n">car</span> <span class="o">-</span><span class="mi">4</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="mi">15</span> <span class="n">car</span> <span class="mi">0</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">15</span> <span class="n">car</span> <span class="mi">1</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="mi">20</span> <span class="n">car</span> <span class="mi">2</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">20</span> <span class="n">car</span> <span class="mi">3</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="mi">25</span> <span class="n">car</span> <span class="mi">4</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">25</span> <span class="n">car</span> <span class="mi">5</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="mi">30</span> <span class="n">car</span> <span class="mi">6</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">0</span>
+<span class="mi">30</span> <span class="n">car</span> <span class="mi">7</span> <span class="n">done</span> <span class="n">by</span> <span class="n">Carwash</span> <span class="mi">1</span>
+<span class="n">waitingCars</span> <span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">,</span> <span class="s1">&#39;13&#39;</span><span class="p">,</span> <span class="s1">&#39;14&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="breakdown">
+<h2>Breakdown<a class="headerlink" href="#breakdown" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-5"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span>
+        <span class="n">reactivate</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">operate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repairduration</span><span class="p">,</span> <span class="n">triplength</span><span class="p">):</span>  <span class="c1"># PEM</span>
+        <span class="n">tripleft</span> <span class="o">=</span> <span class="n">triplength</span>                   <span class="c1"># time needed to finish trip</span>
+        <span class="k">while</span> <span class="n">tripleft</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tripleft</span>         <span class="c1"># try to finish the trip</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interrupted</span><span class="p">():</span>             <span class="c1"># if another breakdown occurs</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interruptCause</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">now</span><span class="p">()))</span>
+                <span class="n">tripleft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interruptLeft</span>   <span class="c1"># time to finish the trip</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interruptReset</span><span class="p">()</span>           <span class="c1"># end interrupt state</span>
+                <span class="n">reactivate</span><span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="n">repairduration</span><span class="p">)</span>  <span class="c1"># restart breakdown br</span>
+                <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">repairduration</span>      <span class="c1"># delay for repairs</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Bus repaired at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>  <span class="c1"># no more breakdowns, bus finished trip</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Bus has arrived at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+
+
+<span class="k">class</span> <span class="nc">Breakdown</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myBus</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Breakdown &#39;</span> <span class="o">+</span> <span class="n">myBus</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bus</span> <span class="o">=</span> <span class="n">myBus</span>
+
+    <span class="k">def</span> <span class="nf">breakBus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>       <span class="c1"># process execution method</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">interval</span>  <span class="c1"># breakdown interarrivals</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">terminated</span><span class="p">():</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interrupt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>    <span class="c1"># breakdown to myBus</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Bus</span><span class="p">(</span><span class="s1">&#39;Bus&#39;</span><span class="p">)</span>      <span class="c1"># create a bus object</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">operate</span><span class="p">(</span><span class="n">repairduration</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">triplength</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="n">br</span> <span class="o">=</span> <span class="n">Breakdown</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>   <span class="c1"># create breakdown br to bus b</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="n">br</span><span class="o">.</span><span class="n">breakBus</span><span class="p">(</span><span class="mi">300</span><span class="p">))</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">4000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SimPy: No more events at time </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Breakdown</span> <span class="n">Bus</span> <span class="n">at</span> <span class="mi">300</span>
+<span class="n">Bus</span> <span class="n">repaired</span> <span class="n">at</span> <span class="mi">320</span>
+<span class="n">Breakdown</span> <span class="n">Bus</span> <span class="n">at</span> <span class="mi">620</span>
+<span class="n">Bus</span> <span class="n">repaired</span> <span class="n">at</span> <span class="mi">640</span>
+<span class="n">Breakdown</span> <span class="n">Bus</span> <span class="n">at</span> <span class="mi">940</span>
+<span class="n">Bus</span> <span class="n">repaired</span> <span class="n">at</span> <span class="mi">960</span>
+<span class="n">Bus</span> <span class="n">has</span> <span class="n">arrived</span> <span class="n">at</span> <span class="mi">1060</span>
+<span class="n">SimPy</span><span class="p">:</span> <span class="n">No</span> <span class="n">more</span> <span class="n">events</span> <span class="n">at</span> <span class="n">time</span> <span class="mi">1260</span>
+</pre></div>
+</div>
+</section>
+<section id="firework">
+<h2>Firework<a class="headerlink" href="#firework" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-6"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">simulate</span>
+
+
+<span class="k">class</span> <span class="nc">Firework</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> firework launched&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">10.0</span>  <span class="c1"># wait 10.0 time units</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">1.0</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> tick&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">10.0</span>  <span class="c1"># wait another 10.0 time units</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Boom!!&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Firework</span><span class="p">()</span>  <span class="c1"># create a Firework object, and</span>
+                <span class="c1"># activate it (with some default parameters)</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">execute</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>0 firework launched
+11.0 tick
+12.0 tick
+13.0 tick
+14.0 tick
+15.0 tick
+16.0 tick
+17.0 tick
+18.0 tick
+19.0 tick
+20.0 tick
+30.0 Boom!!
+</pre></div>
+</div>
+</section>
+<section id="levelinventory">
+<h2>Levelinventory<a class="headerlink" href="#levelinventory" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-7"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">normalvariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Level</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span>
+        <span class="n">now</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Deliver</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deliver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># an &quot;offeror&quot; PEM</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">lead</span> <span class="o">=</span> <span class="mf">10.0</span>      <span class="c1"># time between refills</span>
+            <span class="n">delivery</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># amount in each refill</span>
+            <span class="k">yield</span> <span class="n">put</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">stock</span><span class="p">,</span> <span class="n">delivery</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;at </span><span class="si">%6.4f</span><span class="s1">, add </span><span class="si">%6.4f</span><span class="s1"> units, now amount = </span><span class="si">%6.4f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">delivery</span><span class="p">,</span> <span class="n">stock</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">lead</span>
+
+
+<span class="k">class</span> <span class="nc">Demand</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="n">stockout</span> <span class="o">=</span> <span class="mf">0.0</span>     <span class="c1"># initialize initial stockout amount</span>
+
+    <span class="k">def</span> <span class="nf">demand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># a &quot;requester&quot; PEM</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="mf">1.0</span>      <span class="c1"># set time-step to one day</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">day</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="n">normalvariate</span><span class="p">(</span><span class="mf">1.20</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">)</span>  <span class="c1"># today&#39;s random demand</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">dd</span> <span class="o">-</span> <span class="n">stock</span><span class="o">.</span><span class="n">amount</span>
+            <span class="c1"># excess of demand over current stock amount</span>
+            <span class="k">if</span> <span class="n">dd</span> <span class="o">&gt;</span> <span class="n">stock</span><span class="o">.</span><span class="n">amount</span><span class="p">:</span>     <span class="c1"># can&#39;t supply requested amount</span>
+                <span class="k">yield</span> <span class="n">get</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">stock</span><span class="p">,</span> <span class="n">stock</span><span class="o">.</span><span class="n">amount</span>
+                <span class="c1"># supply all available amount</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stockout</span> <span class="o">+=</span> <span class="n">ds</span>
+                <span class="c1"># add unsupplied demand to self.stockout</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;day </span><span class="si">%6.4f</span><span class="s1">, demand = </span><span class="si">%6.4f</span><span class="s1">, shortfall = </span><span class="si">%6.4f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                        <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">dd</span><span class="p">,</span> <span class="o">-</span><span class="n">ds</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># can supply requested amount</span>
+                <span class="k">yield</span> <span class="n">get</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">stock</span><span class="p">,</span> <span class="n">dd</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;day </span><span class="si">%6.4f</span><span class="s1">, supplied </span><span class="si">%6.4f</span><span class="s1">, now amount = </span><span class="si">%6.4f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                        <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="n">dd</span><span class="p">,</span> <span class="n">stock</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
+
+
+<span class="n">stock</span> <span class="o">=</span> <span class="n">Level</span><span class="p">(</span><span class="n">monitored</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    <span class="c1"># &#39;unbounded&#39; capacity and other defaults</span>
+
+<span class="n">seed</span><span class="p">(</span><span class="mi">99999</span><span class="p">)</span>
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="n">offeror</span> <span class="o">=</span> <span class="n">Deliver</span><span class="p">()</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">offeror</span><span class="p">,</span> <span class="n">offeror</span><span class="o">.</span><span class="n">deliver</span><span class="p">())</span>
+<span class="n">requester</span> <span class="o">=</span> <span class="n">Demand</span><span class="p">()</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">requester</span><span class="p">,</span> <span class="n">requester</span><span class="o">.</span><span class="n">demand</span><span class="p">())</span>
+
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">49.9</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">stock</span><span class="o">.</span><span class="n">bufferMon</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">requester</span><span class="o">.</span><span class="n">stockout</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Summary of results through end of day </span><span class="si">%6.4f</span><span class="s1">:&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">now</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;average stock = </span><span class="si">%6.4f</span><span class="s1">, cumulative stockout = </span><span class="si">%6.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">at</span> <span class="mf">0.0000</span><span class="p">,</span> <span class="n">add</span> <span class="mf">10.0000</span> <span class="n">units</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">10.0000</span>
+<span class="n">day</span> <span class="mf">1.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.0115</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">8.9885</span>
+<span class="n">day</span> <span class="mf">2.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1377</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.8508</span>
+<span class="n">day</span> <span class="mf">3.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.7743</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.0766</span>
+<span class="n">day</span> <span class="mf">4.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.4056</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">5.6709</span>
+<span class="n">day</span> <span class="mf">5.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.9736</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">4.6973</span>
+<span class="n">day</span> <span class="mf">6.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1061</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">3.5912</span>
+<span class="n">day</span> <span class="mf">7.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.4067</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">2.1845</span>
+<span class="n">day</span> <span class="mf">8.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2884</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.8961</span>
+<span class="n">day</span> <span class="mf">9.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.4426</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5465</span>
+<span class="n">at</span> <span class="mf">10.0000</span><span class="p">,</span> <span class="n">add</span> <span class="mf">10.0000</span> <span class="n">units</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">10.0000</span>
+<span class="n">day</span> <span class="mf">10.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.5850</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">8.4150</span>
+<span class="n">day</span> <span class="mf">11.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.7974</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.6176</span>
+<span class="n">day</span> <span class="mf">12.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.8854</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">6.7323</span>
+<span class="n">day</span> <span class="mf">13.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.4893</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">5.2430</span>
+<span class="n">day</span> <span class="mf">14.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.0522</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">4.1908</span>
+<span class="n">day</span> <span class="mf">15.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.0492</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">3.1416</span>
+<span class="n">day</span> <span class="mf">16.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2013</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">1.9403</span>
+<span class="n">day</span> <span class="mf">17.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.4026</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.5377</span>
+<span class="n">day</span> <span class="mf">18.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.0874</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5497</span>
+<span class="n">day</span> <span class="mf">19.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.3043</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.3043</span>
+<span class="n">at</span> <span class="mf">20.0000</span><span class="p">,</span> <span class="n">add</span> <span class="mf">10.0000</span> <span class="n">units</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">10.0000</span>
+<span class="n">day</span> <span class="mf">20.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2737</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">8.7263</span>
+<span class="n">day</span> <span class="mf">21.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.9550</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.7713</span>
+<span class="n">day</span> <span class="mf">22.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.3646</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">6.4067</span>
+<span class="n">day</span> <span class="mf">23.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.8629</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">5.5438</span>
+<span class="n">day</span> <span class="mf">24.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2893</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">4.2545</span>
+<span class="n">day</span> <span class="mf">25.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1897</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">3.0648</span>
+<span class="n">day</span> <span class="mf">26.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.9708</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">2.0940</span>
+<span class="n">day</span> <span class="mf">27.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1397</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.9543</span>
+<span class="n">day</span> <span class="mf">28.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.1286</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1743</span>
+<span class="n">day</span> <span class="mf">29.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">0.8891</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.8891</span>
+<span class="n">at</span> <span class="mf">30.0000</span><span class="p">,</span> <span class="n">add</span> <span class="mf">10.0000</span> <span class="n">units</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">10.0000</span>
+<span class="n">day</span> <span class="mf">30.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.9496</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">9.0504</span>
+<span class="n">day</span> <span class="mf">31.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1515</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.8988</span>
+<span class="n">day</span> <span class="mf">32.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.3724</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">6.5264</span>
+<span class="n">day</span> <span class="mf">33.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.6977</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">5.8287</span>
+<span class="n">day</span> <span class="mf">34.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2291</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">4.5996</span>
+<span class="n">day</span> <span class="mf">35.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.3502</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">3.2494</span>
+<span class="n">day</span> <span class="mf">36.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.0396</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">2.2098</span>
+<span class="n">day</span> <span class="mf">37.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.3442</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.8656</span>
+<span class="n">day</span> <span class="mf">38.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.0919</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.2263</span>
+<span class="n">day</span> <span class="mf">39.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.4077</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.4077</span>
+<span class="n">at</span> <span class="mf">40.0000</span><span class="p">,</span> <span class="n">add</span> <span class="mf">10.0000</span> <span class="n">units</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">10.0000</span>
+<span class="n">day</span> <span class="mf">40.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">0.9053</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">9.0947</span>
+<span class="n">day</span> <span class="mf">41.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2982</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">7.7965</span>
+<span class="n">day</span> <span class="mf">42.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.3458</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">6.4508</span>
+<span class="n">day</span> <span class="mf">43.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2357</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">5.2151</span>
+<span class="n">day</span> <span class="mf">44.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.2822</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">3.9329</span>
+<span class="n">day</span> <span class="mf">45.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1809</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">2.7519</span>
+<span class="n">day</span> <span class="mf">46.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.0891</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">1.6629</span>
+<span class="n">day</span> <span class="mf">47.0000</span><span class="p">,</span> <span class="n">supplied</span> <span class="mf">1.1926</span><span class="p">,</span> <span class="n">now</span> <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.4702</span>
+<span class="n">day</span> <span class="mf">48.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.3927</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.9224</span>
+<span class="n">day</span> <span class="mf">49.0000</span><span class="p">,</span> <span class="n">demand</span> <span class="o">=</span> <span class="mf">1.2690</span><span class="p">,</span> <span class="n">shortfall</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.2690</span>
+
+<span class="n">Summary</span> <span class="n">of</span> <span class="n">results</span> <span class="n">through</span> <span class="n">end</span> <span class="n">of</span> <span class="n">day</span> <span class="mf">49.0000</span><span class="p">:</span>
+<span class="n">average</span> <span class="n">stock</span> <span class="o">=</span> <span class="mf">4.4581</span><span class="p">,</span> <span class="n">cumulative</span> <span class="n">stockout</span> <span class="o">=</span> <span class="mf">7.2894</span>
+</pre></div>
+</div>
+</section>
+<section id="message">
+<h2>Message<a class="headerlink" href="#message" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-8"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">simulate</span>
+
+
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A simple Process&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Message&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len</span> <span class="o">=</span> <span class="nb">len</span>
+
+    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;Starting&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mf">100.0</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;Arrived&#39;</span><span class="p">))</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">203</span><span class="p">)</span>   <span class="c1"># new message</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">go</span><span class="p">())</span>  <span class="c1"># activate it</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">33</span><span class="p">)</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">go</span><span class="p">(),</span> <span class="n">at</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">now</span><span class="p">())</span>  <span class="c1"># will print 106.0</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mi">1</span> <span class="n">Starting</span>
+<span class="mf">6.0</span> <span class="mi">2</span> <span class="n">Starting</span>
+<span class="mf">100.0</span> <span class="mi">1</span> <span class="n">Arrived</span>
+<span class="mf">106.0</span> <span class="mi">2</span> <span class="n">Arrived</span>
+<span class="n">Current</span> <span class="n">time</span> <span class="ow">is</span> <span class="mf">106.0</span>
+</pre></div>
+</div>
+</section>
+<section id="resource">
+<h2>Resource<a class="headerlink" href="#resource" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-9"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Process</span><span class="p">,</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span>
+        <span class="n">now</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="n">inClients</span> <span class="o">=</span> <span class="p">[]</span>     <span class="c1"># list the clients in order by their requests</span>
+    <span class="n">outClients</span> <span class="o">=</span> <span class="p">[]</span>    <span class="c1"># list the clients in order by completion of service</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getserved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servtime</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">myServer</span><span class="p">):</span>
+        <span class="n">Client</span><span class="o">.</span><span class="n">inClients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> requests 1 unit at t = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">now</span><span class="p">()))</span>
+        <span class="c1"># request use of a resource unit</span>
+        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">myServer</span><span class="p">,</span> <span class="n">priority</span>
+        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">servtime</span>
+        <span class="c1"># release the resource</span>
+        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">myServer</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> done at t = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">now</span><span class="p">()))</span>
+        <span class="n">Client</span><span class="o">.</span><span class="n">outClients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># the next line creates the ``server`` Resource object</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># server defaults to qType==FIFO</span>
+
+<span class="c1"># the next lines create some Client process objects</span>
+<span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c1&#39;</span><span class="p">),</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>
+<span class="n">c3</span><span class="p">,</span> <span class="n">c4</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c3&#39;</span><span class="p">),</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c4&#39;</span><span class="p">)</span>
+<span class="n">c5</span><span class="p">,</span> <span class="n">c6</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c5&#39;</span><span class="p">),</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c6&#39;</span><span class="p">)</span>
+
+<span class="c1"># in the next lines each client requests</span>
+<span class="c1"># one of the ``server``&#39;s Resource units</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="n">c3</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span> <span class="n">c4</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c5</span><span class="p">,</span> <span class="n">c5</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c6</span><span class="p">,</span> <span class="n">c6</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Request order: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">Client</span><span class="o">.</span><span class="n">inClients</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Service order: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">Client</span><span class="o">.</span><span class="n">outClients</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c2</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c3</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c4</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c5</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c6</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c1</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">c2</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">c3</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">c4</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">c5</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">c6</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">Request</span> <span class="n">order</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">,</span> <span class="s1">&#39;c3&#39;</span><span class="p">,</span> <span class="s1">&#39;c4&#39;</span><span class="p">,</span> <span class="s1">&#39;c5&#39;</span><span class="p">,</span> <span class="s1">&#39;c6&#39;</span><span class="p">]</span>
+<span class="n">Service</span> <span class="n">order</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;c1&#39;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">,</span> <span class="s1">&#39;c3&#39;</span><span class="p">,</span> <span class="s1">&#39;c4&#39;</span><span class="p">,</span> <span class="s1">&#39;c5&#39;</span><span class="p">,</span> <span class="s1">&#39;c6&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="resource-monitor">
+<h2>Resource monitor<a class="headerlink" href="#resource-monitor" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-10"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Monitor</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span>
+        <span class="n">hold</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+        <span class="n">inClients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">outClients</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getserved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">servtime</span><span class="p">,</span> <span class="n">myServer</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> requests 1 unit at t = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">now</span><span class="p">()))</span>
+            <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">myServer</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">servtime</span>
+            <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">myServer</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> done at t = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">now</span><span class="p">()))</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">monitored</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitorType</span><span class="o">=</span><span class="n">Monitor</span><span class="p">)</span>
+
+<span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c1&#39;</span><span class="p">),</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>
+<span class="n">c3</span><span class="p">,</span> <span class="n">c4</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c3&#39;</span><span class="p">),</span> <span class="n">Client</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;c4&#39;</span><span class="p">)</span>
+
+<span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="n">c3</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span> <span class="n">c4</span><span class="o">.</span><span class="n">getserved</span><span class="p">(</span><span class="n">servtime</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">myServer</span><span class="o">=</span><span class="n">server</span><span class="p">))</span>
+
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(TimeAverage no. waiting: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">waitMon</span><span class="o">.</span><span class="n">timeAverage</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) Average no. waiting: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">waitMon</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) Var of no. waiting: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">waitMon</span><span class="o">.</span><span class="n">var</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) SD of no. waiting: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">waitMon</span><span class="o">.</span><span class="n">var</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(TimeAverage no. in service: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">actMon</span><span class="o">.</span><span class="n">timeAverage</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) Average no. in service: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">actMon</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) Var of no. in service: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">server</span><span class="o">.</span><span class="n">actMon</span><span class="o">.</span><span class="n">var</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;(Number) SD of no. in service: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">actMon</span><span class="o">.</span><span class="n">var</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Time history for the &quot;server&quot; waitQ:&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[time, waitQ]&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">server</span><span class="o">.</span><span class="n">waitMon</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Time history for the &quot;server&quot; activeQ:&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[time, activeQ]&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">server</span><span class="o">.</span><span class="n">actMon</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c2</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c3</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c4</span> <span class="n">requests</span> <span class="mi">1</span> <span class="n">unit</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c1</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">c2</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">c3</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">c4</span> <span class="n">done</span> <span class="n">at</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">400</span>
+
+<span class="p">(</span><span class="n">TimeAverage</span> <span class="n">no</span><span class="o">.</span> <span class="n">waiting</span><span class="p">:</span> <span class="mf">1.5</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">Average</span> <span class="n">no</span><span class="o">.</span> <span class="n">waiting</span><span class="p">:</span> <span class="mf">1.2857</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">Var</span> <span class="n">of</span> <span class="n">no</span><span class="o">.</span> <span class="n">waiting</span><span class="p">:</span> <span class="mf">1.0612</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">SD</span> <span class="n">of</span> <span class="n">no</span><span class="o">.</span> <span class="n">waiting</span><span class="p">:</span> <span class="mf">1.0302</span>
+<span class="p">(</span><span class="n">TimeAverage</span> <span class="n">no</span><span class="o">.</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">Average</span> <span class="n">no</span><span class="o">.</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span> <span class="mf">0.4444</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">Var</span> <span class="n">of</span> <span class="n">no</span><span class="o">.</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span> <span class="mf">0.2469</span>
+<span class="p">(</span><span class="n">Number</span><span class="p">)</span> <span class="n">SD</span> <span class="n">of</span> <span class="n">no</span><span class="o">.</span> <span class="ow">in</span> <span class="n">service</span><span class="p">:</span> <span class="mf">0.4969</span>
+<span class="o">========================================</span>
+<span class="n">Time</span> <span class="n">history</span> <span class="k">for</span> <span class="n">the</span> <span class="s2">&quot;server&quot;</span> <span class="n">waitQ</span><span class="p">:</span>
+<span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="n">waitQ</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="o">========================================</span>
+<span class="n">Time</span> <span class="n">history</span> <span class="k">for</span> <span class="n">the</span> <span class="s2">&quot;server&quot;</span> <span class="n">activeQ</span><span class="p">:</span>
+<span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="n">activeQ</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="shopping">
+<h2>Shopping<a class="headerlink" href="#shopping" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-11"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">simulate</span>
+
+
+<span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">buy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>   <span class="n">budget</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Here I am at the shops </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mf">5.0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+            <span class="c1"># executed 4 times at intervals of t time units</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;I just bought something </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">budget</span> <span class="o">-=</span> <span class="mf">10.00</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;All I have left is </span><span class="si">%s</span><span class="s1"> I am going home </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">budget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># create a customer named &quot;Evelyn&quot;,</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Evelyn&#39;</span><span class="p">)</span>
+
+<span class="c1"># and activate her with a budget of 100</span>
+<span class="n">activate</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">buy</span><span class="p">(</span><span class="n">budget</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Here</span> <span class="n">I</span> <span class="n">am</span> <span class="n">at</span> <span class="n">the</span> <span class="n">shops</span> <span class="n">Evelyn</span>
+<span class="n">I</span> <span class="n">just</span> <span class="n">bought</span> <span class="n">something</span> <span class="n">Evelyn</span>
+<span class="n">I</span> <span class="n">just</span> <span class="n">bought</span> <span class="n">something</span> <span class="n">Evelyn</span>
+<span class="n">I</span> <span class="n">just</span> <span class="n">bought</span> <span class="n">something</span> <span class="n">Evelyn</span>
+<span class="n">I</span> <span class="n">just</span> <span class="n">bought</span> <span class="n">something</span> <span class="n">Evelyn</span>
+<span class="n">All</span> <span class="n">I</span> <span class="n">have</span> <span class="n">left</span> <span class="ow">is</span> <span class="mf">60.0</span> <span class="n">I</span> <span class="n">am</span> <span class="n">going</span> <span class="n">home</span> <span class="n">Evelyn</span>
+</pre></div>
+</div>
+</section>
+<section id="storewidget">
+<h2>Storewidget<a class="headerlink" href="#storewidget" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate" id="index-12"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Lister</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Store</span><span class="p">,</span> <span class="n">activate</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">hold</span><span class="p">,</span>
+    <span class="n">initialize</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">simulate</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ProducerD</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">produce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># the ProducerD PEM</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">put</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="p">[</span><span class="n">Widget</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">Widget</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mi">10</span>
+
+
+<span class="k">class</span> <span class="nc">ConsumerD</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Process</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># the ConsumerD PEM</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">toGet</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">yield</span> <span class="n">get</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">toGet</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">got</span><span class="p">)</span> <span class="o">==</span> <span class="n">toGet</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> Get widget weights </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span>
+                    <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">weight</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">got</span><span class="p">]))</span>
+            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="mi">11</span>
+
+
+<span class="k">class</span> <span class="nc">Widget</span><span class="p">(</span><span class="n">Lister</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+
+
+<span class="n">widgbuf</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">widgbuf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Widget</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="n">initialize</span><span class="p">()</span>
+
+<span class="n">buf</span> <span class="o">=</span> <span class="n">Store</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">initialBuffered</span><span class="o">=</span><span class="n">widgbuf</span><span class="p">,</span> <span class="n">monitored</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>  <span class="c1"># define and activate 3 producer objects</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">ProducerD</span><span class="p">()</span>
+    <span class="n">activate</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">produce</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>  <span class="c1"># define and activate 3 consumer objects</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">ConsumerD</span><span class="p">()</span>
+    <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">consume</span><span class="p">())</span>
+
+<span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LenBuffer: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">buf</span><span class="o">.</span><span class="n">bufferMon</span><span class="p">)</span>  <span class="c1"># length of buffer</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;getQ: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">buf</span><span class="o">.</span><span class="n">getQMon</span><span class="p">)</span>         <span class="c1"># length of getQ</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;putQ </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">buf</span><span class="o">.</span><span class="n">putQMon</span><span class="p">)</span>          <span class="c1"># length of putQ</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="mi">0</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="mi">0</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="mi">11</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="mi">11</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="mi">11</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="mi">22</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="mi">22</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="mi">22</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="mi">33</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="mi">33</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="mi">40</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="mi">44</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="mi">50</span> <span class="n">Get</span> <span class="n">widget</span> <span class="n">weights</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">LenBuffer</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">getQ</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">putQ</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sm_SimPy_Logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Additional examples</a><ul>
+<li><a class="reference internal" href="#car">Car</a></li>
+<li><a class="reference internal" href="#cart">CarT</a></li>
+<li><a class="reference internal" href="#cars">Cars</a></li>
+<li><a class="reference internal" href="#carst">CarsT</a></li>
+<li><a class="reference internal" href="#carwash">Carwash</a></li>
+<li><a class="reference internal" href="#breakdown">Breakdown</a></li>
+<li><a class="reference internal" href="#firework">Firework</a></li>
+<li><a class="reference internal" href="#levelinventory">Levelinventory</a></li>
+<li><a class="reference internal" href="#message">Message</a></li>
+<li><a class="reference internal" href="#resource">Resource</a></li>
+<li><a class="reference internal" href="#resource-monitor">Resource monitor</a></li>
+<li><a class="reference internal" href="#shopping">Shopping</a></li>
+<li><a class="reference internal" href="#storewidget">Storewidget</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../Cheatsheets.html"
+                          title="previous chapter">Cheatsheets</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../SimPy_Tutorials.html"
+                          title="next chapter">SimPy Tutorials</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Manuals/Examples.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../SimPy_Tutorials.html" title="SimPy Tutorials"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../Cheatsheets.html" title="Cheatsheets"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Manuals.html" >Manuals</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Additional examples</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2002-2022, Klaus Müller, Tony Vignaux, Ontje Lünsdorf, Stefan Scherfke.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Overview of multilevel wavelet decompositions &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2D Forward and Inverse Discrete Wavelet Transform" href="2d-dwt-and-idwt.html" />
+    <link rel="prev" title="Inverse Discrete Wavelet Transform (IDWT)" href="idwt-inverse-discrete-wavelet-transform.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="2d-dwt-and-idwt.html" title="2D Forward and Inverse Discrete Wavelet Transform"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="idwt-inverse-discrete-wavelet-transform.html" title="Inverse Discrete Wavelet Transform (IDWT)"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of multilevel wavelet decompositions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="overview-of-multilevel-wavelet-decompositions">
+<h1>Overview of multilevel wavelet decompositions<a class="headerlink" href="#overview-of-multilevel-wavelet-decompositions" title="Link to this heading">¶</a></h1>
+<p>There are a number of different ways a wavelet decomposition can be performed
+for multiresolution analysis of n-dimensional data. Here we will review the
+three approaches currently implemented in PyWavelets. 2D cases are
+illustrated, but each of the approaches extends to the n-dimensional case in a
+straightforward manner.</p>
+<section id="multilevel-discrete-wavelet-transform">
+<h2>Multilevel Discrete Wavelet Transform<a class="headerlink" href="#multilevel-discrete-wavelet-transform" title="Link to this heading">¶</a></h2>
+<p>The most common approach to the multilevel discrete wavelet transform involves
+further decomposition of only the approximation subband at each subsequent
+level. This is also sometimes referred to as the Mallat decomposition
+<a class="reference internal" href="#mall89" id="id1"><span>[Mall89]</span></a>. In 2D, the discrete wavelet transform produces four sets of
+coefficients corresponding to the four possible compinations of the wavelet
+decomposition filters over the two separate axes. (In n-dimensions, there
+are <code class="docutils literal notranslate"><span class="pre">2**n</span></code> sets of coefficients). For subsequent levels of decomposition,
+only the approximation coefficients (the lowpass subband) are further
+decomposed.</p>
+<p>In PyWavelets, this decomposition is implemented for n-dimensional data by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">wavedecn()</span></code> and the inverse by <code class="xref py py-func docutils literal notranslate"><span class="pre">waverecn()</span></code>. 1D and 2D
+versions of these routines also exist. It is illustrated in the figure below.
+The top row indicates the coefficient names as used by <code class="xref py py-func docutils literal notranslate"><span class="pre">wavedec2()</span></code>
+after each level of decomposition. The bottom row shows wavelet coefficients
+for the camerman image (with each subband independently normalized for easier
+visualization).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pywt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">pywt._doc_utils</span> <span class="kn">import</span> <span class="n">wavedec2_keys</span><span class="p">,</span> <span class="n">draw_2d_wp_basis</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">camera</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+
+<span class="n">max_lev</span> <span class="o">=</span> <span class="mi">3</span>       <span class="c1"># how many levels of decomposition to draw</span>
+<span class="n">label_levels</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># how many levels to explicitly label on the plots</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_lev</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># show the original image before decomposition</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Image&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="k">continue</span>
+
+    <span class="c1"># plot subband boundaries of a standard DWT basis</span>
+    <span class="n">draw_2d_wp_basis</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">wavedec2_keys</span><span class="p">(</span><span class="n">level</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">level</span><span class="p">],</span>
+                     <span class="n">label_levels</span><span class="o">=</span><span class="n">label_levels</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> level</span><span class="se">\n</span><span class="s1">decomposition&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+
+    <span class="c1"># compute the 2D DWT</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">wavedec2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;periodization&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+    <span class="c1"># normalize each coefficient array independently for better visibility</span>
+    <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">detail_level</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+        <span class="n">c</span><span class="p">[</span><span class="n">detail_level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="n">detail_level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="c1"># show the normalized coefficients</span>
+    <span class="n">arr</span><span class="p">,</span> <span class="n">slices</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">coeffs_to_array</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Coefficients</span><span class="se">\n</span><span class="s1">(</span><span class="si">{}</span><span class="s1"> level)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It can be seen that many of the coefficients are near zero (gray). This ability
+of the wavelet transform to sparsely represent natural images is a key
+property that makes it desirable in applications such as image compression and
+restoration.</p>
+</section>
+<section id="fully-seperable-discrete-wavelet-transform">
+<h2>Fully Seperable Discrete Wavelet Transform<a class="headerlink" href="#fully-seperable-discrete-wavelet-transform" title="Link to this heading">¶</a></h2>
+<p>An alternative decomposition results in first fully decomposing one axis of the
+data prior to moving onto each additional axis in turn. This is illustrated
+for the 2D case in the upper right panel of the figure below. This approach has
+a factor of two higher computational cost as compared to the Mallat approach,
+but has advantages in compactly representing anisotropic data. A demo of this
+is <a class="reference external" href="https://github.com/PyWavelets/pywt/tree/master/demo/fswavedecn_mondrian.py">available</a>).</p>
+<p>This form of the DWT is also sometimes referred to as the tensor wavelet
+transform or the hyperbolic wavelet transform. In PyWavelets it is implemented
+for n-dimensional data by <code class="xref py py-func docutils literal notranslate"><span class="pre">fswavedecn()</span></code> and the inverse by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">fswaverecn()</span></code>.</p>
+</section>
+<section id="wavelet-packet-transform">
+<h2>Wavelet Packet Transform<a class="headerlink" href="#wavelet-packet-transform" title="Link to this heading">¶</a></h2>
+<p>Another possible choice is to apply additional levels of decomposition to all
+wavelet subbands from the first level as opposed to only the approximation
+subband. This is known as the wavelet packet transform and is illustrated in
+2D in the lower left panel of the figure. It is also possible to only perform
+any subset of the decompositions, resulting in a wide number of potential
+wavelet packet bases. An arbitrary example is shown in the lower right panel
+of the figure below.</p>
+<p>A further description is available in the
+<a class="reference internal" href="wavelet-packets.html#ref-wp"><span class="std std-ref">wavelet packet documentation</span></a>.</p>
+<p>For the wavelet packets, the plots below use “natural” ordering for simplicity,
+but this does not directly match the “frequency” ordering for these wavelet
+packets. It is possible to rearrange the coefficients into frequency ordering
+(see the <code class="docutils literal notranslate"><span class="pre">get_level</span></code> method of <a class="reference internal" href="wavelet-packets.html#id7" title="pywt.WaveletPacket2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a> and <a class="reference internal" href="#wick94" id="id2"><span>[Wick94]</span></a>
+for more details).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">pywt._doc_utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">wavedec_keys</span><span class="p">,</span> <span class="n">wavedec2_keys</span><span class="p">,</span> <span class="n">draw_2d_wp_basis</span><span class="p">,</span>
+                             <span class="n">draw_2d_fswavedecn_basis</span><span class="p">)</span>
+
+<span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+
+<span class="n">max_lev</span> <span class="o">=</span> <span class="mi">4</span>       <span class="c1"># how many levels of decomposition to draw</span>
+<span class="n">label_levels</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># how many levels to explicitly label on the plots</span>
+
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="c1"># plot a 5-level standard DWT basis</span>
+<span class="n">draw_2d_wp_basis</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">wavedec2_keys</span><span class="p">(</span><span class="n">max_lev</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="n">label_levels</span><span class="o">=</span><span class="n">label_levels</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;wavedec2 (</span><span class="si">{}</span><span class="s1"> level)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_lev</span><span class="p">))</span>
+
+<span class="c1"># plot for the fully separable case</span>
+<span class="n">draw_2d_fswavedecn_basis</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">max_lev</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label_levels</span><span class="o">=</span><span class="n">label_levels</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;fswavedecn (</span><span class="si">{}</span><span class="s1"> level)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_lev</span><span class="p">))</span>
+
+<span class="c1"># get all keys corresponding to a full wavelet packet decomposition</span>
+<span class="n">wp_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">],</span> <span class="n">repeat</span><span class="o">=</span><span class="n">max_lev</span><span class="p">))</span>
+<span class="n">draw_2d_wp_basis</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">wp_keys</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;wavelet packet</span><span class="se">\n</span><span class="s1">(full: </span><span class="si">{}</span><span class="s1"> level)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_lev</span><span class="p">))</span>
+
+<span class="c1"># plot an example of a custom wavelet packet basis</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;aaaa&#39;</span><span class="p">,</span> <span class="s1">&#39;aaad&#39;</span><span class="p">,</span> <span class="s1">&#39;aaah&#39;</span><span class="p">,</span> <span class="s1">&#39;aaav&#39;</span><span class="p">,</span> <span class="s1">&#39;aad&#39;</span><span class="p">,</span> <span class="s1">&#39;aah&#39;</span><span class="p">,</span> <span class="s1">&#39;aava&#39;</span><span class="p">,</span> <span class="s1">&#39;aavd&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;aavh&#39;</span><span class="p">,</span> <span class="s1">&#39;aavv&#39;</span><span class="p">,</span> <span class="s1">&#39;ad&#39;</span><span class="p">,</span> <span class="s1">&#39;ah&#39;</span><span class="p">,</span> <span class="s1">&#39;ava&#39;</span><span class="p">,</span> <span class="s1">&#39;avd&#39;</span><span class="p">,</span> <span class="s1">&#39;avh&#39;</span><span class="p">,</span> <span class="s1">&#39;avv&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;vaa&#39;</span><span class="p">,</span> <span class="s1">&#39;vad&#39;</span><span class="p">,</span> <span class="s1">&#39;vah&#39;</span><span class="p">,</span> <span class="s1">&#39;vav&#39;</span><span class="p">,</span> <span class="s1">&#39;vd&#39;</span><span class="p">,</span> <span class="s1">&#39;vh&#39;</span><span class="p">,</span> <span class="s1">&#39;vv&#39;</span><span class="p">]</span>
+<span class="n">draw_2d_wp_basis</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">label_levels</span><span class="o">=</span><span class="n">label_levels</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;wavelet packet</span><span class="se">\n</span><span class="s1">(custom)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_lev</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="mall89" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">Mall89</a><span class="fn-bracket">]</span></span>
+<p>Mallat, S.G. “A Theory for Multiresolution Signal Decomposition: The Wavelet Representation” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 2, no. 7. July 1989. DOI: 10.1109/34.192463</p>
+</div>
+<div class="citation" id="wick94" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Wick94</a><span class="fn-bracket">]</span></span>
+<p>Wickerhauser, M.V. “Adapted Wavelet Analysis from Theory to Software” Wellesley. Massachusetts: A K Peters. 1994.</p>
+</div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Overview of multilevel wavelet decompositions</a><ul>
+<li><a class="reference internal" href="#multilevel-discrete-wavelet-transform">Multilevel Discrete Wavelet Transform</a></li>
+<li><a class="reference internal" href="#fully-seperable-discrete-wavelet-transform">Fully Seperable Discrete Wavelet Transform</a></li>
+<li><a class="reference internal" href="#wavelet-packet-transform">Wavelet Packet Transform</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="idwt-inverse-discrete-wavelet-transform.html"
+                          title="previous chapter">Inverse Discrete Wavelet Transform (IDWT)</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="2d-dwt-and-idwt.html"
+                          title="next chapter">2D Forward and Inverse Discrete Wavelet Transform</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/ref/2d-decompositions-overview.rst" target="_blank">
+                Overview of multilevel wavelet decompositions
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="2d-dwt-and-idwt.html" title="2D Forward and Inverse Discrete Wavelet Transform"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="idwt-inverse-discrete-wavelet-transform.html" title="Inverse Discrete Wavelet Transform (IDWT)"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Overview of multilevel wavelet decompositions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

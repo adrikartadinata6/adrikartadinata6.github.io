@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pymodbus REPL (Read Evaluate Print Loop) &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulator" href="simulator.html" />
+    <link rel="prev" title="Server" href="server.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pymodbus REPL (Read Evaluate Print Loop)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-as-pymodbus-optional-dependency">Install as pymodbus optional dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-directly-from-the-github-repo">Install directly from the github repo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-instructions">Usage Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demo">Demo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymodbus-repl-client">Pymodbus REPL Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pymodbus-repl-server">Pymodbus REPL Server</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_changes.html">API changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Pymodbus internals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pymodbus REPL (Read Evaluate Print Loop)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/repl.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymodbus-repl-read-evaluate-print-loop">
+<h1>Pymodbus REPL (Read Evaluate Print Loop)<a class="headerlink" href="#pymodbus-repl-read-evaluate-print-loop" title="Link to this heading"></a></h1>
+<p style="color: red;"><strong>Warning:</strong> The Pymodbus REPL documentation is not updated.</p><section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>Project repo <a class="reference external" href="https://github.com/pymodbus-dev/repl">pymodbus-repl</a></p>
+<section id="install-as-pymodbus-optional-dependency">
+<h3>Install as pymodbus optional dependency<a class="headerlink" href="#install-as-pymodbus-optional-dependency" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install &quot;.[repl]&quot;
+</pre></div>
+</div>
+</section>
+<section id="install-directly-from-the-github-repo">
+<h3>Install directly from the github repo<a class="headerlink" href="#install-directly-from-the-github-repo" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install &quot;git+https://github.com/pymodbus-dev/repl&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage-instructions">
+<h2>Usage Instructions<a class="headerlink" href="#usage-instructions" title="Link to this heading"></a></h2>
+<p>RTU and TCP are supported as of now</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bash-3.2$ pymodbus.console
+Usage: pymodbus.console [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --version       Show the version and exit.
+  --verbose       Verbose logs
+  --support-diag  Support Diagnostic messages
+  --help          Show this message and exit.
+
+Commands:
+  serial
+  tcp
+</pre></div>
+</div>
+<p>TCP Options</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bash-3.2$ pymodbus.console tcp --help
+Usage: pymodbus.console tcp [OPTIONS]
+
+Options:
+  --host TEXT     Modbus TCP IP
+  --port INTEGER  Modbus TCP port
+  --help          Show this message and exit.
+</pre></div>
+</div>
+<p>SERIAL Options</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bash-3.2$ pymodbus.console serial --help
+Usage: pymodbus.console serial [OPTIONS]
+
+Options:
+  --method TEXT          Modbus Serial Mode (rtu/ascii)
+  --port TEXT            Modbus RTU port
+  --baudrate INTEGER     Modbus RTU serial baudrate to use.
+  --bytesize [5|6|7|8]   Modbus RTU serial Number of data bits. Possible
+                         values: FIVEBITS, SIXBITS, SEVENBITS, EIGHTBITS.
+  --parity [N|E|O|M|S]   Modbus RTU serial parity.  Enable parity checking.
+                         Possible values: PARITY_NONE, PARITY_EVEN, PARITY_ODD
+                         PARITY_MARK, PARITY_SPACE. Default to &#39;N&#39;
+  --stopbits [1|1.5|2]   Modbus RTU serial stop bits. Number of stop bits.
+                         Possible values: STOPBITS_ONE,
+                         STOPBITS_ONE_POINT_FIVE, STOPBITS_TWO. Default to &#39;1&#39;
+  --xonxoff INTEGER      Modbus RTU serial xonxoff.  Enable software flow
+                         control.
+  --rtscts INTEGER       Modbus RTU serial rtscts. Enable hardware (RTS/CTS)
+                         flow control.
+  --dsrdtr INTEGER       Modbus RTU serial dsrdtr. Enable hardware (DSR/DTR)
+                         flow control.
+  --timeout FLOAT        Modbus RTU serial read timeout.
+  --write-timeout FLOAT  Modbus RTU serial write timeout.
+  --help                 Show this message and exit.
+</pre></div>
+</div>
+<p>To view all available commands type <code class="docutils literal notranslate"><span class="pre">help</span></code></p>
+<p>TCP</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pymodbus.console tcp --host 192.168.128.126 --port 5020
+
+&gt; help
+Available commands:
+client.change_ascii_input_delimiter          Diagnostic sub command, Change message delimiter for future requests.
+client.clear_counters                        Diagnostic sub command, Clear all counters and diag registers.
+client.clear_overrun_count                   Diagnostic sub command, Clear over run counter.
+client.close                                 Closes the underlying socket connection
+client.connect                               Connect to the modbus tcp server
+client.debug_enabled                         Returns a boolean indicating if debug is enabled.
+client.force_listen_only_mode                Diagnostic sub command, Forces the addressed remote device to         its Listen Only Mode.
+client.get_clear_modbus_plus                 Diagnostic sub command, Get or clear stats of remote          modbus plus device.
+client.get_com_event_counter                 Read  status word and an event count from the remote device&#39;s         communication event counter.
+client.get_com_event_log                     Read  status word, event count, message count, and a field of event bytes from the remote device.
+client.host                                  Read Only!
+client.idle_time                             Bus Idle Time to initiate next transaction
+client.is_socket_open                        Check whether the underlying socket/serial is open or not.
+client.last_frame_end                        Read Only!
+client.mask_write_register                   Mask content of holding register at `address`          with `and_mask` and `or_mask`.
+client.port                                  Read Only!
+client.read_coils                            Reads `count` coils from a given slave starting at `address`.
+client.read_device_information               Read the identification and additional information of remote slave.
+client.read_discrete_inputs                  Reads `count` number of discrete inputs starting at offset `address`.
+client.read_exception_status                 Read the contents of eight Exception Status outputs in a remote          device.
+client.read_holding_registers                Read `count` number of holding registers starting at `address`.
+client.read_input_registers                  Read `count` number of input registers starting at `address`.
+client.readwrite_registers                   Read `read_count` number of holding registers starting at         `read_address`  and write `write_registers`         starting at `write_address`.
+client.report_slave_id                       Report information about remote slave ID.
+client.restart_comm_option                   Diagnostic sub command, initialize and restart remote devices serial         interface and clear all of its communications event counters .
+client.return_bus_com_error_count            Diagnostic sub command, Return count of CRC errors         received by remote slave.
+client.return_bus_exception_error_count      Diagnostic sub command, Return count of Modbus exceptions         returned by remote slave.
+client.return_bus_message_count              Diagnostic sub command, Return count of message detected on bus          by remote slave.
+client.return_diagnostic_register            Diagnostic sub command, Read 16-bit diagnostic register.
+client.return_iop_overrun_count              Diagnostic sub command, Return count of iop overrun errors         by remote slave.
+client.return_query_data                     Diagnostic sub command , Loop back data sent in response.
+client.return_slave_bus_char_overrun_count   Diagnostic sub command, Return count of messages not handled          by remote slave due to character overrun condition.
+client.return_slave_busy_count               Diagnostic sub command, Return count of server busy exceptions sent          by remote slave.
+client.return_slave_message_count            Diagnostic sub command, Return count of messages addressed to         remote slave.
+client.return_slave_no_ack_count             Diagnostic sub command, Return count of NO ACK exceptions sent          by remote slave.
+client.return_slave_no_response_count        Diagnostic sub command, Return count of No responses  by remote slave.
+client.silent_interval                       Read Only!
+client.state                                 Read Only!
+client.timeout                               Read Only!
+client.write_coil                            Write `value` to coil at `address`.
+client.write_coils                           Write `value` to coil at `address`.
+client.write_register                        Write `value` to register at `address`.
+client.write_registers                       Write list of `values` to registers starting at `address`.
+</pre></div>
+</div>
+<p>SERIAL</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pymodbus.console serial --port /dev/ttyUSB0 --baudrate 19200 --timeout 2
+&gt; help
+Available commands:
+client.baudrate                              Read Only!
+client.bytesize                              Read Only!
+client.change_ascii_input_delimiter          Diagnostic sub command, Change message delimiter for future requests.
+client.clear_counters                        Diagnostic sub command, Clear all counters and diag registers.
+client.clear_overrun_count                   Diagnostic sub command, Clear over run counter.
+client.close                                 Closes the underlying socket connection
+client.connect                               Connect to the modbus serial server
+client.debug_enabled                         Returns a boolean indicating if debug is enabled.
+client.force_listen_only_mode                Diagnostic sub command, Forces the addressed remote device to         its Listen Only Mode.
+client.get_baudrate                          Serial Port baudrate.
+client.get_bytesize                          Number of data bits.
+client.get_clear_modbus_plus                 Diagnostic sub command, Get or clear stats of remote          modbus plus device.
+client.get_com_event_counter                 Read  status word and an event count from the remote device&#39;s         communication event counter.
+client.get_com_event_log                     Read  status word, event count, message count, and a field of event bytes from the remote device.
+client.get_parity                            Enable Parity Checking.
+client.get_port                              Serial Port.
+client.get_serial_settings                   Gets Current Serial port settings.
+client.get_stopbits                          Number of stop bits.
+client.get_timeout                           Serial Port Read timeout.
+client.idle_time                             Bus Idle Time to initiate next transaction
+client.inter_byte_timeout                    Read Only!
+client.is_socket_open                        c l i e n t . i s   s o c k e t   o p e n
+client.mask_write_register                   Mask content of holding register at `address`          with `and_mask` and `or_mask`.
+client.method                                Read Only!
+client.parity                                Read Only!
+client.port                                  Read Only!
+client.read_coils                            Reads `count` coils from a given slave starting at `address`.
+client.read_device_information               Read the identification and additional information of remote slave.
+client.read_discrete_inputs                  Reads `count` number of discrete inputs starting at offset `address`.
+client.read_exception_status                 Read the contents of eight Exception Status outputs in a remote          device.
+client.read_holding_registers                Read `count` number of holding registers starting at `address`.
+client.read_input_registers                  Read `count` number of input registers starting at `address`.
+client.readwrite_registers                   Read `read_count` number of holding registers starting at         `read_address`  and write `write_registers`         starting at `write_address`.
+client.report_slave_id                       Report information about remote slave ID.
+client.restart_comm_option                   Diagnostic sub command, initialize and restart remote devices serial         interface and clear all of its communications event counters .
+client.return_bus_com_error_count            Diagnostic sub command, Return count of CRC errors         received by remote slave.
+client.return_bus_exception_error_count      Diagnostic sub command, Return count of Modbus exceptions         returned by remote slave.
+client.return_bus_message_count              Diagnostic sub command, Return count of message detected on bus          by remote slave.
+client.return_diagnostic_register            Diagnostic sub command, Read 16-bit diagnostic register.
+client.return_iop_overrun_count              Diagnostic sub command, Return count of iop overrun errors         by remote slave.
+client.return_query_data                     Diagnostic sub command , Loop back data sent in response.
+client.return_slave_bus_char_overrun_count   Diagnostic sub command, Return count of messages not handled          by remote slave due to character overrun condition.
+client.return_slave_busy_count               Diagnostic sub command, Return count of server busy exceptions sent          by remote slave.
+client.return_slave_message_count            Diagnostic sub command, Return count of messages addressed to         remote slave.
+client.return_slave_no_ack_count             Diagnostic sub command, Return count of NO ACK exceptions sent          by remote slave.
+client.return_slave_no_response_count        Diagnostic sub command, Return count of No responses  by remote slave.
+client.set_baudrate                          Baudrate setter.
+client.set_bytesize                          Byte size setter.
+client.set_parity                            Parity Setter.
+client.set_port                              Serial Port setter.
+client.set_stopbits                          Stop bit setter.
+client.set_timeout                           Read timeout setter.
+client.silent_interval                       Read Only!
+client.state                                 Read Only!
+client.stopbits                              Read Only!
+client.timeout                               Read Only!
+client.write_coil                            Write `value` to coil at `address`.
+client.write_coils                           Write `value` to coil at `address`.
+client.write_register                        Write `value` to register at `address`.
+client.write_registers                       Write list of `values` to registers starting at `address`.
+result.decode                                Decode the register response to known formatters.
+result.raw                                   Return raw result dict.
+</pre></div>
+</div>
+<p>Every command has auto suggestion on the arguments supported, arg and
+value are to be supplied in <code class="docutils literal notranslate"><span class="pre">arg=val</span></code> format.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span> <span class="n">count</span><span class="o">=</span><span class="mi">4</span> <span class="n">address</span><span class="o">=</span><span class="mi">9</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">{</span>
+    <span class="s2">&quot;registers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">60497</span><span class="p">,</span>
+        <span class="mi">47134</span><span class="p">,</span>
+        <span class="mi">34091</span><span class="p">,</span>
+        <span class="mi">15424</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The last result could be accessed with <code class="docutils literal notranslate"><span class="pre">result.raw</span></code> command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">result</span><span class="o">.</span><span class="n">raw</span>
+<span class="p">{</span>
+    <span class="s2">&quot;registers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">15626</span><span class="p">,</span>
+        <span class="mi">55203</span><span class="p">,</span>
+        <span class="mi">28733</span><span class="p">,</span>
+        <span class="mi">18368</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For Holding and Input register reads, the decoded value could be viewed
+with <code class="docutils literal notranslate"><span class="pre">result.decode</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">result</span><span class="o">.</span><span class="n">decode</span> <span class="n">word_order</span><span class="o">=</span><span class="n">little</span> <span class="n">byte_order</span><span class="o">=</span><span class="n">little</span> <span class="n">formatters</span><span class="o">=</span><span class="n">float64</span>
+<span class="mf">28.17</span>
+
+<span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Client settings could be retrieved and altered as well.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="c1"># For serial settings</span>
+
+<span class="o">&gt;</span> <span class="c1"># Check the serial mode</span>
+<span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">method</span>
+<span class="s2">&quot;rtu&quot;</span>
+
+<span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">get_serial_settings</span>
+<span class="p">{</span>
+    <span class="s2">&quot;t1.5&quot;</span><span class="p">:</span> <span class="mf">0.00171875</span><span class="p">,</span>
+    <span class="s2">&quot;baudrate&quot;</span><span class="p">:</span> <span class="mi">9600</span><span class="p">,</span>
+    <span class="s2">&quot;read timeout&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/ptyp0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t3.5&quot;</span><span class="p">:</span> <span class="mf">0.00401</span><span class="p">,</span>
+    <span class="s2">&quot;bytesize&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;parity&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stopbits&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+<span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">set_timeout</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">null</span>
+
+<span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">get_timeout</span>
+<span class="mf">1.0</span>
+
+<span class="o">&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">get_serial_settings</span>
+<span class="p">{</span>
+    <span class="s2">&quot;t1.5&quot;</span><span class="p">:</span> <span class="mf">0.00171875</span><span class="p">,</span>
+    <span class="s2">&quot;baudrate&quot;</span><span class="p">:</span> <span class="mi">9600</span><span class="p">,</span>
+    <span class="s2">&quot;read timeout&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/ptyp0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t3.5&quot;</span><span class="p">:</span> <span class="mf">0.00401</span><span class="p">,</span>
+    <span class="s2">&quot;bytesize&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;parity&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stopbits&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="demo">
+<h2>Demo<a class="headerlink" href="#demo" title="Link to this heading"></a></h2>
+<section id="pymodbus-repl-client">
+<h3>Pymodbus REPL Client<a class="headerlink" href="#pymodbus-repl-client" title="Link to this heading"></a></h3>
+<p>Pymodbus REPL comes with many handy features such as payload decoder
+to directly retrieve the values in desired format and supports all
+the diagnostic function codes directly .</p>
+<p>For more info on REPL Client refer  <a class="reference external" href="https://github.com/pymodbus-dev/repl/blob/main/pymodbus/repl/client/README.rst">pymodbus repl client</a></p>
+<a class="reference external image-reference" href="https://asciinema.org/a/y1xOk7lm59U1bRBE2N1pDIj2o"><img alt="https://asciinema.org/a/y1xOk7lm59U1bRBE2N1pDIj2o.png" src="https://asciinema.org/a/y1xOk7lm59U1bRBE2N1pDIj2o.png" /></a>
+</section>
+<section id="pymodbus-repl-server">
+<h3>Pymodbus REPL Server<a class="headerlink" href="#pymodbus-repl-server" title="Link to this heading"></a></h3>
+<p>Pymodbus also comes with a REPL server to quickly run an asynchronous server with additional capabilities out of the box like simulating errors, delay, mangled messages etc.</p>
+<p>For more info on REPL Server refer <a class="reference external" href="https://github.com/pymodbus-dev/repl/blob/main/pymodbus/repl/server/README.rst">pymodbus repl server</a></p>
+<a class="reference external image-reference" href="https://youtu.be/OutaVz0JkWg"><img alt="https://img.youtube.com/vi/OutaVz0JkWg/maxresdefault.jpg" src="https://img.youtube.com/vi/OutaVz0JkWg/maxresdefault.jpg" /></a>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="server.html" class="btn btn-neutral float-left" title="Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulator.html" class="btn btn-neutral float-right" title="Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

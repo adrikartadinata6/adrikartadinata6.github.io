@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>8.2.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8.1.2" href="8.1.2.html" />
+    <link rel="prev" title="8.3.0" href="8.3.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="8.1.2.html" title="8.1.2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="8.3.0.html" title="8.3.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">8.2.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>8.2.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h2>
+<section id="categories">
+<h3>Categories<a class="headerlink" href="#categories" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">im.category</span></code> is deprecated and will be removed in Pillow 10.0.0 (2023-07-01),
+along with the related <code class="docutils literal notranslate"><span class="pre">Image.NORMAL</span></code>, <code class="docutils literal notranslate"><span class="pre">Image.SEQUENCE</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Image.CONTAINER</span></code> attributes.</p>
+<p>To determine if an image has multiple frames or not,
+<code class="docutils literal notranslate"><span class="pre">getattr(im,</span> <span class="pre">&quot;is_animated&quot;,</span> <span class="pre">False)</span></code> can be used instead.</p>
+</section>
+<section id="tk-tcl-8-4">
+<h3>Tk/Tcl 8.4<a class="headerlink" href="#tk-tcl-8-4" title="Link to this heading">¶</a></h3>
+<p>Support for Tk/Tcl 8.4 is deprecated and will be removed in Pillow 10.0.0 (2023-07-01),
+when Tk/Tcl 8.5 will be the minimum supported.</p>
+</section>
+</section>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading">¶</a></h2>
+<section id="image-alpha-composite-dest">
+<h3>Image.alpha_composite: dest<a class="headerlink" href="#image-alpha-composite-dest" title="Link to this heading">¶</a></h3>
+<p>When calling <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.alpha_composite" title="PIL.Image.Image.alpha_composite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">alpha_composite()</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">dest</span></code> argument now
+accepts negative co-ordinates, like the upper left corner of the <code class="docutils literal notranslate"><span class="pre">box</span></code> argument of
+<a class="reference internal" href="../reference/Image.html#PIL.Image.Image.paste" title="PIL.Image.Image.paste"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paste()</span></code></a> can be negative. Naturally, this has effect of
+cropping the overlaid image.</p>
+</section>
+<section id="image-getexif-exif-and-gps-ifd">
+<h3>Image.getexif: EXIF and GPS IFD<a class="headerlink" href="#image-getexif-exif-and-gps-ifd" title="Link to this heading">¶</a></h3>
+<p>Previously, <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.getexif" title="PIL.Image.Image.getexif"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getexif()</span></code></a> flattened the EXIF IFD into the rest of
+the data, losing information. This information is now kept separate, moved under
+<code class="docutils literal notranslate"><span class="pre">im.getexif().get_ifd(0x8769)</span></code>.</p>
+<p>Direct access to the GPS IFD dictionary was possible through <code class="docutils literal notranslate"><span class="pre">im.getexif()[0x8825]</span></code>.
+This is now consistent with other IFDs, and must be accessed through
+<code class="docutils literal notranslate"><span class="pre">im.getexif().get_ifd(0x8825)</span></code>.</p>
+<p>These changes only affect <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.getexif" title="PIL.Image.Image.getexif"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getexif()</span></code></a>, introduced in Pillow
+6.0. The older <code class="docutils literal notranslate"><span class="pre">_getexif()</span></code> methods are unaffected.</p>
+</section>
+<section id="image-modeinfo">
+<h3>Image._MODEINFO<a class="headerlink" href="#image-modeinfo" title="Link to this heading">¶</a></h3>
+<p>This internal dictionary had been deprecated by a comment since PIL, and is now
+removed. Instead, <code class="docutils literal notranslate"><span class="pre">Image.getmodebase()</span></code>, <code class="docutils literal notranslate"><span class="pre">Image.getmodetype()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Image.getmodebandnames()</span></code>, <code class="docutils literal notranslate"><span class="pre">Image.getmodebands()</span></code> or <code class="docutils literal notranslate"><span class="pre">ImageMode.getmode()</span></code>
+can be used.</p>
+</section>
+</section>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="getxmp-for-jpeg-images">
+<h3>getxmp() for JPEG images<a class="headerlink" href="#getxmp-for-jpeg-images" title="Link to this heading">¶</a></h3>
+<p>A new method has been added to return
+<a class="reference external" href="https://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP data</a> for JPEG
+images. It reads the XML data into a dictionary of names and values.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;Tests/images/xmp_test.jpg&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">im</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">getxmp</span><span class="p">())</span>
+<span class="go">{&#39;RDF&#39;: {}, &#39;Description&#39;: {&#39;Version&#39;: &#39;10.4&#39;, &#39;ProcessVersion&#39;: &#39;10.0&#39;, ...}, ...}</span>
+</pre></div>
+</div>
+</section>
+<section id="imagedraw-rounded-rectangle">
+<h3>ImageDraw.rounded_rectangle<a class="headerlink" href="#imagedraw-rounded-rectangle" title="Link to this heading">¶</a></h3>
+<p>Added <a class="reference internal" href="../reference/ImageDraw.html#PIL.ImageDraw.ImageDraw.rounded_rectangle" title="PIL.ImageDraw.ImageDraw.rounded_rectangle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rounded_rectangle()</span></code></a>. It works the same as
+<a class="reference internal" href="../reference/ImageDraw.html#PIL.ImageDraw.ImageDraw.rectangle" title="PIL.ImageDraw.ImageDraw.rectangle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rectangle()</span></code></a>, except with an additional <code class="docutils literal notranslate"><span class="pre">radius</span></code>
+argument. <code class="docutils literal notranslate"><span class="pre">radius</span></code> is limited to half of the width or the height, so that users can
+create a circle, but not any other ellipse.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+<span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">draw</span><span class="o">.</span><span class="n">rounded_rectangle</span><span class="p">(</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="imageops-autocontrast-preserve-tone">
+<h3>ImageOps.autocontrast: preserve_tone<a class="headerlink" href="#imageops-autocontrast-preserve-tone" title="Link to this heading">¶</a></h3>
+<p>The default behaviour of <a class="reference internal" href="../reference/ImageOps.html#PIL.ImageOps.autocontrast" title="PIL.ImageOps.autocontrast"><code class="xref py py-meth docutils literal notranslate"><span class="pre">autocontrast()</span></code></a> is to normalize
+separate histograms for each color channel, changing the tone of the image. The new
+<code class="docutils literal notranslate"><span class="pre">preserve_tone</span></code> argument keeps the tone unchanged by using one luminance histogram
+for all channels.</p>
+</section>
+<section id="imageshow-gmdisplayviewer">
+<h3>ImageShow.GmDisplayViewer<a class="headerlink" href="#imageshow-gmdisplayviewer" title="Link to this heading">¶</a></h3>
+<p>If GraphicsMagick is present, this new <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.Viewer" title="PIL.ImageShow.Viewer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.ImageShow.Viewer</span></code></a> subclass will
+be registered. It uses <a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick</a>, an <a class="reference external" href="https://imagemagick.org/">ImageMagick</a> fork, to display images.</p>
+<p>The GraphicsMagick based viewer has a lower priority than its ImageMagick
+counterpart.  Thus, if both ImageMagick and GraphicsMagick are installed,
+<code class="docutils literal notranslate"><span class="pre">im.show()</span></code> and <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.show" title="PIL.ImageShow.show"><code class="xref py py-func docutils literal notranslate"><span class="pre">ImageShow.show()</span></code></a> prefer the viewer based on
+ImageMagick, i.e the behaviour stays the same for Pillow users having
+ImageMagick installed.</p>
+</section>
+<section id="imageshow-ipythonviewer">
+<h3>ImageShow.IPythonViewer<a class="headerlink" href="#imageshow-ipythonviewer" title="Link to this heading">¶</a></h3>
+<p>If IPython is present, this new <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.Viewer" title="PIL.ImageShow.Viewer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.ImageShow.Viewer</span></code></a> subclass will be
+registered. It displays images on all IPython frontends. This will be helpful
+to users of Google Colab, allowing <code class="docutils literal notranslate"><span class="pre">im.show()</span></code> to display images.</p>
+<p>It is lower in priority than the other default <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.Viewer" title="PIL.ImageShow.Viewer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.ImageShow.Viewer</span></code></a>
+instances, so it will only be used by <code class="docutils literal notranslate"><span class="pre">im.show()</span></code> or <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.show" title="PIL.ImageShow.show"><code class="xref py py-func docutils literal notranslate"><span class="pre">ImageShow.show()</span></code></a>
+if none of the other viewers are available. This means that the behaviour of
+<a class="reference internal" href="../reference/ImageShow.html#module-PIL.ImageShow" title="PIL.ImageShow"><code class="xref py py-class docutils literal notranslate"><span class="pre">PIL.ImageShow</span></code></a> will stay the same for most Pillow users.</p>
+</section>
+<section id="saving-tiff-with-icc-profile">
+<h3>Saving TIFF with ICC profile<a class="headerlink" href="#saving-tiff-with-icc-profile" title="Link to this heading">¶</a></h3>
+<p>As is already possible for JPEG, PNG and WebP, the ICC profile for TIFF files can now
+be specified through a keyword argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.tif&quot;</span><span class="p">,</span> <span class="n">icc_profile</span><span class="o">=...</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Link to this heading">¶</a></h2>
+<p>These were all found with <a class="reference external" href="https://github.com/google/oss-fuzz">OSS-Fuzz</a>.</p>
+<section id="cve-2021-25287-cve-2021-25288-fix-oob-read-in-jpeg2kdecode">
+<h3><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-25287">CVE-2021-25287</a>, <a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-25288">CVE-2021-25288</a>: Fix OOB read in Jpeg2KDecode<a class="headerlink" href="#cve-2021-25287-cve-2021-25288-fix-oob-read-in-jpeg2kdecode" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>For J2k images with multiple bands, it’s legal to have different widths for each band,
+e.g. 1 byte for <code class="docutils literal notranslate"><span class="pre">L</span></code>, 4 bytes for <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p>This dates to Pillow 2.4.0.</p></li>
+</ul>
+</section>
+<section id="cve-2021-28675-fix-dos-in-psdimageplugin">
+<h3><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28675">CVE-2021-28675</a>: Fix DOS in PsdImagePlugin<a class="headerlink" href="#cve-2021-28675-fix-dos-in-psdimageplugin" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/plugins.html#PIL.PsdImagePlugin.PsdImageFile" title="PIL.PsdImagePlugin.PsdImageFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsdImagePlugin.PsdImageFile</span></code></a> did not sanity check the number of input
+layers with regard to the size of the data block, this could lead to a
+denial-of-service on <a class="reference internal" href="../reference/Image.html#PIL.Image.open" title="PIL.Image.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> prior to
+<a class="reference internal" href="../reference/Image.html#PIL.Image.Image.load" title="PIL.Image.Image.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a>.</p></li>
+<li><p>This dates to the PIL fork.</p></li>
+</ul>
+</section>
+<section id="cve-2021-28676-fix-fli-dos">
+<h3><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28676">CVE-2021-28676</a>: Fix FLI DOS<a class="headerlink" href="#cve-2021-28676-fix-fli-dos" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FliDecode.c</span></code> did not properly check that the block advance was non-zero,
+potentially leading to an infinite loop on load.</p></li>
+<li><p>This dates to the PIL fork.</p></li>
+</ul>
+</section>
+<section id="cve-2021-28677-fix-eps-dos-on-open">
+<h3><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28677">CVE-2021-28677</a>: Fix EPS DOS on _open<a class="headerlink" href="#cve-2021-28677-fix-eps-dos-on-open" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The readline used in EPS has to deal with any combination of <code class="docutils literal notranslate"><span class="pre">\r</span></code> and <code class="docutils literal notranslate"><span class="pre">\n</span></code> as line
+endings. It accidentally used a quadratic method of accumulating lines while looking
+for a line ending.</p></li>
+<li><p>A malicious EPS file could use this to perform a denial-of-service of Pillow in the
+open phase, before an image was accepted for opening.</p></li>
+<li><p>This dates to the PIL fork.</p></li>
+</ul>
+</section>
+<section id="cve-2021-28678-fix-blp-dos">
+<h3><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28678">CVE-2021-28678</a>: Fix BLP DOS<a class="headerlink" href="#cve-2021-28678-fix-blp-dos" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin</span></code> did not properly check that reads after jumping to file offsets
+returned data. This could lead to a denial-of-service where the decoder could be run a
+large number of times on empty data.</p></li>
+<li><p>This dates to Pillow 5.1.0.</p></li>
+</ul>
+</section>
+<section id="fix-memory-dos-in-imagefont">
+<h3>Fix memory DOS in ImageFont<a class="headerlink" href="#fix-memory-dos-in-imagefont" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>A corrupt or specially crafted TTF font could have font metrics that lead to
+unreasonably large sizes when rendering text in font. <code class="docutils literal notranslate"><span class="pre">ImageFont.py</span></code> did not check
+the image size before allocating memory for it.</p></li>
+<li><p>This dates to the PIL fork.</p></li>
+</ul>
+</section>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="gif-writer-uses-lzw-encoding">
+<h3>GIF writer uses LZW encoding<a class="headerlink" href="#gif-writer-uses-lzw-encoding" title="Link to this heading">¶</a></h3>
+<p>GIF files are now written using LZW encoding, which will generate smaller files,
+typically about 70% of the size generated by the older encoder.</p>
+<p>The pixel data is encoded using the format specified in the <a class="reference external" href="https://www.w3.org/Graphics/GIF/spec-gif89a.txt">CompuServe GIF standard</a>.</p>
+<p>The older encoder used a variant of run-length encoding that was compatible but less
+efficient.</p>
+</section>
+<section id="graphicsmagick">
+<h3>GraphicsMagick<a class="headerlink" href="#graphicsmagick" title="Link to this heading">¶</a></h3>
+<p>The test suite can now be run on systems which have <a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick</a> but not
+<a class="reference external" href="https://imagemagick.org/">ImageMagick</a> installed.  If both are installed, the tests prefer ImageMagick.</p>
+</section>
+<section id="libraqm-and-fribidi-linking">
+<h3>Libraqm and FriBiDi linking<a class="headerlink" href="#libraqm-and-fribidi-linking" title="Link to this heading">¶</a></h3>
+<p>The way the libraqm dependency for complex text scripts is linked has been changed:</p>
+<p>Source builds will now link against the system version of libraqm at build time
+rather than at runtime by default.</p>
+<p>Binary wheels now include a statically linked modified version of libraqm that
+links against FriBiDi at runtime instead. This change is intended to address
+issues with the previous implementation on some platforms. These are created
+by building Pillow with the new build flags <code class="docutils literal notranslate"><span class="pre">--vendor-raqm</span> <span class="pre">--vendor-fribidi</span></code>.</p>
+<p>Windows users will now need to install <code class="docutils literal notranslate"><span class="pre">fribidi.dll</span></code> (or <code class="docutils literal notranslate"><span class="pre">fribidi-0.dll</span></code>) only,
+<code class="docutils literal notranslate"><span class="pre">libraqm.dll</span></code> is no longer used.</p>
+<p>See <a class="reference internal" href="../installation.html"><span class="doc">installation documentation</span></a> for more information.</p>
+</section>
+<section id="pyqt6">
+<h3>PyQt6<a class="headerlink" href="#pyqt6" title="Link to this heading">¶</a></h3>
+<p>Support has been added for PyQt6. If it is installed, it will be used instead of
+PySide6, PyQt5 or PySide2.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">8.2.0</a><ul>
+<li><a class="reference internal" href="#deprecations">Deprecations</a><ul>
+<li><a class="reference internal" href="#categories">Categories</a></li>
+<li><a class="reference internal" href="#tk-tcl-8-4">Tk/Tcl 8.4</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li><a class="reference internal" href="#image-alpha-composite-dest">Image.alpha_composite: dest</a></li>
+<li><a class="reference internal" href="#image-getexif-exif-and-gps-ifd">Image.getexif: EXIF and GPS IFD</a></li>
+<li><a class="reference internal" href="#image-modeinfo">Image._MODEINFO</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#getxmp-for-jpeg-images">getxmp() for JPEG images</a></li>
+<li><a class="reference internal" href="#imagedraw-rounded-rectangle">ImageDraw.rounded_rectangle</a></li>
+<li><a class="reference internal" href="#imageops-autocontrast-preserve-tone">ImageOps.autocontrast: preserve_tone</a></li>
+<li><a class="reference internal" href="#imageshow-gmdisplayviewer">ImageShow.GmDisplayViewer</a></li>
+<li><a class="reference internal" href="#imageshow-ipythonviewer">ImageShow.IPythonViewer</a></li>
+<li><a class="reference internal" href="#saving-tiff-with-icc-profile">Saving TIFF with ICC profile</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a><ul>
+<li><a class="reference internal" href="#cve-2021-25287-cve-2021-25288-fix-oob-read-in-jpeg2kdecode">CVE-2021-25287, CVE-2021-25288: Fix OOB read in Jpeg2KDecode</a></li>
+<li><a class="reference internal" href="#cve-2021-28675-fix-dos-in-psdimageplugin">CVE-2021-28675: Fix DOS in PsdImagePlugin</a></li>
+<li><a class="reference internal" href="#cve-2021-28676-fix-fli-dos">CVE-2021-28676: Fix FLI DOS</a></li>
+<li><a class="reference internal" href="#cve-2021-28677-fix-eps-dos-on-open">CVE-2021-28677: Fix EPS DOS on _open</a></li>
+<li><a class="reference internal" href="#cve-2021-28678-fix-blp-dos">CVE-2021-28678: Fix BLP DOS</a></li>
+<li><a class="reference internal" href="#fix-memory-dos-in-imagefont">Fix memory DOS in ImageFont</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#gif-writer-uses-lzw-encoding">GIF writer uses LZW encoding</a></li>
+<li><a class="reference internal" href="#graphicsmagick">GraphicsMagick</a></li>
+<li><a class="reference internal" href="#libraqm-and-fribidi-linking">Libraqm and FriBiDi linking</a></li>
+<li><a class="reference internal" href="#pyqt6">PyQt6</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="8.3.0.html"
+                          title="previous chapter">8.3.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="8.1.2.html"
+                          title="next chapter">8.1.2</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/8.2.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="8.1.2.html" title="8.1.2"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="8.3.0.html" title="8.3.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">8.2.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

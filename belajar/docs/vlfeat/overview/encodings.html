@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Tutorials > Fisher Vector and VLAD</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="tut.html">Tutorials</a></span><span class='separator'>></span><span class='page'><a href="encodings.html">Fisher Vector and VLAD</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+    
+
+<div class='toc'>
+<h3>Table of Contents</h3><ul><li class="level1"><a href="#tut.fisher">Fisher encoding</a></li>
+<li class="level1"><a href="#tut.vlad">VLAD encoding</a></li>
+</ul>
+</div><!-- Table of contents -->
+
+
+<p>This short tutorial shows how to
+compute <b><a href="../api/fisher.html">Fisher vector</a></b> and
+<b><a href="../api/vlad.html">VLAD</a></b> encodings with VLFeat MATLAB
+interface.</p>
+
+<p>These encoding serve a similar purposes: summarizing in a vectorial
+statistic a number of local feature descriptors
+(e.g. <a href="../api/sift.html">SIFT</a>). Similarly to bag of visual
+words, they assign local descriptor to elements in a visual
+dictionary, obtained with vector quantization (KMeans) in the case of
+VLAD or a <a href="../api/gmm.html">Gaussian Mixture Models</a> for Fisher
+Vectors. However, rather than storing visual word occurrences only,
+these representations store a statistics of the difference between
+dictionary elements and pooled local features.</p>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.fisher">Fisher encoding</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>The Fisher encoding uses GMM to construct a visual word
+dictionary. To exemplify constructing a GMM, consider a number of 2
+dimensional data points (see also the <a href="gmm.html">GMM
+tutorial</a>). In practice, these points would be a collection of SIFT
+or other local image features. The following code fits a GMM to the
+points:</p>
+
+<div class="highlight"><pre><span></span><span class="n">numFeatures</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">5000</span><span class="w"> </span><span class="p">;</span>
+<span class="n">dimension</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">;</span>
+<span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">rand</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="n">numFeatures</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">numClusters</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">means</span><span class="p">,</span><span class="w"> </span><span class="n">covariances</span><span class="p">,</span><span class="w"> </span><span class="n">priors</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_gmm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">numClusters</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Next, we create another random set of vectors, which should be
+encoded using the Fisher Vector representation and the GMM just
+obtained:</p>
+
+<div class="highlight"><pre><span></span><span class="n">numDataToBeEncoded</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span>
+<span class="n">dataToBeEncoded</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">rand</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="n">numDataToBeEncoded</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The Fisher vector encoding <code/>enc</code> of these vectors is
+obtained by calling the <code/><a href=../matlab/vl_fisher.html>vl_fisher</a></code> function using the
+output of the <code/><a href=../matlab/vl_gmm.html>vl_gmm</a></code> function:</p>
+
+<div class="highlight"><pre><span></span><span class="n">encoding</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_fisher</span><span class="p">(</span><span class="n">datatoBeEncoded</span><span class="p">,</span><span class="w"> </span><span class="n">means</span><span class="p">,</span><span class="w"> </span><span class="n">covariances</span><span class="p">,</span><span class="w"> </span><span class="n">priors</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The <code/>encoding</code> vector is the Fisher vector
+representation of the data <code/>dataToBeEncoded</code>.</p>
+
+<p>Note that Fisher Vectors support
+several <a href="../api/fisher-fundamentals.html#fisher-normalization">normalization options</a>
+that can affect substantially the performance of the
+representation.</p>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.vlad">VLAD encoding</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>The <b>V</b>ector
+of <b>L</b>inearly <b>A</b>gregated <b>D</b>escriptors is similar to
+Fisher vectors but (i) it does not store second-order information
+about the features and (ii) it typically use KMeans instead of GMMs to
+generate the feature vocabulary (although the latter is also an
+option).</p>
+
+<p>Consider the same 2D data matrix <code/>data</code> used in the
+previous section to train the Fisher vector representation. To compute
+VLAD, we first need to obtain a visual word dictionary. This time, we
+use K-means:</p>
+
+<div class="highlight"><pre><span></span><span class="n">numClusters</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="p">;</span>
+<span class="n">centers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_kmeans</span><span class="p">(</span><span class="n">dataLearn</span><span class="p">,</span><span class="w"> </span><span class="n">numClusters</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Now consider the data <code/>dataToBeEncoded</code> and use
+the <code/><a href=../matlab/vl_vlad.html>vl_vlad</a></code> function to compute the encoding. Differently
+from <code/><a href=../matlab/vl_fisher.html>vl_fisher</a></code>, <code/><a href=../matlab/vl_vlad.html>vl_vlad</a></code> requires the
+data-to-cluster assignments to be passed in. This allows using a fast
+vector quantization technique (e.g. kd-tree) as well as switching from
+soft to hard assignment.</p>
+
+<p>In this example, we use a kd-tree for quantization:</p>
+
+<div class="highlight"><pre><span></span><span class="n">kdtree</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_kdtreebuild</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">nn</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_kdtreequery</span><span class="p">(</span><span class="n">kdtree</span><span class="p">,</span><span class="w"> </span><span class="n">centers</span><span class="p">,</span><span class="w"> </span><span class="n">dataEncode</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p>Now we have in the <code/>nn</code> the indexes of the nearest
+center to each vector in the matrix <code/>dataToBeEncoded</code>. The
+next step is to create an assignment matrix:</p>
+
+<pre>
+assignments = zeros(numClusters,numDataToBeEncoded);
+assignments(sub2ind(size(assignments), nn, 1:length(nn))) = 1;
+</pre>
+
+<p>It is now possible to encode the data using
+the <code/><a href=../matlab/vl_vlad.html>vl_vlad</a></code> function:</p>
+
+<pre>
+enc = vl_vlad(dataToBeEncoded,centers,assignments);
+</pre>
+
+<p>Note that, similarly to Fisher vectors, VLAD supports
+several <a href="../api/vlad-fundamentals.html#vlad-normalization">normalization options</a>
+that can affect substantially the performance of the
+representation.</p>
+
+
+  
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

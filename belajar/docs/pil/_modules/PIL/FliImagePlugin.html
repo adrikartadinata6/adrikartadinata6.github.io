@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.FliImagePlugin &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.FliImagePlugin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.FliImagePlugin</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># FLI/FLC file handling.</span>
+<span class="c1">#</span>
+<span class="c1"># History:</span>
+<span class="c1">#       95-09-01 fl     Created</span>
+<span class="c1">#       97-01-03 fl     Fixed parser, setup decoder tile</span>
+<span class="c1">#       98-07-15 fl     Renamed offset attribute to avoid name clash</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) Secret Labs AB 1997-98.</span>
+<span class="c1"># Copyright (c) Fredrik Lundh 1995-97.</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFile</span><span class="p">,</span> <span class="n">ImagePalette</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">i16le</span> <span class="k">as</span> <span class="n">i16</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">i32le</span> <span class="k">as</span> <span class="n">i32</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">o8</span>
+
+<span class="c1">#</span>
+<span class="c1"># decoder</span>
+
+
+<span class="k">def</span> <span class="nf">_accept</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">6</span>
+        <span class="ow">and</span> <span class="n">i16</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0xAF11</span><span class="p">,</span> <span class="mh">0xAF12</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="n">i16</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># flags</span>
+    <span class="p">)</span>
+
+
+<span class="c1">##</span>
+<span class="c1"># Image plugin for the FLI/FLC animation format.  Use the &lt;b&gt;seek&lt;/b&gt;</span>
+<span class="c1"># method to load individual frames.</span>
+
+
+<div class="viewcode-block" id="FliImageFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.FliImagePlugin.FliImageFile">[docs]</a>
+<span class="k">class</span> <span class="nc">FliImageFile</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">ImageFile</span><span class="p">):</span>
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;FLI&quot;</span>
+    <span class="n">format_description</span> <span class="o">=</span> <span class="s2">&quot;Autodesk FLI/FLC Animation&quot;</span>
+    <span class="n">_close_exclusive_fp_after_loading</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># HEAD</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">_accept</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00\x00</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not an FLI/FLC file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># frames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_animated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+        <span class="c1"># image characteristics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># animation speed</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">magic</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="mh">0xAF11</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">//</span> <span class="mi">70</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">duration</span>
+
+        <span class="c1"># look for palette</span>
+        <span class="n">palette</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">)]</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span> <span class="o">=</span> <span class="mi">128</span>
+
+        <span class="k">if</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xF100</span><span class="p">:</span>
+            <span class="c1"># prefix chunk; ignore it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span> <span class="o">+</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xF1FA</span><span class="p">:</span>
+            <span class="c1"># look for palette chunk</span>
+            <span class="n">number_of_subchunks</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_subchunks</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">chunk_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">chunk_size</span> <span class="o">-</span> <span class="mi">6</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_CUR</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+                <span class="n">chunk_type</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">chunk_type</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_palette</span><span class="p">(</span><span class="n">palette</span><span class="p">,</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">chunk_type</span> <span class="o">==</span> <span class="mi">11</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk_size</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="n">o8</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">palette</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">ImagePalette</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">palette</span><span class="p">))</span>
+
+        <span class="c1"># set things up to decode first frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__rewind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_palette</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+        <span class="c1"># load palette</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="mi">256</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+                <span class="n">palette</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="FliImageFile.seek">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.FliImagePlugin.FliImageFile.seek">[docs]</a>
+    <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_check</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__frame</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">frame</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seek</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__rewind</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span> <span class="o">=</span> <span class="mi">128</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># ensure that the previous frame was loaded</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">frame</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;cannot seek to frame </span><span class="si">{</span><span class="n">frame</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span> <span class="o">=</span> <span class="n">frame</span>
+
+        <span class="c1"># move to next frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__offset</span><span class="p">)</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;missing frame size&quot;</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">framesize</span> <span class="o">=</span> <span class="n">i32</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">decodermaxblock</span> <span class="o">=</span> <span class="n">framesize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;fli&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__offset</span> <span class="o">+=</span> <span class="n">framesize</span>
+
+<div class="viewcode-block" id="FliImageFile.tell">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.FliImagePlugin.FliImageFile.tell">[docs]</a>
+    <span class="k">def</span> <span class="nf">tell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__frame</span></div>
+</div>
+
+
+
+<span class="c1">#</span>
+<span class="c1"># registry</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_open</span><span class="p">(</span><span class="n">FliImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">FliImageFile</span><span class="p">,</span> <span class="n">_accept</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_extensions</span><span class="p">(</span><span class="n">FliImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;.fli&quot;</span><span class="p">,</span> <span class="s2">&quot;.flc&quot;</span><span class="p">])</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.FliImagePlugin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>9.3.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9.2.0" href="9.2.0.html" />
+    <link rel="prev" title="9.4.0" href="9.4.0.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="9.2.0.html" title="9.2.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="9.4.0.html" title="9.4.0"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">9.3.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>9.3.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="allow-default-imagedraw-font-to-be-set">
+<h3>Allow default ImageDraw font to be set<a class="headerlink" href="#allow-default-imagedraw-font-to-be-set" title="Link to this heading">¶</a></h3>
+<p>Rather than specifying a font when calling text-related ImageDraw methods, or
+setting a font on each ImageDraw instance, the default font can now be set for
+all future ImageDraw operations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+<span class="n">ImageDraw</span><span class="o">.</span><span class="n">ImageDraw</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;Tests/fonts/FreeMono.ttf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="saving-multiple-mpo-frames">
+<h3>Saving multiple MPO frames<a class="headerlink" href="#saving-multiple-mpo-frames" title="Link to this heading">¶</a></h3>
+<p>Multiple MPO frames can now be saved. Using the <code class="docutils literal notranslate"><span class="pre">save_all</span></code> argument, all of
+an image’s frames will be saved to file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;frozenpond.mpo&quot;</span><span class="p">)</span>
+<span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">save_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additional images can also be appended when saving, by combining the
+<code class="docutils literal notranslate"><span class="pre">save_all</span></code> argument with the <code class="docutils literal notranslate"><span class="pre">append_images</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">save_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">append_images</span><span class="o">=</span><span class="p">[</span><span class="n">im1</span><span class="p">,</span> <span class="n">im2</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="added-exiftags-enums">
+<h3>Added ExifTags enums<a class="headerlink" href="#added-exiftags-enums" title="Link to this heading">¶</a></h3>
+<p>The data from <a class="reference internal" href="../reference/ExifTags.html#PIL.ExifTags.TAGS" title="PIL.ExifTags.TAGS"><code class="xref py py-data docutils literal notranslate"><span class="pre">TAGS</span></code></a> and
+<a class="reference internal" href="../reference/ExifTags.html#PIL.ExifTags.GPSTAGS" title="PIL.ExifTags.GPSTAGS"><code class="xref py py-data docutils literal notranslate"><span class="pre">GPSTAGS</span></code></a> is now also exposed as <code class="docutils literal notranslate"><span class="pre">enum.IntEnum</span></code>
+classes: <a class="reference internal" href="../reference/ExifTags.html#PIL.ExifTags.Base" title="PIL.ExifTags.Base"><code class="xref py py-data docutils literal notranslate"><span class="pre">Base</span></code></a> and <a class="reference internal" href="../reference/ExifTags.html#PIL.ExifTags.GPS" title="PIL.ExifTags.GPS"><code class="xref py py-data docutils literal notranslate"><span class="pre">GPS</span></code></a>.</p>
+</section>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Link to this heading">¶</a></h2>
+<section id="initialize-libtiff-buffer-when-saving">
+<h3>Initialize libtiff buffer when saving<a class="headerlink" href="#initialize-libtiff-buffer-when-saving" title="Link to this heading">¶</a></h3>
+<p>When saving a TIFF image to a file object using libtiff, the buffer was not
+initialized. This behaviour introduced in Pillow 2.0.0, and has now been fixed.</p>
+</section>
+<section id="decode-jpeg-compressed-blp1-data-in-original-mode">
+<h3>Decode JPEG compressed BLP1 data in original mode<a class="headerlink" href="#decode-jpeg-compressed-blp1-data-in-original-mode" title="Link to this heading">¶</a></h3>
+<p>Within the BLP image format, BLP1 data may use JPEG compression. Instead of
+telling the JPEG library that this data is in BGRX mode, Pillow will now
+decode the data in its natural CMYK mode, then convert it to RGB and rearrange
+the channels afterwards. Trying to load the data in an incorrect mode could
+result in a segmentation fault. This issue was introduced in Pillow 9.1.0.</p>
+</section>
+<section id="limit-samplesperpixel-to-avoid-runtime-dos">
+<h3>Limit SAMPLESPERPIXEL to avoid runtime DOS<a class="headerlink" href="#limit-samplesperpixel-to-avoid-runtime-dos" title="Link to this heading">¶</a></h3>
+<p>A large value in the <code class="docutils literal notranslate"><span class="pre">SAMPLESPERPIXEL</span></code> tag could lead to a memory and runtime DOS in
+<code class="docutils literal notranslate"><span class="pre">TiffImagePlugin.py</span></code> when setting up the context for image decoding.
+This was introduced in Pillow 9.2.0, found with <a class="reference external" href="https://github.com/google/oss-fuzz">OSS-Fuzz</a> and fixed by limiting
+<code class="docutils literal notranslate"><span class="pre">SAMPLESPERPIXEL</span></code> to the number of planes that we can decode.</p>
+</section>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="python-3-11-wheels">
+<h3>Python 3.11 wheels<a class="headerlink" href="#python-3-11-wheels" title="Link to this heading">¶</a></h3>
+<p>Pillow 9.2.0 had wheels built against Python 3.11 beta, available as a preview to help
+others prepare for 3.11, and ensure Pillow can be used immediately on release day of
+3.11.0 final (2022-10-24, <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0664/"><strong>PEP 664</strong></a>).</p>
+<p>Pillow 9.3.0 now officially includes binary wheels for Python 3.11 final.</p>
+</section>
+<section id="windows-wheels">
+<h3>Windows wheels<a class="headerlink" href="#windows-wheels" title="Link to this heading">¶</a></h3>
+<p>This release contains wheels for Windows built using GitHub Actions.</p>
+<p>Previously they were built by <a class="reference external" href="https://www.cgohlke.com/">Christoph Gohlke</a>.</p>
+<p>A huge thanks to Christoph for building Windows binaries for us for around a decade,
+plus testing, and fixing over a hundred bug fixes along the way, in addition to building
+and hosting unofficial Windows binaries for hundreds of Python projects!</p>
+</section>
+<section id="added-dds-ati1-ati2-and-bc6h-reading">
+<h3>Added DDS ATI1, ATI2 and BC6H reading<a class="headerlink" href="#added-dds-ati1-ati2-and-bc6h-reading" title="Link to this heading">¶</a></h3>
+<p>Support has been added to read the ATI1, ATI2 and BC6H formats of DDS images.</p>
+</section>
+<section id="release-gil-when-converting-images-using-matrix-operations">
+<h3>Release GIL when converting images using matrix operations<a class="headerlink" href="#release-gil-when-converting-images-using-matrix-operations" title="Link to this heading">¶</a></h3>
+<p>Python’s Global Interpreter Lock is now released when converting images using matrix
+operations.</p>
+</section>
+<section id="show-all-frames-with-imageshow">
+<h3>Show all frames with ImageShow<a class="headerlink" href="#show-all-frames-with-imageshow" title="Link to this heading">¶</a></h3>
+<p>When calling <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.show" title="PIL.Image.Image.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a> or using
+<a class="reference internal" href="../reference/ImageShow.html#module-PIL.ImageShow" title="PIL.ImageShow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageShow</span></code></a>, all frames will now be shown.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">9.3.0</a><ul>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#allow-default-imagedraw-font-to-be-set">Allow default ImageDraw font to be set</a></li>
+<li><a class="reference internal" href="#saving-multiple-mpo-frames">Saving multiple MPO frames</a></li>
+<li><a class="reference internal" href="#added-exiftags-enums">Added ExifTags enums</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a><ul>
+<li><a class="reference internal" href="#initialize-libtiff-buffer-when-saving">Initialize libtiff buffer when saving</a></li>
+<li><a class="reference internal" href="#decode-jpeg-compressed-blp1-data-in-original-mode">Decode JPEG compressed BLP1 data in original mode</a></li>
+<li><a class="reference internal" href="#limit-samplesperpixel-to-avoid-runtime-dos">Limit SAMPLESPERPIXEL to avoid runtime DOS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#python-3-11-wheels">Python 3.11 wheels</a></li>
+<li><a class="reference internal" href="#windows-wheels">Windows wheels</a></li>
+<li><a class="reference internal" href="#added-dds-ati1-ati2-and-bc6h-reading">Added DDS ATI1, ATI2 and BC6H reading</a></li>
+<li><a class="reference internal" href="#release-gil-when-converting-images-using-matrix-operations">Release GIL when converting images using matrix operations</a></li>
+<li><a class="reference internal" href="#show-all-frames-with-imageshow">Show all frames with ImageShow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="9.4.0.html"
+                          title="previous chapter">9.4.0</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="9.2.0.html"
+                          title="next chapter">9.2.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/9.3.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="9.2.0.html" title="9.2.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="9.4.0.html" title="9.4.0"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">9.3.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

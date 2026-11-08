@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyModbus - A Python Modbus Stack &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client" href="client.html" />
+    <link rel="prev" title="Welcome to PyModbus’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PyModbus - A Python Modbus Stack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pymodbus-in-a-nutshell">Pymodbus in a nutshell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-features">Common features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#client-features">Client Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-features">Server Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#repl-features">REPL Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulator-features">Simulator Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#use-cases">Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-with-pip">Install with pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-with-github">Install with github</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-code">Example Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-instructions">Development instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#internals">Internals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-documentation">Generate documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#license-information">License Information</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_changes.html">API changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Pymodbus internals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PyModbus - A Python Modbus Stack</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/readme.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymodbus-a-python-modbus-stack">
+<h1>PyModbus - A Python Modbus Stack<a class="headerlink" href="#pymodbus-a-python-modbus-stack" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/actions/workflows/ci.yml">Github CI</a></p>
+<p><a class="reference external" href="http://pymodbus.readthedocs.io/en/latest/?badge=latest">Documentation Status</a></p>
+<p><a class="reference external" href="http://pepy.tech/project/pymodbus">Downloads</a></p>
+<p>Pymodbus is a full Modbus protocol implementation offering client/server with synchronous/asynchronous API a well as simulators.</p>
+<p>Current release is <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/releases/tag/v3.6.9">3.6.9</a>.</p>
+<p>Bleeding edge (not released) is <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/tree/dev">dev</a>.</p>
+<p>All changes are described in <a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/changelog.html">release notes</a>
+and all API changes are <a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/api_changes.html">documented</a></p>
+<p>A big thanks to all the <a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/authors.html">volunteers</a> that helps make pymodbus a great project.</p>
+<p>Source code on <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus">github</a></p>
+<section id="pymodbus-in-a-nutshell">
+<h2>Pymodbus in a nutshell<a class="headerlink" href="#pymodbus-in-a-nutshell" title="Link to this heading"></a></h2>
+<p>Pymodbus consist of 5 parts:</p>
+<ul class="simple">
+<li><p><strong>client</strong>, connect to your favorite device(s)</p></li>
+<li><p><strong>server</strong>, simulate your favorite device(s)</p></li>
+<li><p><strong>repl</strong>, a commandline text based client/server simulator</p></li>
+<li><p><strong>simulator</strong>, an html based server simulator</p></li>
+<li><p><strong>examples</strong>, showing both simple and advances usage</p></li>
+</ul>
+<section id="common-features">
+<h3>Common features<a class="headerlink" href="#common-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Full modbus standard protocol implementation</p></li>
+<li><p>Support for custom function codes</p></li>
+<li><p>support serial (rs-485), tcp, tls and udp communication</p></li>
+<li><p>support all standard frames: socket, rtu, rtu-over-tcp, tcp and ascii</p></li>
+<li><p>does not have third party dependencies, apart from pyserial (optional)</p></li>
+<li><p>very lightweight project</p></li>
+<li><p>requires Python &gt;= 3.8</p></li>
+<li><p>thorough test suite, that test all corners of the library</p></li>
+<li><p>automatically tested on Windows, Linux and MacOS combined with python 3.8 - 3.12</p></li>
+<li><p>strongly typed API (py.typed present)</p></li>
+</ul>
+<p>The modbus protocol specification: Modbus_Application_Protocol_V1_1b3.pdf can be found on
+<a class="reference external" href="https://modbus.org">modbus org</a></p>
+</section>
+<section id="client-features">
+<h3>Client Features<a class="headerlink" href="#client-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>asynchronous API and synchronous API for applications</p></li>
+<li><p>very simple setup and call sequence (just 6 lines of code)</p></li>
+<li><p>utilities to convert int/float to/from multiple registers</p></li>
+<li><p>payload builder/decoder to help with complex data</p></li>
+</ul>
+<p><a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/client.html">Client documentation</a></p>
+</section>
+<section id="server-features">
+<h3>Server Features<a class="headerlink" href="#server-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>asynchronous implementation for high performance</p></li>
+<li><p>synchronous API classes for convenience</p></li>
+<li><p>simulate real life devices</p></li>
+<li><p>full server control context (device information, counters, etc)</p></li>
+<li><p>different backend datastores to manage register values</p></li>
+<li><p>callback to intercept requests/responses</p></li>
+<li><p>work on RS485 in parallel with other devices</p></li>
+</ul>
+<p><a class="reference external" href="https://pymodbus.readthedocs.io/en/latest/source/library/server.html">Server documentation</a></p>
+</section>
+<section id="repl-features">
+<h3>REPL Features<a class="headerlink" href="#repl-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>server/client commandline emulator</p></li>
+<li><p>easy test of real device (client)</p></li>
+<li><p>easy test of client app (server)</p></li>
+<li><p>simulation of broken requests/responses</p></li>
+<li><p>simulation of error responses (hard to provoke in real devices)</p></li>
+</ul>
+<p><a class="reference external" href="https://github.com/pymodbus-dev/repl">REPL documentation</a></p>
+</section>
+<section id="simulator-features">
+<h3>Simulator Features<a class="headerlink" href="#simulator-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>server simulator with WEB interface</p></li>
+<li><p>configure the structure of a real device</p></li>
+<li><p>monitor traffic online</p></li>
+<li><p>allow distributed team members to work on a virtual device using internet</p></li>
+<li><p>simulation of broken requests/responses</p></li>
+<li><p>simulation of error responses (hard to provoke in real devices)</p></li>
+</ul>
+<p><a class="reference external" href="https://pymodbus.readthedocs.io/en/dev/source/simulator.html">Simulator documentation</a></p>
+</section>
+</section>
+<section id="use-cases">
+<h2>Use Cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<p>The client is the most typically used. It is embedded into applications,
+where it abstract the modbus protocol from the application by providing an
+easy to use API. The client is integrated into some well known projects like
+<a class="reference external" href="https://www.home-assistant.io">home-assistant</a>.</p>
+<p>Although most system administrators will find little need for a Modbus
+server, the server is handy to verify the functionality of an application.</p>
+<p>The simulator and/or server is often used to simulate real life devices testing
+applications. The server is excellent to perform high volume testing (e.g.
+houndreds of devices connected to the application). The advantage of the server is
+that it runs not only a “normal” computers but also on small ones like Raspberry PI.</p>
+<p>Since the library is written in python, it allows for easy scripting and/or integration into their existing
+solutions.</p>
+<p>For more information please browse the project documentation:</p>
+<p><a class="reference external" href="https://readthedocs.org/docs/pymodbus/en/latest/index.html">https://readthedocs.org/docs/pymodbus/en/latest/index.html</a></p>
+</section>
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Link to this heading"></a></h2>
+<p>The library is available on pypi.org and github.com to install with</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">pip</span></code> for those who just want to use the library</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code> for those who wants to help or just are curious</p></li>
+</ul>
+<p>Be aware that there are a number of project, who have forked pymodbus and</p>
+<ul class="simple">
+<li><p>seems just to provide a version frozen in time</p></li>
+<li><p>extended pymodbus with extra functionality</p></li>
+</ul>
+<p>The latter is not because we rejected the extra functionality (we welcome all changes),
+but because the codeowners made that decision.</p>
+<p>In both cases, please understand, we cannot offer support to users of these projects as we do not known
+what have been changed nor what status the forked code have.</p>
+<p>A growing number of Linux distributions include pymodbus in their standard installation.</p>
+<p>You need to have python3 installed, preferable 3.11.</p>
+<section id="install-with-pip">
+<h3>Install with pip<a class="headerlink" href="#install-with-pip" title="Link to this heading"></a></h3>
+<p>You can install using pip by issuing the following
+commands in a terminal window:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymodbus</span>
+</pre></div>
+</div>
+<p>If you want to use the serial interface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymodbus</span><span class="p">[</span><span class="n">serial</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will install pymodbus with the pyserial dependency.</p>
+<p>Pymodbus offers a number of extra options:</p>
+<ul class="simple">
+<li><p><strong>repl</strong>, needed by pymodbus.repl</p></li>
+<li><p><strong>serial</strong>, needed for serial communication</p></li>
+<li><p><strong>simulator</strong>, needed by pymodbus.simulator</p></li>
+<li><p><strong>documentation</strong>, needed to generate documentation</p></li>
+<li><p><strong>development</strong>, needed for development</p></li>
+<li><p><strong>all</strong>, installs all of the above</p></li>
+</ul>
+<p>which can be installed as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymodbus</span><span class="p">[</span><span class="o">&lt;</span><span class="n">option</span><span class="o">&gt;</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>It is possible to install old releases if needed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymodbus</span><span class="o">==</span><span class="mf">3.5.4</span>
+</pre></div>
+</div>
+</section>
+<section id="install-with-github">
+<h3>Install with github<a class="headerlink" href="#install-with-github" title="Link to this heading"></a></h3>
+<p>On github, fork <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus.git">https://github.com/pymodbus-dev/pymodbus.git</a></p>
+<p>Clone the source, and make a virtual environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/&lt;</span><span class="n">your</span> <span class="n">account</span><span class="o">&gt;/</span><span class="n">pymodbus</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">pymodbus</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="o">.</span><span class="n">venv</span>
+</pre></div>
+</div>
+<p>Activate the virtual environment, this command needs repeated in every new terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+<p>To get a specific release:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">v3</span><span class="mf">.5.2</span>
+</pre></div>
+</div>
+<p>or the bleeding edge:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">dev</span>
+</pre></div>
+</div>
+<p>Some distributions have an old pip, which needs to be upgraded:</p>
+<blockquote>
+<div><p>pip install –upgrade pip</p>
+</div></blockquote>
+<p>Install required development tools:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="s2">&quot;.[development]&quot;</span>
+</pre></div>
+</div>
+<p>Install all (allows creation of documentation etc):</p>
+<blockquote>
+<div><p>pip install “.[all]”</p>
+</div></blockquote>
+<p>Install git hooks, that helps control the commit and avoid errors when submitting a Pull Request:</p>
+<blockquote>
+<div><p>cp githooks/* .git/hooks</p>
+</div></blockquote>
+<p>This installs dependencies in your virtual environment
+with pointers directly to the pymodbus directory,
+so any change you make is immediately available as if installed.</p>
+<dl class="simple">
+<dt>The repository contains a number of important branches and tags.</dt><dd><ul class="simple">
+<li><p><strong>dev</strong> is where all development happens, this branch is not always stable.</p></li>
+<li><p><strong>master</strong> is where are releases are kept.</p></li>
+<li><p><strong>vX.Y.Z</strong> (e.g. v2.5.3) is a specific release</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="example-code">
+<h2>Example Code<a class="headerlink" href="#example-code" title="Link to this heading"></a></h2>
+<p>For those of you that just want to get started fast, here you go:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusTcpClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusTcpClient</span><span class="p">(</span><span class="s1">&#39;MyDevice.lan&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_coil</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We provide a couple of simple ready to go clients:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/dev/examples/simple_async_client.py">async client</a></p></li>
+<li><p><a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/dev/examples/simple_sync_client.py">sync client</a></p></li>
+</ul>
+<p>For more advanced examples, check out <a class="reference external" href="https://pymodbus.readthedocs.io/en/dev/source/examples.html">Examples</a> included in the
+repository. If you have created any utilities that meet a specific
+need, feel free to submit them so others can benefit.</p>
+<p>Also, if you have a question, please <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/discussions/new?category=q-a">create a post in discussions q&amp;a topic</a>,
+so that others can benefit from the results.</p>
+<p>If you think, that something in the code is broken/not running well, please <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/issues/new">open an issue</a>,
+read the Template-text first and then post your issue with your setup information.</p>
+<p><a class="reference external" href="https://pymodbus.readthedocs.io/en/dev/source/examples.html">Example documentation</a></p>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>Just fork the repo and raise your Pull Request against <code class="code docutils literal notranslate"><span class="pre">dev</span></code> branch.</p>
+<p>We always have more work than time, so feel free to open a discussion / issue on a theme you want to solve.</p>
+<p>If your company would like your device tested or have a cloud based device
+simulation, feel free to contact us.
+We are happy to help your company solve your modbus challenges.</p>
+<p>That said, the current work mainly involves polishing the library and
+solving issues:</p>
+<ul class="simple">
+<li><p>Fixing bugs/feature requests</p></li>
+<li><p>Architecture documentation</p></li>
+<li><p>Functional testing against any reference we can find</p></li>
+</ul>
+<p>There are 2 bigger projects ongoing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>rewriting the internal part of all clients (both sync and async)</p></li>
+<li><p>Add features to and simulator, and enhance the web design</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="development-instructions">
+<h2>Development instructions<a class="headerlink" href="#development-instructions" title="Link to this heading"></a></h2>
+<p>The current code base is compatible with python &gt;= 3.8.</p>
+<p>Here are some of the common commands to perform a range of activities:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>   <span class="o">&lt;--</span> <span class="n">Activate</span> <span class="n">the</span> <span class="n">virtual</span> <span class="n">environment</span>
+<span class="o">./</span><span class="n">check_ci</span><span class="o">.</span><span class="n">sh</span>               <span class="o">&lt;--</span> <span class="n">run</span> <span class="n">the</span> <span class="n">same</span> <span class="n">checks</span> <span class="k">as</span> <span class="n">CI</span> <span class="n">runs</span> <span class="n">on</span> <span class="n">a</span> <span class="n">pull</span> <span class="n">request</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Make a pull request:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">checkout</span> <span class="n">dev</span>          <span class="o">&lt;--</span> <span class="n">activate</span> <span class="n">development</span> <span class="n">branch</span>
+<span class="n">git</span> <span class="n">pull</span>                  <span class="o">&lt;--</span> <span class="n">update</span> <span class="n">branch</span> <span class="k">with</span> <span class="n">newest</span> <span class="n">changes</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">feature</span>   <span class="o">&lt;--</span> <span class="n">make</span> <span class="n">new</span> <span class="n">branch</span> <span class="k">for</span> <span class="n">pull</span> <span class="n">request</span>
+<span class="o">...</span> <span class="n">make</span> <span class="n">source</span> <span class="n">changes</span>
+<span class="n">git</span> <span class="n">commit</span>                <span class="o">&lt;--</span> <span class="n">commit</span> <span class="n">change</span> <span class="n">to</span> <span class="n">git</span>
+<span class="n">git</span> <span class="n">push</span>                  <span class="o">&lt;--</span> <span class="n">push</span> <span class="n">to</span> <span class="n">your</span> <span class="n">account</span> <span class="n">on</span> <span class="n">github</span>
+
+<span class="n">on</span> <span class="n">github</span> <span class="nb">open</span> <span class="n">a</span> <span class="n">pull</span> <span class="n">request</span><span class="p">,</span> <span class="n">check</span> <span class="n">that</span> <span class="n">CI</span> <span class="n">turns</span> <span class="n">green</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">wait</span> <span class="k">for</span> <span class="n">review</span> <span class="n">comments</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Test your changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">test</span>
+<span class="n">pytest</span>
+</pre></div>
+</div>
+<p>you can also do extended testing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="o">--</span><span class="n">cov</span>         <span class="o">&lt;--</span> <span class="n">Coverage</span> <span class="n">html</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">build</span><span class="o">/</span><span class="n">html</span>
+<span class="n">pytest</span> <span class="o">--</span><span class="n">profile</span>     <span class="o">&lt;--</span> <span class="n">Call</span> <span class="n">profile</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">prof</span>
+</pre></div>
+</div>
+<section id="internals">
+<h3>Internals<a class="headerlink" href="#internals" title="Link to this heading"></a></h3>
+<p>There are no documentation of the architecture (help is welcome), but most classes and
+methods are documented:</p>
+<p><a class="reference external" href="https://pymodbus.readthedocs.io/en/dev/source/internals.html">Pymodbus internals</a></p>
+</section>
+<section id="generate-documentation">
+<h3>Generate documentation<a class="headerlink" href="#generate-documentation" title="Link to this heading"></a></h3>
+<p><strong>Remark</strong> Assumes that you have installed documentation tools:;</p>
+<blockquote>
+<div><p>pip install “.[documentation]”</p>
+</div></blockquote>
+<p>to build do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">doc</span>
+<span class="o">./</span><span class="n">build_html</span>
+</pre></div>
+</div>
+<p>The documentation is available in &lt;root&gt;/build/html</p>
+<p>Remark: this generates a new zip/tgz file of examples which are uploaded.</p>
+</section>
+</section>
+<section id="license-information">
+<h2>License Information<a class="headerlink" href="#license-information" title="Link to this heading"></a></h2>
+<p>Released under the <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/dev/LICENSE">BSD License</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to PyModbus’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client.html" class="btn btn-neutral float-right" title="Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

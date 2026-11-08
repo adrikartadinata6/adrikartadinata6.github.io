@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Wrapping and checking functions &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plotting with Matplotlib" href="plotting.html" />
+    <link rel="prev" title="Logarithmic Units" href="log_units.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plotting.html" title="Plotting with Matplotlib"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="log_units.html" title="Logarithmic Units"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wrapping and checking functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="wrapping-and-checking-functions">
+<span id="wrapping"></span><h1>Wrapping and checking functions<a class="headerlink" href="#wrapping-and-checking-functions" title="Permalink to this heading">¶</a></h1>
+<p>In some cases you might want to use pint with a pre-existing web service or library
+which is not units aware. Or you might want to write a fast implementation of a
+numerical algorithm that requires the input values in some specific units.</p>
+<p>For example, consider a function to return the period of the pendulum within
+a hypothetical physics library. The library does not use units, but instead
+requires you to provide numerical values in certain units:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simple_physics</span> <span class="kn">import</span> <span class="n">pendulum_period</span>      
+<span class="gp">&gt;&gt;&gt; </span><span class="n">help</span><span class="p">(</span><span class="n">pendulum_period</span><span class="p">)</span>                           
+<span class="go">Help on function pendulum_period in module simple_physics:</span>
+
+<span class="go">pendulum_period(length)</span>
+<span class="go">Return the pendulum period in seconds. The length of the pendulum</span>
+<span class="go">must be provided in meters.</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pendulum_period</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">2.0064092925890407</span>
+</pre></div>
+</div>
+<p>This behaviour is very error prone, in particular when combining multiple libraries.
+You could wrap this function to use Quantities instead:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">mypp_caveman</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pendulum_period</span><span class="p">(</span><span class="n">length</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp_caveman</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">centimeter</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.00640929, &#39;second&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Pint provides a more convenient way to do this:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)(</span><span class="n">pendulum_period</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or in the decorator format:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">mypp</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">pendulum_period</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mypp</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">centimeter</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.00640929, &#39;second&#39;)&gt;</span>
+</pre></div>
+</div>
+<p><cite>wraps</cite> takes 3 input arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt><strong>ret</strong>: the return units.</dt><dd><p>Use None to skip conversion.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>args</strong>: the inputs units for each argument, as an iterable.</dt><dd><p>Use None to skip conversion of any given element.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>strict</strong>: if <cite>True</cite> all convertible arguments must be a Quantity</dt><dd><p>and others will raise a ValueError (True by default)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<section id="strict-mode">
+<h2>Strict Mode<a class="headerlink" href="#strict-mode" title="Permalink to this heading">¶</a></h2>
+<p>By default, the function is wrapped in <cite>strict</cite> mode. In this mode,
+the input arguments assigned to units must be a Quantities.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp</span><span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.00640929, &#39;second&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mypp</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">A wrapped function using strict=True requires quantity for all arguments with not None units. (error found for meter, 1.0)</span>
+</pre></div>
+</div>
+<p>To enable using non-Quantity numerical values, set strict to False`.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp_ns</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="kc">False</span><span class="p">)(</span><span class="n">pendulum_period</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mypp_ns</span><span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.00640929, &#39;second&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mypp_ns</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.00640929, &#39;second&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>In this mode, the value is assumed to have the correct units.</p>
+</section>
+<section id="multiple-arguments-or-return-values">
+<h2>Multiple arguments or return values<a class="headerlink" href="#multiple-arguments-or-return-values" title="Permalink to this heading">¶</a></h2>
+<p>For a function with more arguments, use a tuple:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">simple_physics</span> <span class="kn">import</span> <span class="n">pendulum_period2</span>         
+<span class="gp">&gt;&gt;&gt; </span><span class="n">help</span><span class="p">(</span><span class="n">pendulum_period2</span><span class="p">)</span>                              
+<span class="go">Help on function pendulum_period2 in module simple_physics:</span>
+
+<span class="go">pendulum_period2(length, swing_amplitude)</span>
+<span class="go">Return the pendulum period in seconds. The length of the pendulum</span>
+<span class="go">must be provided in meters. The swing_amplitude must be in radians.</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mypp2</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">radians</span><span class="p">))(</span><span class="n">pendulum_period2</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>Or if the function has multiple outputs:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp3</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">((</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">),</span>
+<span class="gp">... </span>                   <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">radians</span><span class="p">))(</span><span class="n">pendulum_period_maxspeed</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>If there are more return values than specified units, <code class="docutils literal notranslate"><span class="pre">None</span></code> is assumed for
+the extra outputs. For example, given the NREL SOLPOS calculator that outputs
+solar zenith, azimuth and air mass, the following wrapper assumes no units for
+airmass</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">@ureg.wraps((&#39;deg&#39;, &#39;deg&#39;), (&#39;deg&#39;, &#39;deg&#39;, &#39;millibar&#39;, &#39;degC&#39;))</span>
+<span class="go">def solar_position(lat, lon, press, tamb, timestamp):</span>
+<span class="go">    return zenith, azimuth, airmass</span>
+</pre></div>
+</div>
+</section>
+<section id="optional-arguments">
+<h2>Optional arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<p>For a function with named keywords with optional values, use a tuple for all
+arguments:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">meters</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meters</span><span class="o">/</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">calculate_time_to_fall</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">gravity</span><span class="o">=</span><span class="n">Q_</span><span class="p">(</span><span class="mf">9.8</span><span class="p">,</span> <span class="s1">&#39;m/s^2&#39;</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate time to fall from a height h.</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="sd">    By default, the gravity is assumed to be earth gravity,</span>
+<span class="gp">... </span><span class="sd">    but it can be modified.</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="sd">    d = .5 * g * t**2</span>
+<span class="gp">... </span><span class="sd">    t = sqrt(2 * d / g)</span>
+<span class="gp">... </span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="n">t</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">height</span> <span class="o">/</span> <span class="n">gravity</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; seconds to fall&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">t</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lunar_module_height</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="s1">&#39;feet&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s1">&#39;inches&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_time_to_fall</span><span class="p">(</span><span class="n">lunar_module_height</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">1.1939473204801092 seconds to fall</span>
+<span class="go">&lt;Quantity(1.19394732, &#39;second&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">moon_gravity</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">1.625</span><span class="p">,</span> <span class="s1">&#39;m/s^2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_time_to_fall</span><span class="p">(</span><span class="n">lunar_module_height</span><span class="p">,</span> <span class="n">gravity</span><span class="o">=</span><span class="n">moon_gravity</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.932051, &#39;second&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="specifying-relations-between-arguments">
+<h2>Specifying relations between arguments<a class="headerlink" href="#specifying-relations-between-arguments" title="Permalink to this heading">¶</a></h2>
+<p>In certain cases, you may not be concerned with the actual units and only care about the unit relations among arguments.</p>
+<p>This is done using a string starting with the equal sign <cite>=</cite>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="s1">&#39;=A**2&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;=A&#39;</span><span class="p">,</span> <span class="s1">&#39;=A&#39;</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">sqsum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>  <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+</pre></div>
+</div>
+<p>which can be read as the first argument (<cite>x</cite>) has certain units (we labeled them <cite>A</cite>),
+the second argument (<cite>y</cite>) has the same units as the first (<cite>A</cite> again). The return value
+has the unit of <cite>x</cite> squared (<cite>A**2</cite>)</p>
+<p>You can use more than one label:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="s1">&#39;=A**2*B&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;=A&#39;</span><span class="p">,</span> <span class="s1">&#39;=A*B&#39;</span><span class="p">,</span> <span class="s1">&#39;=B&#39;</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>With optional arguments</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="s1">&#39;=A*B&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;=A&#39;</span><span class="p">,</span> <span class="s1">&#39;=B&#39;</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">get_displacement</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">Q_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;m/s&#39;</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">time</span> <span class="o">*</span> <span class="n">rate</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_displacement</span><span class="p">(</span><span class="n">Q_</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">))</span>
+<span class="go">&lt;Quantity(2, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_displacement</span><span class="p">(</span><span class="n">Q_</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;deg/s&#39;</span><span class="p">))</span>
+<span class="go">&lt;Quantity(2, &#39;degree&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="ignoring-an-argument-or-return-value">
+<h2>Ignoring an argument or return value<a class="headerlink" href="#ignoring-an-argument-or-return-value" title="Permalink to this heading">¶</a></h2>
+<p>To avoid the conversion of an argument or return value, use None</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp3</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">wraps</span><span class="p">((</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)(</span><span class="n">pendulum_period_error</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="checking-dimensionality">
+<h1>Checking dimensionality<a class="headerlink" href="#checking-dimensionality" title="Permalink to this heading">¶</a></h1>
+<p>When you want pint quantities to be used as inputs to your functions, pint provides a wrapper to ensure units are of
+correct type - or more precisely, they match the expected dimensionality of the physical quantity.</p>
+<p>Similar to wraps(), you can pass None to skip checking of some parameters, but the return parameter type is not checked.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mypp</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;[length]&#39;</span><span class="p">)(</span><span class="n">pendulum_period</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the decorator format:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@ureg</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;[length]&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">pendulum_period</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you just want to check the dimensionality of a quantity, you can do so with the built-in ‘check’ function.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">m</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;[length]&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;[time]&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Wrapping and checking functions</a><ul>
+<li><a class="reference internal" href="#strict-mode">Strict Mode</a></li>
+<li><a class="reference internal" href="#multiple-arguments-or-return-values">Multiple arguments or return values</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional arguments</a></li>
+<li><a class="reference internal" href="#specifying-relations-between-arguments">Specifying relations between arguments</a></li>
+<li><a class="reference internal" href="#ignoring-an-argument-or-return-value">Ignoring an argument or return value</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#checking-dimensionality">Checking dimensionality</a></li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="log_units.html" title="previous chapter">Logarithmic Units</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="plotting.html" title="next chapter">Plotting with Matplotlib</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/wrapping.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

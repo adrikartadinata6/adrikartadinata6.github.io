@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7.1.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7.0.0" href="7.0.0.html" />
+    <link rel="prev" title="7.1.1" href="7.1.1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="7.0.0.html" title="7.0.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="7.1.1.html" title="7.1.1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">7.1.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>7.1.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading">¶</a></h2>
+<section id="allow-saving-of-zero-quality-jpeg-images">
+<h3>Allow saving of zero quality JPEG images<a class="headerlink" href="#allow-saving-of-zero-quality-jpeg-images" title="Link to this heading">¶</a></h3>
+<p>If no quality was specified when saving a JPEG, Pillow internally used a value
+of zero to indicate that the default quality should be used. However, this
+removed the ability to actually save a JPEG with zero quality. This has now
+been resolved.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;hopper.jpg&quot;</span><span class="p">)</span>
+<span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.jpg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="new-channel-operations">
+<h3>New channel operations<a class="headerlink" href="#new-channel-operations" title="Link to this heading">¶</a></h3>
+<p>Three new channel operations have been added: <a class="reference internal" href="../reference/ImageChops.html#PIL.ImageChops.soft_light" title="PIL.ImageChops.soft_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">soft_light()</span></code></a>,
+<a class="reference internal" href="../reference/ImageChops.html#PIL.ImageChops.hard_light" title="PIL.ImageChops.hard_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hard_light()</span></code></a> and <a class="reference internal" href="../reference/ImageChops.html#PIL.ImageChops.overlay" title="PIL.ImageChops.overlay"><code class="xref py py-meth docutils literal notranslate"><span class="pre">overlay()</span></code></a>.</p>
+</section>
+<section id="pillow-version-constant">
+<h3>PILLOW_VERSION constant<a class="headerlink" href="#pillow-version-constant" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">PILLOW_VERSION</span></code> has been re-added but is deprecated and will be removed in a future
+release. Use <code class="docutils literal notranslate"><span class="pre">__version__</span></code> instead.</p>
+<p>It was initially removed in Pillow 7.0.0, but brought back in 7.1.0 to give projects
+more time to upgrade.</p>
+</section>
+<section id="reading-jpeg-comments">
+<h3>Reading JPEG comments<a class="headerlink" href="#reading-jpeg-comments" title="Link to this heading">¶</a></h3>
+<p>When opening a JPEG image, the comment may now be read into
+<a class="reference internal" href="../reference/Image.html#PIL.Image.Image.info" title="PIL.Image.Image.info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">info</span></code></a>.</p>
+</section>
+<section id="support-for-different-charset-encodings-in-pcffontfile">
+<h3>Support for different charset encodings in PcfFontFile<a class="headerlink" href="#support-for-different-charset-encodings-in-pcffontfile" title="Link to this heading">¶</a></h3>
+<p>Previously <code class="docutils literal notranslate"><span class="pre">PcfFontFile</span></code> output only bitmap PIL fonts with ISO 8859-1 encoding, even
+though the PCF format supports Unicode, making it hard to work with Pillow with bitmap
+fonts in languages which use different character sets.</p>
+<p>Now it’s possible to set a different charset encoding in <code class="docutils literal notranslate"><span class="pre">PcfFontFile</span></code>’s class
+constructor. By default, it generates a PIL font file with ISO 8859-1 as before. The
+generated PIL font file still contains up to 256 characters, but the character set is
+different depending on the selected encoding.</p>
+<p>To use such a font with <code class="docutils literal notranslate"><span class="pre">ImageDraw.text</span></code>, call it with a bytes object with the same
+encoding as the font file.</p>
+</section>
+<section id="x11-imagegrab-grab">
+<h3>X11 ImageGrab.grab()<a class="headerlink" href="#x11-imagegrab-grab" title="Link to this heading">¶</a></h3>
+<p>Support has been added for <code class="docutils literal notranslate"><span class="pre">ImageGrab.grab()</span></code> on Linux using the X server
+with the XCB library.</p>
+<p>An optional <code class="docutils literal notranslate"><span class="pre">xdisplay</span></code> parameter has been added to select the X server,
+with the default value of <code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code> using the default X server.</p>
+<p>Passing a different value on Windows or macOS will force taking a snapshot
+using the selected X server; pass an empty string to use the default X server.
+XCB support is not included in pre-compiled wheels for Windows and macOS.</p>
+</section>
+</section>
+<section id="security">
+<h2>Security<a class="headerlink" href="#security" title="Link to this heading">¶</a></h2>
+<p>This release includes security fixes.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10177">CVE-2020-10177</a> Fix multiple out-of-bounds reads in FLI decoding</p></li>
+<li><p><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10378">CVE-2020-10378</a> Fix bounds overflow in PCX decoding</p></li>
+<li><p><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10379">CVE-2020-10379</a> Fix two buffer overflows in TIFF decoding</p></li>
+<li><p><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10994">CVE-2020-10994</a> Fix bounds overflow in JPEG 2000 decoding</p></li>
+<li><p><a class="reference external" href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11538">CVE-2020-11538</a> Fix buffer overflow in SGI-RLE decoding</p></li>
+</ul>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="if-present-only-use-alpha-channel-for-bounding-box">
+<h3>If present, only use alpha channel for bounding box<a class="headerlink" href="#if-present-only-use-alpha-channel-for-bounding-box" title="Link to this heading">¶</a></h3>
+<p>When the <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.getbbox" title="PIL.Image.Image.getbbox"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getbbox()</span></code></a> method calculates the bounding
+box, for an RGB image it trims black pixels. Similarly, for an RGBA image it
+would trim black transparent pixels. This is now changed so that if an image
+has an alpha channel (RGBA, RGBa, PA, LA, La), any transparent pixels are
+trimmed.</p>
+</section>
+<section id="improved-apng-support">
+<h3>Improved APNG support<a class="headerlink" href="#improved-apng-support" title="Link to this heading">¶</a></h3>
+<p>Added support for reading and writing Animated Portable Network Graphics (APNG) images.
+The PNG plugin now supports using the <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.seek" title="PIL.Image.Image.seek"><code class="xref py py-meth docutils literal notranslate"><span class="pre">seek()</span></code></a> method and the
+<a class="reference internal" href="../reference/ImageSequence.html#PIL.ImageSequence.Iterator" title="PIL.ImageSequence.Iterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a> class to read APNG frame sequences.
+The PNG plugin also now supports using the <code class="docutils literal notranslate"><span class="pre">append_images</span></code> argument to write APNG frame
+sequences. See <a class="reference internal" href="../handbook/image-file-formats.html#apng-sequences"><span class="std std-ref">APNG sequences</span></a> for further details.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">7.1.0</a><ul>
+<li><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li><a class="reference internal" href="#allow-saving-of-zero-quality-jpeg-images">Allow saving of zero quality JPEG images</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#new-channel-operations">New channel operations</a></li>
+<li><a class="reference internal" href="#pillow-version-constant">PILLOW_VERSION constant</a></li>
+<li><a class="reference internal" href="#reading-jpeg-comments">Reading JPEG comments</a></li>
+<li><a class="reference internal" href="#support-for-different-charset-encodings-in-pcffontfile">Support for different charset encodings in PcfFontFile</a></li>
+<li><a class="reference internal" href="#x11-imagegrab-grab">X11 ImageGrab.grab()</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#if-present-only-use-alpha-channel-for-bounding-box">If present, only use alpha channel for bounding box</a></li>
+<li><a class="reference internal" href="#improved-apng-support">Improved APNG support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="7.1.1.html"
+                          title="previous chapter">7.1.1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="7.0.0.html"
+                          title="next chapter">7.0.0</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/7.1.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="7.0.0.html" title="7.0.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="7.1.1.html" title="7.1.1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">7.1.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

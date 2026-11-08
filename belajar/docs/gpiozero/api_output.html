@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>15. API - Output Devices &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="16. API - SPI Devices" href="api_spi.html" />
+    <link rel="prev" title="14. API - Input Devices" href="api_input.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">15. API - Output Devices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#regular-classes">15.1. Regular Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#led">15.1.1. LED</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.LED"><code class="docutils literal notranslate"><span class="pre">LED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pwmled">15.1.2. PWMLED</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.PWMLED"><code class="docutils literal notranslate"><span class="pre">PWMLED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#rgbled">15.1.3. RGBLED</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.RGBLED"><code class="docutils literal notranslate"><span class="pre">RGBLED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#buzzer">15.1.4. Buzzer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Buzzer"><code class="docutils literal notranslate"><span class="pre">Buzzer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tonalbuzzer">15.1.5. TonalBuzzer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.TonalBuzzer"><code class="docutils literal notranslate"><span class="pre">TonalBuzzer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#motor">15.1.6. Motor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Motor"><code class="docutils literal notranslate"><span class="pre">Motor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#phaseenablemotor">15.1.7. PhaseEnableMotor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.PhaseEnableMotor"><code class="docutils literal notranslate"><span class="pre">PhaseEnableMotor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#servo">15.1.8. Servo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.Servo"><code class="docutils literal notranslate"><span class="pre">Servo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#angularservo">15.1.9. AngularServo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.AngularServo"><code class="docutils literal notranslate"><span class="pre">AngularServo</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#base-classes">15.2. Base Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#digitaloutputdevice">15.2.1. DigitalOutputDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.DigitalOutputDevice"><code class="docutils literal notranslate"><span class="pre">DigitalOutputDevice</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pwmoutputdevice">15.2.2. PWMOutputDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.PWMOutputDevice"><code class="docutils literal notranslate"><span class="pre">PWMOutputDevice</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#outputdevice">15.2.3. OutputDevice</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpiozero.OutputDevice"><code class="docutils literal notranslate"><span class="pre">OutputDevice</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiodevice">15.2.4. GPIODevice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">15. </span>API - Output Devices</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_output.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.output_devices">
+<span id="api-output-devices"></span><h1><span class="section-number">15. </span>API - Output Devices<a class="headerlink" href="#module-gpiozero.output_devices" title="Link to this heading"></a></h1>
+<p>These output device component interfaces have been provided for simple use of
+everyday components. Components must be wired up correctly before use in code.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All GPIO pin numbers use Broadcom (BCM) numbering by default. See the
+<a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> section for more information.</p>
+</div>
+<section id="regular-classes">
+<h2><span class="section-number">15.1. </span>Regular Classes<a class="headerlink" href="#regular-classes" title="Link to this heading"></a></h2>
+<p>The following classes are intended for general use with the devices they
+represent. All classes in this section are concrete (not abstract).</p>
+<section id="led">
+<h3><span class="section-number">15.1.1. </span>LED<a class="headerlink" href="#led" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.LED">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">LED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#LED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.LED" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.DigitalOutputDevice" title="gpiozero.DigitalOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigitalOutputDevice</span></code></a> and represents a light emitting diode
+(LED).</p>
+<p>Connect the cathode (short leg, flat side) of the LED to a ground pin;
+connect the anode (longer leg) to a limiting resistor; connect the other
+side of the limiting resistor to a GPIO pin (the limiting resistor can be
+placed either side of the LED).</p>
+<p>The following example will light the LED:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">LED</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">led</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin which the LED is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the LED will operate normally with the
+circuit described above. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> you should wire the cathode
+to the GPIO pin, and the anode to a 3V3 pin (via a limiting resistor).</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> or </em><em>None</em>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), the LED will be off initially.  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>, the LED will be left in whatever state the pin is found
+in when configured for output (warning: this can be on).  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the LED will be switched on initially.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.LED.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.LED.blink" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.LED.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.LED.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.LED.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.LED.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.LED.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.LED.toggle" title="Link to this definition"></a></dt>
+<dd><p>Reverse the state of the device. If it’s on, turn it off; if it’s off,
+turn it on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LED.is_lit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_lit</span></span><a class="headerlink" href="#gpiozero.LED.is_lit" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise. This property is usually derived from
+<a class="reference internal" href="#gpiozero.LED.value" title="gpiozero.LED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. Unlike <a class="reference internal" href="#gpiozero.LED.value" title="gpiozero.LED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>, this is <em>always</em> a boolean.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LED.pin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pin</span></span><a class="headerlink" href="#gpiozero.LED.pin" title="Link to this definition"></a></dt>
+<dd><p>The <a class="reference internal" href="api_pins.html#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> that the device is connected to. This will be
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> if the device has been closed (see the
+<a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method). When dealing with GPIO pins, query
+<code class="docutils literal notranslate"><span class="pre">pin.number</span></code> to discover the GPIO pin (in BCM numbering) that the
+device is connected to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.LED.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.LED.value" title="Link to this definition"></a></dt>
+<dd><p>Returns 1 if the device is currently active and 0 otherwise. Setting
+this property changes the state of the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pwmled">
+<h3><span class="section-number">15.1.2. </span>PWMLED<a class="headerlink" href="#pwmled" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.PWMLED">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PWMLED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMLED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMLED" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.PWMOutputDevice" title="gpiozero.PWMOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMOutputDevice</span></code></a> and represents a light emitting diode
+(LED) with variable brightness.</p>
+<p>A typical configuration of such a device is to connect a GPIO pin to the
+anode (long leg) of the LED, and the cathode (short leg) to ground, with
+an optional resistor to prevent the LED from burning out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin which the LED is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the <a class="reference internal" href="#gpiozero.PWMLED.on" title="gpiozero.PWMLED.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO
+to HIGH. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, the <a class="reference internal" href="#gpiozero.PWMLED.on" title="gpiozero.PWMLED.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO to
+LOW (the <a class="reference internal" href="#gpiozero.PWMLED.off" title="gpiozero.PWMLED.off"><code class="xref py py-meth docutils literal notranslate"><span class="pre">off()</span></code></a> method always does the opposite).</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If <code class="docutils literal notranslate"><span class="pre">0</span></code> (the default), the LED will be off initially. Other values
+between 0 and 1 can be specified as an initial brightness for the LED.
+Note that <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> cannot be specified (unlike the parent class) as
+there is no way to tell PWM not to alter the state of the pin.</p></li>
+<li><p><strong>frequency</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The frequency (in Hz) of pulses emitted to drive the LED. Defaults
+to 100Hz.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.PWMLED.blink" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 0.</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 0.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.PWMLED.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.PWMLED.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.pulse">
+<span class="sig-name descname"><span class="pre">pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.PWMLED.pulse" title="Link to this definition"></a></dt>
+<dd><p>Make the device fade in and out repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 1.</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 1.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to pulse; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue pulsing and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the pulse is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.PWMLED.toggle" title="Link to this definition"></a></dt>
+<dd><p>Toggle the state of the device. If the device is currently off
+(<a class="reference internal" href="#gpiozero.PWMLED.value" title="gpiozero.PWMLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is 0.0), this changes it to “fully” on (<a class="reference internal" href="#gpiozero.PWMLED.value" title="gpiozero.PWMLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is
+1.0).  If the device has a duty cycle (<a class="reference internal" href="#gpiozero.PWMLED.value" title="gpiozero.PWMLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>) of 0.1, this will
+toggle it to 0.9, and so on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.is_lit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_lit</span></span><a class="headerlink" href="#gpiozero.PWMLED.is_lit" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active (<a class="reference internal" href="#gpiozero.PWMLED.value" title="gpiozero.PWMLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>
+is non-zero) and <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.pin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pin</span></span><a class="headerlink" href="#gpiozero.PWMLED.pin" title="Link to this definition"></a></dt>
+<dd><p>The <a class="reference internal" href="api_pins.html#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> that the device is connected to. This will be
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> if the device has been closed (see the
+<a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method). When dealing with GPIO pins, query
+<code class="docutils literal notranslate"><span class="pre">pin.number</span></code> to discover the GPIO pin (in BCM numbering) that the
+device is connected to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMLED.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.PWMLED.value" title="Link to this definition"></a></dt>
+<dd><p>The duty cycle of the PWM device. 0.0 is off, 1.0 is fully on. Values
+in between may be specified for varying levels of power in the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="rgbled">
+<h3><span class="section-number">15.1.3. </span>RGBLED<a class="headerlink" href="#rgbled" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.RGBLED">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">RGBLED</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_generic.html#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a> and represents a full color LED component (composed
+of red, green, and blue LEDs).</p>
+<p>Connect the common cathode (longest leg) to a ground pin; connect each of
+the other legs (representing the red, green, and blue anodes) to any GPIO
+pins.  You should use three limiting resistors (one per anode).</p>
+<p>The following code will make the LED yellow:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">RGBLED</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">RGBLED</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">led</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://colorzero.readthedocs.io/">colorzero</a> library is also supported:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">RGBLED</span>
+<span class="kn">from</span> <span class="nn">colorzero</span> <span class="kn">import</span> <span class="n">Color</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">RGBLED</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">led</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>red</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that controls the red component of the RGB LED. See
+<a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a
+<a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a> will be raised.</p></li>
+<li><p><strong>green</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that controls the green component of the RGB LED.</p></li>
+<li><p><strong>blue</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that controls the blue component of the RGB LED.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Set to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default) for common cathode RGB LEDs. If you
+are using a common anode RGB LED, set this to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>.</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><em>Color</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The initial color for the RGB LED. Defaults to black <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></code>.</p></li>
+<li><p><strong>pwm</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), construct <a class="reference internal" href="#gpiozero.PWMLED" title="gpiozero.PWMLED"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMLED</span></code></a> instances for
+each component of the RGBLED. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, construct regular
+<a class="reference internal" href="#gpiozero.LED" title="gpiozero.LED"><code class="xref py py-class docutils literal notranslate"><span class="pre">LED</span></code></a> instances, which prevents smooth color graduations.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED.blink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED.blink" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 0. Must be 0 if
+<em>pwm</em> was <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> when the class was constructed
+(<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> will be raised if not).</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 0. Must be 0 if
+<em>pwm</em> was <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> when the class was constructed
+(<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> will be raised if not).</p></li>
+<li><p><strong>on_color</strong> (<a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><em>Color</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The color to use when the LED is “on”. Defaults to white.</p></li>
+<li><p><strong>off_color</strong> (<a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><em>Color</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The color to use when the LED is “off”. Defaults to black.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED.off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED.off" title="Link to this definition"></a></dt>
+<dd><p>Turn the LED off. This is equivalent to setting the LED color to black
+<code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED.on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED.on" title="Link to this definition"></a></dt>
+<dd><p>Turn the LED on. This equivalent to setting the LED color to white
+<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.pulse">
+<span class="sig-name descname"><span class="pre">pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED.pulse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED.pulse" title="Link to this definition"></a></dt>
+<dd><p>Make the device fade in and out repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 1.</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 1.</p></li>
+<li><p><strong>on_color</strong> (<a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><em>Color</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The color to use when the LED is “on”. Defaults to white.</p></li>
+<li><p><strong>off_color</strong> (<a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><em>Color</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a>) – The color to use when the LED is “off”. Defaults to black.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to pulse; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue pulsing and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the pulse is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#RGBLED.toggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.RGBLED.toggle" title="Link to this definition"></a></dt>
+<dd><p>Toggle the state of the device. If the device is currently off
+(<a class="reference internal" href="#gpiozero.RGBLED.value" title="gpiozero.RGBLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></code>), this changes it to “fully” on
+(<a class="reference internal" href="#gpiozero.RGBLED.value" title="gpiozero.RGBLED.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code>).  If the device has a specific color,
+this method inverts the color.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.blue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">blue</span></span><a class="headerlink" href="#gpiozero.RGBLED.blue" title="Link to this definition"></a></dt>
+<dd><p>Represents the blue element of the LED as a <a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Blue" title="(in colorzero v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Blue</span></code></a>
+object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color</span></span><a class="headerlink" href="#gpiozero.RGBLED.color" title="Link to this definition"></a></dt>
+<dd><p>Represents the color of the LED as a <a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Color" title="(in colorzero v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Color</span></code></a> object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.green">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">green</span></span><a class="headerlink" href="#gpiozero.RGBLED.green" title="Link to this definition"></a></dt>
+<dd><p>Represents the green element of the LED as a <a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Green" title="(in colorzero v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Green</span></code></a>
+object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.is_lit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_lit</span></span><a class="headerlink" href="#gpiozero.RGBLED.is_lit" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the LED is currently active (not black) and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.red">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">red</span></span><a class="headerlink" href="#gpiozero.RGBLED.red" title="Link to this definition"></a></dt>
+<dd><p>Represents the red element of the LED as a <a class="reference external" href="/usr/share/doc/python3-colorzero/html/api_color.html#colorzero.Red" title="(in colorzero v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Red</span></code></a>
+object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.RGBLED.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.RGBLED.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the color of the LED as an RGB 3-tuple of <code class="docutils literal notranslate"><span class="pre">(red,</span> <span class="pre">green,</span>
+<span class="pre">blue)</span></code> where each value is between 0 and 1 if <em>pwm</em> was <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>
+when the class was constructed (and only 0 or 1 if not).</p>
+<p>For example, red would be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0,</span> <span class="pre">0)</span></code> and yellow would be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span>
+<span class="pre">0)</span></code>, while orange would be <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0.5,</span> <span class="pre">0)</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buzzer">
+<h3><span class="section-number">15.1.4. </span>Buzzer<a class="headerlink" href="#buzzer" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Buzzer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Buzzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Buzzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Buzzer" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.DigitalOutputDevice" title="gpiozero.DigitalOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigitalOutputDevice</span></code></a> and represents a digital buzzer
+component.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This interface is only capable of simple on/off commands, and is not
+capable of playing a variety of tones (see <a class="reference internal" href="#gpiozero.TonalBuzzer" title="gpiozero.TonalBuzzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">TonalBuzzer</span></code></a>).</p>
+</div>
+<p>Connect the cathode (negative pin) of the buzzer to a ground pin; connect
+the other side to any GPIO pin.</p>
+<p>The following example will sound the buzzer:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Buzzer</span>
+
+<span class="n">bz</span> <span class="o">=</span> <span class="n">Buzzer</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">bz</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin which the buzzer is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the buzzer will operate normally with
+the circuit described above. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> you should wire the
+cathode to the GPIO pin, and the anode to a 3V3 pin.</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> or </em><em>None</em>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), the buzzer will be silent initially. If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>, the buzzer will be left in whatever state the pin is
+found in when configured for output (warning: this can be on). If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the buzzer will be switched on initially.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.beep">
+<span class="sig-name descname"><span class="pre">beep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.Buzzer.beep" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.Buzzer.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.Buzzer.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.Buzzer.toggle" title="Link to this definition"></a></dt>
+<dd><p>Reverse the state of the device. If it’s on, turn it off; if it’s off,
+turn it on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.Buzzer.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise. This property is usually derived from
+<a class="reference internal" href="#gpiozero.Buzzer.value" title="gpiozero.Buzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>. Unlike <a class="reference internal" href="#gpiozero.Buzzer.value" title="gpiozero.Buzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>, this is <em>always</em> a boolean.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.pin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pin</span></span><a class="headerlink" href="#gpiozero.Buzzer.pin" title="Link to this definition"></a></dt>
+<dd><p>The <a class="reference internal" href="api_pins.html#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> that the device is connected to. This will be
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> if the device has been closed (see the
+<a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method). When dealing with GPIO pins, query
+<code class="docutils literal notranslate"><span class="pre">pin.number</span></code> to discover the GPIO pin (in BCM numbering) that the
+device is connected to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Buzzer.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.Buzzer.value" title="Link to this definition"></a></dt>
+<dd><p>Returns 1 if the device is currently active and 0 otherwise. Setting
+this property changes the state of the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="tonalbuzzer">
+<h3><span class="section-number">15.1.5. </span>TonalBuzzer<a class="headerlink" href="#tonalbuzzer" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">TonalBuzzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#TonalBuzzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.TonalBuzzer" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_boards.html#gpiozero.CompositeDevice" title="gpiozero.CompositeDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDevice</span></code></a> and represents a tonal buzzer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin which the buzzer is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default), the buzzer will be off initially. Values
+between -1 and 1 can be specified as an initial value for the buzzer.</p></li>
+<li><p><strong>mid_tone</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The tone which is represented the device’s middle value (0). The
+default is “A4” (MIDI note 69).</p></li>
+<li><p><strong>octaves</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of octaves to allow away from the base note. The default is
+1, meaning a value of -1 goes one octave below the base note, and one
+above, i.e. from A3 to A5 with the default base note of A4.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this class does not currently work with
+<a class="reference internal" href="api_pins.html#gpiozero.pins.pigpio.PiGPIOFactory" title="gpiozero.pins.pigpio.PiGPIOFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">PiGPIOFactory</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.play">
+<span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tone</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#TonalBuzzer.play"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.TonalBuzzer.play" title="Link to this definition"></a></dt>
+<dd><p>Play the given <em>tone</em>. This can either be an instance of
+<a class="reference internal" href="api_tones.html#gpiozero.tones.Tone" title="gpiozero.tones.Tone"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tone</span></code></a> or can be anything that could be used to
+construct an instance of <a class="reference internal" href="api_tones.html#gpiozero.tones.Tone" title="gpiozero.tones.Tone"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tone</span></code></a>.</p>
+<p>For example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">TonalBuzzer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero.tones</span> <span class="kn">import</span> <span class="n">Tone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">TonalBuzzer</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Tone</span><span class="p">(</span><span class="s2">&quot;A4&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Tone</span><span class="p">(</span><span class="mf">220.0</span><span class="p">))</span> <span class="c1"># Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">Tone</span><span class="p">(</span><span class="mi">60</span><span class="p">))</span> <span class="c1"># middle C in MIDI notation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="s2">&quot;A4&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="mf">220.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#TonalBuzzer.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.TonalBuzzer.stop" title="Link to this definition"></a></dt>
+<dd><p>Turn the buzzer off. This is equivalent to setting <a class="reference internal" href="#gpiozero.TonalBuzzer.value" title="gpiozero.TonalBuzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> to
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the buzzer is currently playing, otherwise
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.max_tone">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_tone</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.max_tone" title="Link to this definition"></a></dt>
+<dd><p>The highest tone that the buzzer can play, i.e. the tone played when
+<a class="reference internal" href="#gpiozero.TonalBuzzer.value" title="gpiozero.TonalBuzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is 1.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.mid_tone">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mid_tone</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.mid_tone" title="Link to this definition"></a></dt>
+<dd><p>The middle tone available, i.e. the tone played when <a class="reference internal" href="#gpiozero.TonalBuzzer.value" title="gpiozero.TonalBuzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is
+0.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.min_tone">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_tone</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.min_tone" title="Link to this definition"></a></dt>
+<dd><p>The lowest tone that the buzzer can play, i.e. the tone played
+when <a class="reference internal" href="#gpiozero.TonalBuzzer.value" title="gpiozero.TonalBuzzer.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is -1.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.octaves">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">octaves</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.octaves" title="Link to this definition"></a></dt>
+<dd><p>The number of octaves available (above and below mid_tone).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.tone">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tone</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.tone" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference internal" href="api_tones.html#gpiozero.tones.Tone" title="gpiozero.tones.Tone"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tone</span></code></a> that the buzzer is currently
+playing, or <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> if the buzzer is silent. This property can
+also be set to play the specified tone.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.TonalBuzzer.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.TonalBuzzer.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the state of the buzzer as a value between -1 (representing
+the minimum tone) and 1 (representing the maximum tone). This can also
+be the special value <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> indicating that the buzzer is
+currently silent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="motor">
+<h3><span class="section-number">15.1.6. </span>Motor<a class="headerlink" href="#motor" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Motor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Motor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Motor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Motor" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_boards.html#gpiozero.CompositeDevice" title="gpiozero.CompositeDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDevice</span></code></a> and represents a generic motor
+connected to a bi-directional motor driver circuit (i.e. an <a class="reference external" href="https://en.wikipedia.org/wiki/H_bridge">H-bridge</a>).</p>
+<p>Attach an <a class="reference external" href="https://en.wikipedia.org/wiki/H_bridge">H-bridge</a> motor controller to your Pi; connect a power source
+(e.g. a battery pack or the 5V pin) to the controller; connect the outputs
+of the controller board to the two terminals of the motor; connect the
+inputs of the controller board to two GPIO pins.</p>
+<p>The following code will make the motor turn “forwards”:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Motor</span>
+
+<span class="n">motor</span> <span class="o">=</span> <span class="n">Motor</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+<span class="n">motor</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forward</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the forward input of the motor driver chip is
+connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers. If this
+is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a> will be raised.</p></li>
+<li><p><strong>backward</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the backward input of the motor driver chip is
+connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers. If this
+is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a> will be raised.</p></li>
+<li><p><strong>enable</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – The GPIO pin that enables the motor. Required for <em>some</em> motor
+controller boards. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers.</p></li>
+<li><p><strong>pwm</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), construct <a class="reference internal" href="#gpiozero.PWMOutputDevice" title="gpiozero.PWMOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMOutputDevice</span></code></a>
+instances for the motor controller pins, allowing both direction and
+variable speed control. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, construct
+<a class="reference internal" href="#gpiozero.DigitalOutputDevice" title="gpiozero.DigitalOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigitalOutputDevice</span></code></a> instances, allowing only direction
+control.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Motor.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Motor.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Motor.backward" title="Link to this definition"></a></dt>
+<dd><p>Drive the motor backwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>speed</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The speed at which the motor should turn. Can be any value between
+0 (stopped) and the default 1 (maximum speed) if <em>pwm</em> was
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the class was constructed (and only 0 or 1 if
+not).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Motor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Motor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Motor.forward" title="Link to this definition"></a></dt>
+<dd><p>Drive the motor forwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>speed</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The speed at which the motor should turn. Can be any value between
+0 (stopped) and the default 1 (maximum speed) if <em>pwm</em> was
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the class was constructed (and only 0 or 1 if
+not).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Motor.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Motor.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Motor.reverse" title="Link to this definition"></a></dt>
+<dd><p>Reverse the current direction of the motor. If the motor is currently
+idle this does nothing. Otherwise, the motor’s direction will be
+reversed at the current speed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Motor.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Motor.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Motor.stop" title="Link to this definition"></a></dt>
+<dd><p>Stop the motor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Motor.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.Motor.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the motor is currently running and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Motor.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.Motor.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the speed of the motor as a floating point value between -1
+(full speed backward) and 1 (full speed forward), with 0 representing
+stopped.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="phaseenablemotor">
+<h3><span class="section-number">15.1.7. </span>PhaseEnableMotor<a class="headerlink" href="#phaseenablemotor" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PhaseEnableMotor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PhaseEnableMotor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PhaseEnableMotor" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_boards.html#gpiozero.CompositeDevice" title="gpiozero.CompositeDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDevice</span></code></a> and represents a generic motor connected
+to a Phase/Enable motor driver circuit; the phase of the driver controls
+whether the motor turns forwards or backwards, while enable controls the
+speed with PWM.</p>
+<p>The following code will make the motor turn “forwards”:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">PhaseEnableMotor</span>
+<span class="n">motor</span> <span class="o">=</span> <span class="n">PhaseEnableMotor</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">motor</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the phase (direction) input of the motor driver chip
+is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers. If
+this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a> will be raised.</p></li>
+<li><p><strong>enable</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the enable (speed) input of the motor driver chip
+is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a> for valid pin numbers. If
+this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a> will be raised.</p></li>
+<li><p><strong>pwm</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), construct <a class="reference internal" href="#gpiozero.PWMOutputDevice" title="gpiozero.PWMOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWMOutputDevice</span></code></a>
+instances for the motor controller pins, allowing both direction and
+variable speed control. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, construct
+<a class="reference internal" href="#gpiozero.DigitalOutputDevice" title="gpiozero.DigitalOutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigitalOutputDevice</span></code></a> instances, allowing only direction
+control.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PhaseEnableMotor.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PhaseEnableMotor.backward" title="Link to this definition"></a></dt>
+<dd><p>Drive the motor backwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>speed</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The speed at which the motor should turn. Can be any value between
+0 (stopped) and the default 1 (maximum speed).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PhaseEnableMotor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PhaseEnableMotor.forward" title="Link to this definition"></a></dt>
+<dd><p>Drive the motor forwards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>speed</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The speed at which the motor should turn. Can be any value between
+0 (stopped) and the default 1 (maximum speed).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PhaseEnableMotor.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PhaseEnableMotor.reverse" title="Link to this definition"></a></dt>
+<dd><p>Reverse the current direction of the motor. If the motor is currently
+idle this does nothing. Otherwise, the motor’s direction will be
+reversed at the current speed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PhaseEnableMotor.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PhaseEnableMotor.stop" title="Link to this definition"></a></dt>
+<dd><p>Stop the motor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.PhaseEnableMotor.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the motor is currently running and
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PhaseEnableMotor.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.PhaseEnableMotor.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the speed of the motor as a floating point value between -1
+(full speed backward) and 1 (full speed forward).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="servo">
+<h3><span class="section-number">15.1.8. </span>Servo<a class="headerlink" href="#servo" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.Servo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">Servo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Servo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Servo" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_boards.html#gpiozero.CompositeDevice" title="gpiozero.CompositeDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDevice</span></code></a> and represents a PWM-controlled servo
+motor connected to a GPIO pin.</p>
+<p>Connect a power source (e.g. a battery pack or the 5V pin) to the power
+cable of the servo (this is typically colored red); connect the ground
+cable of the servo (typically colored black or brown) to the negative of
+your battery pack, or a GND pin; connect the final cable (typically colored
+white or orange) to the GPIO pin you wish to use for controlling the servo.</p>
+<p>The following code will make the servo move between its minimum, maximum,
+and mid-point positions with a pause between each:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Servo</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="n">servo</span> <span class="o">=</span> <span class="n">Servo</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">servo</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">servo</span><span class="o">.</span><span class="n">mid</span><span class="p">()</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">servo</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use the <a class="reference internal" href="#gpiozero.Servo.value" title="gpiozero.Servo.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> property to move the servo to a
+particular position, on a scale from -1 (min) to 1 (max) where 0 is the
+mid-point:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Servo</span>
+
+<span class="n">servo</span> <span class="o">=</span> <span class="n">Servo</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="n">servo</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To reduce servo jitter, use the pigpio pin driver rather than the default
+RPi.GPIO driver (pigpio uses DMA sampling for much more precise edge
+timing). See <a class="reference internal" href="api_pins.html#changing-pin-factory"><span class="std std-ref">Changing the pin factory</span></a> for further information.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the servo is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If <code class="docutils literal notranslate"><span class="pre">0</span></code> (the default), the device’s mid-point will be set initially.
+Other values between -1 and +1 can be specified as an initial position.
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> means to start the servo un-controlled (see
+<a class="reference internal" href="#gpiozero.Servo.value" title="gpiozero.Servo.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>).</p></li>
+<li><p><strong>min_pulse_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The pulse width corresponding to the servo’s minimum position. This
+defaults to 1ms.</p></li>
+<li><p><strong>max_pulse_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The pulse width corresponding to the servo’s maximum position. This
+defaults to 2ms.</p></li>
+<li><p><strong>frame_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The length of time between servo control pulses measured in seconds.
+This defaults to 20ms which is a common value for servos.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Servo.detach">
+<span class="sig-name descname"><span class="pre">detach</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Servo.detach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Servo.detach" title="Link to this definition"></a></dt>
+<dd><p>Temporarily disable control of the servo. This is equivalent to
+setting <a class="reference internal" href="#gpiozero.Servo.value" title="gpiozero.Servo.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> to <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Servo.max">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Servo.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Servo.max" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its maximum position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Servo.mid">
+<span class="sig-name descname"><span class="pre">mid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Servo.mid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Servo.mid" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its mid-point position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.Servo.min">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#Servo.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.Servo.min" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its minimum position.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.frame_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frame_width</span></span><a class="headerlink" href="#gpiozero.Servo.frame_width" title="Link to this definition"></a></dt>
+<dd><p>The time between control pulses, measured in seconds.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.Servo.is_active" title="Link to this definition"></a></dt>
+<dd><p>Composite devices are considered “active” if any of their constituent
+devices have a “truthy” value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.max_pulse_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_pulse_width</span></span><a class="headerlink" href="#gpiozero.Servo.max_pulse_width" title="Link to this definition"></a></dt>
+<dd><p>The control pulse width corresponding to the servo’s maximum position,
+measured in seconds.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.min_pulse_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_pulse_width</span></span><a class="headerlink" href="#gpiozero.Servo.min_pulse_width" title="Link to this definition"></a></dt>
+<dd><p>The control pulse width corresponding to the servo’s minimum position,
+measured in seconds.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.pulse_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pulse_width</span></span><a class="headerlink" href="#gpiozero.Servo.pulse_width" title="Link to this definition"></a></dt>
+<dd><p>Returns the current pulse width controlling the servo.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.Servo.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.Servo.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the position of the servo as a value between -1 (the minimum
+position) and +1 (the maximum position). This can also be the special
+value <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> indicating that the servo is currently
+“uncontrolled”, i.e. that no control signal is being sent. Typically
+this means the servo’s position remains unchanged, but that it can be
+moved by hand.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="angularservo">
+<h3><span class="section-number">15.1.9. </span>AngularServo<a class="headerlink" href="#angularservo" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.AngularServo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">AngularServo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#AngularServo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.AngularServo" title="Link to this definition"></a></dt>
+<dd><p>Extends <a class="reference internal" href="#gpiozero.Servo" title="gpiozero.Servo"><code class="xref py py-class docutils literal notranslate"><span class="pre">Servo</span></code></a> and represents a rotational PWM-controlled servo
+motor which can be set to particular angles (assuming valid minimum and
+maximum angles are provided to the constructor).</p>
+<p>Connect a power source (e.g. a battery pack or the 5V pin) to the power
+cable of the servo (this is typically colored red); connect the ground
+cable of the servo (typically colored black or brown) to the negative of
+your battery pack, or a GND pin; connect the final cable (typically colored
+white or orange) to the GPIO pin you wish to use for controlling the servo.</p>
+<p>Next, calibrate the angles that the servo can rotate to. In an interactive
+Python session, construct a <a class="reference internal" href="#gpiozero.Servo" title="gpiozero.Servo"><code class="xref py py-class docutils literal notranslate"><span class="pre">Servo</span></code></a> instance. The servo should move
+to its mid-point by default. Set the servo to its minimum value, and
+measure the angle from the mid-point. Set the servo to its maximum value,
+and again measure the angle:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">Servo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Servo</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="c1"># measure the angle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="c1"># measure the angle</span>
+</pre></div>
+</div>
+<p>You should now be able to construct an <a class="reference internal" href="#gpiozero.AngularServo" title="gpiozero.AngularServo"><code class="xref py py-class docutils literal notranslate"><span class="pre">AngularServo</span></code></a> instance
+with the correct bounds:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="n">AngularServo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">AngularServo</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="n">min_angle</span><span class="o">=-</span><span class="mi">42</span><span class="p">,</span> <span class="n">max_angle</span><span class="o">=</span><span class="mi">44</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">angle</span>
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">angle</span>
+<span class="go">15.0</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can set <em>min_angle</em> greater than <em>max_angle</em> if you wish to reverse
+the sense of the angles (e.g. <code class="docutils literal notranslate"><span class="pre">min_angle=45,</span> <span class="pre">max_angle=-45</span></code>). This
+can be useful with servos that rotate in the opposite direction to your
+expectations of minimum and maximum.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the servo is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>initial_angle</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Sets the servo’s initial angle to the specified value. The default is
+0. The value specified must be between <em>min_angle</em> and <em>max_angle</em>
+inclusive. <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> means to start the servo un-controlled (see
+<a class="reference internal" href="#gpiozero.AngularServo.value" title="gpiozero.AngularServo.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>).</p></li>
+<li><p><strong>min_angle</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Sets the minimum angle that the servo can rotate to. This defaults to
+-90, but should be set to whatever you measure from your servo during
+calibration.</p></li>
+<li><p><strong>max_angle</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Sets the maximum angle that the servo can rotate to. This defaults to
+90, but should be set to whatever you measure from your servo during
+calibration.</p></li>
+<li><p><strong>min_pulse_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The pulse width corresponding to the servo’s minimum position. This
+defaults to 1ms.</p></li>
+<li><p><strong>max_pulse_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The pulse width corresponding to the servo’s maximum position. This
+defaults to 2ms.</p></li>
+<li><p><strong>frame_width</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The length of time between servo control pulses measured in seconds.
+This defaults to 20ms which is a common value for servos.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.max">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.AngularServo.max" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its maximum position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.mid">
+<span class="sig-name descname"><span class="pre">mid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.AngularServo.mid" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its mid-point position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.min">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gpiozero.AngularServo.min" title="Link to this definition"></a></dt>
+<dd><p>Set the servo to its minimum position.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.angle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">angle</span></span><a class="headerlink" href="#gpiozero.AngularServo.angle" title="Link to this definition"></a></dt>
+<dd><p>The position of the servo as an angle measured in degrees. This will
+only be accurate if <a class="reference internal" href="#gpiozero.AngularServo.min_angle" title="gpiozero.AngularServo.min_angle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_angle</span></code></a> and <a class="reference internal" href="#gpiozero.AngularServo.max_angle" title="gpiozero.AngularServo.max_angle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_angle</span></code></a> have been
+set appropriately in the constructor.</p>
+<p>This can also be the special value <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> indicating that the
+servo is currently “uncontrolled”, i.e. that no control signal is being
+sent.  Typically this means the servo’s position remains unchanged, but
+that it can be moved by hand.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.AngularServo.is_active" title="Link to this definition"></a></dt>
+<dd><p>Composite devices are considered “active” if any of their constituent
+devices have a “truthy” value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.max_angle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_angle</span></span><a class="headerlink" href="#gpiozero.AngularServo.max_angle" title="Link to this definition"></a></dt>
+<dd><p>The maximum angle that the servo will rotate to when <a class="reference internal" href="#gpiozero.AngularServo.max" title="gpiozero.AngularServo.max"><code class="xref py py-meth docutils literal notranslate"><span class="pre">max()</span></code></a> is
+called.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.min_angle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_angle</span></span><a class="headerlink" href="#gpiozero.AngularServo.min_angle" title="Link to this definition"></a></dt>
+<dd><p>The minimum angle that the servo will rotate to when <a class="reference internal" href="#gpiozero.AngularServo.min" title="gpiozero.AngularServo.min"><code class="xref py py-meth docutils literal notranslate"><span class="pre">min()</span></code></a> is
+called.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.AngularServo.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.AngularServo.value" title="Link to this definition"></a></dt>
+<dd><p>Represents the position of the servo as a value between -1 (the minimum
+position) and +1 (the maximum position). This can also be the special
+value <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> indicating that the servo is currently
+“uncontrolled”, i.e. that no control signal is being sent. Typically
+this means the servo’s position remains unchanged, but that it can be
+moved by hand.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="base-classes">
+<h2><span class="section-number">15.2. </span>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h2>
+<p>The classes in the sections above are derived from a series of base classes,
+some of which are effectively abstract. The classes form the (partial)
+hierarchy displayed in the graph below (abstract classes are shaded lighter
+than concrete classes):</p>
+<img alt="_images/output_device_hierarchy.svg" src="_images/output_device_hierarchy.svg" /><p>The following sections document these base classes for advanced users that wish
+to construct classes for their own devices.</p>
+<section id="digitaloutputdevice">
+<h3><span class="section-number">15.2.1. </span>DigitalOutputDevice<a class="headerlink" href="#digitaloutputdevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.DigitalOutputDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">DigitalOutputDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#DigitalOutputDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DigitalOutputDevice" title="Link to this definition"></a></dt>
+<dd><p>Represents a generic output device with typical on/off behaviour.</p>
+<p>This class extends <a class="reference internal" href="#gpiozero.OutputDevice" title="gpiozero.OutputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputDevice</span></code></a> with a <a class="reference internal" href="#gpiozero.DigitalOutputDevice.blink" title="gpiozero.DigitalOutputDevice.blink"><code class="xref py py-meth docutils literal notranslate"><span class="pre">blink()</span></code></a> method which
+uses an optional background thread to handle toggling the device state
+without further interaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the device is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the <a class="reference internal" href="#gpiozero.DigitalOutputDevice.on" title="gpiozero.DigitalOutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO
+to HIGH. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, the <a class="reference internal" href="#gpiozero.DigitalOutputDevice.on" title="gpiozero.DigitalOutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO to
+LOW (the <a class="reference internal" href="#gpiozero.DigitalOutputDevice.off" title="gpiozero.DigitalOutputDevice.off"><code class="xref py py-meth docutils literal notranslate"><span class="pre">off()</span></code></a> method always does the opposite).</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> or </em><em>None</em>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), the device will be off initially.  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>, the device will be left in whatever state the pin is
+found in when configured for output (warning: this can be on).  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the device will be switched on initially.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.DigitalOutputDevice.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#DigitalOutputDevice.blink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DigitalOutputDevice.blink" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.DigitalOutputDevice.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#DigitalOutputDevice.off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DigitalOutputDevice.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.DigitalOutputDevice.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#DigitalOutputDevice.on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DigitalOutputDevice.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.DigitalOutputDevice.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.DigitalOutputDevice.value" title="Link to this definition"></a></dt>
+<dd><p>Returns 1 if the device is currently active and 0 otherwise. Setting
+this property changes the state of the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pwmoutputdevice">
+<h3><span class="section-number">15.2.2. </span>PWMOutputDevice<a class="headerlink" href="#pwmoutputdevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PWMOutputDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice" title="Link to this definition"></a></dt>
+<dd><p>Generic output device configured for pulse-width modulation (PWM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the device is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the <a class="reference internal" href="#gpiozero.PWMOutputDevice.on" title="gpiozero.PWMOutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO
+to HIGH. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, the <a class="reference internal" href="#gpiozero.PWMOutputDevice.on" title="gpiozero.PWMOutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO to
+LOW (the <a class="reference internal" href="#gpiozero.PWMOutputDevice.off" title="gpiozero.PWMOutputDevice.off"><code class="xref py py-meth docutils literal notranslate"><span class="pre">off()</span></code></a> method always does the opposite).</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If 0 (the default), the device’s duty cycle will be 0 initially.
+Other values between 0 and 1 can be specified as an initial duty cycle.
+Note that <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> cannot be specified (unlike the parent class) as
+there is no way to tell PWM not to alter the state of the pin.</p></li>
+<li><p><strong>frequency</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The frequency (in Hz) of pulses emitted to drive the device. Defaults
+to 100Hz.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.blink">
+<span class="sig-name descname"><span class="pre">blink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">off_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice.blink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice.blink" title="Link to this definition"></a></dt>
+<dd><p>Make the device turn on and off repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds on. Defaults to 1 second.</p></li>
+<li><p><strong>off_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds off. Defaults to 1 second.</p></li>
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 0.</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 0.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to blink; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue blinking and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the blink is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice.off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice.on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.pulse">
+<span class="sig-name descname"><span class="pre">pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fade_in_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_out_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice.pulse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice.pulse" title="Link to this definition"></a></dt>
+<dd><p>Make the device fade in and out repeatedly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fade_in_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading in. Defaults to 1.</p></li>
+<li><p><strong>fade_out_time</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Number of seconds to spend fading out. Defaults to 1.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>None</em>) – Number of times to pulse; <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> (the default) means forever.</p></li>
+<li><p><strong>background</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), start a background thread to
+continue pulsing and return immediately. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, only
+return when the pulse is finished (warning: the default value of
+<em>n</em> will result in this method never returning).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#PWMOutputDevice.toggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PWMOutputDevice.toggle" title="Link to this definition"></a></dt>
+<dd><p>Toggle the state of the device. If the device is currently off
+(<a class="reference internal" href="#gpiozero.PWMOutputDevice.value" title="gpiozero.PWMOutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is 0.0), this changes it to “fully” on (<a class="reference internal" href="#gpiozero.PWMOutputDevice.value" title="gpiozero.PWMOutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> is
+1.0).  If the device has a duty cycle (<a class="reference internal" href="#gpiozero.PWMOutputDevice.value" title="gpiozero.PWMOutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>) of 0.1, this will
+toggle it to 0.9, and so on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.frequency">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#gpiozero.PWMOutputDevice.frequency" title="Link to this definition"></a></dt>
+<dd><p>The frequency of the pulses used with the PWM device, in Hz. The
+default is 100Hz.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.is_active">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#gpiozero.PWMOutputDevice.is_active" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is currently active (<a class="reference internal" href="#gpiozero.PWMOutputDevice.value" title="gpiozero.PWMOutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a>
+is non-zero) and <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.PWMOutputDevice.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.PWMOutputDevice.value" title="Link to this definition"></a></dt>
+<dd><p>The duty cycle of the PWM device. 0.0 is off, 1.0 is fully on. Values
+in between may be specified for varying levels of power in the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="outputdevice">
+<h3><span class="section-number">15.2.3. </span>OutputDevice<a class="headerlink" href="#outputdevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">OutputDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#OutputDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDevice" title="Link to this definition"></a></dt>
+<dd><p>Represents a generic GPIO output device.</p>
+<p>This class extends <a class="reference internal" href="api_input.html#gpiozero.GPIODevice" title="gpiozero.GPIODevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODevice</span></code></a> to add facilities common to GPIO
+output devices: an <a class="reference internal" href="#gpiozero.OutputDevice.on" title="gpiozero.OutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method to switch the device on, a
+corresponding <a class="reference internal" href="#gpiozero.OutputDevice.off" title="gpiozero.OutputDevice.off"><code class="xref py py-meth docutils literal notranslate"><span class="pre">off()</span></code></a> method, and a <a class="reference internal" href="#gpiozero.OutputDevice.toggle" title="gpiozero.OutputDevice.toggle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle()</span></code></a> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the device is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised.</p></li>
+<li><p><strong>active_high</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> (the default), the <a class="reference internal" href="#gpiozero.OutputDevice.on" title="gpiozero.OutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO
+to HIGH. If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, the <a class="reference internal" href="#gpiozero.OutputDevice.on" title="gpiozero.OutputDevice.on"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on()</span></code></a> method will set the GPIO to
+LOW (the <a class="reference internal" href="#gpiozero.OutputDevice.off" title="gpiozero.OutputDevice.off"><code class="xref py py-meth docutils literal notranslate"><span class="pre">off()</span></code></a> method always does the opposite).</p></li>
+<li><p><strong>initial_value</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> or </em><em>None</em>) – If <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> (the default), the device will be off initially.  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a>, the device will be left in whatever state the pin is
+found in when configured for output (warning: this can be on).  If
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the device will be switched on initially.</p></li>
+<li><p><strong>pin_factory</strong> (<a class="reference internal" href="api_pins.html#gpiozero.Factory" title="gpiozero.Factory"><em>Factory</em></a><em> or </em><em>None</em>) – See <a class="reference internal" href="api_pins.html"><span class="doc">API - Pins</span></a> for more information (this is an advanced feature
+which most users can ignore).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice.off">
+<span class="sig-name descname"><span class="pre">off</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#OutputDevice.off"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDevice.off" title="Link to this definition"></a></dt>
+<dd><p>Turns the device off.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice.on">
+<span class="sig-name descname"><span class="pre">on</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#OutputDevice.on"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDevice.on" title="Link to this definition"></a></dt>
+<dd><p>Turns the device on.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/output_devices.html#OutputDevice.toggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDevice.toggle" title="Link to this definition"></a></dt>
+<dd><p>Reverse the state of the device. If it’s on, turn it off; if it’s off,
+turn it on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice.active_high">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">active_high</span></span><a class="headerlink" href="#gpiozero.OutputDevice.active_high" title="Link to this definition"></a></dt>
+<dd><p>When <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, the <a class="reference internal" href="#gpiozero.OutputDevice.value" title="gpiozero.OutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> property is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the
+device’s <a class="reference internal" href="api_input.html#gpiozero.GPIODevice.pin" title="gpiozero.GPIODevice.pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin</span></code></a> is high. When <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#False" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a> the
+<a class="reference internal" href="#gpiozero.OutputDevice.value" title="gpiozero.OutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> property is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> when the device’s pin is low
+(i.e. the value is inverted).</p>
+<p>This property can be set after construction; be warned that changing it
+will invert <a class="reference internal" href="#gpiozero.OutputDevice.value" title="gpiozero.OutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a> (i.e. changing this property doesn’t change
+the device’s pin state - it just changes how that state is
+interpreted).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gpiozero.OutputDevice.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#gpiozero.OutputDevice.value" title="Link to this definition"></a></dt>
+<dd><p>Returns 1 if the device is currently active and 0 otherwise. Setting
+this property changes the state of the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="gpiodevice">
+<h3><span class="section-number">15.2.4. </span>GPIODevice<a class="headerlink" href="#gpiodevice" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIODevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/devices.html#GPIODevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Extends <a class="reference internal" href="api_generic.html#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a>. Represents a generic GPIO device and provides
+the services common to all single-pin GPIO devices (like ensuring two
+GPIO devices do no share a <a class="reference internal" href="api_input.html#gpiozero.GPIODevice.pin" title="gpiozero.GPIODevice.pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pin</strong> (<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The GPIO pin that the device is connected to. See <a class="reference internal" href="recipes.html#pin-numbering"><span class="std std-ref">Pin Numbering</span></a>
+for valid pin numbers. If this is <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> a <a class="reference internal" href="api_exc.html#gpiozero.GPIODeviceError" title="gpiozero.GPIODeviceError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>
+will be raised. If the pin is already in use by another device,
+<a class="reference internal" href="api_exc.html#gpiozero.GPIOPinInUse" title="gpiozero.GPIOPinInUse"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIOPinInUse</span></code></a> will be raised.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gpiozero/devices.html#GPIODevice.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Shut down the device and release all associated resources (such as GPIO
+pins).</p>
+<p>This method is idempotent (can be called on an already closed device
+without any side-effects). It is primarily intended for interactive use
+at the command line. It disables the device and releases its pin(s) for
+use by another device.</p>
+<p>You can attempt to do this simply by deleting an object, but unless
+you’ve cleaned up all references to the object this may not work (even
+if you’ve cleaned up all references, there’s still no guarantee the
+garbage collector will actually delete the object at that point).  By
+contrast, the close method provides a means of ensuring that the object
+is shut down.</p>
+<p>For example, if you have a breadboard with a buzzer connected to pin
+16, but then wish to attach an LED instead:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span> <span class="o">=</span> <span class="n">Buzzer</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bz</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span> <span class="o">=</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">led</span><span class="o">.</span><span class="n">blink</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_generic.html#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a> descendents can also be used as context managers using
+the <a class="reference external" href="/usr/share/doc/python3.12-doc/html/reference/compound_stmts.html#with" title="(in Python v3.12)"><code class="xref std std-keyword docutils literal notranslate"><span class="pre">with</span></code></a> statement. For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Buzzer</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">as</span> <span class="n">bz</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">bz</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">LED</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">as</span> <span class="n">led</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">led</span><span class="o">.</span><span class="n">on</span><span class="p">()</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">closed</span></span></dt>
+<dd><p>Returns <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a> if the device is closed (see the <a class="reference internal" href="api_input.html#gpiozero.GPIODevice.close" title="gpiozero.GPIODevice.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>
+method). Once a device is closed you can no longer use any other
+methods or properties to control or query the device.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pin</span></span></dt>
+<dd><p>The <a class="reference internal" href="api_pins.html#gpiozero.Pin" title="gpiozero.Pin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pin</span></code></a> that the device is connected to. This will be
+<a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">None</span></code></a> if the device has been closed (see the
+<a class="reference internal" href="api_generic.html#gpiozero.Device.close" title="gpiozero.Device.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method). When dealing with GPIO pins, query
+<code class="docutils literal notranslate"><span class="pre">pin.number</span></code> to discover the GPIO pin (in BCM numbering) that the
+device is connected to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span></dt>
+<dd><p>Returns a value representing the device’s state. Frequently, this is a
+boolean value, or a number between 0 and 1 but some devices use larger
+ranges (e.g. -1 to +1) and composite devices usually use tuples to
+return the states of all their subordinate components.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_input.html" class="btn btn-neutral float-left" title="14. API - Input Devices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_spi.html" class="btn btn-neutral float-right" title="16. API - SPI Devices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Logarithmic Units &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Wrapping and checking functions" href="wrapping.html" />
+    <link rel="prev" title="Temperature conversion" href="nonmult.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="wrapping.html" title="Wrapping and checking functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nonmult.html" title="Temperature conversion"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Logarithmic Units</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="logarithmic-units">
+<span id="log-units"></span><h1>Logarithmic Units<a class="headerlink" href="#logarithmic-units" title="Permalink to this heading">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Support for logarithmic units in Pint is currently in Beta. Please take
+careful note of the information below, particularly around <a class="reference internal" href="#compound-log-units">compound log units</a>
+to avoid calculation errors. Bug reports and pull requests are always
+welcome, please see <a class="reference internal" href="contributing.html"><span class="doc">Contributing to Pint</span></a> for more information on
+how you can help improve this feature (and Pint in general).</p>
+</div>
+<p>Pint supports some logarithmic units, including <cite>dB</cite>, <cite>dBm</cite>, <cite>octave</cite>, and <cite>decade</cite>
+as well as some conversions between them and their base units where applicable.
+These units behave much like those described in <a class="reference internal" href="nonmult.html#nonmult"><span class="std std-ref">Temperature conversion</span></a>, so many of
+the recommendations there apply here as well.</p>
+<section id="setting-up-the-unitregistry">
+<h2>Setting up the <code class="docutils literal notranslate"><span class="pre">UnitRegistry()</span></code><a class="headerlink" href="#setting-up-the-unitregistry" title="Permalink to this heading">¶</a></h2>
+<p>Many of the examples below will fail without supplying the
+<code class="docutils literal notranslate"><span class="pre">autoconvert_offset_to_baseunit=True</span></code> flag. To use logarithmic units,
+intialize your <code class="docutils literal notranslate"><span class="pre">UnitRegistry()</span></code> like so:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">(</span><span class="n">autoconvert_offset_to_baseunit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+</pre></div>
+</div>
+<p>If you can’t pass that flag you will need to define all logarithmic units
+<a class="reference internal" href="defining-quantities.html#using-the-constructor"><span class="std std-ref">using the Quantity() constructor</span></a>, and you will
+be restricted in the kinds of operations you can do without explicitly calling
+<cite>.to_base_units()</cite> first.</p>
+</section>
+<section id="defining-log-quantities">
+<h2>Defining log quantities<a class="headerlink" href="#defining-log-quantities" title="Permalink to this heading">¶</a></h2>
+<p>After you’ve set up your <code class="docutils literal notranslate"><span class="pre">UnitRegistry()</span></code> with the <code class="docutils literal notranslate"><span class="pre">autoconvert...</span></code> flag,
+you can define simple logarithmic quantities like most others:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mf">20.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dBm</span>
+<span class="go">&lt;Quantity(20.0, &#39;decibelmilliwatt&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;20.0 dBm&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(20.0, &#39;decibelmilliwatt&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;20 dB&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(20, &#39;decibel&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="converting-to-and-from-base-units">
+<h2>Converting to and from base units<a class="headerlink" href="#converting-to-and-from-base-units" title="Permalink to this heading">¶</a></h2>
+<p>Get a sense of how logarithmic units are handled by using the <cite>.to()</cite> and
+<cite>.to_base_units()</cite> methods:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;20 dBm&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;mW&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(100.0, &#39;milliwatt&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;20 dB&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>
+<span class="go">&lt;Quantity(100.0, &#39;dimensionless&#39;)&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Notice in the above example how the <cite>dB</cite> unit is defined for
+power quantities (10*log(p/p0)) not field (amplitude) quantities
+(20*log(v/v0)). Take care that you’re only using it to multiply power
+levels, and not e.g. Voltages.</p>
+</div>
+<p>Convert back from a base unit to a logarithmic unit using the <cite>.to()</cite> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;mW&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;dBm&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(20.0, &#39;decibelmilliwatt&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shift</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shift</span>
+<span class="go">&lt;Quantity(4, &#39;dimensionless&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shift</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;octave&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.0, &#39;octave&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="compound-log-units">
+<h2>Compound log units<a class="headerlink" href="#compound-log-units" title="Permalink to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Support for compound logarithmic units is not comprehensive. The following
+examples work, but many others will not. Consider converting the logarithmic
+portion to base units before adding more units.</p>
+</div>
+<p>Pint sometimes works with mixtures of logarithmic and other units. Below is an
+example of computing RMS noise from a noise density and a bandwidth:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">noise_density</span> <span class="o">=</span> <span class="o">-</span><span class="mf">161.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dBm</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">kHz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise_power</span> <span class="o">=</span> <span class="n">noise_density</span> <span class="o">*</span> <span class="n">bandwidth</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;dBm&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(-121.0, &#39;decibelmilliwatt&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;mW&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(7.94328235e-13, &#39;milliwatt&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>There are still issues with parsing compound units, so for now the following
+will not work:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">-</span><span class="mf">161.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;dBm/Hz&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mf">161.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dBm</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>But this will:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;-161.0 dBm/Hz&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mf">161.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dBm</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="o">-</span><span class="mf">161.0</span><span class="p">,</span> <span class="s1">&#39;dBm&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Hz</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mf">161.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dBm</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>To begin using this feature while avoiding problems, define logarithmic units
+as single-unit quantities and convert them to their base units as quickly as
+possible.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Logarithmic Units</a><ul>
+<li><a class="reference internal" href="#setting-up-the-unitregistry">Setting up the <code class="docutils literal notranslate"><span class="pre">UnitRegistry()</span></code></a></li>
+<li><a class="reference internal" href="#defining-log-quantities">Defining log quantities</a></li>
+<li><a class="reference internal" href="#converting-to-and-from-base-units">Converting to and from base units</a></li>
+<li><a class="reference internal" href="#compound-log-units">Compound log units</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="nonmult.html" title="previous chapter">Temperature conversion</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="wrapping.html" title="next chapter">Wrapping and checking functions</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/log_units.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

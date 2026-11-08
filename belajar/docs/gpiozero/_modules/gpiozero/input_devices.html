@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpiozero.input_devices &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_exc.html">25. API - Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gpiozero.input_devices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gpiozero.input_devices</h1><div class="highlight"><pre>
+<span></span><span class="c1"># vim: set fileencoding=utf-8:</span>
+<span class="c1">#</span>
+<span class="c1"># GPIO Zero: a library for controlling the Raspberry Pi&#39;s GPIO pins</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2015-2023 Dave Jones &lt;dave@waveform.org.uk&gt;</span>
+<span class="c1"># Copyright (c) 2015-2021 Ben Nuttall &lt;ben@bennuttall.com&gt;</span>
+<span class="c1"># Copyright (c) 2020 Robert Erdin &lt;roberte@depop.com&gt;</span>
+<span class="c1"># Copyright (c) 2020 Fangchen Li &lt;fangchen.li@outlook.com&gt;</span>
+<span class="c1"># Copyright (c) 2020 Dan Jackson &lt;dan@djackson.org&gt;</span>
+<span class="c1"># Copyright (c) 2016-2020 Andrew Scheller &lt;github@loowis.durge.org&gt;</span>
+<span class="c1"># Copyright (c) 2019 Kosovan Sofiia &lt;sofiia.kosovan@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2018 Philippe Muller &lt;philippe.muller@gmail.com&gt;</span>
+<span class="c1"># Copyright (c) 2016 Steveis &lt;SteveAmor@users.noreply.github.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Lock</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span>
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">median</span><span class="p">,</span> <span class="n">mean</span>
+
+<span class="kn">from</span> <span class="nn">.exc</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InputDeviceError</span><span class="p">,</span>
+    <span class="n">DeviceClosed</span><span class="p">,</span>
+    <span class="n">DistanceSensorNoEcho</span><span class="p">,</span>
+    <span class="n">PinInvalidState</span><span class="p">,</span>
+    <span class="n">PWMSoftwareFallback</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.devices</span> <span class="kn">import</span> <span class="n">GPIODevice</span><span class="p">,</span> <span class="n">CompositeDevice</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">GPIOQueue</span><span class="p">,</span> <span class="n">EventsMixin</span><span class="p">,</span> <span class="n">HoldMixin</span><span class="p">,</span> <span class="n">event</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.pins.pigpio</span> <span class="kn">import</span> <span class="n">PiGPIOFactory</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">PiGPIOFactory</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="InputDevice">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.InputDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">InputDevice</span><span class="p">(</span><span class="n">GPIODevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a generic GPIO input device.</span>
+
+<span class="sd">    This class extends :class:`GPIODevice` to add facilities common to GPIO</span>
+<span class="sd">    input devices.  The constructor adds the optional *pull_up* parameter to</span>
+<span class="sd">    specify how the pin should be pulled by the internal resistors. The</span>
+<span class="sd">    :attr:`is_active` property is adjusted accordingly so that :data:`True`</span>
+<span class="sd">    still means active regardless of the *pull_up* setting.</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin that the device is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        If :data:`True`, the pin will be pulled high with an internal resistor.</span>
+<span class="sd">        If :data:`False` (the default), the pin will be pulled low.  If</span>
+<span class="sd">        :data:`None`, the pin will be floating. As gpiozero cannot</span>
+<span class="sd">        automatically guess the active state when not pulling the pin, the</span>
+<span class="sd">        *active_state* parameter must be passed.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        If :data:`True`, when the hardware pin state is ``HIGH``, the software</span>
+<span class="sd">        pin is ``HIGH``. If :data:`False`, the input polarity is reversed: when</span>
+<span class="sd">        the hardware pin state is ``HIGH``, the software pin state is ``LOW``.</span>
+<span class="sd">        Use this parameter to set the active state of the underlying pin when</span>
+<span class="sd">        configuring it as not pulled (when *pull_up* is :data:`None`). When</span>
+<span class="sd">        *pull_up* is :data:`True` or :data:`False`, the active state is</span>
+<span class="sd">        automatically set to the proper value.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span>
+            <span class="n">pull</span> <span class="o">=</span> <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="s1">&#39;floating&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">:</span> <span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="s1">&#39;down&#39;</span><span class="p">}[</span><span class="n">pull_up</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">pull</span> <span class="o">!=</span> <span class="n">pull</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">pull</span> <span class="o">=</span> <span class="n">pull</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+        <span class="k">if</span> <span class="n">pull_up</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">active_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PinInvalidState</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Pin </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is defined as floating, but &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;active_state&quot; is not defined&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_active_state</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">active_state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">active_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PinInvalidState</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Pin </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is not floating, but &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;active_state&quot; is not None&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_active_state</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">pull_up</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inactive_state</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pull_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :data:`True`, the device uses a pull-up resistor to set the GPIO pin</span>
+<span class="sd">        &quot;high&quot; by default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">pull</span>
+        <span class="k">if</span> <span class="n">pull</span> <span class="o">==</span> <span class="s1">&#39;floating&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pull</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object on pin &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="si">!r}</span><span class="s2">, pull_up=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pull_up</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is_active=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="DigitalInputDevice">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.DigitalInputDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">DigitalInputDevice</span><span class="p">(</span><span class="n">EventsMixin</span><span class="p">,</span> <span class="n">InputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a generic input device with typical on/off behaviour.</span>
+
+<span class="sd">    This class extends :class:`InputDevice` with machinery to fire the active</span>
+<span class="sd">    and inactive events for devices that operate in a typical digital manner:</span>
+<span class="sd">    straight forward on / off states with (reasonably) clean transitions</span>
+<span class="sd">    between the two.</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin that the device is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type bounce_time: float or None</span>
+<span class="sd">    :param bounce_time:</span>
+<span class="sd">        Specifies the length of time (in seconds) that the component will</span>
+<span class="sd">        ignore changes in state after an initial change. This defaults to</span>
+<span class="sd">        :data:`None` which indicates that no bounce compensation will be</span>
+<span class="sd">        performed.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bounce_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="n">pull_up</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="n">active_state</span><span class="p">,</span>
+            <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">bounce</span> <span class="o">=</span> <span class="n">bounce_time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pin_changed</span>
+            <span class="c1"># Call _fire_events once to set initial state of events</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">_pin_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="c1"># XXX This is a bit of a hack; _fire_events takes *is_active* rather</span>
+        <span class="c1"># than *value*. Here we&#39;re assuming no-one&#39;s overridden the default</span>
+        <span class="c1"># implementation of *is_active*.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="n">ticks</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state_to_value</span><span class="p">(</span><span class="n">state</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="SmoothedInputDevice">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.SmoothedInputDevice">[docs]</a>
+<span class="k">class</span> <span class="nc">SmoothedInputDevice</span><span class="p">(</span><span class="n">EventsMixin</span><span class="p">,</span> <span class="n">InputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a generic input device which takes its value from the average of</span>
+<span class="sd">    a queue of historical values.</span>
+
+<span class="sd">    This class extends :class:`InputDevice` with a queue which is filled by a</span>
+<span class="sd">    background thread which continually polls the state of the underlying</span>
+<span class="sd">    device. The average (a configurable function) of the values in the queue is</span>
+<span class="sd">    compared to a threshold which is used to determine the state of the</span>
+<span class="sd">    :attr:`is_active` property.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        The background queue is not automatically started upon construction.</span>
+<span class="sd">        This is to allow descendents to set up additional components before the</span>
+<span class="sd">        queue starts reading values. Effectively this is an abstract base</span>
+<span class="sd">        class.</span>
+
+<span class="sd">    This class is intended for use with devices which either exhibit analog</span>
+<span class="sd">    behaviour (such as the charging time of a capacitor with an LDR), or those</span>
+<span class="sd">    which exhibit &quot;twitchy&quot; behaviour (such as certain motion sensors).</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin that the device is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        The value above which the device will be considered &quot;on&quot;.</span>
+
+<span class="sd">    :param int queue_len:</span>
+<span class="sd">        The length of the internal queue which is filled by the background</span>
+<span class="sd">        thread.</span>
+
+<span class="sd">    :param float sample_wait:</span>
+<span class="sd">        The length of time to wait between retrieving the state of the</span>
+<span class="sd">        underlying device. Defaults to 0.0 indicating that values are retrieved</span>
+<span class="sd">        as fast as possible.</span>
+
+<span class="sd">    :param bool partial:</span>
+<span class="sd">        If :data:`False` (the default), attempts to read the state of the</span>
+<span class="sd">        device (from the :attr:`is_active` property) will block until the queue</span>
+<span class="sd">        has filled.  If :data:`True`, a value will be returned immediately, but</span>
+<span class="sd">        be aware that this value is likely to fluctuate excessively.</span>
+
+<span class="sd">    :param average:</span>
+<span class="sd">        The function used to average the values in the internal queue. This</span>
+<span class="sd">        defaults to :func:`statistics.median` which is a good selection for</span>
+<span class="sd">        discarding outliers from jittery sensors. The function specified must</span>
+<span class="sd">        accept a sequence of numbers and return a single number.</span>
+
+<span class="sd">    :type ignore: frozenset or None</span>
+<span class="sd">    :param ignore:</span>
+<span class="sd">        The set of values which the queue should ignore, if returned from</span>
+<span class="sd">        querying the device&#39;s value.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">queue_len</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sample_wait</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">median</span><span class="p">,</span>
+            <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="n">pull_up</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="n">active_state</span><span class="p">,</span>
+            <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">GPIOQueue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue_len</span><span class="p">,</span> <span class="n">sample_wait</span><span class="p">,</span> <span class="n">partial</span><span class="p">,</span>
+                                    <span class="n">average</span><span class="p">,</span> <span class="n">ignore</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># If the queue isn&#39;t initialized (it&#39;s None), or _queue hasn&#39;t been</span>
+            <span class="c1"># set ignore the error because we&#39;re trying to close anyway</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="c1"># Cannot join thread before it starts; we don&#39;t care about this</span>
+            <span class="c1"># because we&#39;re trying to close the thread anyway</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">full</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object on pin &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="si">!r}</span><span class="s2">, pull_up=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pull_up</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">queue_len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The length of the internal queue of values which is averaged to</span>
+<span class="sd">        determine the overall state of the device. This defaults to 5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">maxlen</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">partial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :data:`False` (the default), attempts to read the</span>
+<span class="sd">        :attr:`~SmoothedInputDevice.value` or</span>
+<span class="sd">        :attr:`~SmoothedInputDevice.is_active` properties will block until the</span>
+<span class="sd">        queue has filled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">partial</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the average of the values in the internal queue. This is</span>
+<span class="sd">        compared to :attr:`~SmoothedInputDevice.threshold` to determine whether</span>
+<span class="sd">        :attr:`is_active` is :data:`True`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :attr:`~SmoothedInputDevice.value` exceeds this amount, then</span>
+<span class="sd">        :attr:`is_active` will return :data:`True`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span>
+
+    <span class="nd">@threshold</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InputDeviceError</span><span class="p">(</span>
+                <span class="s1">&#39;threshold must be between zero and one exclusive&#39;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :data:`True` if the :attr:`~SmoothedInputDevice.value`</span>
+<span class="sd">        currently exceeds :attr:`~SmoothedInputDevice.threshold` and</span>
+<span class="sd">        :data:`False` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span></div>
+
+
+
+<div class="viewcode-block" id="Button">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.Button">[docs]</a>
+<span class="k">class</span> <span class="nc">Button</span><span class="p">(</span><span class="n">HoldMixin</span><span class="p">,</span> <span class="n">DigitalInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`DigitalInputDevice` and represents a simple push button</span>
+<span class="sd">    or switch.</span>
+
+<span class="sd">    Connect one side of the button to a ground pin, and the other to any GPIO</span>
+<span class="sd">    pin. Alternatively, connect one side of the button to the 3V3 pin, and the</span>
+<span class="sd">    other to any GPIO pin, then set *pull_up* to :data:`False` in the</span>
+<span class="sd">    :class:`Button` constructor.</span>
+
+<span class="sd">    The following example will print a line of text when the button is pushed::</span>
+
+<span class="sd">        from gpiozero import Button</span>
+
+<span class="sd">        button = Button(4)</span>
+<span class="sd">        button.wait_for_press()</span>
+<span class="sd">        print(&quot;The button was pressed!&quot;)</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin which the button is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        If :data:`True` (the default), the GPIO pin will be pulled high by</span>
+<span class="sd">        default.  In this case, connect the other side of the button to ground.</span>
+<span class="sd">        If :data:`False`, the GPIO pin will be pulled low by default. In this</span>
+<span class="sd">        case, connect the other side of the button to 3V3. If :data:`None`, the</span>
+<span class="sd">        pin will be floating, so it must be externally pulled up or down and</span>
+<span class="sd">        the ``active_state`` parameter must be set accordingly.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type bounce_time: float or None</span>
+<span class="sd">    :param bounce_time:</span>
+<span class="sd">        If :data:`None` (the default), no software bounce compensation will be</span>
+<span class="sd">        performed. Otherwise, this is the length of time (in seconds) that the</span>
+<span class="sd">        component will ignore changes in state after an initial change.</span>
+
+<span class="sd">    :param float hold_time:</span>
+<span class="sd">        The length of time (in seconds) to wait after the button is pushed,</span>
+<span class="sd">        until executing the :attr:`when_held` handler. Defaults to ``1``.</span>
+
+<span class="sd">    :param bool hold_repeat:</span>
+<span class="sd">        If :data:`True`, the :attr:`when_held` handler will be repeatedly</span>
+<span class="sd">        executed as long as the device remains active, every *hold_time*</span>
+<span class="sd">        seconds. If :data:`False` (the default) the :attr:`when_held` handler</span>
+<span class="sd">        will be only be executed once per hold.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bounce_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hold_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hold_repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="n">pull_up</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="n">active_state</span><span class="p">,</span>
+            <span class="n">bounce_time</span><span class="o">=</span><span class="n">bounce_time</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hold_time</span> <span class="o">=</span> <span class="n">hold_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hold_repeat</span> <span class="o">=</span> <span class="n">hold_repeat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns 1 if the button is currently pressed, and 0 if it is not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<span class="n">Button</span><span class="o">.</span><span class="n">is_pressed</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">is_active</span>
+<span class="n">Button</span><span class="o">.</span><span class="n">pressed_time</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">active_time</span>
+<span class="n">Button</span><span class="o">.</span><span class="n">when_pressed</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">when_activated</span>
+<span class="n">Button</span><span class="o">.</span><span class="n">when_released</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">when_deactivated</span>
+<span class="n">Button</span><span class="o">.</span><span class="n">wait_for_press</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">wait_for_active</span>
+<span class="n">Button</span><span class="o">.</span><span class="n">wait_for_release</span> <span class="o">=</span> <span class="n">Button</span><span class="o">.</span><span class="n">wait_for_inactive</span>
+
+
+<div class="viewcode-block" id="LineSensor">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.LineSensor">[docs]</a>
+<span class="k">class</span> <span class="nc">LineSensor</span><span class="p">(</span><span class="n">SmoothedInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`SmoothedInputDevice` and represents a single pin line</span>
+<span class="sd">    sensor like the TCRT5000 infra-red proximity sensor found in the `CamJam #3</span>
+<span class="sd">    EduKit`_.</span>
+
+<span class="sd">    A typical line sensor has a small circuit board with three pins: VCC, GND,</span>
+<span class="sd">    and OUT. VCC should be connected to a 3V3 pin, GND to one of the ground</span>
+<span class="sd">    pins, and finally OUT to the GPIO specified as the value of the *pin*</span>
+<span class="sd">    parameter in the constructor.</span>
+
+<span class="sd">    The following code will print a line of text indicating when the sensor</span>
+<span class="sd">    detects a line, or stops detecting a line::</span>
+
+<span class="sd">        from gpiozero import LineSensor</span>
+<span class="sd">        from signal import pause</span>
+
+<span class="sd">        sensor = LineSensor(4)</span>
+<span class="sd">        sensor.when_line = lambda: print(&#39;Line detected&#39;)</span>
+<span class="sd">        sensor.when_no_line = lambda: print(&#39;No line detected&#39;)</span>
+<span class="sd">        pause()</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin which the sensor is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :param int queue_len:</span>
+<span class="sd">        The length of the queue used to store values read from the sensor. This</span>
+<span class="sd">        defaults to 5.</span>
+
+<span class="sd">    :param float sample_rate:</span>
+<span class="sd">        The number of values to read from the device (and append to the</span>
+<span class="sd">        internal queue) per second. Defaults to 100.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        Defaults to 0.5. When the average of all values in the internal queue</span>
+<span class="sd">        rises above this value, the sensor will be considered &quot;active&quot; by the</span>
+<span class="sd">        :attr:`~SmoothedInputDevice.is_active` property, and all appropriate</span>
+<span class="sd">        events will be fired.</span>
+
+<span class="sd">    :param bool partial:</span>
+<span class="sd">        When :data:`False` (the default), the object will not return a value</span>
+<span class="sd">        for :attr:`~SmoothedInputDevice.is_active` until the internal queue has</span>
+<span class="sd">        filled with values.  Only set this to :data:`True` if you require</span>
+<span class="sd">        values immediately after object construction.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+
+<span class="sd">    .. _CamJam #3 EduKit: http://camjam.me/?page_id=1035</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">queue_len</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="n">pull_up</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="n">active_state</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="n">queue_len</span><span class="p">,</span>
+            <span class="n">sample_wait</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">partial</span><span class="p">,</span>
+            <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a value representing the average of the queued values. This</span>
+<span class="sd">        is nearer 0 for black under the sensor, and nearer 1 for white under</span>
+<span class="sd">        the sensor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">line_detected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span></div>
+
+
+<span class="n">LineSensor</span><span class="o">.</span><span class="n">when_line</span> <span class="o">=</span> <span class="n">LineSensor</span><span class="o">.</span><span class="n">when_deactivated</span>
+<span class="n">LineSensor</span><span class="o">.</span><span class="n">when_no_line</span> <span class="o">=</span> <span class="n">LineSensor</span><span class="o">.</span><span class="n">when_activated</span>
+<span class="n">LineSensor</span><span class="o">.</span><span class="n">wait_for_line</span> <span class="o">=</span> <span class="n">LineSensor</span><span class="o">.</span><span class="n">wait_for_inactive</span>
+<span class="n">LineSensor</span><span class="o">.</span><span class="n">wait_for_no_line</span> <span class="o">=</span> <span class="n">LineSensor</span><span class="o">.</span><span class="n">wait_for_active</span>
+
+
+<div class="viewcode-block" id="MotionSensor">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.MotionSensor">[docs]</a>
+<span class="k">class</span> <span class="nc">MotionSensor</span><span class="p">(</span><span class="n">SmoothedInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`SmoothedInputDevice` and represents a passive infra-red</span>
+<span class="sd">    (PIR) motion sensor like the sort found in the `CamJam #2 EduKit`_.</span>
+
+<span class="sd">    .. _CamJam #2 EduKit: http://camjam.me/?page_id=623</span>
+
+<span class="sd">    A typical PIR device has a small circuit board with three pins: VCC, OUT,</span>
+<span class="sd">    and GND. VCC should be connected to a 5V pin, GND to one of the ground</span>
+<span class="sd">    pins, and finally OUT to the GPIO specified as the value of the *pin*</span>
+<span class="sd">    parameter in the constructor.</span>
+
+<span class="sd">    The following code will print a line of text when motion is detected::</span>
+
+<span class="sd">        from gpiozero import MotionSensor</span>
+
+<span class="sd">        pir = MotionSensor(4)</span>
+<span class="sd">        pir.wait_for_motion()</span>
+<span class="sd">        print(&quot;Motion detected!&quot;)</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin which the sensor is connected to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :type pull_up: bool or None</span>
+<span class="sd">    :param pull_up:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :type active_state: bool or None</span>
+<span class="sd">    :param active_state:</span>
+<span class="sd">        See description under :class:`InputDevice` for more information.</span>
+
+<span class="sd">    :param int queue_len:</span>
+<span class="sd">        The length of the queue used to store values read from the sensor. This</span>
+<span class="sd">        defaults to 1 which effectively disables the queue. If your motion</span>
+<span class="sd">        sensor is particularly &quot;twitchy&quot; you may wish to increase this value.</span>
+
+<span class="sd">    :param float sample_rate:</span>
+<span class="sd">        The number of values to read from the device (and append to the</span>
+<span class="sd">        internal queue) per second. Defaults to 10.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        Defaults to 0.5. When the average of all values in the internal queue</span>
+<span class="sd">        rises above this value, the sensor will be considered &quot;active&quot; by the</span>
+<span class="sd">        :attr:`~SmoothedInputDevice.is_active` property, and all appropriate</span>
+<span class="sd">        events will be fired.</span>
+
+<span class="sd">    :param bool partial:</span>
+<span class="sd">        When :data:`False` (the default), the object will not return a value</span>
+<span class="sd">        for :attr:`~SmoothedInputDevice.is_active` until the internal queue has</span>
+<span class="sd">        filled with values.  Only set this to :data:`True` if you require</span>
+<span class="sd">        values immediately after object construction.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">queue_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="n">pull_up</span><span class="p">,</span> <span class="n">active_state</span><span class="o">=</span><span class="n">active_state</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="n">queue_len</span><span class="p">,</span> <span class="n">sample_wait</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span>
+            <span class="n">sample_rate</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">partial</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        With the default *queue_len* of 1, this is effectively boolean where 0</span>
+<span class="sd">        means no motion detected and 1 means motion detected. If you specify</span>
+<span class="sd">        a *queue_len* greater than 1, this will be an averaged value where</span>
+<span class="sd">        values closer to 1 imply motion detection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<span class="n">MotionSensor</span><span class="o">.</span><span class="n">motion_detected</span> <span class="o">=</span> <span class="n">MotionSensor</span><span class="o">.</span><span class="n">is_active</span>
+<span class="n">MotionSensor</span><span class="o">.</span><span class="n">when_motion</span> <span class="o">=</span> <span class="n">MotionSensor</span><span class="o">.</span><span class="n">when_activated</span>
+<span class="n">MotionSensor</span><span class="o">.</span><span class="n">when_no_motion</span> <span class="o">=</span> <span class="n">MotionSensor</span><span class="o">.</span><span class="n">when_deactivated</span>
+<span class="n">MotionSensor</span><span class="o">.</span><span class="n">wait_for_motion</span> <span class="o">=</span> <span class="n">MotionSensor</span><span class="o">.</span><span class="n">wait_for_active</span>
+<span class="n">MotionSensor</span><span class="o">.</span><span class="n">wait_for_no_motion</span> <span class="o">=</span> <span class="n">MotionSensor</span><span class="o">.</span><span class="n">wait_for_inactive</span>
+
+
+<div class="viewcode-block" id="LightSensor">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.LightSensor">[docs]</a>
+<span class="k">class</span> <span class="nc">LightSensor</span><span class="p">(</span><span class="n">SmoothedInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`SmoothedInputDevice` and represents a light dependent</span>
+<span class="sd">    resistor (LDR).</span>
+
+<span class="sd">    Connect one leg of the LDR to the 3V3 pin; connect one leg of a 1µF</span>
+<span class="sd">    capacitor to a ground pin; connect the other leg of the LDR and the other</span>
+<span class="sd">    leg of the capacitor to the same GPIO pin. This class repeatedly discharges</span>
+<span class="sd">    the capacitor, then times the duration it takes to charge (which will vary</span>
+<span class="sd">    according to the light falling on the LDR).</span>
+
+<span class="sd">    The following code will print a line of text when light is detected::</span>
+
+<span class="sd">        from gpiozero import LightSensor</span>
+
+<span class="sd">        ldr = LightSensor(18)</span>
+<span class="sd">        ldr.wait_for_light()</span>
+<span class="sd">        print(&quot;Light detected!&quot;)</span>
+
+<span class="sd">    :type pin: int or str</span>
+<span class="sd">    :param pin:</span>
+<span class="sd">        The GPIO pin which the sensor is attached to. See :ref:`pin-numbering`</span>
+<span class="sd">        for valid pin numbers. If this is :data:`None` a :exc:`GPIODeviceError`</span>
+<span class="sd">        will be raised.</span>
+
+<span class="sd">    :param int queue_len:</span>
+<span class="sd">        The length of the queue used to store values read from the circuit.</span>
+<span class="sd">        This defaults to 5.</span>
+
+<span class="sd">    :param float charge_time_limit:</span>
+<span class="sd">        If the capacitor in the circuit takes longer than this length of time</span>
+<span class="sd">        to charge, it is assumed to be dark. The default (0.01 seconds) is</span>
+<span class="sd">        appropriate for a 1µF capacitor coupled with the LDR from the</span>
+<span class="sd">        `CamJam #2 EduKit`_. You may need to adjust this value for different</span>
+<span class="sd">        valued capacitors or LDRs.</span>
+
+<span class="sd">    :param float threshold:</span>
+<span class="sd">        Defaults to 0.1. When the average of all values in the internal queue</span>
+<span class="sd">        rises above this value, the area will be considered &quot;light&quot;, and all</span>
+<span class="sd">        appropriate events will be fired.</span>
+
+<span class="sd">    :param bool partial:</span>
+<span class="sd">        When :data:`False` (the default), the object will not return a value</span>
+<span class="sd">        for :attr:`~SmoothedInputDevice.is_active` until the internal queue has</span>
+<span class="sd">        filled with values.  Only set this to :data:`True` if you require</span>
+<span class="sd">        values immediately after object construction.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+
+<span class="sd">    .. _CamJam #2 EduKit: http://camjam.me/?page_id=623</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">charge_time_limit</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                 <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">pin</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="n">queue_len</span><span class="p">,</span>
+            <span class="n">sample_wait</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">partial</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time_limit</span> <span class="o">=</span> <span class="n">charge_time_limit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charged</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="s1">&#39;rising&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">bounce</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cap_charged</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">charge_time_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time_limit</span>
+
+    <span class="k">def</span> <span class="nf">_cap_charged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time</span> <span class="o">=</span> <span class="n">ticks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charged</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Drain charge from the capacitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;output&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charged</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># Time the charging of the capacitor</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charged</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge_time_limit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks_diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_charge_time</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">charge_time_limit</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a value between 0 (dark) and 1 (light).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<span class="n">LightSensor</span><span class="o">.</span><span class="n">light_detected</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="o">.</span><span class="n">is_active</span>
+<span class="n">LightSensor</span><span class="o">.</span><span class="n">when_light</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="o">.</span><span class="n">when_activated</span>
+<span class="n">LightSensor</span><span class="o">.</span><span class="n">when_dark</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="o">.</span><span class="n">when_deactivated</span>
+<span class="n">LightSensor</span><span class="o">.</span><span class="n">wait_for_light</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="o">.</span><span class="n">wait_for_active</span>
+<span class="n">LightSensor</span><span class="o">.</span><span class="n">wait_for_dark</span> <span class="o">=</span> <span class="n">LightSensor</span><span class="o">.</span><span class="n">wait_for_inactive</span>
+
+
+<div class="viewcode-block" id="DistanceSensor">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.DistanceSensor">[docs]</a>
+<span class="k">class</span> <span class="nc">DistanceSensor</span><span class="p">(</span><span class="n">SmoothedInputDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends :class:`SmoothedInputDevice` and represents an HC-SR04 ultrasonic</span>
+<span class="sd">    distance sensor, as found in the `CamJam #3 EduKit`_.</span>
+
+<span class="sd">    The distance sensor requires two GPIO pins: one for the *trigger* (marked</span>
+<span class="sd">    TRIG on the sensor) and another for the *echo* (marked ECHO on the sensor).</span>
+<span class="sd">    However, a voltage divider is required to ensure the 5V from the ECHO pin</span>
+<span class="sd">    doesn&#39;t damage the Pi. Wire your sensor according to the following</span>
+<span class="sd">    instructions:</span>
+
+<span class="sd">    1. Connect the GND pin of the sensor to a ground pin on the Pi.</span>
+
+<span class="sd">    2. Connect the TRIG pin of the sensor a GPIO pin.</span>
+
+<span class="sd">    3. Connect one end of a 330Ω resistor to the ECHO pin of the sensor.</span>
+
+<span class="sd">    4. Connect one end of a 470Ω resistor to the GND pin of the sensor.</span>
+
+<span class="sd">    5. Connect the free ends of both resistors to another GPIO pin. This forms</span>
+<span class="sd">       the required `voltage divider`_.</span>
+
+<span class="sd">    6. Finally, connect the VCC pin of the sensor to a 5V pin on the Pi.</span>
+
+<span class="sd">    Alternatively, the 3V3 tolerant HC-SR04P sensor (which does not require a</span>
+<span class="sd">    voltage divider) will work with this class.</span>
+
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        If you do not have the precise values of resistor specified above,</span>
+<span class="sd">        don&#39;t worry! What matters is the *ratio* of the resistors to each</span>
+<span class="sd">        other.</span>
+
+<span class="sd">        You also don&#39;t need to be absolutely precise; the `voltage divider`_</span>
+<span class="sd">        given above will actually output ~3V (rather than 3.3V). A simple 2:3</span>
+<span class="sd">        ratio will give 3.333V which implies you can take three resistors of</span>
+<span class="sd">        equal value, use one of them instead of the 330Ω resistor, and two of</span>
+<span class="sd">        them in series instead of the 470Ω resistor.</span>
+
+<span class="sd">    .. _voltage divider: https://en.wikipedia.org/wiki/Voltage_divider</span>
+
+<span class="sd">    The following code will periodically report the distance measured by the</span>
+<span class="sd">    sensor in cm assuming the TRIG pin is connected to GPIO17, and the ECHO</span>
+<span class="sd">    pin to GPIO18::</span>
+
+<span class="sd">        from gpiozero import DistanceSensor</span>
+<span class="sd">        from time import sleep</span>
+
+<span class="sd">        sensor = DistanceSensor(echo=18, trigger=17)</span>
+<span class="sd">        while True:</span>
+<span class="sd">            print(&#39;Distance: &#39;, sensor.distance * 100)</span>
+<span class="sd">            sleep(1)</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        For improved accuracy, use the pigpio pin driver rather than the default</span>
+<span class="sd">        RPi.GPIO driver (pigpio uses DMA sampling for much more precise edge</span>
+<span class="sd">        timing). This is particularly relevant if you&#39;re using Pi 1 or Pi Zero.</span>
+<span class="sd">        See :ref:`changing-pin-factory` for further information.</span>
+
+<span class="sd">    :type echo: int or str</span>
+<span class="sd">    :param echo:</span>
+<span class="sd">        The GPIO pin which the ECHO pin is connected to. See</span>
+<span class="sd">        :ref:`pin-numbering` for valid pin numbers. If this is :data:`None` a</span>
+<span class="sd">        :exc:`GPIODeviceError` will be raised.</span>
+
+<span class="sd">    :type trigger: int or str</span>
+<span class="sd">    :param trigger:</span>
+<span class="sd">        The GPIO pin which the TRIG pin is connected to. See</span>
+<span class="sd">        :ref:`pin-numbering` for valid pin numbers. If this is :data:`None` a</span>
+<span class="sd">        :exc:`GPIODeviceError` will be raised.</span>
+
+<span class="sd">    :param int queue_len:</span>
+<span class="sd">        The length of the queue used to store values read from the sensor.</span>
+<span class="sd">        This defaults to 9.</span>
+
+<span class="sd">    :param float max_distance:</span>
+<span class="sd">        The :attr:`value` attribute reports a normalized value between 0 (too</span>
+<span class="sd">        close to measure) and 1 (maximum distance). This parameter specifies</span>
+<span class="sd">        the maximum distance expected in meters. This defaults to 1.</span>
+
+<span class="sd">    :param float threshold_distance:</span>
+<span class="sd">        Defaults to 0.3. This is the distance (in meters) that will trigger the</span>
+<span class="sd">        ``in_range`` and ``out_of_range`` events when crossed.</span>
+
+<span class="sd">    :param bool partial:</span>
+<span class="sd">        When :data:`False` (the default), the object will not return a value</span>
+<span class="sd">        for :attr:`~SmoothedInputDevice.is_active` until the internal queue has</span>
+<span class="sd">        filled with values.  Only set this to :data:`True` if you require</span>
+<span class="sd">        values immediately after object construction.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+
+<span class="sd">    .. _CamJam #3 EduKit: http://camjam.me/?page_id=1035</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ECHO_LOCK</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trigger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+                 <span class="n">max_distance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">threshold_distance</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">echo</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">queue_len</span><span class="o">=</span><span class="n">queue_len</span><span class="p">,</span> <span class="n">sample_wait</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span>
+            <span class="n">partial</span><span class="o">=</span><span class="n">partial</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="nb">frozenset</span><span class="p">({</span><span class="kc">None</span><span class="p">}),</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_distance</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid maximum distance (must be positive)&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_max_distance</span> <span class="o">=</span> <span class="n">max_distance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold_distance</span> <span class="o">/</span> <span class="n">max_distance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">speed_of_sound</span> <span class="o">=</span> <span class="mf">343.26</span> <span class="c1"># m/s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="n">GPIODevice</span><span class="p">(</span><span class="n">trigger</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo_rise</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo_fall</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="s1">&#39;output&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">bounce</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo_changed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+        <span class="k">if</span> <span class="n">PiGPIOFactory</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="p">,</span> <span class="n">PiGPIOFactory</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">PWMSoftwareFallback</span><span class="p">(</span>
+                <span class="s1">&#39;For more accurate readings, use the pigpio pin factory.&#39;</span>
+                <span class="s1">&#39;See https://gpiozero.readthedocs.io/en/stable/api_input.html#distancesensor-hc-sr04 for more info&#39;</span>
+            <span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The maximum distance that the sensor will measure in meters. This value</span>
+<span class="sd">        is specified in the constructor and is used to provide the scaling for</span>
+<span class="sd">        the :attr:`~SmoothedInputDevice.value` attribute. When :attr:`distance`</span>
+<span class="sd">        is equal to :attr:`max_distance`, :attr:`~SmoothedInputDevice.value`</span>
+<span class="sd">        will be 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_distance</span>
+
+    <span class="nd">@max_distance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">max_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid maximum distance (must be positive)&#39;</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_distance</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_distance</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">threshold_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The distance, measured in meters, that will trigger the</span>
+<span class="sd">        :attr:`when_in_range` and :attr:`when_out_of_range` events when</span>
+<span class="sd">        crossed. This is simply a meter-scaled variant of the usual</span>
+<span class="sd">        :attr:`~SmoothedInputDevice.threshold` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_distance</span>
+
+    <span class="nd">@threshold_distance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">threshold_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_distance</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current distance measured by the sensor in meters. Note</span>
+<span class="sd">        that this property will have a value between 0 and</span>
+<span class="sd">        :attr:`max_distance`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_distance</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a value between 0, indicating the reflector is either touching</span>
+<span class="sd">        the sensor or is sufficiently near that the sensor can&#39;t tell the</span>
+<span class="sd">        difference, and 1, indicating the reflector is at or beyond the</span>
+<span class="sd">        specified *max_distance*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the :class:`Pin` that the sensor&#39;s trigger is connected to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">pin</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the :class:`Pin` that the sensor&#39;s echo is connected to. This</span>
+<span class="sd">        is simply an alias for the usual :attr:`~GPIODevice.pin` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin</span>
+
+    <span class="k">def</span> <span class="nf">_echo_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">level</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo_rise</span> <span class="o">=</span> <span class="n">ticks</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo_fall</span> <span class="o">=</span> <span class="n">ticks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_echo</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Wait up to 50ms for the echo pin to fall to low (the maximum echo</span>
+        <span class="c1"># pulse is 35ms so this gives some leeway); if it doesn&#39;t something is</span>
+        <span class="c1"># horribly wrong (most likely at the hardware level)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.05</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DistanceSensorNoEcho</span><span class="p">(</span><span class="s1">&#39;echo pin set high&#39;</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_echo</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_echo_fall</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_echo_rise</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Obtain the class-level ECHO_LOCK to ensure multiple distance sensors</span>
+        <span class="c1"># don&#39;t listen for each other&#39;s &quot;pings&quot;</span>
+        <span class="k">with</span> <span class="n">DistanceSensor</span><span class="o">.</span><span class="n">ECHO_LOCK</span><span class="p">:</span>
+            <span class="c1"># Fire the trigger</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Wait up to 100ms for the echo pin to rise and fall (35ms is the</span>
+            <span class="c1"># maximum pulse time, but the pre-rise time is unspecified in the</span>
+            <span class="c1"># &quot;datasheet&quot;; 100ms seems sufficiently long to conclude something</span>
+            <span class="c1"># has failed)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo_fall</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo_rise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">distance</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks_diff</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_echo_fall</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_echo_rise</span><span class="p">)</span> <span class="o">*</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">speed_of_sound</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">distance</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_distance</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If we only saw the falling edge it means we missed</span>
+                    <span class="c1"># the echo because it was too fast</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The echo pin never rose or fell; something&#39;s gone horribly</span>
+                <span class="c1"># wrong</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">DistanceSensorNoEcho</span><span class="p">(</span><span class="s1">&#39;no echo received&#39;</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span></div>
+
+
+<span class="n">DistanceSensor</span><span class="o">.</span><span class="n">when_out_of_range</span> <span class="o">=</span> <span class="n">DistanceSensor</span><span class="o">.</span><span class="n">when_activated</span>
+<span class="n">DistanceSensor</span><span class="o">.</span><span class="n">when_in_range</span> <span class="o">=</span> <span class="n">DistanceSensor</span><span class="o">.</span><span class="n">when_deactivated</span>
+<span class="n">DistanceSensor</span><span class="o">.</span><span class="n">wait_for_out_of_range</span> <span class="o">=</span> <span class="n">DistanceSensor</span><span class="o">.</span><span class="n">wait_for_active</span>
+<span class="n">DistanceSensor</span><span class="o">.</span><span class="n">wait_for_in_range</span> <span class="o">=</span> <span class="n">DistanceSensor</span><span class="o">.</span><span class="n">wait_for_inactive</span>
+
+
+<div class="viewcode-block" id="RotaryEncoder">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.RotaryEncoder">[docs]</a>
+<span class="k">class</span> <span class="nc">RotaryEncoder</span><span class="p">(</span><span class="n">EventsMixin</span><span class="p">,</span> <span class="n">CompositeDevice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a simple two-pin incremental `rotary encoder`_ device.</span>
+
+<span class="sd">    These devices typically have three pins labelled &quot;A&quot;, &quot;B&quot;, and &quot;C&quot;. Connect</span>
+<span class="sd">    A and B directly to two GPIO pins, and C (&quot;common&quot;) to one of the ground</span>
+<span class="sd">    pins on your Pi. Then simply specify the A and B pins as the arguments when</span>
+<span class="sd">    constructing this classs.</span>
+
+<span class="sd">    For example, if your encoder&#39;s A pin is connected to GPIO 21, and the B</span>
+<span class="sd">    pin to GPIO 20 (and presumably the C pin to a suitable GND pin), while an</span>
+<span class="sd">    LED (with a suitable 300Ω resistor) is connected to GPIO 5, the following</span>
+<span class="sd">    session will result in the brightness of the LED being controlled by</span>
+<span class="sd">    dialling the rotary encoder back and forth::</span>
+
+<span class="sd">        &gt;&gt;&gt; from gpiozero import RotaryEncoder</span>
+<span class="sd">        &gt;&gt;&gt; from gpiozero.tools import scaled_half</span>
+<span class="sd">        &gt;&gt;&gt; rotor = RotaryEncoder(21, 20)</span>
+<span class="sd">        &gt;&gt;&gt; led = PWMLED(5)</span>
+<span class="sd">        &gt;&gt;&gt; led.source = scaled_half(rotor.values)</span>
+
+<span class="sd">    :type a: int or str</span>
+<span class="sd">    :param a:</span>
+<span class="sd">        The GPIO pin connected to the &quot;A&quot; output of the rotary encoder.</span>
+
+<span class="sd">    :type b: int or str</span>
+<span class="sd">    :param b:</span>
+<span class="sd">        The GPIO pin connected to the &quot;B&quot; output of the rotary encoder.</span>
+
+<span class="sd">    :type bounce_time: float or None</span>
+<span class="sd">    :param bounce_time:</span>
+<span class="sd">        If :data:`None` (the default), no software bounce compensation will be</span>
+<span class="sd">        performed. Otherwise, this is the length of time (in seconds) that the</span>
+<span class="sd">        component will ignore changes in state after an initial change.</span>
+
+<span class="sd">    :type max_steps: int</span>
+<span class="sd">    :param max_steps:</span>
+<span class="sd">        The number of steps clockwise the encoder takes to change the</span>
+<span class="sd">        :attr:`value` from 0 to 1, or counter-clockwise from 0 to -1.</span>
+<span class="sd">        If this is 0, then the encoder&#39;s :attr:`value` never changes, but you</span>
+<span class="sd">        can still read :attr:`steps` to determine the integer number of steps</span>
+<span class="sd">        the encoder has moved clockwise or counter clockwise.</span>
+
+<span class="sd">    :type threshold_steps: tuple of int</span>
+<span class="sd">    :param threshold_steps:</span>
+<span class="sd">        A (min, max) tuple of steps between which the device will be considered</span>
+<span class="sd">        &quot;active&quot;, inclusive. In other words, when :attr:`steps` is greater than</span>
+<span class="sd">        or equal to the *min* value, and less than or equal the *max* value,</span>
+<span class="sd">        the :attr:`active` property will be :data:`True` and the appropriate</span>
+<span class="sd">        events (:attr:`when_activated`, :attr:`when_deactivated`) will be</span>
+<span class="sd">        fired. Defaults to (0, 0).</span>
+
+<span class="sd">    :type wrap: bool</span>
+<span class="sd">    :param wrap:</span>
+<span class="sd">        If :data:`True` and *max_steps* is non-zero, when the :attr:`steps`</span>
+<span class="sd">        reaches positive or negative *max_steps* it wraps around by negation.</span>
+<span class="sd">        Defaults to :data:`False`.</span>
+
+<span class="sd">    :type pin_factory: Factory or None</span>
+<span class="sd">    :param pin_factory:</span>
+<span class="sd">        See :doc:`api_pins` for more information (this is an advanced feature</span>
+<span class="sd">        which most users can ignore).</span>
+
+<span class="sd">    .. _rotary encoder: https://en.wikipedia.org/wiki/Rotary_encoder</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The rotary encoder&#39;s two pins move through the following sequence when</span>
+    <span class="c1"># the encoder is rotated one step clockwise:</span>
+    <span class="c1">#</span>
+    <span class="c1">#   ────┐     ┌─────┐     ┌────────</span>
+    <span class="c1">#    _  │     │     │     │          counter        ┌───┐</span>
+    <span class="c1">#    A  │     │     │     │         clockwise  ┌─── │ 0 │ ───┐  clockwise</span>
+    <span class="c1">#       └─────┘     └─────┘           (CCW)    │    └───┘    │    (CW)</span>
+    <span class="c1">#       :     :     :     :             │    ┌───┐         ┌───┐    │</span>
+    <span class="c1">#   ───────┐  :  ┌─────┐  :  ┌─────     ▾    │ 1 │         │ 2 │    ▾</span>
+    <span class="c1">#    _  :  │  :  │  :  │  :  │               └───┘         └───┘</span>
+    <span class="c1">#    B  :  │  :  │  :  │  :  │                 │    ┌───┐    │</span>
+    <span class="c1">#       :  └─────┘  :  └─────┘                 └─── │ 3 │ ───┘</span>
+    <span class="c1">#       :  :  :  :  :  :  :  :                      └───┘</span>
+    <span class="c1">#    0  2  3  1  0  2  3  1  0</span>
+    <span class="c1">#</span>
+    <span class="c1"># Treating the A pin as a &quot;high&quot; bit, and the B pin as a &quot;low&quot; bit, this</span>
+    <span class="c1"># means that the pins return the sequence 0, 2, 3, 1 for each step that the</span>
+    <span class="c1"># encoder takes clockwise. Conversely, the pins return the sequence 0, 1,</span>
+    <span class="c1"># 3, 2 for each step counter-clockwise.</span>
+    <span class="c1">#</span>
+    <span class="c1"># We can treat these values as edges to take in a simple state machine,</span>
+    <span class="c1"># which is represented in the dictionary below:</span>
+
+    <span class="n">TRANSITIONS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;idle&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw1&#39;</span><span class="p">,</span> <span class="s1">&#39;cw1&#39;</span><span class="p">,</span>  <span class="s1">&#39;idle&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;ccw1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw1&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw3&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;ccw2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw1&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw3&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;ccw3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;-1&#39;</span><span class="p">,</span>   <span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw3&#39;</span><span class="p">,</span> <span class="s1">&#39;ccw2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;cw1&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;cw3&#39;</span><span class="p">,</span>  <span class="s1">&#39;cw1&#39;</span><span class="p">,</span>  <span class="s1">&#39;cw2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;cw2&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;cw3&#39;</span><span class="p">,</span>  <span class="s1">&#39;cw1&#39;</span><span class="p">,</span>  <span class="s1">&#39;cw2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;cw3&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s1">&#39;+1&#39;</span><span class="p">,</span>   <span class="s1">&#39;cw3&#39;</span><span class="p">,</span>  <span class="s1">&#39;idle&#39;</span><span class="p">,</span> <span class="s1">&#39;cw2&#39;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="c1"># The state machine here includes more than just the strictly necessary</span>
+    <span class="c1"># edges; it also permits &quot;wiggle&quot; between intermediary states so that the</span>
+    <span class="c1"># overall graph looks like this:</span>
+    <span class="c1">#</span>
+    <span class="c1">#                            ┌──────┐</span>
+    <span class="c1">#                            │      │</span>
+    <span class="c1">#                      ┌─────┤ idle ├────┐</span>
+    <span class="c1">#                      │1    │      │   2│</span>
+    <span class="c1">#                      │     └──────┘    │</span>
+    <span class="c1">#                      ▾       ▴  ▴      ▾</span>
+    <span class="c1">#                  ┌────────┐  │  │  ┌───────┐</span>
+    <span class="c1">#                  │        │ 0│  │0 │       │</span>
+    <span class="c1">#              ┌───┤  ccw1  ├──┤  ├──┤  cw1  ├───┐</span>
+    <span class="c1">#              │2  │        │  │  │  │       │  1│</span>
+    <span class="c1">#              │   └─┬──────┘  │  │  └─────┬─┘   │</span>
+    <span class="c1">#              │    3│    ▴    │  │    ▴   │3    │</span>
+    <span class="c1">#              │     ▾    │1   │  │   2│   ▾     │</span>
+    <span class="c1">#              │   ┌──────┴─┐  │  │  ┌─┴─────┐   │</span>
+    <span class="c1">#              │   │        │ 0│  │0 │       │   │</span>
+    <span class="c1">#              │   │  ccw2  ├──┤  ├──┤  cw2  │   │</span>
+    <span class="c1">#              │   │        │  │  │  │       │   │</span>
+    <span class="c1">#              │   └─┬──────┘  │  │  └─────┬─┘   │</span>
+    <span class="c1">#              │    2│    ▴    │  │    ▴   │1    │</span>
+    <span class="c1">#              │     ▾    │3   │  │   3│   ▾     │</span>
+    <span class="c1">#              │   ┌──────┴─┐  │  │  ┌─┴─────┐   │</span>
+    <span class="c1">#              │   │        │  │  │  │       │   │</span>
+    <span class="c1">#              └──▸│  ccw3  │  │  │  │  cw3  │◂──┘</span>
+    <span class="c1">#                  │        │  │  │  │       │</span>
+    <span class="c1">#                  └───┬────┘  │  │  └───┬───┘</span>
+    <span class="c1">#                     0│       │  │      │0</span>
+    <span class="c1">#                      ▾       │  │      ▾</span>
+    <span class="c1">#                  ┌────────┐  │  │  ┌───────┐</span>
+    <span class="c1">#                  │        │  │  │  │       │</span>
+    <span class="c1">#                  │   -1   ├──┘  └──┤  +1   │</span>
+    <span class="c1">#                  │        │        │       │</span>
+    <span class="c1">#                  └────────┘        └───────┘</span>
+    <span class="c1">#</span>
+    <span class="c1"># Note that, once we start down the clockwise (cw) or counter-clockwise</span>
+    <span class="c1"># (ccw) path, we don&#39;t allow the state to pick the alternate direction</span>
+    <span class="c1"># without passing through the idle state again. This seems to work well in</span>
+    <span class="c1"># practice with several encoders, even quite jiggly ones with no debounce</span>
+    <span class="c1"># hardware or software</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bounce_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                 <span class="n">threshold_steps</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">min_thresh</span><span class="p">,</span> <span class="n">max_thresh</span> <span class="o">=</span> <span class="n">threshold_steps</span>
+        <span class="k">if</span> <span class="n">max_thresh</span> <span class="o">&lt;</span> <span class="n">min_thresh</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;maximum threshold cannot be less than minimum&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_steps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">min_thresh</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_thresh</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wrap</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="s1">&#39;idle&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_when_rotated</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_when_rotated_cw</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_when_rotated_ccw</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_cw_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_ccw_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">a</span><span class="o">=</span><span class="n">InputDevice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">),</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">InputDevice</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">pull_up</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">),</span>
+            <span class="n">_order</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span> <span class="n">pin_factory</span><span class="o">=</span><span class="n">pin_factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">bounce_time</span> <span class="o">=</span> <span class="n">bounce_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">bounce_time</span> <span class="o">=</span> <span class="n">bounce_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="s1">&#39;both&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a_changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">pin</span><span class="o">.</span><span class="n">when_changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b_changed</span>
+        <span class="c1"># Call _fire_events once to set initial state of events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin_factory</span><span class="o">.</span><span class="n">ticks</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_open</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;gpiozero.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> object on pins &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">pin</span><span class="si">!r}</span><span class="s2"> and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">pin</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DeviceClosed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_a_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">_state_to_value</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_change_state</span><span class="p">(</span><span class="n">ticks</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_b_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">&amp;</span> <span class="mh">0x2</span><span class="p">)</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">_state_to_value</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_change_state</span><span class="p">(</span><span class="n">ticks</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_change_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ticks</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">RotaryEncoder</span><span class="o">.</span><span class="n">TRANSITIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">][</span><span class="n">edge</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">new_state</span> <span class="o">==</span> <span class="s1">&#39;+1&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="k">else</span>
+                <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_cw_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_rotated_cw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_cw_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">new_state</span> <span class="o">==</span> <span class="s1">&#39;-1&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">&gt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="k">else</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap</span> <span class="k">else</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_ccw_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fire_rotated_ccw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_ccw_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">new_state</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_rotated</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_events</span><span class="p">(</span><span class="n">ticks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="s1">&#39;idle&#39;</span>
+
+<div class="viewcode-block" id="RotaryEncoder.wait_for_rotate">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.RotaryEncoder.wait_for_rotate">[docs]</a>
+    <span class="k">def</span> <span class="nf">wait_for_rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pause the script until the encoder is rotated at least one step in</span>
+<span class="sd">        either direction, or the timeout is reached.</span>
+
+<span class="sd">        :type timeout: float or None</span>
+<span class="sd">        :param timeout:</span>
+<span class="sd">            Number of seconds to wait before proceeding. If this is</span>
+<span class="sd">            :data:`None` (the default), then wait indefinitely until the</span>
+<span class="sd">            encoder is rotated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RotaryEncoder.wait_for_rotate_clockwise">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.RotaryEncoder.wait_for_rotate_clockwise">[docs]</a>
+    <span class="k">def</span> <span class="nf">wait_for_rotate_clockwise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pause the script until the encoder is rotated at least one step</span>
+<span class="sd">        clockwise, or the timeout is reached.</span>
+
+<span class="sd">        :type timeout: float or None</span>
+<span class="sd">        :param timeout:</span>
+<span class="sd">            Number of seconds to wait before proceeding. If this is</span>
+<span class="sd">            :data:`None` (the default), then wait indefinitely until the</span>
+<span class="sd">            encoder is rotated clockwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_cw_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RotaryEncoder.wait_for_rotate_counter_clockwise">
+<a class="viewcode-back" href="../../api_input.html#gpiozero.RotaryEncoder.wait_for_rotate_counter_clockwise">[docs]</a>
+    <span class="k">def</span> <span class="nf">wait_for_rotate_counter_clockwise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pause the script until the encoder is rotated at least one step</span>
+<span class="sd">        counter-clockwise, or the timeout is reached.</span>
+
+<span class="sd">        :type timeout: float or None</span>
+<span class="sd">        :param timeout:</span>
+<span class="sd">            Number of seconds to wait before proceeding. If this is</span>
+<span class="sd">            :data:`None` (the default), then wait indefinitely until the</span>
+<span class="sd">            encoder is rotated counter-clockwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_ccw_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+
+    <span class="n">when_rotated</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to be run when the encoder is rotated in either direction.</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory) parameters,</span>
+<span class="sd">        or a Python function which accepts a single mandatory parameter (with</span>
+<span class="sd">        as many optional parameters as you like). If the function accepts a</span>
+<span class="sd">        single mandatory parameter, the device that activated will be passed</span>
+<span class="sd">        as that parameter.</span>
+
+<span class="sd">        Set this property to :data:`None` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_rotated_clockwise</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to be run when the encoder is rotated clockwise.</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory) parameters,</span>
+<span class="sd">        or a Python function which accepts a single mandatory parameter (with</span>
+<span class="sd">        as many optional parameters as you like). If the function accepts a</span>
+<span class="sd">        single mandatory parameter, the device that activated will be passed</span>
+<span class="sd">        as that parameter.</span>
+
+<span class="sd">        Set this property to :data:`None` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">when_rotated_counter_clockwise</span> <span class="o">=</span> <span class="n">event</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function to be run when the encoder is rotated counter-clockwise.</span>
+
+<span class="sd">        This can be set to a function which accepts no (mandatory) parameters,</span>
+<span class="sd">        or a Python function which accepts a single mandatory parameter (with</span>
+<span class="sd">        as many optional parameters as you like). If the function accepts a</span>
+<span class="sd">        single mandatory parameter, the device that activated will be passed</span>
+<span class="sd">        as that parameter.</span>
+
+<span class="sd">        Set this property to :data:`None` (the default) to disable the event.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The &quot;steps&quot; value of the encoder starts at 0. It increments by one for</span>
+<span class="sd">        every step the encoder is rotated clockwise, and decrements by one for</span>
+<span class="sd">        every step it is rotated counter-clockwise. The steps value is</span>
+<span class="sd">        limited by :attr:`max_steps`. It will not advance beyond positive or</span>
+<span class="sd">        negative :attr:`max_steps`, unless :attr:`wrap` is :data:`True` in</span>
+<span class="sd">        which case it will roll around by negation. If :attr:`max_steps` is</span>
+<span class="sd">        zero then steps are not limited at all, and will increase infinitely</span>
+<span class="sd">        in either direction, but :attr:`value` will return a constant zero.</span>
+
+<span class="sd">        Note that, in contrast to most other input devices, because the rotary</span>
+<span class="sd">        encoder has no absolute position the :attr:`steps` attribute (and</span>
+<span class="sd">        :attr:`value` by corollary) is writable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span>
+
+    <span class="k">def</span> <span class="nf">_fire_rotated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_fire_rotated_cw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated_clockwise</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated_clockwise</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_fire_rotated_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated_counter_clockwise</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">when_rotated_counter_clockwise</span><span class="p">()</span>
+
+    <span class="nd">@steps</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents the value of the rotary encoder as a value between -1 and 1.</span>
+<span class="sd">        The value is calculated by dividing the value of :attr:`steps` into the</span>
+<span class="sd">        range from negative :attr:`max_steps` to positive :attr:`max_steps`.</span>
+
+<span class="sd">        Note that, in contrast to most other input devices, because the rotary</span>
+<span class="sd">        encoder has no absolute position the :attr:`value` attribute is</span>
+<span class="sd">        writable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of discrete steps the rotary encoder takes to move</span>
+<span class="sd">        :attr:`value` from 0 to 1 clockwise, or 0 to -1 counter-clockwise. In</span>
+<span class="sd">        another sense, this is also the total number of discrete states this</span>
+<span class="sd">        input can represent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_steps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">threshold_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The mininum and maximum number of steps between which :attr:`is_active`</span>
+<span class="sd">        will return :data:`True`. Defaults to (0, 0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If :data:`True`, when :attr:`value` reaches its limit (-1 or 1), it</span>
+<span class="sd">        &quot;wraps around&quot; to the opposite limit. When :data:`False`, the value</span>
+<span class="sd">        (and the corresponding :attr:`steps` attribute) simply don&#39;t advance</span>
+<span class="sd">        beyond their limits.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

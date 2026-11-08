@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client &mdash; PyModbus 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d4a24374"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Server" href="server.html" />
+    <link rel="prev" title="PyModbus - A Python Modbus Stack" href="readme.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyModbus
+          </a>
+              <div class="version">
+                v3.6.9
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">PyModbus - A Python Modbus Stack</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#client-performance">Client performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-protocols-framers">Client protocols/framers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#serial-rs-485">Serial (RS-485)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tcp">TCP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tls">TLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp">UDP</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#client-usage">Client usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-device-addressing">Client device addressing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-response-handling">Client response handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-interface-classes">Client interface classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#client-serial">Client serial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.AsyncModbusSerialClient"><code class="docutils literal notranslate"><span class="pre">AsyncModbusSerialClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.ModbusSerialClient"><code class="docutils literal notranslate"><span class="pre">ModbusSerialClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#client-tcp">Client TCP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.AsyncModbusTcpClient"><code class="docutils literal notranslate"><span class="pre">AsyncModbusTcpClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.ModbusTcpClient"><code class="docutils literal notranslate"><span class="pre">ModbusTcpClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#client-tls">Client TLS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.AsyncModbusTlsClient"><code class="docutils literal notranslate"><span class="pre">AsyncModbusTlsClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.ModbusTlsClient"><code class="docutils literal notranslate"><span class="pre">ModbusTlsClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#client-udp">Client UDP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.AsyncModbusUdpClient"><code class="docutils literal notranslate"><span class="pre">AsyncModbusUdpClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.ModbusUdpClient"><code class="docutils literal notranslate"><span class="pre">ModbusUdpClient</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modbus-calls">Modbus calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.execute"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.execute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_coils"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_coils()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_discrete_inputs"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_discrete_inputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_holding_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_holding_registers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_input_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_input_registers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.write_coil"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.write_coil()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.write_register"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.write_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_exception_status"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_exception_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_query_data"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_query_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_restart_communication"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_restart_communication()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_diagnostic_register"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_diagnostic_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_change_ascii_input_delimeter"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_change_ascii_input_delimeter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_force_listen_only"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_force_listen_only()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_clear_counters"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_clear_counters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_message_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_bus_message_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_comm_error_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_bus_comm_error_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_exception_error_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_bus_exception_error_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_message_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_slave_message_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_no_response_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_slave_no_response_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_nak_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_slave_nak_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_busy_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_slave_busy_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_char_overrun_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_bus_char_overrun_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_iop_overrun_count"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_read_iop_overrun_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_clear_overrun_counter"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_clear_overrun_counter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_getclear_modbus_response"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_getclear_modbus_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_counter"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_get_comm_event_counter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_log"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.diag_get_comm_event_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.write_coils"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.write_coils()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.write_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.write_registers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.report_slave_id"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.report_slave_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_file_record"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_file_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.write_file_record"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.write_file_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.mask_write_register"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.mask_write_register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.readwrite_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.readwrite_registers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_fifo_queue"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_fifo_queue()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.read_device_information"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.read_device_information()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.DATATYPE"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.DATATYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.convert_from_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.convert_from_registers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.convert_to_registers"><code class="docutils literal notranslate"><span class="pre">ModbusClientMixin.convert_to_registers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">Pymodbus REPL (Read Evaluate Print Loop)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_changes.html">API changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Pymodbus internals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyModbus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Client</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/client.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client">
+<h1>Client<a class="headerlink" href="#client" title="Link to this heading"></a></h1>
+<p>Pymodbus offers both a <code class="xref py py-mod docutils literal notranslate"><span class="pre">synchronous</span> <span class="pre">client</span></code> and a <code class="xref py py-mod docutils literal notranslate"><span class="pre">asynchronous</span> <span class="pre">client</span></code>.
+Both clients offer simple calls for each type of request, as well as a unified response, removing
+a lot of the complexities in the modbus protocol.</p>
+<p>In addition to the “pure” client, pymodbus offers a set of utilities converting to/from registers to/from “normal” python values.</p>
+<p>The client is NOT thread safe, meaning the application must ensure that calls are serialized.
+This is only a problem for synchronous applications that use multiple threads or for asynchronous applications
+that use multiple <code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio.create_task</span></code>.</p>
+<p>It is allowed to have multiple client objects that e.g. each communicate with a TCP based device.</p>
+<section id="client-performance">
+<h2>Client performance<a class="headerlink" href="#client-performance" title="Link to this heading"></a></h2>
+<p>There are currently a big performance gap between the 2 clients
+(try it on your computer <a class="reference external" href="https://github.com/pymodbus-dev/pymodbus/blob/v3.6.9/examples/client_performance.py">examples/client_performance.py</a>).
+This is due to a rather old implementation of the synchronous client, we are currently working to update the client code.
+Our aim is to achieve a similar data rate with both clients and at least double the data rate while keeping the stability.
+Table below is a test with 1000 calls each reading 10 registers.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>client</strong></p></th>
+<th class="head"><p><strong>asynchronous</strong></p></th>
+<th class="head"><p><strong>synchronous</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>total time</p></td>
+<td><p>0,33 sec</p></td>
+<td><p>114,10 sec</p></td>
+</tr>
+<tr class="row-odd"><td><p>ms/call</p></td>
+<td><p>0,33 ms</p></td>
+<td><p>114,10 ms</p></td>
+</tr>
+<tr class="row-even"><td><p>ms/register</p></td>
+<td><p>0,03 ms</p></td>
+<td><p>11,41 ms</p></td>
+</tr>
+<tr class="row-odd"><td><p>calls/sec</p></td>
+<td><p>3.030</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>registers/sec</p></td>
+<td><p>30.300</p></td>
+<td><p>87</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="client-protocols-framers">
+<h2>Client protocols/framers<a class="headerlink" href="#client-protocols-framers" title="Link to this heading"></a></h2>
+<p>Pymodbus offers clients with transport different protocols and different framers</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>protocol</strong></p></th>
+<th class="head"><p>ASCII</p></th>
+<th class="head"><p>RTU</p></th>
+<th class="head"><p>RTU_OVER_TCP</p></th>
+<th class="head"><p>Socket</p></th>
+<th class="head"><p>TLS</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Serial (RS-485)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>TCP</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>TLS</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>UDP</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<section id="serial-rs-485">
+<h3>Serial (RS-485)<a class="headerlink" href="#serial-rs-485" title="Link to this heading"></a></h3>
+<p>Pymodbus do not connect to the device (server) but connects to a comm port or usb port on the local computer.</p>
+<p>RS-485 is a half duplex protocol, meaning the servers do nothing until the client sends a request then the server
+being addressed responds. The client controls the traffic and as a consequence one RS-485 line can only have 1 client
+but upto 254 servers (physical devices).</p>
+<p>RS-485 is a simple 2 wire cabling with a pullup resistor. It is important to note that many USB converters do not have a
+builtin resistor, this must be added manually. When experiencing many faulty packets and retries this is often the problem.</p>
+</section>
+<section id="tcp">
+<h3>TCP<a class="headerlink" href="#tcp" title="Link to this heading"></a></h3>
+<p>Pymodbus connects directly to the device using a standard socket and have a one-to-one connection with the device.
+In case of multiple TCP devices the application must instantiate multiple client objects one for each connection.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>a TCP device often represent multiple physical devices (e.g Ethernet-RS485 converter), each of these devices
+can be addressed normally</p>
+</div>
+</section>
+<section id="tls">
+<h3>TLS<a class="headerlink" href="#tls" title="Link to this heading"></a></h3>
+<p>A variant of <strong>TCP</strong> that uses encryption and certificates. <strong>TLS</strong> is mostly used when the devices are connected to the internet.</p>
+</section>
+<section id="udp">
+<h3>UDP<a class="headerlink" href="#udp" title="Link to this heading"></a></h3>
+<p>A broadcast variant of <strong>TCP</strong>. <strong>UDP</strong> allows addressing of many devices with a single request, however there are no control
+that a device have received the packet.</p>
+</section>
+</section>
+<section id="client-usage">
+<h2>Client usage<a class="headerlink" href="#client-usage" title="Link to this heading"></a></h2>
+<p>Using pymodbus client to set/get information from a device (server)
+is done in a few simple steps, like the following synchronous example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusTcpClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusTcpClient</span><span class="p">(</span><span class="s1">&#39;MyDevice.lan&#39;</span><span class="p">)</span>   <span class="c1"># Create client object</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>                           <span class="c1"># connect to device, reconnect automatically</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_coil</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>        <span class="c1"># set information in device</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># get information from device</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>                      <span class="c1"># use information</span>
+<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>                             <span class="c1"># Disconnect device</span>
+</pre></div>
+</div>
+<p>and a asynchronous example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusTcpClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusTcpClient</span><span class="p">(</span><span class="s1">&#39;MyDevice.lan&#39;</span><span class="p">)</span>    <span class="c1"># Create client object</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>                           <span class="c1"># connect to device, reconnect automatically</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_coil</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>        <span class="c1"># set information in device</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># get information from device</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>                            <span class="c1"># use information</span>
+<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>                                   <span class="c1"># Disconnect device</span>
+</pre></div>
+</div>
+<p>The line <code class="xref py py-mod docutils literal notranslate"><span class="pre">client</span> <span class="pre">=</span> <span class="pre">AsyncModbusTcpClient('MyDevice.lan')</span></code> only creates the object it does not activate
+anything.</p>
+<p>The line <code class="xref py py-mod docutils literal notranslate"><span class="pre">await</span> <span class="pre">client.connect()</span></code> connects to the device (or comm port), if this cannot connect successfully within
+the timeout it throws an exception. If connected successfully reconnecting later is handled automatically</p>
+<p>The line <code class="xref py py-mod docutils literal notranslate"><span class="pre">await</span> <span class="pre">client.write_coil(1,</span> <span class="pre">True,</span> <span class="pre">slave=1)</span></code> is an example of a write request, set address 1 to True on device 1 (slave).</p>
+<p>The line <code class="xref py py-mod docutils literal notranslate"><span class="pre">result</span> <span class="pre">=</span> <span class="pre">await</span> <span class="pre">client.read_coils(2,</span> <span class="pre">3,</span> <span class="pre">slave=1)</span></code> is an example of a read request, get the value of address 2, 3 and 4 (count = 3) from device 1 (slave).</p>
+<p>The last line <code class="xref py py-mod docutils literal notranslate"><span class="pre">client.close()</span></code> closes the connection and render the object inactive.</p>
+<p>Large parts of the implementation are shared between the different classes,
+to ensure high stability and efficient maintenance.</p>
+<p>The synchronous clients are not thread safe nor is a single client intended
+to be used from multiple threads. Due to the nature of the modbus protocol,
+it makes little sense to have client calls split over different threads,
+however the application can do it with proper locking implemented.</p>
+<p>The asynchronous client only runs in the thread where the asyncio loop is created,
+it does not provide mechanisms to prevent (semi)parallel calls,
+that must be prevented at application level.</p>
+</section>
+<section id="client-device-addressing">
+<h2>Client device addressing<a class="headerlink" href="#client-device-addressing" title="Link to this heading"></a></h2>
+<p>With <strong>TCP</strong>, <strong>TLS</strong> and <strong>UDP</strong>, the tcp/ip address of the physical device is defined when creating the object.
+The logical devices represented by the device is addressed with the <code class="xref py py-mod docutils literal notranslate"><span class="pre">slave=</span></code> parameter.</p>
+<p>With <strong>Serial</strong>, the comm port is defined when creating the object.
+The physical devices are addressed with the <code class="xref py py-mod docutils literal notranslate"><span class="pre">slave=</span></code> parameter.</p>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">slave=0</span></code> is used as broadcast in order to address all devices.
+However experience shows that modern devices do not allow broadcast, mostly because it is
+inheriently dangerous. With <code class="xref py py-mod docutils literal notranslate"><span class="pre">slave=0</span></code> the application can get upto 254 responses on a single request!</p>
+<p>The simple request calls (mixin) do NOT support broadcast, if an application wants to use broadcast
+it must call <code class="xref py py-mod docutils literal notranslate"><span class="pre">client.execute</span></code> and deal with the responses.</p>
+</section>
+<section id="client-response-handling">
+<h2>Client response handling<a class="headerlink" href="#client-response-handling" title="Link to this heading"></a></h2>
+<p>All simple request calls (mixin) return a unified result independent whether it´s a read, write or diagnostic call.</p>
+<p>The application should evaluate the result generically:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">rr</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: exception in pymodbus </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">exc</span>
+<span class="k">if</span> <span class="n">rr</span><span class="o">.</span><span class="n">isError</span><span class="p">():</span>
+    <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: pymodbus returned an error!&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">ModbusException</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">except</span> <span class="pre">ModbusException</span> <span class="pre">as</span> <span class="pre">exc:</span></code> happens generally when pymodbus experiences an internal error.
+There are a few situation where a unexpected response from a device can cause an exception.</p>
+<p><code class="xref py py-mod docutils literal notranslate"><span class="pre">rr.isError()</span></code> is set whenever the device reports a problem.</p>
+<p>And in case of read retrieve the data depending on type of request</p>
+<ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">rr.bits</span></code> is set for coils / input_register requests</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">rr.registers</span></code> is set for other requests</p></li>
+</ul>
+</section>
+<section id="client-interface-classes">
+<h2>Client interface classes<a class="headerlink" href="#client-interface-classes" title="Link to this heading"></a></h2>
+<p>There are a client class for each type of communication and for asynchronous/synchronous</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>Serial</strong></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">AsyncModbusSerialClient</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">ModbusSerialClient</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TCP</strong></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">AsyncModbusTcpClient</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">ModbusTcpClient</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>TLS</strong></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">AsyncModbusTlsClient</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">ModbusTlsClient</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>UDP</strong></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">AsyncModbusUdpClient</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">ModbusUdpClient</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<section id="client-serial">
+<h3>Client serial<a class="headerlink" href="#client-serial" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusSerialClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">AsyncModbusSerialClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.RTU</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baudrate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">19200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytesize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'N'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopbits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.AsyncModbusSerialClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseClient</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p><strong>AsyncModbusSerialClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port</strong> – Serial port used for communication.</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baudrate</strong> – Bits per second.</p></li>
+<li><p><strong>bytesize</strong> – Number of bits per byte 7-8.</p></li>
+<li><p><strong>parity</strong> – ‘E’ven, ‘O’dd or ‘N’one</p></li>
+<li><p><strong>stopbits</strong> – Number of stop bits 1, 1.5, 2.</p></li>
+<li><p><strong>handle_local_echo</strong> – Discard local echo from dongle.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusSerialClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusSerialClient</span><span class="p">(</span><span class="s2">&quot;dev/serial0&quot;</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusSerialClient.connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusSerialClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect Async client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusSerialClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reconnect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusSerialClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close connection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">ModbusSerialClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.RTU</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baudrate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">19200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytesize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'N'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopbits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseSyncClient</span></code></p>
+<p><strong>ModbusSerialClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port</strong> – Serial port used for communication.</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>baudrate</strong> – Bits per second.</p></li>
+<li><p><strong>bytesize</strong> – Number of bits per byte 7-8.</p></li>
+<li><p><strong>parity</strong> – ‘E’ven, ‘O’dd or ‘N’one</p></li>
+<li><p><strong>stopbits</strong> – Number of stop bits 0-2.</p></li>
+<li><p><strong>handle_local_echo</strong> – Discard local echo from dongle.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>strict</strong> – Strict timing, 1.5 character between requests.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusSerialClient</span>
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusSerialClient</span><span class="p">(</span><span class="s2">&quot;dev/serial0&quot;</span><span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<p>Remark: There are no automatic reconnect as with AsyncModbusSerialClient</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.connected" title="Link to this definition"></a></dt>
+<dd><p>Connect internal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect to the modbus serial server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close the underlying socket connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.send" title="Link to this definition"></a></dt>
+<dd><p>Send data on the underlying socket.</p>
+<p>If receive buffer still holds some data then flush it.</p>
+<p>Sleep if last send finished less than 3.5 character times ago.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.recv">
+<span class="sig-name descname"><span class="pre">recv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.recv" title="Link to this definition"></a></dt>
+<dd><p>Read data from the underlying descriptor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusSerialClient.is_socket_open">
+<span class="sig-name descname"><span class="pre">is_socket_open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusSerialClient.is_socket_open" title="Link to this definition"></a></dt>
+<dd><p>Check if socket is open.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="client-tcp">
+<h3>Client TCP<a class="headerlink" href="#client-tcp" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTcpClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">AsyncModbusTcpClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">502</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.SOCKET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.AsyncModbusTcpClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseClient</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p><strong>AsyncModbusTcpClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication</p></li>
+<li><p><strong>source_address</strong> – source address of client</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusTcpClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusTcpClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTcpClient.connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusTcpClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Initiate connection to start client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTcpClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reconnect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusTcpClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close connection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">ModbusTcpClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">502</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.SOCKET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseSyncClient</span></code></p>
+<p><strong>ModbusTcpClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication</p></li>
+<li><p><strong>source_address</strong> – source address of client</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusTcpClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusTcpClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<p>Remark: There are no automatic reconnect as with AsyncModbusTcpClient</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.connected" title="Link to this definition"></a></dt>
+<dd><p>Connect internal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect to the modbus tcp server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.close" title="Link to this definition"></a></dt>
+<dd><p>Close the underlying socket connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.send" title="Link to this definition"></a></dt>
+<dd><p>Send data on the underlying socket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.recv">
+<span class="sig-name descname"><span class="pre">recv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.recv" title="Link to this definition"></a></dt>
+<dd><p>Read data from the underlying descriptor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTcpClient.is_socket_open">
+<span class="sig-name descname"><span class="pre">is_socket_open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTcpClient.is_socket_open" title="Link to this definition"></a></dt>
+<dd><p>Check if socket is open.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="client-tls">
+<h3>Client TLS<a class="headerlink" href="#client-tls" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTlsClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">AsyncModbusTlsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">802</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.TLS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SSLContext</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.AsyncModbusTlsClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymodbus.client.AsyncModbusTcpClient" title="pymodbus.client.tcp.AsyncModbusTcpClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncModbusTcpClient</span></code></a></p>
+<p><strong>AsyncModbusTlsClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication</p></li>
+<li><p><strong>source_address</strong> – Source address of client</p></li>
+<li><p><strong>sslctx</strong> – SSLContext to use for TLS</p></li>
+<li><p><strong>certfile</strong> – Cert file path for TLS server request</p></li>
+<li><p><strong>keyfile</strong> – Key file path for TLS server request</p></li>
+<li><p><strong>password</strong> – Password for for decrypting private key file</p></li>
+<li><p><strong>server_hostname</strong> – Bind certificate to host</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusTlsClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusTlsClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTlsClient.connect">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusTlsClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Initiate connection to start client.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusTlsClient.generate_ssl">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_ssl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">certfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SSLContext</span></span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusTlsClient.generate_ssl" title="Link to this definition"></a></dt>
+<dd><p>Generate sslctx from cert/key/password.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>certfile</strong> – Cert file path for TLS server request</p></li>
+<li><p><strong>keyfile</strong> – Key file path for TLS server request</p></li>
+<li><p><strong>password</strong> – Password for for decrypting private key file</p></li>
+</ul>
+</dd>
+</dl>
+<p>Remark:
+- MODBUS/TCP Security Protocol Specification demands TLSv2 at least
+- verify_mode is set to ssl.NONE</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTlsClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">ModbusTlsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">802</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.TLS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sslctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SSLContext</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">certfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTlsClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymodbus.client.ModbusTcpClient" title="pymodbus.client.tcp.ModbusTcpClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusTcpClient</span></code></a></p>
+<p><strong>ModbusTlsClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication</p></li>
+<li><p><strong>source_address</strong> – Source address of client</p></li>
+<li><p><strong>sslctx</strong> – SSLContext to use for TLS</p></li>
+<li><p><strong>certfile</strong> – Cert file path for TLS server request</p></li>
+<li><p><strong>keyfile</strong> – Key file path for TLS server request</p></li>
+<li><p><strong>password</strong> – Password for decrypting private key file</p></li>
+<li><p><strong>server_hostname</strong> – Bind certificate to host</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusTlsClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusTlsClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<p>Remark: There are no automatic reconnect as with AsyncModbusTlsClient</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTlsClient.generate_ssl">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_ssl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">certfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SSLContext</span></span></span><a class="headerlink" href="#pymodbus.client.ModbusTlsClient.generate_ssl" title="Link to this definition"></a></dt>
+<dd><p>Generate sslctx from cert/key/password.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>certfile</strong> – Cert file path for TLS server request</p></li>
+<li><p><strong>keyfile</strong> – Key file path for TLS server request</p></li>
+<li><p><strong>password</strong> – Password for for decrypting private key file</p></li>
+</ul>
+</dd>
+</dl>
+<p>Remark:
+- MODBUS/TCP Security Protocol Specification demands TLSv2 at least
+- verify_mode is set to ssl.NONE</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTlsClient.connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pymodbus.client.ModbusTlsClient.connected" title="Link to this definition"></a></dt>
+<dd><p>Connect internal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusTlsClient.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusTlsClient.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect to the modbus tls server.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="client-udp">
+<h3>Client UDP<a class="headerlink" href="#client-udp" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusUdpClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">AsyncModbusUdpClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">502</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.SOCKET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.AsyncModbusUdpClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseClient</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DatagramProtocol</span></code></p>
+<p><strong>AsyncModbusUdpClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication.</p></li>
+<li><p><strong>source_address</strong> – source address of client,</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">AsyncModbusUdpClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusUdpClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pymodbus.client.AsyncModbusUdpClient.connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><a class="headerlink" href="#pymodbus.client.AsyncModbusUdpClient.connected" title="Link to this definition"></a></dt>
+<dd><p>Return true if connected.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusUdpClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.</span></span><span class="sig-name descname"><span class="pre">ModbusUdpClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">502</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="library/pymodbus.html#pymodbus.Framer" title="pymodbus.framer.Framer"><span class="pre">Framer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Framer.SOCKET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.ModbusUdpClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModbusBaseSyncClient</span></code></p>
+<p><strong>ModbusUdpClient</strong>.</p>
+<p>Fixed parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>host</strong> – Host IP address or host name</p>
+</dd>
+</dl>
+<p>Optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – Port used for communication.</p></li>
+<li><p><strong>source_address</strong> – source address of client,</p></li>
+</ul>
+</dd>
+</dl>
+<p>Common optional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framer</strong> – Framer enum name</p></li>
+<li><p><strong>timeout</strong> – Timeout for a request, in seconds.</p></li>
+<li><p><strong>retries</strong> – Max number of retries per request.</p></li>
+<li><p><strong>retry_on_empty</strong> – Retry on empty response.</p></li>
+<li><p><strong>broadcast_enable</strong> – True to treat id 0 as broadcast address.</p></li>
+<li><p><strong>reconnect_delay</strong> – Minimum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>reconnect_delay_max</strong> – Maximum delay in seconds.milliseconds before reconnecting.</p></li>
+<li><p><strong>on_reconnect_callback</strong> – Function that will be called just before a reconnection attempt.</p></li>
+<li><p><strong>no_resend_on_retry</strong> – Do not resend request when retrying due to missing response.</p></li>
+<li><p><strong>kwargs</strong> – Experimental parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymodbus.client</span> <span class="kn">import</span> <span class="n">ModbusUdpClient</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusUdpClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="internals.html#pymodbus-internals"><span class="std std-ref">Pymodbus internals</span></a> for advanced usage.</p>
+<p>Remark: There are no automatic reconnect as with AsyncModbusUdpClient</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pymodbus.client.ModbusUdpClient.connected">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pymodbus.client.ModbusUdpClient.connected" title="Link to this definition"></a></dt>
+<dd><p>Connect internal.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="modbus-calls">
+<h2>Modbus calls<a class="headerlink" href="#modbus-calls" title="Link to this heading"></a></h2>
+<p>Pymodbus makes all standard modbus requests/responses available as simple calls.</p>
+<p>Using Modbus&lt;transport&gt;Client.register() custom messagees can be added to pymodbus,
+and handled automatically.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymodbus.client.mixin.</span></span><span class="sig-name descname"><span class="pre">ModbusClientMixin</span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p><strong>ModbusClientMixin</strong>.</p>
+<p>This is an interface class to facilitate the sending requests/receiving responses like read_coils.
+execute() allows to make a call with non-standard or user defined function codes (remember to add a PDU
+in the transport class to interpret the request/response).</p>
+<p>Simple modbus message call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Advanced modbus message call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">request</span> <span class="o">=</span> <span class="n">ReadCoilsRequest</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">ReadCoilsRequest</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All methods can be used directly (synchronous) or
+with await &lt;method&gt; (asynchronous) depending on the client used.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModbusRequest</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.execute" title="Link to this definition"></a></dt>
+<dd><p>Execute request (code ???).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+<p>Call with custom function codes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Response is not interpreted.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_coils">
+<span class="sig-name descname"><span class="pre">read_coils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_coils" title="Link to this definition"></a></dt>
+<dd><p>Read coils (code 0x01).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to read from</p></li>
+<li><p><strong>count</strong> – (optional) Number of coils to read</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_discrete_inputs">
+<span class="sig-name descname"><span class="pre">read_discrete_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_discrete_inputs" title="Link to this definition"></a></dt>
+<dd><p>Read discrete inputs (code 0x02).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to read from</p></li>
+<li><p><strong>count</strong> – (optional) Number of coils to read</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_holding_registers">
+<span class="sig-name descname"><span class="pre">read_holding_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_holding_registers" title="Link to this definition"></a></dt>
+<dd><p>Read holding registers (code 0x03).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to read from</p></li>
+<li><p><strong>count</strong> – (optional) Number of coils to read</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_input_registers">
+<span class="sig-name descname"><span class="pre">read_input_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_input_registers" title="Link to this definition"></a></dt>
+<dd><p>Read input registers (code 0x04).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to read from</p></li>
+<li><p><strong>count</strong> – (optional) Number of coils to read</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.write_coil">
+<span class="sig-name descname"><span class="pre">write_coil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.write_coil" title="Link to this definition"></a></dt>
+<dd><p>Write single coil (code 0x05).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Address to write to</p></li>
+<li><p><strong>value</strong> – Boolean to write</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.write_register">
+<span class="sig-name descname"><span class="pre">write_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.write_register" title="Link to this definition"></a></dt>
+<dd><p>Write register (code 0x06).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Address to write to</p></li>
+<li><p><strong>value</strong> – Value to write</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_exception_status">
+<span class="sig-name descname"><span class="pre">read_exception_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_exception_status" title="Link to this definition"></a></dt>
+<dd><p>Read Exception Status (code 0x07).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_query_data">
+<span class="sig-name descname"><span class="pre">diag_query_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_query_data" title="Link to this definition"></a></dt>
+<dd><p>Diagnose query data (code 0x08 sub 0x00).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – Message to be returned</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_restart_communication">
+<span class="sig-name descname"><span class="pre">diag_restart_communication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toggle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_restart_communication" title="Link to this definition"></a></dt>
+<dd><p>Diagnose restart communication (code 0x08 sub 0x01).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>toggle</strong> – True if toggled.</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_diagnostic_register">
+<span class="sig-name descname"><span class="pre">diag_read_diagnostic_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_diagnostic_register" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read diagnostic register (code 0x08 sub 0x02).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_change_ascii_input_delimeter">
+<span class="sig-name descname"><span class="pre">diag_change_ascii_input_delimeter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_change_ascii_input_delimeter" title="Link to this definition"></a></dt>
+<dd><p>Diagnose change ASCII input delimiter (code 0x08 sub 0x03).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_force_listen_only">
+<span class="sig-name descname"><span class="pre">diag_force_listen_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_force_listen_only" title="Link to this definition"></a></dt>
+<dd><p>Diagnose force listen only (code 0x08 sub 0x04).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_clear_counters">
+<span class="sig-name descname"><span class="pre">diag_clear_counters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_clear_counters" title="Link to this definition"></a></dt>
+<dd><p>Diagnose clear counters (code 0x08 sub 0x0A).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_message_count">
+<span class="sig-name descname"><span class="pre">diag_read_bus_message_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_message_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read bus message count (code 0x08 sub 0x0B).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_comm_error_count">
+<span class="sig-name descname"><span class="pre">diag_read_bus_comm_error_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_comm_error_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Bus Communication Error Count (code 0x08 sub 0x0C).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_exception_error_count">
+<span class="sig-name descname"><span class="pre">diag_read_bus_exception_error_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_exception_error_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Bus Exception Error Count (code 0x08 sub 0x0D).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_message_count">
+<span class="sig-name descname"><span class="pre">diag_read_slave_message_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_message_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Slave Message Count (code 0x08 sub 0x0E).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_no_response_count">
+<span class="sig-name descname"><span class="pre">diag_read_slave_no_response_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_no_response_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Slave No Response Count (code 0x08 sub 0x0F).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_nak_count">
+<span class="sig-name descname"><span class="pre">diag_read_slave_nak_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_nak_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Slave NAK Count (code 0x08 sub 0x10).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_busy_count">
+<span class="sig-name descname"><span class="pre">diag_read_slave_busy_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_slave_busy_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Slave Busy Count (code 0x08 sub 0x11).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_char_overrun_count">
+<span class="sig-name descname"><span class="pre">diag_read_bus_char_overrun_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_bus_char_overrun_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Bus Character Overrun Count (code 0x08 sub 0x12).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_read_iop_overrun_count">
+<span class="sig-name descname"><span class="pre">diag_read_iop_overrun_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_read_iop_overrun_count" title="Link to this definition"></a></dt>
+<dd><p>Diagnose read Iop overrun count (code 0x08 sub 0x13).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_clear_overrun_counter">
+<span class="sig-name descname"><span class="pre">diag_clear_overrun_counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_clear_overrun_counter" title="Link to this definition"></a></dt>
+<dd><p>Diagnose Clear Overrun Counter and Flag (code 0x08 sub 0x14).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_getclear_modbus_response">
+<span class="sig-name descname"><span class="pre">diag_getclear_modbus_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_getclear_modbus_response" title="Link to this definition"></a></dt>
+<dd><p>Diagnose Get/Clear modbus plus (code 0x08 sub 0x15).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_counter">
+<span class="sig-name descname"><span class="pre">diag_get_comm_event_counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_counter" title="Link to this definition"></a></dt>
+<dd><p>Diagnose get event counter (code 0x0B).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – (optional) Experimental parameters.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_log">
+<span class="sig-name descname"><span class="pre">diag_get_comm_event_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.diag_get_comm_event_log" title="Link to this definition"></a></dt>
+<dd><p>Diagnose get event counter (code 0x0C).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – (optional) Experimental parameters.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.write_coils">
+<span class="sig-name descname"><span class="pre">write_coils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.write_coils" title="Link to this definition"></a></dt>
+<dd><p>Write coils (code 0x0F).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to write to</p></li>
+<li><p><strong>values</strong> – List of booleans to write, or a single boolean to write</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.write_registers">
+<span class="sig-name descname"><span class="pre">write_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.write_registers" title="Link to this definition"></a></dt>
+<dd><p>Write registers (code 0x10).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – Start address to write to</p></li>
+<li><p><strong>values</strong> – List of values to write, or a single value to write</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.report_slave_id">
+<span class="sig-name descname"><span class="pre">report_slave_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.report_slave_id" title="Link to this definition"></a></dt>
+<dd><p>Report slave ID (code 0x11).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_file_record">
+<span class="sig-name descname"><span class="pre">read_file_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_file_record" title="Link to this definition"></a></dt>
+<dd><p>Read file record (code 0x14).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>records</strong> – List of (Reference type, File number, Record Number, Record Length)</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.write_file_record">
+<span class="sig-name descname"><span class="pre">write_file_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.write_file_record" title="Link to this definition"></a></dt>
+<dd><p>Write file record (code 0x15).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>records</strong> – List of (Reference type, File number, Record Number, Record Length)</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.mask_write_register">
+<span class="sig-name descname"><span class="pre">mask_write_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">65535</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.mask_write_register" title="Link to this definition"></a></dt>
+<dd><p>Mask write register (code 0x16).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The mask pointer address (0x0000 to 0xffff)</p></li>
+<li><p><strong>and_mask</strong> – The and bitmask to apply to the register address</p></li>
+<li><p><strong>or_mask</strong> – The or bitmask to apply to the register address</p></li>
+<li><p><strong>kwargs</strong> – (optional) Experimental parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.readwrite_registers">
+<span class="sig-name descname"><span class="pre">readwrite_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slave</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.readwrite_registers" title="Link to this definition"></a></dt>
+<dd><p>Read/Write registers (code 0x17).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>read_address</strong> – The address to start reading from</p></li>
+<li><p><strong>read_count</strong> – The number of registers to read from address</p></li>
+<li><p><strong>write_address</strong> – The address to start writing to</p></li>
+<li><p><strong>values</strong> – List of values to write, or a single value to write</p></li>
+<li><p><strong>slave</strong> – (optional) Modbus slave ID</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_fifo_queue">
+<span class="sig-name descname"><span class="pre">read_fifo_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_fifo_queue" title="Link to this definition"></a></dt>
+<dd><p>Read FIFO queue (code 0x18).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address to start reading from</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.read_device_information">
+<span class="sig-name descname"><span class="pre">read_device_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.read_device_information" title="Link to this definition"></a></dt>
+<dd><p>Read FIFO queue (code 0x2B sub 0x0E).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>read_code</strong> – The device information read code</p></li>
+<li><p><strong>object_id</strong> – The object to read from</p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.DATATYPE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DATATYPE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.DATATYPE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Datatype enum (name and number of bytes), used for convert_* calls.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.convert_from_registers">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_from_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.DATATYPE" title="pymodbus.client.mixin.ModbusClientMixin.DATATYPE"><span class="pre">DATATYPE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.convert_from_registers" title="Link to this definition"></a></dt>
+<dd><p>Convert registers to int/float/str.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>registers</strong> – list of registers received from e.g. read_holding_registers()</p></li>
+<li><p><strong>data_type</strong> – data type to convert to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>int, float or str depending on “data_type”</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="library/pymodbus.html#pymodbus.ModbusException" title="pymodbus.ModbusException"><strong>ModbusException</strong></a> – when size of registers is not 1, 2 or 4</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymodbus.client.mixin.ModbusClientMixin.convert_to_registers">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_to_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pymodbus.client.mixin.ModbusClientMixin.DATATYPE" title="pymodbus.client.mixin.ModbusClientMixin.DATATYPE"><span class="pre">DATATYPE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pymodbus.client.mixin.ModbusClientMixin.convert_to_registers" title="Link to this definition"></a></dt>
+<dd><p>Convert int/float/str to registers (16/32/64 bit).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – value to be converted</p></li>
+<li><p><strong>data_type</strong> – data type to be encoded as registers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of registers, can be used directly in e.g. write_registers()</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – when there is a mismatch between data_type and value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="readme.html" class="btn btn-neutral float-left" title="PyModbus - A Python Modbus Stack" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="server.html" class="btn btn-neutral float-right" title="Server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright See license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

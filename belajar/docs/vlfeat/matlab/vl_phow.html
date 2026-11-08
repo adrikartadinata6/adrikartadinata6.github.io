@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > MATLAB API > SIFT - vl_phow</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="matlab.html">MATLAB API</a></span><span class='separator'>></span><span class='page'><a href="vl_phow.html">SIFT - vl_phow</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        <div class="mdoc">
+<ul class="breadcrumb"><li><a href="matlab.html">Index</a></li><li><a href="vl_liop.html">Prev</a></li><li><a href="vl_plotsiftdescriptor.html">Next</a></li></ul><div class="documentation"><p>
+[FRAMES, DESCRS] = <a href="vl_phow.html">VL_PHOW</a>(IM) extracts PHOW features [1] from the
+image IM. PHOW is simply dense SIFT applied at several resolutions. This function is a commodity interface to <a href="vl_dsift.html">VL_DSIFT</a>() and
+<a href="vl_imsmooth.html">VL_IMSMOOTH</a>().
+</p><p>
+DESCRS has the same format of <a href="vl_sift.html">VL_SIFT</a>() and <a href="vl_dsift.html">VL_DSIFT</a>(). FRAMES(1:2,:)
+are the x,y coordinates of the center of each descriptor, FRAMES(3,:)
+is the contrast of the descriptor, as returned by <a href="vl_dsift.html">VL_DSIFT</a>() (for
+colour variant, contranst is computed on the intensity channel).
+FRAMES(4,:) is the size of the bin of the descriptor.
+</p><p>
+By default,
+<a href="vl_phow.html">VL_PHOW</a>() computes the gray-scale variant of the descriptor.  The
+COLOR option can be used to compute the color variant instead.
+</p><dl><dt>
+Verbose
+<span class="defaults">false</span></dt><dd><p>
+Set to true to turn on verbose output.
+</p></dd><dt>
+Sizes
+<span class="defaults">[4 6 8 10]</span></dt><dd><p>
+Scales at which the dense SIFT features are extracted. Each
+value is used as bin size for the <a href="vl_dsift.html">VL_DSIFT</a>() function.
+</p></dd><dt>
+Fast
+<span class="defaults">true</span></dt><dd><p>
+Set to false to turn off the fast SIFT features computation by
+<a href="vl_dsift.html">VL_DSIFT</a>().
+</p></dd><dt>
+Step
+<span class="defaults">2</span></dt><dd><p>
+Step (in pixels) of the grid at which the dense SIFT features
+are extracted.
+</p></dd><dt>
+Color
+<span class="defaults">'gray'</span></dt><dd><p>
+Choose between 'gray' (PHOW-gray), 'rgb', 'hsv', and 'opponent'
+(PHOW-color).
+</p></dd><dt>
+ContrastThreshold
+<span class="defaults">0.005</span></dt><dd><p>
+Contrast threshold below which SIFT features are mapped to
+zero. The input image is scaled to have intensity range in [0,1]
+(rather than [0,255]) and this value is compared to the
+descriptor norm as returned by <a href="vl_dsift.html">VL_DSIFT</a>().
+</p></dd><dt>
+WindowSize
+<span class="defaults">1.5</span></dt><dd><p>
+Size of the Gaussian window in units of spatial bins.
+</p></dd><dt>
+Magnif
+<span class="defaults">6</span></dt><dd><p>
+The image is smoothed by a Gaussian kernel of standard deviation
+SIZE / MAGNIF. Note that, in the standard SIFT descriptor, the
+magnification value is 3; here the default one is 6 as it seems
+to perform better in applications.
+</p></dd><dt>
+FloatDescriptors
+<span class="defaults">false</span></dt><dd><p>
+If set to TRUE, the descriptors are returned in floating point
+format.
+</p></dd></dl><p>
+See also: <a href="vl_dsift.html">VL_DSIFT</a>(), <a href="vl_help.html">VL_HELP</a>().
+</p></div></div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>9.1.0 &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9.0.1" href="9.0.1.html" />
+    <link rel="prev" title="9.1.1" href="9.1.1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="9.0.1.html" title="9.0.1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="9.1.1.html" title="9.1.1"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">9.1.0</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>9.1.0<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="api-changes">
+<h2>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading">¶</a></h2>
+<section id="raise-an-error-when-performing-a-negative-crop">
+<h3>Raise an error when performing a negative crop<a class="headerlink" href="#raise-an-error-when-performing-a-negative-crop" title="Link to this heading">¶</a></h3>
+<p>Performing a negative crop on an image previously just returned a <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code> image. Now
+it will raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code>, to help reduce confusion if a user has unintentionally
+provided the wrong arguments.</p>
+</section>
+<section id="added-specific-error-if-path-coordinate-type-is-incorrect">
+<h3>Added specific error if path coordinate type is incorrect<a class="headerlink" href="#added-specific-error-if-path-coordinate-type-is-incorrect" title="Link to this heading">¶</a></h3>
+<p>Rather than returning a <code class="xref py py-exc docutils literal notranslate"><span class="pre">SystemError</span></code>, passing the incorrect types of coordinates into
+a path will now raise a more specific <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code>, with the message “incorrect
+coordinate type”.</p>
+</section>
+<section id="replace-requirements-txt-with-extras">
+<h3>Replace requirements.txt with extras<a class="headerlink" href="#replace-requirements-txt-with-extras" title="Link to this heading">¶</a></h3>
+<p>Rather than installing all dependencies for docs and tests via <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>,
+<code class="docutils literal notranslate"><span class="pre">extras_require</span></code> is used instead. This installs only those needed and at the same
+time as installing Pillow.</p>
+<p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install with dependencies for tests:</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>tests<span class="o">]</span>
+
+<span class="c1"># Or for building docs:</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>docs<span class="o">]</span>
+
+<span class="c1"># Or for all:</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>docs,tests<span class="o">]</span>
+</pre></div>
+</div>
+<p>On macOS, the last argument may need to be wrapped in quotes, e.g.
+<code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[tests]&quot;</span></code></p>
+<p>Therefore <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> has been removed along with the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install-req</span></code>
+command for installing its contents.</p>
+</section>
+</section>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">¶</a></h2>
+<section id="constants">
+<h3>Constants<a class="headerlink" href="#constants" title="Link to this heading">¶</a></h3>
+<p>A number of constants have been deprecated and will be removed in Pillow 10.0.0
+(2023-07-01). Instead, <code class="docutils literal notranslate"><span class="pre">enum.IntEnum</span></code> classes have been added.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some of these deprecations were restored in Pillow 9.4.0. See
+<a class="reference internal" href="9.4.0.html#restored-image-constants"><span class="std std-ref">Constants</span></a></p>
+</div>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Deprecated</p></th>
+<th class="head"><p>Use instead</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.NONE</span></code></p></td>
+<td><p>Either <code class="docutils literal notranslate"><span class="pre">Image.Dither.NONE</span></code> or <code class="docutils literal notranslate"><span class="pre">Image.Resampling.NEAREST</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.NEAREST</span></code></p></td>
+<td><p>Either <code class="docutils literal notranslate"><span class="pre">Image.Dither.NONE</span></code> or <code class="docutils literal notranslate"><span class="pre">Image.Resampling.NEAREST</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ORDERED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Dither.ORDERED</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.RASTERIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Dither.RASTERIZE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.FLOYDSTEINBERG</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Dither.FLOYDSTEINBERG</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.WEB</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Palette.WEB</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ADAPTIVE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Palette.ADAPTIVE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.AFFINE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transform.AFFINE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.EXTENT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transform.EXTENT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.PERSPECTIVE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transform.PERSPECTIVE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.QUAD</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transform.QUAD</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.MESH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transform.MESH</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.FLIP_LEFT_RIGHT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.FLIP_LEFT_RIGHT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.FLIP_TOP_BOTTOM</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.FLIP_TOP_BOTTOM</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ROTATE_90</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.ROTATE_90</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ROTATE_180</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.ROTATE_180</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ROTATE_270</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.ROTATE_270</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.TRANSPOSE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.TRANSPOSE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.TRANSVERSE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Transpose.TRANSVERSE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.BOX</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.BOX</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.BILINEAR</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.BILINEAR</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.LINEAR</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.BILINEAR</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.HAMMING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.HAMMING</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.BICUBIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.BICUBIC</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.CUBIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.BICUBIC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.LANCZOS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.LANCZOS</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.ANTIALIAS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Resampling.LANCZOS</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.MEDIANCUT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Quantize.MEDIANCUT</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.MAXCOVERAGE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Quantize.MAXCOVERAGE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Image.FASTOCTREE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Quantize.FASTOCTREE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Image.LIBIMAGEQUANT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Image.Quantize.LIBIMAGEQUANT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.INTENT_PERCEPTUAL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Intent.PERCEPTUAL</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.INTENT_RELATIVE_COLORMETRIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Intent.RELATIVE_COLORMETRIC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.INTENT_SATURATION</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Intent.SATURATION</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.INTENT_ABSOLUTE_COLORIMETRIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Intent.ABSOLUTE_COLORIMETRIC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.DIRECTION_INPUT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Direction.INPUT</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.DIRECTION_OUTPUT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Direction.OUTPUT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.DIRECTION_PROOF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageCms.Direction.PROOF</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageFont.LAYOUT_BASIC</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageFont.Layout.BASIC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageFont.LAYOUT_RAQM</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ImageFont.Layout.RAQM</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_FORMAT_JPEG</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.Format.JPEG</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ENCODING_UNCOMPRESSED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.Encoding.UNCOMPRESSED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ENCODING_DXT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.Encoding.DXT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ENCODING_UNCOMPRESSED_RAW_RGBA</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.Encoding.UNCOMPRESSED_RAW_RGBA</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ALPHA_ENCODING_DXT1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.AlphaEncoding.DXT1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ALPHA_ENCODING_DXT3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.AlphaEncoding.DXT3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.BLP_ALPHA_ENCODING_DXT5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BlpImagePlugin.AlphaEncoding.DXT5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FtexImagePlugin.FORMAT_DXT1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FtexImagePlugin.Format.DXT1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FtexImagePlugin.FORMAT_UNCOMPRESSED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FtexImagePlugin.Format.UNCOMPRESSED</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.APNG_DISPOSE_OP_NONE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.Disposal.OP_NONE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.APNG_DISPOSE_OP_BACKGROUND</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.Disposal.OP_BACKGROUND</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.APNG_DISPOSE_OP_PREVIOUS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.Disposal.OP_PREVIOUS</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.APNG_BLEND_OP_SOURCE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.Blend.OP_SOURCE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.APNG_BLEND_OP_OVER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PngImagePlugin.Blend.OP_OVER</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="imageshow-viewer-show-file-file-argument">
+<h3>ImageShow.Viewer.show_file file argument<a class="headerlink" href="#imageshow-viewer-show-file-file-argument" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">file</span></code> argument in <a class="reference internal" href="../reference/ImageShow.html#PIL.ImageShow.Viewer.show_file" title="PIL.ImageShow.Viewer.show_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show_file()</span></code></a> has been
+deprecated and  will be removed in Pillow 10.0.0 (2023-07-01). It has been replaced by
+<code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<p>In effect, <code class="docutils literal notranslate"><span class="pre">viewer.show_file(&quot;test.jpg&quot;)</span></code> will continue to work unchanged.
+<code class="docutils literal notranslate"><span class="pre">viewer.show_file(file=&quot;test.jpg&quot;)</span></code> will raise a deprecation warning, and suggest
+<code class="docutils literal notranslate"><span class="pre">viewer.show_file(path=&quot;test.jpg&quot;)</span></code> instead.</p>
+</section>
+<section id="fitsstubimageplugin">
+<h3>FitsStubImagePlugin<a class="headerlink" href="#fitsstubimageplugin" title="Link to this heading">¶</a></h3>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 9.1.0.</span></p>
+</div>
+<p>The stub image plugin <code class="docutils literal notranslate"><span class="pre">FitsStubImagePlugin</span></code> has been deprecated and will be removed in
+Pillow 10.0.0 (2023-07-01). FITS images can be read without a handler through
+<a class="reference internal" href="../reference/plugins.html#module-PIL.FitsImagePlugin" title="PIL.FitsImagePlugin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">FitsImagePlugin</span></code></a> instead.</p>
+</section>
+</section>
+<section id="api-additions">
+<h2>API Additions<a class="headerlink" href="#api-additions" title="Link to this heading">¶</a></h2>
+<section id="added-get-photoshop-blocks-to-parse-photoshop-tiff-tag">
+<h3>Added get_photoshop_blocks() to parse Photoshop TIFF tag<a class="headerlink" href="#added-get-photoshop-blocks-to-parse-photoshop-tiff-tag" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/plugins.html#PIL.TiffImagePlugin.TiffImageFile.get_photoshop_blocks" title="PIL.TiffImagePlugin.TiffImageFile.get_photoshop_blocks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_photoshop_blocks()</span></code></a> has been added, to
+allow users to determine what Photoshop “Image Resource Blocks” are contained within an
+image. The keys of the returned dictionary are the image resource IDs.</p>
+<p>At present, the information within each block is merely returned as a dictionary with a
+“data” entry. This will allow more useful information to be added in the future without
+breaking backwards compatibility.</p>
+</section>
+<section id="added-mct-and-no-jp2-options-for-saving-jpeg-2000">
+<h3>Added mct and no_jp2 options for saving JPEG 2000<a class="headerlink" href="#added-mct-and-no-jp2-options-for-saving-jpeg-2000" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.save" title="PIL.Image.Image.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.Image.Image.save()</span></code></a> method now supports the following options for
+JPEG 2000:</p>
+<dl class="simple">
+<dt><strong>mct</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">1</span></code> then enable multiple component transformation when encoding,
+otherwise use <code class="docutils literal notranslate"><span class="pre">0</span></code> for no component transformation (default). If MCT is
+enabled and <code class="docutils literal notranslate"><span class="pre">irreversible</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> then the Irreversible Color
+Transformation will be applied, otherwise encoding will use the
+Reversible Color Transformation. MCT works best with a <code class="docutils literal notranslate"><span class="pre">mode</span></code> of
+<code class="docutils literal notranslate"><span class="pre">RGB</span></code> and is only applicable when the image data has 3 components.</p>
+</dd>
+<dt><strong>no_jp2</strong></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> then don’t wrap the raw codestream in the JP2 file format when
+saving, otherwise the extension of the filename will be used to determine
+the format (default).</p>
+</dd>
+</dl>
+</section>
+<section id="added-pyencoder">
+<h3>Added PyEncoder<a class="headerlink" href="#added-pyencoder" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/ImageFile.html#PIL.ImageFile.PyEncoder" title="PIL.ImageFile.PyEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyEncoder</span></code></a> has been added, allowing for file encoders to be
+written in Python. See <a class="reference internal" href="../handbook/writing-your-own-image-plugin.html#file-codecs-py"><span class="std std-ref">Writing Your Own File Codec in Python</span></a> for
+more information.</p>
+</section>
+<section id="gifimageplugin-loading-strategy">
+<h3>GifImagePlugin loading strategy<a class="headerlink" href="#gifimageplugin-loading-strategy" title="Link to this heading">¶</a></h3>
+<p>Pillow 9.0.0 introduced the conversion of subsequent GIF frames to <code class="docutils literal notranslate"><span class="pre">RGB</span></code> or <code class="docutils literal notranslate"><span class="pre">RGBA</span></code>. This
+behaviour can now be changed so that the first <code class="docutils literal notranslate"><span class="pre">P</span></code> frame is converted to <code class="docutils literal notranslate"><span class="pre">RGB</span></code> as
+well.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">GifImagePlugin</span>
+<span class="n">GifImagePlugin</span><span class="o">.</span><span class="n">LOADING_STRATEGY</span> <span class="o">=</span> <span class="n">GifImagePlugin</span><span class="o">.</span><span class="n">LoadingStrategy</span><span class="o">.</span><span class="n">RGB_ALWAYS</span>
+</pre></div>
+</div>
+<p>Or subsequent frames can be kept in <code class="docutils literal notranslate"><span class="pre">P</span></code> mode as long as there is only a single
+palette.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">GifImagePlugin</span>
+<span class="n">GifImagePlugin</span><span class="o">.</span><span class="n">LOADING_STRATEGY</span> <span class="o">=</span> <span class="n">GifImagePlugin</span><span class="o">.</span><span class="n">LoadingStrategy</span><span class="o">.</span><span class="n">RGB_AFTER_DIFFERENT_PALETTE_ONLY</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="other-changes">
+<h2>Other Changes<a class="headerlink" href="#other-changes" title="Link to this heading">¶</a></h2>
+<section id="musllinux-wheels">
+<h3>musllinux wheels<a class="headerlink" href="#musllinux-wheels" title="Link to this heading">¶</a></h3>
+<p>Pillow now builds binary wheels for musllinux, suitable for Linux distributions based on the musl C standard library such as Alpine
+(rather than the glibc library used by manylinux wheels). See <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0656/"><strong>PEP 656</strong></a>.</p>
+</section>
+<section id="imageshow-temporary-files-on-unix">
+<h3>ImageShow temporary files on Unix<a class="headerlink" href="#imageshow-temporary-files-on-unix" title="Link to this heading">¶</a></h3>
+<p>When calling <a class="reference internal" href="../reference/Image.html#PIL.Image.Image.show" title="PIL.Image.Image.show"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show()</span></code></a> or using <a class="reference internal" href="../reference/ImageShow.html#module-PIL.ImageShow" title="PIL.ImageShow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageShow</span></code></a>,
+a temporary file is created from the image. On Unix, Pillow will no longer delete these
+files, and instead leave it to the operating system to do so.</p>
+</section>
+<section id="image-repr-pretty">
+<h3>Image._repr_pretty_<a class="headerlink" href="#image-repr-pretty" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">im._repr_pretty_</span></code> has been added to provide a representation of an image without the
+identity of the object. This allows Jupyter to describe an image and have that
+description stay the same on subsequent executions of the same code.</p>
+</section>
+<section id="added-bigtiff-reading">
+<h3>Added BigTIFF reading<a class="headerlink" href="#added-bigtiff-reading" title="Link to this heading">¶</a></h3>
+<p>Support has been added for reading BigTIFF images.</p>
+</section>
+<section id="added-blp-saving">
+<h3>Added BLP saving<a class="headerlink" href="#added-blp-saving" title="Link to this heading">¶</a></h3>
+<p>Support has been added for saving BLP images. <code class="docutils literal notranslate"><span class="pre">blp_version</span></code> can be used to specify
+whether the image should be saved as BLP1 or BLP2, e.g.
+<code class="docutils literal notranslate"><span class="pre">im.save(&quot;out.blp&quot;,</span> <span class="pre">blp_version=&quot;BLP1&quot;)</span></code>. By default, BLP2 will be used.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">9.1.0</a><ul>
+<li><a class="reference internal" href="#api-changes">API Changes</a><ul>
+<li><a class="reference internal" href="#raise-an-error-when-performing-a-negative-crop">Raise an error when performing a negative crop</a></li>
+<li><a class="reference internal" href="#added-specific-error-if-path-coordinate-type-is-incorrect">Added specific error if path coordinate type is incorrect</a></li>
+<li><a class="reference internal" href="#replace-requirements-txt-with-extras">Replace requirements.txt with extras</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deprecations">Deprecations</a><ul>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#imageshow-viewer-show-file-file-argument">ImageShow.Viewer.show_file file argument</a></li>
+<li><a class="reference internal" href="#fitsstubimageplugin">FitsStubImagePlugin</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-additions">API Additions</a><ul>
+<li><a class="reference internal" href="#added-get-photoshop-blocks-to-parse-photoshop-tiff-tag">Added get_photoshop_blocks() to parse Photoshop TIFF tag</a></li>
+<li><a class="reference internal" href="#added-mct-and-no-jp2-options-for-saving-jpeg-2000">Added mct and no_jp2 options for saving JPEG 2000</a></li>
+<li><a class="reference internal" href="#added-pyencoder">Added PyEncoder</a></li>
+<li><a class="reference internal" href="#gifimageplugin-loading-strategy">GifImagePlugin loading strategy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-changes">Other Changes</a><ul>
+<li><a class="reference internal" href="#musllinux-wheels">musllinux wheels</a></li>
+<li><a class="reference internal" href="#imageshow-temporary-files-on-unix">ImageShow temporary files on Unix</a></li>
+<li><a class="reference internal" href="#image-repr-pretty">Image._repr_pretty_</a></li>
+<li><a class="reference internal" href="#added-bigtiff-reading">Added BigTIFF reading</a></li>
+<li><a class="reference internal" href="#added-blp-saving">Added BLP saving</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="9.1.1.html"
+                          title="previous chapter">9.1.1</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="9.0.1.html"
+                          title="next chapter">9.0.1</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/releasenotes/9.1.0.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="9.0.1.html" title="9.0.1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="9.1.1.html" title="9.1.1"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Release Notes</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">9.1.0</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

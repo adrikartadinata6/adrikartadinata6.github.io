@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > vl_demo_sift_peak</title>
+
+  <!-- Stylesheets -->
+  <link href="../../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="vl_demo_sift_peak.html">vl_demo_sift_peak</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+<h1 id="id-6045">Source code for <code/>vl_demo_sift_peak.m</code></h1><p>This file is located in the <code/>toolbox/demo</code> folder in VLFeat package.</p>
+<div class="highlight"><pre><span></span><span class="c">% VL_DEMO_SIFT_PEAK  Demo: SIFT: peak treshold</span>
+
+<span class="nb">randn</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">rand</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">double</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">.005</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nb">ones</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span><span class="w"> </span><span class="o">.*</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="p">;</span>
+<span class="n">I</span><span class="p">(:,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">I</span><span class="p">(:,</span><span class="k">end</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span>
+<span class="n">I</span><span class="p">(</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">I</span><span class="p">(</span><span class="k">end</span><span class="p">,:)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span>
+<span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="nb">pi</span><span class="o">*</span><span class="mi">4</span>^<span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vl_imsmooth</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">single</span><span class="p">(</span><span class="mi">255</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">I</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">clf</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">imagesc</span><span class="p">(</span><span class="n">I</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">colormap</span><span class="w"> </span><span class="s">gray</span><span class="w"> </span><span class="p">;</span>
+<span class="n">axis</span><span class="w"> </span><span class="s">equal</span><span class="w"> </span><span class="p">;</span><span class="w">  </span><span class="n">axis</span><span class="w"> </span><span class="s">off</span><span class="p">;</span><span class="w"> </span><span class="n">axis</span><span class="w"> </span><span class="s">tight</span><span class="w"> </span><span class="p">;</span>
+<span class="n">hold</span><span class="w"> </span><span class="s">on</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">vl_demo_print</span><span class="p">(</span><span class="s">&#39;sift_peak_0&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">tpr</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">30</span><span class="p">]</span><span class="w"> </span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="n">tp</span><span class="p">=</span><span class="n">tpr</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_sift</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">           </span><span class="s">&#39;PeakThresh&#39;</span><span class="p">,</span><span class="w">   </span><span class="n">tp</span><span class="p">,</span><span class="w">    </span><span class="k">...</span>
+<span class="w">           </span><span class="s">&#39;EdgeThresh&#39;</span><span class="p">,</span><span class="w">   </span><span class="mi">10000</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">           </span><span class="s">&#39;FirstOctave&#39;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">h1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_plotframe</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span><span class="s">&#39;color&#39;</span><span class="p">,</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="s">&#39;linewidth&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="n">h2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_plotframe</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="n">h2</span><span class="p">,</span><span class="s">&#39;color&#39;</span><span class="p">,</span><span class="s">&#39;y&#39;</span><span class="p">,</span><span class="s">&#39;linewidth&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">vl_demo_print</span><span class="p">(</span><span class="nb">sprintf</span><span class="p">(</span><span class="s">&#39;sift_peak_%d&#39;</span><span class="p">,</span><span class="nb">find</span><span class="p">(</span><span class="n">tp</span><span class="o">==</span><span class="n">tpr</span><span class="p">)))</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">delete</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="w">  </span><span class="nb">delete</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="k">end</span>
+</pre></div>
+
+
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

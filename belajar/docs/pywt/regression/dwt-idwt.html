@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DWT and IDWT &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multilevel DWT, IDWT and SWT" href="multilevel.html" />
+    <link rel="prev" title="Signal Extension Modes" href="modes.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="multilevel.html" title="Multilevel DWT, IDWT and SWT"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modes.html" title="Signal Extension Modes"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DWT and IDWT</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dwt-and-idwt">
+<span id="reg-dwt-idwt"></span><h1>DWT and IDWT<a class="headerlink" href="#dwt-and-idwt" title="Link to this heading">¶</a></h1>
+<section id="discrete-wavelet-transform">
+<h2>Discrete Wavelet Transform<a class="headerlink" href="#discrete-wavelet-transform" title="Link to this heading">¶</a></h2>
+<p>Let’s do a <code class="xref py py-func docutils literal notranslate"><span class="pre">Discrete</span> <span class="pre">Wavelet</span> <span class="pre">Transform</span></code> of a sample data <code class="docutils literal notranslate"><span class="pre">x</span></code>
+using the <code class="docutils literal notranslate"><span class="pre">db2</span></code> wavelet. It’s simple..</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pywt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">dwt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;db2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the approximation and details coefficients are in <code class="docutils literal notranslate"><span class="pre">cA</span></code> and <code class="docutils literal notranslate"><span class="pre">cD</span></code>
+respectively:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA</span><span class="p">)</span>
+<span class="go">[ 5.65685425  7.39923721  0.22414387  3.33677403  7.77817459]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD</span><span class="p">)</span>
+<span class="go">[-2.44948974 -1.60368225 -4.44140056 -0.41361256  1.22474487]</span>
+</pre></div>
+</div>
+</section>
+<section id="inverse-discrete-wavelet-transform">
+<h2>Inverse Discrete Wavelet Transform<a class="headerlink" href="#inverse-discrete-wavelet-transform" title="Link to this heading">¶</a></h2>
+<p>Now let’s do an opposite operation
+- <code class="xref py py-func docutils literal notranslate"><span class="pre">Inverse</span> <span class="pre">Discrete</span> <span class="pre">Wavelet</span> <span class="pre">Transform</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">(</span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span><span class="p">,</span> <span class="s1">&#39;db2&#39;</span><span class="p">))</span>
+<span class="go">[ 3.  7.  1.  1. -2.  5.  4.  6.]</span>
+</pre></div>
+</div>
+<p>Voilà! That’s it!</p>
+</section>
+<section id="more-examples">
+<h2>More Examples<a class="headerlink" href="#more-examples" title="Link to this heading">¶</a></h2>
+<p>Now let’s experiment with the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code> some more. For example let’s pass a
+<a class="reference internal" href="../ref/wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object instead of the wavelet name and specify signal
+extension mode (the default is <a class="reference internal" href="../ref/signal-extension-modes.html#modes-symmetric"><span class="std std-ref">symmetric</span></a>) for the
+border effect handling:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;sym3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">dwt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cA</span><span class="p">)</span>
+<span class="go">[ 4.38354585  3.80302657  7.31813271 -0.58565539  4.09727044  7.81994027]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cD</span><span class="p">)</span>
+<span class="go">[-1.33068221 -2.78795192 -3.16825651 -0.67715519 -0.09722957 -0.07045258]</span>
+</pre></div>
+</div>
+<p>Note that the output coefficients arrays length depends not only on the input
+data length but also on the :class:Wavelet type (particularly on its
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">filters</span> <span class="pre">length</span></code> that are used in the transformation).</p>
+<p>To find out what will be the output data size use the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt_coeff_len()</span></code>
+function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># int() is for normalizing Python integers and long integers for documentation tests</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">dwt_coeff_len</span><span class="p">(</span><span class="n">data_len</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">filter_len</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">dec_len</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">dwt_coeff_len</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">w</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cA</span><span class="p">)</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<p>Looks fine. (And if you expected that the output length would be a half of the
+input data length, well, that’s the trade-off that allows for the perfect
+reconstruction…).</p>
+<p>The third argument of the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt_coeff_len()</span></code> is the already mentioned signal
+extension mode (please refer to the PyWavelets’ documentation for the
+<a class="reference internal" href="../ref/signal-extension-modes.html#modes"><span class="std std-ref">modes</span></a> description). Currently there are six
+<a class="reference internal" href="../ref/signal-extension-modes.html#modes"><span class="std std-ref">extension modes</span></a> available:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pywt</span><span class="o">.</span><span class="n">Modes</span><span class="o">.</span><span class="n">modes</span>
+<span class="go">[&#39;zero&#39;, &#39;constant&#39;, &#39;symmetric&#39;, &#39;periodic&#39;, &#39;smooth&#39;, &#39;periodization&#39;, &#39;reflect&#39;, &#39;antisymmetric&#39;, &#39;antireflect&#39;]</span>
+</pre></div>
+</div>
+<p>As you see in the above example, the <a class="reference internal" href="../ref/signal-extension-modes.html#modes-periodization"><span class="std std-ref">periodization</span></a>
+(periodization) mode is slightly different from the others. It’s aim when
+doing the <code class="xref py py-func docutils literal notranslate"><span class="pre">DWT</span></code> transform is to output coefficients arrays that
+are half of the length of the input data.</p>
+<p>Knowing that, you should never mix the periodization mode with other modes when
+doing <code class="xref py py-func docutils literal notranslate"><span class="pre">DWT</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">IDWT</span></code>. Otherwise, it will produce
+<strong>invalid results</strong>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">[3, 7, 1, 1, -2, 5, 4, 6]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">dwt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;periodization&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">(</span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span><span class="p">,</span> <span class="s1">&#39;sym3&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span> <span class="c1"># invalid mode</span>
+<span class="go">[ 1.  1. -2.  5.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">(</span><span class="n">cA</span><span class="p">,</span> <span class="n">cD</span><span class="p">,</span> <span class="s1">&#39;sym3&#39;</span><span class="p">,</span> <span class="s1">&#39;periodization&#39;</span><span class="p">))</span>
+<span class="go">[ 3.  7.  1.  1. -2.  5.  4.  6.]</span>
+</pre></div>
+</div>
+</section>
+<section id="tips-tricks">
+<h2>Tips &amp; tricks<a class="headerlink" href="#tips-tricks" title="Link to this heading">¶</a></h2>
+<section id="passing-none-instead-of-coefficients-data-to-idwt">
+<h3>Passing <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of coefficients data to <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code><a class="headerlink" href="#passing-none-instead-of-coefficients-data-to-idwt" title="Link to this heading">¶</a></h3>
+<p>Now some tips &amp; tricks. Passing <code class="docutils literal notranslate"><span class="pre">None</span></code> as one of the coefficient arrays
+parameters is similar to passing a <em>zero-filled</em> array. The results are simply
+the same:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">[ 1.19006969  1.54362308  0.44828774 -0.25881905  0.48296291  0.8365163 ]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">[ 1.19006969  1.54362308  0.44828774 -0.25881905  0.48296291  0.8365163 ]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">[ 0.57769726 -0.93125065  1.67303261 -0.96592583 -0.12940952 -0.22414387]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">[ 0.57769726 -0.93125065  1.67303261 -0.96592583 -0.12940952 -0.22414387]</span>
+</pre></div>
+</div>
+<p>Remember that only one argument at a time can be <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">At least one coefficient parameter must be specified.</span>
+</pre></div>
+</div>
+</section>
+<section id="coefficients-data-size-in-idwt">
+<h3>Coefficients data size in <code class="xref py py-attr docutils literal notranslate"><span class="pre">idwt</span></code><a class="headerlink" href="#coefficients-data-size-in-idwt" title="Link to this heading">¶</a></h3>
+<p>When doing the <code class="xref py py-func docutils literal notranslate"><span class="pre">IDWT</span></code> transform, usually the coefficient arrays
+must have the same size.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s1">&#39;db2&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Coefficients arrays must have the same size.</span>
+</pre></div>
+</div>
+<p>Not every coefficient array can be used in <code class="xref py py-func docutils literal notranslate"><span class="pre">IDWT</span></code>. In the
+following example the <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code> will fail because the input arrays are
+invalid - they couldn’t be created as a result of <code class="xref py py-func docutils literal notranslate"><span class="pre">DWT</span></code>, because
+the minimal output length for dwt using <code class="docutils literal notranslate"><span class="pre">db4</span></code> wavelet and the <a class="reference internal" href="../ref/signal-extension-modes.html#modes-symmetric"><span class="std std-ref">symmetric</span></a> mode is <code class="docutils literal notranslate"><span class="pre">4</span></code>, not <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pywt</span><span class="o">.</span><span class="n">idwt</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;db4&#39;</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Invalid coefficient arrays length for specified wavelet. Wavelet and mode must be the same as used for decomposition.</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">int</span><span class="p">(</span><span class="n">pywt</span><span class="o">.</span><span class="n">dwt_coeff_len</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pywt</span><span class="o">.</span><span class="n">Wavelet</span><span class="p">(</span><span class="s1">&#39;db4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dec_len</span><span class="p">,</span> <span class="s1">&#39;symmetric&#39;</span><span class="p">))</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DWT and IDWT</a><ul>
+<li><a class="reference internal" href="#discrete-wavelet-transform">Discrete Wavelet Transform</a></li>
+<li><a class="reference internal" href="#inverse-discrete-wavelet-transform">Inverse Discrete Wavelet Transform</a></li>
+<li><a class="reference internal" href="#more-examples">More Examples</a></li>
+<li><a class="reference internal" href="#tips-tricks">Tips &amp; tricks</a><ul>
+<li><a class="reference internal" href="#passing-none-instead-of-coefficients-data-to-idwt">Passing <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of coefficients data to <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code></a></li>
+<li><a class="reference internal" href="#coefficients-data-size-in-idwt">Coefficients data size in <code class="xref py py-attr docutils literal notranslate"><span class="pre">idwt</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modes.html"
+                          title="previous chapter">Signal Extension Modes</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="multilevel.html"
+                          title="next chapter">Multilevel DWT, IDWT and SWT</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/regression/dwt-idwt.rst" target="_blank">
+                DWT and IDWT
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="multilevel.html" title="Multilevel DWT, IDWT and SWT"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modes.html" title="Signal Extension Modes"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Usage examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DWT and IDWT</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

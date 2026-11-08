@@ -1,0 +1,1370 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>can.interfaces.ixxat.canlib_vcinpl2 - python-can 4.3.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=0f5ed9ba" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=e61b947c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">python-can 4.3.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">python-can 4.3.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">Library API</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Library API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bus.html">Bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../message.html">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../listeners.html">Reading and Writing Messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../asyncio.html">Asyncio support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bcm.html">Broadcast Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../errors.html">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bit_timing.html">Bit Timing Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../utils.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../internal-api.html">Internal API</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../interfaces.html">Hardware Interfaces</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Hardware Interfaces</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/canalystii.html">CANalyst-II</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/cantact.html">CANtact CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/etas.html">ETAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/gs_usb.html">Geschwister Schneider and candleLight</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/iscan.html">isCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/ixxat.html">IXXAT Virtual Communication Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/kvaser.html">Kvaser’s CANLIB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/neousys.html">Neousys CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/neovi.html">Intrepid Control Systems neoVI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/nican.html">National Instruments NI-CAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/nixnet.html">National Instruments NI-XNET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/pcan.html">PCAN Basic API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/robotell.html">Robotell CAN-USB interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/seeedstudio.html">Seeed Studio USB-CAN Analyzer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/serial.html">CAN over Serial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/slcan.html">CAN over Serial / SLCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/socketcan.html">SocketCAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/socketcand.html">socketcand Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/systec.html">SYSTEC interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/usb2can.html">USB2CAN Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/vector.html">Vector</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../virtual-interfaces.html">Virtual Interfaces</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Virtual Interfaces</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/virtual.html">Virtual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../interfaces/udp_multicast.html">Multicast IP Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plugin-interface.html">Plugin Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../other-tools.html">Other CAN bus tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../scripts.html">Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../development.html">Developer’s Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../history.html">History</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for can.interfaces.ixxat.canlib_vcinpl2</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Ctypes wrapper module for IXXAT Virtual CAN Interface V3 on win32 systems</span>
+
+<span class="sd">TODO: We could implement this interface such that setting other filters</span>
+<span class="sd">      could work when the initial filters were set to zero using the</span>
+<span class="sd">      software fallback. Or could the software filters even be changed</span>
+<span class="sd">      after the connection was opened? We need to document that bahaviour!</span>
+<span class="sd">      See also the NICAN interface.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">can</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BusABC</span><span class="p">,</span>
+    <span class="n">CanProtocol</span><span class="p">,</span>
+    <span class="n">CyclicSendTaskABC</span><span class="p">,</span>
+    <span class="n">LimitedDurationCyclicSendTaskABC</span><span class="p">,</span>
+    <span class="n">Message</span><span class="p">,</span>
+    <span class="n">RestartableCyclicTaskABC</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">can.ctypesutil</span> <span class="kn">import</span> <span class="n">HANDLE</span><span class="p">,</span> <span class="n">PHANDLE</span><span class="p">,</span> <span class="n">CLibrary</span>
+<span class="kn">from</span> <span class="nn">can.ctypesutil</span> <span class="kn">import</span> <span class="n">HRESULT</span> <span class="k">as</span> <span class="n">ctypes_HRESULT</span>
+<span class="kn">from</span> <span class="nn">can.exceptions</span> <span class="kn">import</span> <span class="n">CanInitializationError</span><span class="p">,</span> <span class="n">CanInterfaceNotImplementedError</span>
+<span class="kn">from</span> <span class="nn">can.util</span> <span class="kn">import</span> <span class="n">deprecated_args_alias</span><span class="p">,</span> <span class="n">dlc2len</span><span class="p">,</span> <span class="n">len2dlc</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">constants</span><span class="p">,</span> <span class="n">structures</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;VCITimeout&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VCIError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VCIBusOffError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VCIDeviceNotFoundError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IXXATBus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vciFormatError&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;can.ixxat&quot;</span><span class="p">)</span>
+
+<span class="c1"># Hack to have vciFormatError as a free function, see below</span>
+<span class="n">vciFormatError</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># main ctypes instance</span>
+<span class="n">_canlib</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="c1"># TODO: Use ECI driver for linux</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;cygwin&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_canlib</span> <span class="o">=</span> <span class="n">CLibrary</span><span class="p">(</span><span class="s2">&quot;vcinpl2.dll&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot load IXXAT vcinpl library: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Will not work on other systems, but have it importable anyway for</span>
+    <span class="c1"># tests/sphinx</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;IXXAT VCI library does not work on </span><span class="si">%s</span><span class="s2"> platform&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__vciFormatErrorExtended</span><span class="p">(</span>
+    <span class="n">library_instance</span><span class="p">:</span> <span class="n">CLibrary</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">vret</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a VCI error and attach failed function, decoded HRESULT and arguments</span>
+<span class="sd">    :param CLibrary library_instance:</span>
+<span class="sd">        Mapped instance of IXXAT vcinpl library</span>
+<span class="sd">    :param callable function:</span>
+<span class="sd">        Failed function</span>
+<span class="sd">    :param HRESULT vret:</span>
+<span class="sd">        HRESULT returned by vcinpl call</span>
+<span class="sd">    :param args:</span>
+<span class="sd">        Arbitrary arguments tuple</span>
+<span class="sd">    :return:</span>
+<span class="sd">        Formatted string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: make sure we don&#39;t generate another exception</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> - arguments were </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">__vciFormatError</span><span class="p">(</span><span class="n">library_instance</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">vret</span><span class="p">),</span> <span class="n">args</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__vciFormatError</span><span class="p">(</span><span class="n">library_instance</span><span class="p">:</span> <span class="n">CLibrary</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">vret</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a VCI error and attach failed function and decoded HRESULT</span>
+<span class="sd">    :param CLibrary library_instance:</span>
+<span class="sd">        Mapped instance of IXXAT vcinpl library</span>
+<span class="sd">    :param callable function:</span>
+<span class="sd">        Failed function</span>
+<span class="sd">    :param HRESULT vret:</span>
+<span class="sd">        HRESULT returned by vcinpl call</span>
+<span class="sd">    :return:</span>
+<span class="sd">        Formatted string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">VCI_MAX_ERRSTRLEN</span><span class="p">)</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_MAX_ERRSTRLEN</span><span class="p">)</span>
+    <span class="n">library_instance</span><span class="o">.</span><span class="n">vciFormatError</span><span class="p">(</span><span class="n">vret</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_MAX_ERRSTRLEN</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;function </span><span class="si">{}</span><span class="s2"> failed (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">function</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">buf</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__check_status</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check the result of a vcinpl function call and raise appropriate exception</span>
+<span class="sd">    in case of an error. Used as errcheck function when mapping C functions</span>
+<span class="sd">    with ctypes.</span>
+<span class="sd">        :param result:</span>
+<span class="sd">            Function call numeric result</span>
+<span class="sd">        :param callable function:</span>
+<span class="sd">            Called function</span>
+<span class="sd">        :param args:</span>
+<span class="sd">            Arbitrary arguments tuple</span>
+<span class="sd">        :raise:</span>
+<span class="sd">            :class:VCITimeout</span>
+<span class="sd">            :class:VCIRxQueueEmptyError</span>
+<span class="sd">            :class:StopIteration</span>
+<span class="sd">            :class:VCIError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_E_TIMEOUT</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VCITimeout</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">function</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2"> timed out&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_E_RXQUEUE_EMPTY</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VCIRxQueueEmptyError</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_E_NO_MORE_ITEMS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_E_ACCESSDENIED</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># not a real error, might happen if another program has initialized the bus</span>
+    <span class="k">elif</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">constants</span><span class="o">.</span><span class="n">VCI_OK</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VCIError</span><span class="p">(</span><span class="n">vciFormatError</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">hresult_type</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_ulong</span>
+    <span class="c1"># Map all required symbols and initialize library ---------------------------</span>
+    <span class="c1"># HRESULT VCIAPI vciInitialize ( void );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;vciInitialize&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(),</span> <span class="n">__check_status</span><span class="p">)</span>
+
+    <span class="c1"># void VCIAPI vciFormatError (HRESULT hrError, PCHAR pszText, UINT32 dwsize);</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+            <span class="s2">&quot;vciFormatError&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span><span class="n">ctypes_HRESULT</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+            <span class="s2">&quot;vciFormatErrorA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span><span class="n">ctypes_HRESULT</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">vciFormatError</span> <span class="o">=</span> <span class="n">_canlib</span><span class="o">.</span><span class="n">vciFormatErrorA</span>
+    <span class="c1"># Hack to have vciFormatError as a free function</span>
+    <span class="n">vciFormatError</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">__vciFormatError</span><span class="p">,</span> <span class="n">_canlib</span><span class="p">)</span>
+
+    <span class="c1"># HRESULT VCIAPI vciEnumDeviceOpen( OUT PHANDLE hEnum );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;vciEnumDeviceOpen&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">PHANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># HRESULT VCIAPI vciEnumDeviceClose ( IN HANDLE hEnum );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;vciEnumDeviceClose&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># HRESULT VCIAPI vciEnumDeviceNext( IN  HANDLE hEnum, OUT PVCIDEVICEINFO pInfo );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;vciEnumDeviceNext&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PVCIDEVICEINFO</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># HRESULT VCIAPI vciDeviceOpen( IN  REFVCIID rVciid, OUT PHANDLE  phDevice );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;vciDeviceOpen&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">structures</span><span class="o">.</span><span class="n">PVCIID</span><span class="p">,</span> <span class="n">PHANDLE</span><span class="p">),</span> <span class="n">__check_status</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT vciDeviceClose( HANDLE hDevice )</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;vciDeviceClose&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+
+    <span class="c1"># HRESULT VCIAPI canChannelOpen( IN  HANDLE  hDevice, IN  UINT32  dwCanNo, IN  BOOL    fExclusive, OUT PHANDLE phCanChn );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelOpen&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">,</span> <span class="n">PHANDLE</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI</span>
+    <span class="c1">#   canChannelInitialize( IN HANDLE hCanChn,</span>
+    <span class="c1">#                         IN UINT16 wRxFifoSize,</span>
+    <span class="c1">#                         IN UINT16 wRxThreshold,</span>
+    <span class="c1">#                         IN UINT16 wTxFifoSize,</span>
+    <span class="c1">#                         IN UINT16 wTxThreshold,</span>
+    <span class="c1">#                         IN UINT32 dwFilterSize,</span>
+    <span class="c1">#                         IN UINT8  bFilterMode );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelInitialize&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">HANDLE</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint16</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint16</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint16</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint16</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canChannelActivate( IN HANDLE hCanChn, IN BOOL   fEnable );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelActivate&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">),</span> <span class="n">__check_status</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelClose( HANDLE hChannel )</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;canChannelClose&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canChannelReadMessage( IN  HANDLE  hCanChn, IN  UINT32  dwMsTimeout, OUT PCANMSG2 pCanMsg );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelReadMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANMSG2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelPeekMessage(HANDLE hChannel,PCANMSG2 pCanMsg );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelPeekMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANMSG2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelWaitTxEvent (HANDLE hChannel UINT32 dwMsTimeout );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelWaitTxEvent&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelWaitRxEvent (HANDLE hChannel, UINT32 dwMsTimeout );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelWaitRxEvent&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelPostMessage (HANDLE hChannel, PCANMSG2 pCanMsg );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelPostMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANMSG2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># HRESULT canChannelSendMessage (HANDLE hChannel, UINT32 dwMsTimeout, PCANMSG2 pCanMsg );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canChannelSendMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANMSG2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlOpen( IN  HANDLE  hDevice, IN  UINT32  dwCanNo, OUT PHANDLE phCanCtl );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlOpen&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">PHANDLE</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI</span>
+    <span class="c1">#   canControlInitialize( IN HANDLE  hCanCtl,</span>
+    <span class="c1">#                         IN UINT8   bOpMode,</span>
+    <span class="c1">#                         IN UINT8   bExMode,</span>
+    <span class="c1">#                         IN UINT8   bSFMode,</span>
+    <span class="c1">#                         IN UINT8   bEFMode,</span>
+    <span class="c1">#                         IN UINT32  dwSFIds,</span>
+    <span class="c1">#                         IN UINT32  dwEFIds,</span>
+    <span class="c1">#                         IN PCANBTP pBtpSDR,</span>
+    <span class="c1">#                         IN PCANBTP pBtpFDR );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlInitialize&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">HANDLE</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span>
+            <span class="n">structures</span><span class="o">.</span><span class="n">PCANBTP</span><span class="p">,</span>
+            <span class="n">structures</span><span class="o">.</span><span class="n">PCANBTP</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlClose( IN HANDLE hCanCtl );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;canControlClose&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlReset( IN HANDLE hCanCtl );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;canControlReset&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlStart( IN HANDLE hCanCtl, IN BOOL   fStart );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlStart&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">),</span> <span class="n">__check_status</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlGetStatus( IN  HANDLE hCanCtl, OUT PCANLINESTATUS2 pStatus );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlGetStatus&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANLINESTATUS2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlGetCaps( IN  HANDLE hCanCtl, OUT PCANCAPABILITIES2 pCanCaps );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlGetCaps&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANCAPABILITIES2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT VCIAPI canControlSetAccFilter( IN HANDLE hCanCtl, IN BOOL   fExtend, IN UINT32 dwCode, IN UINT32 dwMask );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlSetAccFilter&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canControlAddFilterIds (HANDLE hControl, BOOL fExtended, UINT32 dwCode, UINT32 dwMask);</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlAddFilterIds&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canControlRemFilterIds (HANDLE hControl, BOOL fExtendend, UINT32 dwCode, UINT32 dwMask );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canControlRemFilterIds&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerOpen (HANDLE hDevice, UINT32 dwCanNo, PHANDLE phScheduler );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerOpen&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">PHANDLE</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerClose (HANDLE hScheduler );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span><span class="s2">&quot;canSchedulerClose&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,),</span> <span class="n">__check_status</span><span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerGetCaps (HANDLE hScheduler, PCANCAPABILITIES2 pCaps );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerGetCaps&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANCAPABILITIES2</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerActivate ( HANDLE hScheduler, BOOL fEnable );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerActivate&quot;</span><span class="p">,</span> <span class="n">hresult_type</span><span class="p">,</span> <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">),</span> <span class="n">__check_status</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerAddMessage (HANDLE hScheduler, PCANCYCLICTXMSG2 pMessage, PUINT32 pdwIndex );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerAddMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">structures</span><span class="o">.</span><span class="n">PCANCYCLICTXMSG2</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerRemMessage (HANDLE hScheduler, UINT32 dwIndex );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerRemMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerStartMessage (HANDLE hScheduler, UINT32 dwIndex, UINT16 dwCount );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerStartMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint16</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># EXTERN_C HRESULT canSchedulerStopMessage (HANDLE hScheduler, UINT32 dwIndex );</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">map_symbol</span><span class="p">(</span>
+        <span class="s2">&quot;canSchedulerStopMessage&quot;</span><span class="p">,</span>
+        <span class="n">hresult_type</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">HANDLE</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="n">__check_status</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">vciInitialize</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="c1"># In case _canlib == None meaning we&#39;re not on win32/no lib found</span>
+    <span class="k">pass</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not initialize IXXAT VCI library: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="n">CAN_INFO_MESSAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_INFO_START</span><span class="p">:</span> <span class="s2">&quot;CAN started&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_INFO_STOP</span><span class="p">:</span> <span class="s2">&quot;CAN stopped&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_INFO_RESET</span><span class="p">:</span> <span class="s2">&quot;CAN reset&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">CAN_ERROR_MESSAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_STUFF</span><span class="p">:</span> <span class="s2">&quot;CAN bit stuff error&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_FORM</span><span class="p">:</span> <span class="s2">&quot;CAN form error&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_ACK</span><span class="p">:</span> <span class="s2">&quot;CAN acknowledgment error&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_BIT</span><span class="p">:</span> <span class="s2">&quot;CAN bit error&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_CRC</span><span class="p">:</span> <span class="s2">&quot;CAN CRC error&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ERROR_OTHER</span><span class="p">:</span> <span class="s2">&quot;Other (unknown) CAN error&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">CAN_STATUS_FLAGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_TXPEND</span><span class="p">:</span> <span class="s2">&quot;transmission pending&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_OVRRUN</span><span class="p">:</span> <span class="s2">&quot;data overrun occurred&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_ERRLIM</span><span class="p">:</span> <span class="s2">&quot;error warning limit exceeded&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_BUSOFF</span><span class="p">:</span> <span class="s2">&quot;bus off&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_ININIT</span><span class="p">:</span> <span class="s2">&quot;init mode active&quot;</span><span class="p">,</span>
+    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_BUSCERR</span><span class="p">:</span> <span class="s2">&quot;bus coupling error&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="IXXATBus">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.IXXATBus">[docs]</a>
+<span class="k">class</span> <span class="nc">IXXATBus</span><span class="p">(</span><span class="n">BusABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The CAN Bus implemented for the IXXAT interface.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This interface does implement efficient filtering of messages, but</span>
+<span class="sd">        the filters have to be set in ``__init__`` using the ``can_filters`` parameter.</span>
+<span class="sd">        Using :meth:`~can.BusABC.set_filters` does not work.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@deprecated_args_alias</span><span class="p">(</span>
+        <span class="n">deprecation_start</span><span class="o">=</span><span class="s2">&quot;4.0.0&quot;</span><span class="p">,</span>
+        <span class="n">deprecation_end</span><span class="o">=</span><span class="s2">&quot;5.0.0&quot;</span><span class="p">,</span>
+        <span class="n">UniqueHardwareId</span><span class="o">=</span><span class="s2">&quot;unique_hardware_id&quot;</span><span class="p">,</span>
+        <span class="n">rxFifoSize</span><span class="o">=</span><span class="s2">&quot;rx_fifo_size&quot;</span><span class="p">,</span>
+        <span class="n">txFifoSize</span><span class="o">=</span><span class="s2">&quot;tx_fifo_size&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">can_filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">receive_own_messages</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">unique_hardware_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">extended</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">rx_fifo_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="n">tx_fifo_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="n">bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500000</span><span class="p">,</span>
+        <span class="n">data_bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2000000</span><span class="p">,</span>
+        <span class="n">sjw_abr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tseg1_abr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tseg2_abr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sjw_dbr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tseg1_dbr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tseg2_dbr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssp_dbr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param channel:</span>
+<span class="sd">            The Channel id to create this bus with.</span>
+
+<span class="sd">        :param can_filters:</span>
+<span class="sd">            See :meth:`can.BusABC.set_filters`.</span>
+
+<span class="sd">        :param receive_own_messages:</span>
+<span class="sd">            Enable self-reception of sent messages.</span>
+
+<span class="sd">        :param unique_hardware_id:</span>
+<span class="sd">            unique_hardware_id to connect (optional, will use the first found if not supplied)</span>
+
+<span class="sd">        :param extended:</span>
+<span class="sd">            Default True, enables the capability to use extended IDs.</span>
+
+<span class="sd">        :param rx_fifo_size:</span>
+<span class="sd">            Receive fifo size (default 1024)</span>
+
+<span class="sd">        :param tx_fifo_size:</span>
+<span class="sd">            Transmit fifo size (default 128)</span>
+
+<span class="sd">        :param bitrate:</span>
+<span class="sd">            Channel bitrate in bit/s</span>
+
+<span class="sd">        :param data_bitrate:</span>
+<span class="sd">            Channel bitrate in bit/s (only in CAN-Fd if baudrate switch enabled).</span>
+
+<span class="sd">        :param sjw_abr:</span>
+<span class="sd">            Bus timing value sample jump width (arbitration).</span>
+
+<span class="sd">        :param tseg1_abr:</span>
+<span class="sd">            Bus timing value tseg1 (arbitration)</span>
+
+<span class="sd">        :param tseg2_abr:</span>
+<span class="sd">            Bus timing value tseg2 (arbitration)</span>
+
+<span class="sd">        :param sjw_dbr:</span>
+<span class="sd">            Bus timing value sample jump width (data)</span>
+
+<span class="sd">        :param tseg1_dbr:</span>
+<span class="sd">            Bus timing value tseg1 (data). Only takes effect with fd and bitrate switch enabled.</span>
+
+<span class="sd">        :param tseg2_dbr:</span>
+<span class="sd">            Bus timing value tseg2 (data). Only takes effect with fd and bitrate switch enabled.</span>
+
+<span class="sd">        :param ssp_dbr:</span>
+<span class="sd">            Secondary sample point (data). Only takes effect with fd and bitrate switch enabled.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_canlib</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CanInterfaceNotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;The IXXAT VCI library has not been initialized. Check the logs for more details.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CAN Filters: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">can_filters</span><span class="p">)</span>
+        <span class="c1"># Configuration options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receive_own_messages</span> <span class="o">=</span> <span class="n">receive_own_messages</span>
+        <span class="c1"># Usually comes as a string from the config file</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bitrate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_BITRATE_PRESETS</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">tseg1_abr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tseg2_abr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sjw_abr</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;To use bitrate </span><span class="si">{</span><span class="n">bitrate</span><span class="si">}</span><span class="s2"> (that has not predefined preset) is mandatory &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;to use also parameters tseg1_abr, tseg2_abr and swj_abr&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_bitrate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_DATABITRATE_PRESETS</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">tseg1_dbr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tseg2_dbr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sjw_dbr</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;To use data_bitrate </span><span class="si">{</span><span class="n">data_bitrate</span><span class="si">}</span><span class="s2"> (that has not predefined preset) is mandatory &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;to use also parameters tseg1_dbr, tseg2_dbr and swj_dbr&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rx_fifo_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rx_fifo_size must be &gt; 0&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tx_fifo_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tx_fifo_size must be &gt; 0&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">channel</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;channel number must be &gt;= 0&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span> <span class="o">=</span> <span class="n">HANDLE</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">VCIDEVICEINFO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span> <span class="o">=</span> <span class="n">HANDLE</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span> <span class="o">=</span> <span class="n">HANDLE</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANCAPABILITIES2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANMSG2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_byte</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_can_protocol</span> <span class="o">=</span> <span class="n">CanProtocol</span><span class="o">.</span><span class="n">CAN_FD</span>
+
+        <span class="c1"># Search for supplied device</span>
+        <span class="k">if</span> <span class="n">unique_hardware_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching for first available device&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching for unique HW ID </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">unique_hardware_id</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceOpen</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">))</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceNext</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">unique_hardware_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">VCIDeviceNotFoundError</span><span class="p">(</span>
+                        <span class="s2">&quot;No IXXAT device(s) connected or device(s) in use by other process(es).&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">VCIDeviceNotFoundError</span><span class="p">(</span>
+                        <span class="s2">&quot;Unique HW ID </span><span class="si">{}</span><span class="s2"> not connected or not available.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">unique_hardware_id</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">unique_hardware_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span><span class="o">.</span><span class="n">UniqueHardwareId</span><span class="o">.</span><span class="n">AsChar</span>
+                    <span class="o">==</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">unique_hardware_id</span><span class="p">,</span> <span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Ignoring IXXAT with hardware id &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span><span class="o">.</span><span class="n">UniqueHardwareId</span><span class="o">.</span><span class="n">AsChar</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">),</span>
+                    <span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">vciDeviceOpen</span><span class="p">(</span>
+                <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span><span class="o">.</span><span class="n">VciObjectId</span><span class="p">),</span>
+                <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CanInitializationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not open device: </span><span class="si">{</span><span class="n">exception</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using unique HW ID </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_info</span><span class="o">.</span><span class="n">UniqueHardwareId</span><span class="o">.</span><span class="n">AsChar</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Initializing channel </span><span class="si">%d</span><span class="s2"> in shared mode, </span><span class="si">%d</span><span class="s2"> rx buffers, </span><span class="si">%d</span><span class="s2"> tx buffers&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="p">,</span>
+            <span class="n">rx_fifo_size</span><span class="p">,</span>
+            <span class="n">tx_fifo_size</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelOpen</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">,</span>
+                <span class="n">channel</span><span class="p">,</span>
+                <span class="n">constants</span><span class="o">.</span><span class="n">FALSE</span><span class="p">,</span>
+                <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CanInitializationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not open and initialize channel: </span><span class="si">{</span><span class="n">exception</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Signal TX/RX events when at least one frame has been handled</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelInitialize</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span>
+            <span class="n">rx_fifo_size</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">tx_fifo_size</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FILTER_PASS</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelActivate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">TRUE</span><span class="p">)</span>
+
+        <span class="n">pBtpSDR</span> <span class="o">=</span> <span class="n">IXXATBus</span><span class="o">.</span><span class="n">_canptb_build</span><span class="p">(</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">CAN_BITRATE_PRESETS</span><span class="p">,</span>
+            <span class="n">bitrate</span><span class="o">=</span><span class="n">bitrate</span><span class="p">,</span>
+            <span class="n">tseg1</span><span class="o">=</span><span class="n">tseg1_abr</span><span class="p">,</span>
+            <span class="n">tseg2</span><span class="o">=</span><span class="n">tseg2_abr</span><span class="p">,</span>
+            <span class="n">sjw</span><span class="o">=</span><span class="n">sjw_abr</span><span class="p">,</span>
+            <span class="n">ssp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">pBtpFDR</span> <span class="o">=</span> <span class="n">IXXATBus</span><span class="o">.</span><span class="n">_canptb_build</span><span class="p">(</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">CAN_DATABITRATE_PRESETS</span><span class="p">,</span>
+            <span class="n">bitrate</span><span class="o">=</span><span class="n">data_bitrate</span><span class="p">,</span>
+            <span class="n">tseg1</span><span class="o">=</span><span class="n">tseg1_dbr</span><span class="p">,</span>
+            <span class="n">tseg2</span><span class="o">=</span><span class="n">tseg2_dbr</span><span class="p">,</span>
+            <span class="n">sjw</span><span class="o">=</span><span class="n">sjw_dbr</span><span class="p">,</span>
+            <span class="n">ssp</span><span class="o">=</span><span class="n">ssp_dbr</span> <span class="k">if</span> <span class="n">ssp_dbr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tseg1_dbr</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Initializing control </span><span class="si">%d</span><span class="s2"> with SDR={</span><span class="si">%s</span><span class="s2">}, FDR={</span><span class="si">%s</span><span class="s2">}&quot;</span><span class="p">,</span>
+            <span class="n">channel</span><span class="p">,</span>
+            <span class="n">pBtpSDR</span><span class="p">,</span>
+            <span class="n">pBtpFDR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlOpen</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlGetCaps</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># check capabilities</span>
+        <span class="n">bOpMode</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_UNDEFINED</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwFeatures</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FEATURE_STDANDEXT</span>
+        <span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># controller supportes CAN_OPMODE_STANDARD and CAN_OPMODE_EXTENDED at the same time</span>
+            <span class="n">bOpMode</span> <span class="o">|=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_STANDARD</span>  <span class="c1"># enable both 11 bits reception</span>
+            <span class="k">if</span> <span class="n">extended</span><span class="p">:</span>  <span class="c1"># parameter from configuration</span>
+                <span class="n">bOpMode</span> <span class="o">|=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_EXTENDED</span>  <span class="c1"># enable 29 bits reception</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwFeatures</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FEATURE_STDANDEXT</span>
+        <span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Channel </span><span class="si">%d</span><span class="s2"> capabilities allow either basic or extended IDs, but not both. using </span><span class="si">%s</span><span class="s2"> according to parameter [extended=</span><span class="si">%s</span><span class="s2">]&quot;</span><span class="p">,</span>
+                <span class="n">channel</span><span class="p">,</span>
+                <span class="s2">&quot;extended&quot;</span> <span class="k">if</span> <span class="n">extended</span> <span class="k">else</span> <span class="s2">&quot;basic&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;True&quot;</span> <span class="k">if</span> <span class="n">extended</span> <span class="k">else</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">bOpMode</span> <span class="o">|=</span> <span class="p">(</span>
+                <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_EXTENDED</span>
+                <span class="k">if</span> <span class="n">extended</span>
+                <span class="k">else</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_STANDARD</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwFeatures</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FEATURE_ERRFRAME</span>
+        <span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bOpMode</span> <span class="o">|=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_OPMODE_ERRFRAME</span>
+
+        <span class="n">bExMode</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_EXMODE_DISABLED</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwFeatures</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FEATURE_EXTDATA</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bExMode</span> <span class="o">|=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_EXMODE_EXTDATALEN</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwFeatures</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FEATURE_FASTDATA</span>
+        <span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bExMode</span> <span class="o">|=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_EXMODE_FASTDATA</span>
+
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlInitialize</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span>
+            <span class="n">bOpMode</span><span class="p">,</span>
+            <span class="n">bExMode</span><span class="p">,</span>
+            <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FILTER_PASS</span><span class="p">,</span>
+            <span class="n">constants</span><span class="o">.</span><span class="n">CAN_FILTER_PASS</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">pBtpSDR</span><span class="p">),</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">pBtpFDR</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># With receive messages, this field contains the relative reception time of</span>
+        <span class="c1"># the message in ticks. The resolution of a tick can be calculated from the fields</span>
+        <span class="c1"># dwClockFreq and dwTscDivisor of the structure  CANCAPABILITIES in accordance with the following formula:</span>
+        <span class="c1"># frequency [1/s] = dwClockFreq / dwTscDivisor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tick_resolution</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwTscClkFreq</span>
+            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_capabilities</span><span class="o">.</span><span class="n">dwTscDivisor</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Setup filters before starting the channel</span>
+        <span class="k">if</span> <span class="n">can_filters</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The IXXAT VCI backend is filtering messages&quot;</span><span class="p">)</span>
+            <span class="c1"># Disable every message coming in</span>
+            <span class="k">for</span> <span class="n">extended</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlSetAccFilter</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span>
+                    <span class="n">extended</span><span class="p">,</span>
+                    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ACC_CODE_NONE</span><span class="p">,</span>
+                    <span class="n">constants</span><span class="o">.</span><span class="n">CAN_ACC_MASK_NONE</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">can_filter</span> <span class="ow">in</span> <span class="n">can_filters</span><span class="p">:</span>
+                <span class="c1"># Filters define what messages are accepted</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">can_filter</span><span class="p">[</span><span class="s2">&quot;can_id&quot;</span><span class="p">])</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">can_filter</span><span class="p">[</span><span class="s2">&quot;can_mask&quot;</span><span class="p">])</span>
+                <span class="n">extended</span> <span class="o">=</span> <span class="n">can_filter</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extended&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlAddFilterIds</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">extended</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="n">code</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Accepting ID: 0x</span><span class="si">%X</span><span class="s2"> MASK: 0x</span><span class="si">%X</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+        <span class="c1"># Start the CAN controller. Messages will be forwarded to the channel</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlStart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">TRUE</span><span class="p">)</span>
+
+        <span class="c1"># For cyclic transmit list. Set when .send_periodic() is first called</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_resolution</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+
+        <span class="c1"># Usually you get back 3 messages like &quot;CAN initialized&quot; ecc...</span>
+        <span class="c1"># Clear the FIFO by filter them out with low timeout</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rx_fifo_size</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelReadMessage</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">VCITimeout</span><span class="p">,</span> <span class="n">VCIRxQueueEmptyError</span><span class="p">):</span>
+                <span class="k">break</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">can_filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_canptb_build</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">bitrate</span><span class="p">,</span> <span class="n">tseg1</span><span class="p">,</span> <span class="n">tseg2</span><span class="p">,</span> <span class="n">sjw</span><span class="p">,</span> <span class="n">ssp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bitrate</span> <span class="ow">in</span> <span class="n">defaults</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">bitrate</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tseg1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tseg1</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">wTS1</span>
+            <span class="k">if</span> <span class="n">tseg2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tseg2</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">wTS2</span>
+            <span class="k">if</span> <span class="n">sjw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sjw</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">wSJW</span>
+            <span class="k">if</span> <span class="n">ssp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ssp</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">wTDO</span>
+            <span class="n">dw_mode</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">dwMode</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dw_mode</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANBTP</span><span class="p">(</span>
+            <span class="n">dwMode</span><span class="o">=</span><span class="n">dw_mode</span><span class="p">,</span>
+            <span class="n">dwBPS</span><span class="o">=</span><span class="n">bitrate</span><span class="p">,</span>
+            <span class="n">wTS1</span><span class="o">=</span><span class="n">tseg1</span><span class="p">,</span>
+            <span class="n">wTS2</span><span class="o">=</span><span class="n">tseg2</span><span class="p">,</span>
+            <span class="n">wSJW</span><span class="o">=</span><span class="n">sjw</span><span class="p">,</span>
+            <span class="n">wTDO</span><span class="o">=</span><span class="n">ssp</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_inWaiting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelWaitRxEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">VCITimeout</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="IXXATBus.flush_tx_buffer">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.IXXATBus.flush_tx_buffer">[docs]</a>
+    <span class="k">def</span> <span class="nf">flush_tx_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flushes the transmit buffer on the IXXAT&quot;&quot;&quot;</span>
+        <span class="c1"># TODO #64: no timeout?</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelWaitTxEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">INFINITE</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_recv_internal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a message from IXXAT device.&quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: handling CAN error messages?</span>
+        <span class="n">data_received</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Peek without waiting</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelPeekMessage</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">VCITimeout</span><span class="p">,</span> <span class="n">VCIRxQueueEmptyError</span><span class="p">,</span> <span class="n">VCIError</span><span class="p">):</span>
+                <span class="c1"># VCIError means no frame available (canChannelPeekMessage returned different from zero)</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_DATA</span><span class="p">:</span>
+                    <span class="n">data_received</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Wait if no message available</span>
+            <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">remaining_ms</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">INFINITE</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">timeout_ms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">timeout</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+                <span class="n">remaining_ms</span> <span class="o">=</span> <span class="n">timeout_ms</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelReadMessage</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="n">remaining_ms</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="n">VCITimeout</span><span class="p">,</span> <span class="n">VCIRxQueueEmptyError</span><span class="p">):</span>
+                    <span class="c1"># Ignore the 2 errors, the timeout is handled manually with the perf_counter()</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># See if we got a data or info/error messages</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_DATA</span><span class="p">:</span>
+                        <span class="n">data_received</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_INFO</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="n">CAN_INFO_MESSAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="sa">f</span><span class="s2">&quot;Unknown CAN info message code </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_ERROR</span>
+                    <span class="p">):</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="n">CAN_ERROR_MESSAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="sa">f</span><span class="s2">&quot;Unknown CAN error message code </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_STATUS</span>
+                    <span class="p">):</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">_format_can_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_STATUS_BUSOFF</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">VCIBusOffError</span><span class="p">()</span>
+
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span>
+                        <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_TIMEOVR</span>
+                    <span class="p">):</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unexpected message info type&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">t0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">remaining_ms</span> <span class="o">=</span> <span class="n">timeout_ms</span> <span class="o">-</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">remaining_ms</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_received</span><span class="p">:</span>
+            <span class="c1"># Timed out / can message type is not DATA</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
+
+        <span class="n">data_len</span> <span class="o">=</span> <span class="n">dlc2len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">dlc</span><span class="p">)</span>
+        <span class="c1"># The _message.dwTime is a 32bit tick value and will overrun,</span>
+        <span class="c1"># so expect to see the value restarting from 0</span>
+        <span class="n">rx_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="n">timestamp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">dwTime</span>
+            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tick_resolution</span><span class="p">,</span>  <span class="c1"># Relative time in s</span>
+            <span class="n">is_remote_frame</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">rtr</span><span class="p">),</span>
+            <span class="n">is_fd</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">edl</span><span class="p">),</span>
+            <span class="n">is_rx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">is_error_frame</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_ERROR</span>
+            <span class="p">),</span>
+            <span class="n">bitrate_switch</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">fdr</span><span class="p">),</span>
+            <span class="n">error_state_indicator</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">esi</span><span class="p">),</span>
+            <span class="n">is_extended_id</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">ext</span><span class="p">),</span>
+            <span class="n">arbitration_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">dwMsgId</span><span class="p">,</span>
+            <span class="n">dlc</span><span class="o">=</span><span class="n">data_len</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">abData</span><span class="p">[:</span><span class="n">data_len</span><span class="p">],</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rx_msg</span><span class="p">,</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="IXXATBus.send">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.IXXATBus.send">[docs]</a>
+    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a message on the bus. The interface may buffer the message.</span>
+
+<span class="sd">        :param msg:</span>
+<span class="sd">            The message to send.</span>
+<span class="sd">        :param timeout:</span>
+<span class="sd">            Timeout after some time.</span>
+<span class="sd">        :raise:</span>
+<span class="sd">            :class:CanTimeoutError</span>
+<span class="sd">            :class:CanOperationError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This system is not designed to be very efficient</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANMSG2</span><span class="p">()</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_ERROR</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_error_frame</span>
+            <span class="k">else</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_DATA</span>
+        <span class="p">)</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">rtr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_remote_frame</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_extended_id</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">srr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive_own_messages</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">fdr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">bitrate_switch</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">esi</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">error_state_indicator</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">edl</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_fd</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">message</span><span class="o">.</span><span class="n">dwMsgId</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">arbitration_id</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">dlc</span><span class="p">:</span>  <span class="c1"># this dlc means number of bytes of payload</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">dlc</span> <span class="o">=</span> <span class="n">len2dlc</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">dlc</span><span class="p">)</span>
+            <span class="n">data_len_dif</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">dlc</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="nb">bytearray</span><span class="p">(</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">data_len_dif</span>
+            <span class="p">)</span>  <span class="c1"># pad with zeros until required length</span>
+            <span class="n">adapter</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint8</span> <span class="o">*</span> <span class="n">msg</span><span class="o">.</span><span class="n">dlc</span><span class="p">)</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">memmove</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">abData</span><span class="p">,</span> <span class="n">adapter</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">dlc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelSendMessage</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">timeout</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">message</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelPostMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_send_periodic_internal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">msgs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Message</span><span class="p">],</span> <span class="n">Message</span><span class="p">],</span>
+        <span class="n">period</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">modifier_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Message</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CyclicSendTaskABC</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a message using built-in cyclic transmit list functionality.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">modifier_callback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">HANDLE</span><span class="p">()</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerOpen</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span>
+                <span class="p">)</span>
+                <span class="n">caps</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANCAPABILITIES2</span><span class="p">()</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerGetCaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="n">caps</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_resolution</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">caps</span><span class="o">.</span><span class="n">dwCmsClkFreq</span> <span class="o">/</span> <span class="n">caps</span><span class="o">.</span><span class="n">dwCmsDivisor</span>
+                <span class="p">)</span>  <span class="c1"># TODO: confirm</span>
+                <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerActivate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">TRUE</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">CyclicSendTask</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="n">msgs</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler_resolution</span>
+            <span class="p">)</span>
+
+        <span class="c1"># fallback to thread based cyclic task</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> falls back to a thread-based cyclic task, &quot;</span>
+            <span class="s2">&quot;when the `modifier_callback` argument is given.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">BusABC</span><span class="o">.</span><span class="n">_send_periodic_internal</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">msgs</span><span class="o">=</span><span class="n">msgs</span><span class="p">,</span>
+            <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+            <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+            <span class="n">modifier_callback</span><span class="o">=</span><span class="n">modifier_callback</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="IXXATBus.shutdown">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.IXXATBus.shutdown">[docs]</a>
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canChannelClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_handle</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlStart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">FALSE</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canControlClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_control_handle</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">vciDeviceClose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_handle</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CyclicSendTask">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.CyclicSendTask">[docs]</a>
+<span class="k">class</span> <span class="nc">CyclicSendTask</span><span class="p">(</span><span class="n">LimitedDurationCyclicSendTaskABC</span><span class="p">,</span> <span class="n">RestartableCyclicTaskABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A message in the cyclic transmit list.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">msgs</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msgs</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;IXXAT Interface only supports periodic transmission of 1 element&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span> <span class="k">if</span> <span class="n">duration</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">CANCYCLICTXMSG2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">wCycleTime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">period</span> <span class="o">*</span> <span class="n">resolution</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">dwMsgId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">arbitration_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">CAN_MSGTYPE_DATA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_extended_id</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">rtr</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_remote_frame</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">uMsgInfo</span><span class="o">.</span><span class="n">Bits</span><span class="o">.</span><span class="n">dlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dlc</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="o">.</span><span class="n">abData</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CyclicSendTask.start">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.CyclicSendTask.start">[docs]</a>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start transmitting message (add to list if needed).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">()</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerAddMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerStartMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyclicSendTask.pause">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.CyclicSendTask.pause">[docs]</a>
+    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause transmitting message (keep it in the list).&quot;&quot;&quot;</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerStopMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyclicSendTask.stop">
+<a class="viewcode-back" href="../../../../interfaces/ixxat.html#can.interfaces.ixxat.canlib_vcinpl2.CyclicSendTask.stop">[docs]</a>
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop transmitting message (remove from list).&quot;&quot;&quot;</span>
+        <span class="c1"># Remove it completely instead of just stopping it to avoid filling up</span>
+        <span class="c1"># the list with permanently stopped messages</span>
+        <span class="n">_canlib</span><span class="o">.</span><span class="n">canSchedulerRemMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<span class="k">def</span> <span class="nf">_format_can_status</span><span class="p">(</span><span class="n">status_flags</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format a status bitfield found in CAN_MSGTYPE_STATUS messages or in dwStatus</span>
+<span class="sd">    field in CANLINESTATUS.</span>
+
+<span class="sd">    Valid states are defined in the CAN_STATUS_* constants in cantype.h</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">flag</span><span class="p">,</span> <span class="n">description</span> <span class="ow">in</span> <span class="n">CAN_STATUS_FLAGS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">status_flags</span> <span class="o">&amp;</span> <span class="n">flag</span><span class="p">:</span>
+            <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+            <span class="n">status_flags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">flag</span>
+
+    <span class="k">if</span> <span class="n">status_flags</span><span class="p">:</span>
+        <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown state 0x</span><span class="si">{</span><span class="n">status_flags</span><span class="si">:</span><span class="s2">02x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">states</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;CAN status message: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">states</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Empty CAN status message&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">get_ixxat_hwids</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a list of hardware ids of all available IXXAT devices.&quot;&quot;&quot;</span>
+    <span class="n">hwids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">device_handle</span> <span class="o">=</span> <span class="n">HANDLE</span><span class="p">()</span>
+    <span class="n">device_info</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">VCIDEVICEINFO</span><span class="p">()</span>
+
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceOpen</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">device_handle</span><span class="p">))</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceNext</span><span class="p">(</span><span class="n">device_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">device_info</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hwids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_info</span><span class="o">.</span><span class="n">UniqueHardwareId</span><span class="o">.</span><span class="n">AsChar</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+    <span class="n">_canlib</span><span class="o">.</span><span class="n">vciEnumDeviceClose</span><span class="p">(</span><span class="n">device_handle</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hwids</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/documentation_options.js?v=0503a316"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=3e7832f7"></script>
+    <script src="../../../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../../../_static/copybutton.js?v=71494f10"></script>
+    </body>
+</html>

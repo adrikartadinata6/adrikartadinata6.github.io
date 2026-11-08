@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImageWin Module (Windows-only) &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ExifTags Module" href="ExifTags.html" />
+    <link rel="prev" title="ImageTk Module" href="ImageTk.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ExifTags.html" title="ExifTags Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImageTk.html" title="ImageTk Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageWin</span></code> Module (Windows-only)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagewin-module-windows-only">
+<span id="module-PIL.ImageWin"></span><h1><a class="reference internal" href="#module-PIL.ImageWin" title="PIL.ImageWin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageWin</span></code></a> Module (Windows-only)<a class="headerlink" href="#imagewin-module-windows-only" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImageWin" title="PIL.ImageWin"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageWin</span></code></a> module contains support to create and display images on
+Windows.</p>
+<p>ImageWin can be used with PythonWin and other user interface toolkits that
+provide access to Windows device contexts or window handles. For example,
+Tkinter makes the window handle available via the winfo_id method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageWin</span>
+
+<span class="n">dib</span> <span class="o">=</span> <span class="n">ImageWin</span><span class="o">.</span><span class="n">Dib</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">hwnd</span> <span class="o">=</span> <span class="n">ImageWin</span><span class="o">.</span><span class="n">HWND</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">winfo_id</span><span class="p">())</span>
+<span class="n">dib</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">hwnd</span><span class="p">,</span> <span class="n">xy</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageWin.</span></span><span class="sig-name descname"><span class="pre">Dib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib" title="Link to this definition">¶</a></dt>
+<dd><p>A Windows bitmap with the given mode and size.  The mode can be one of “1”,
+“L”, “P”, or “RGB”.</p>
+<p>If the display requires a palette, this constructor creates a suitable
+palette and associates it with the image. For an “L” image, 128 graylevels
+are allocated. For an “RGB” image, a 6x6x6 colour cube is used, together
+with 20 graylevels.</p>
+<p>To make sure that palettes work properly under Windows, you must call the
+<code class="docutils literal notranslate"><span class="pre">palette</span></code> method upon certain events from Windows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – Either a PIL image, or a mode string. If a mode string is
+used, a size must also be given.  The mode can be one of “1”,
+“L”, “P”, or “RGB”.</p></li>
+<li><p><strong>size</strong> – If the first argument is a mode string, this
+defines the size of the image.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.draw" title="Link to this definition">¶</a></dt>
+<dd><p>Same as expose, but allows you to specify where to draw the image, and
+what part of it to draw.</p>
+<p>The destination and source areas are given as 4-tuple rectangles. If
+the source is omitted, the entire image is copied. If the source and
+the destination have different sizes, the image is resized as
+necessary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.expose">
+<span class="sig-name descname"><span class="pre">expose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.expose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.expose" title="Link to this definition">¶</a></dt>
+<dd><p>Copy the bitmap contents to a device context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>handle</strong> – Device context (HDC), cast to a Python integer, or an
+HDC or HWND instance.  In PythonWin, you can use
+<code class="docutils literal notranslate"><span class="pre">CDC.GetHandleAttrib()</span></code> to get a suitable handle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.frombytes">
+<span class="sig-name descname"><span class="pre">frombytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.frombytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.frombytes" title="Link to this definition">¶</a></dt>
+<dd><p>Load display memory contents from byte data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>buffer</strong> – A buffer containing display data (usually
+data returned from <a class="reference internal" href="#PIL.ImageWin.Dib.tobytes" title="PIL.ImageWin.Dib.tobytes"><code class="xref py py-func docutils literal notranslate"><span class="pre">tobytes()</span></code></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.paste">
+<span class="sig-name descname"><span class="pre">paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.paste"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.paste" title="Link to this definition">¶</a></dt>
+<dd><p>Paste a PIL image into the bitmap image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> – A PIL image.  The size must match the target region.
+If the mode does not match, the image is converted to the
+mode of the bitmap image.</p></li>
+<li><p><strong>box</strong> – A 4-tuple defining the left, upper, right, and
+lower pixel coordinate.  See <a class="reference internal" href="../handbook/concepts.html#coordinate-system"><span class="std std-ref">Coordinate System</span></a>. If
+None is given instead of a tuple, all of the image is
+assumed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.query_palette">
+<span class="sig-name descname"><span class="pre">query_palette</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.query_palette"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.query_palette" title="Link to this definition">¶</a></dt>
+<dd><p>Installs the palette associated with the image in the given device
+context.</p>
+<p>This method should be called upon <strong>QUERYNEWPALETTE</strong> and
+<strong>PALETTECHANGED</strong> events from Windows. If this method returns a
+non-zero value, one or more display palette entries were changed, and
+the image should be redrawn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>handle</strong> – Device context (HDC), cast to a Python integer, or an
+HDC or HWND instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A true value if one or more entries were changed (this
+indicates that the image should be redrawn).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageWin.Dib.tobytes">
+<span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#Dib.tobytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.Dib.tobytes" title="Link to this definition">¶</a></dt>
+<dd><p>Copy display memory contents to bytes object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A bytes object containing display data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageWin.HDC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageWin.</span></span><span class="sig-name descname"><span class="pre">HDC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#HDC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.HDC" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps an HDC integer. The resulting object can be passed to the
+<a class="reference internal" href="#PIL.ImageWin.Dib.draw" title="PIL.ImageWin.Dib.draw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">draw()</span></code></a> and <a class="reference internal" href="#PIL.ImageWin.Dib.expose" title="PIL.ImageWin.Dib.expose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expose()</span></code></a>
+methods.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageWin.HWND">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageWin.</span></span><span class="sig-name descname"><span class="pre">HWND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wnd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageWin.html#HWND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageWin.HWND" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps an HWND integer. The resulting object can be passed to the
+<a class="reference internal" href="#PIL.ImageWin.Dib.draw" title="PIL.ImageWin.Dib.draw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">draw()</span></code></a> and <a class="reference internal" href="#PIL.ImageWin.Dib.expose" title="PIL.ImageWin.Dib.expose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expose()</span></code></a>
+methods, instead of a DC.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageWin</span></code> Module (Windows-only)</a><ul>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib"><code class="docutils literal notranslate"><span class="pre">Dib</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.draw"><code class="docutils literal notranslate"><span class="pre">Dib.draw()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.expose"><code class="docutils literal notranslate"><span class="pre">Dib.expose()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.frombytes"><code class="docutils literal notranslate"><span class="pre">Dib.frombytes()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.paste"><code class="docutils literal notranslate"><span class="pre">Dib.paste()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.query_palette"><code class="docutils literal notranslate"><span class="pre">Dib.query_palette()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.Dib.tobytes"><code class="docutils literal notranslate"><span class="pre">Dib.tobytes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageWin.HDC"><code class="docutils literal notranslate"><span class="pre">HDC</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageWin.HWND"><code class="docutils literal notranslate"><span class="pre">HWND</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImageTk.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageTk</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ExifTags.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ExifTags</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImageWin.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ExifTags.html" title="ExifTags Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImageTk.html" title="ImageTk Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageWin</span></code> Module (Windows-only)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImageFont Module &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ImageGrab Module" href="ImageGrab.html" />
+    <link rel="prev" title="ImageFilter Module" href="ImageFilter.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageGrab.html" title="ImageGrab Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImageFilter.html" title="ImageFilter Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code> Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagefont-module">
+<span id="module-PIL.ImageFont"></span><h1><a class="reference internal" href="#module-PIL.ImageFont" title="PIL.ImageFont"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code></a> Module<a class="headerlink" href="#imagefont-module" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImageFont" title="PIL.ImageFont"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code></a> module defines a class with the same name. Instances of
+this class store bitmap fonts, and are used with the
+<a class="reference internal" href="ImageDraw.html#PIL.ImageDraw.ImageDraw.text" title="PIL.ImageDraw.ImageDraw.text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PIL.ImageDraw.ImageDraw.text()</span></code></a> method.</p>
+<p>PIL uses its own font file format to store bitmap fonts, limited to 256 characters. You can use
+<a class="reference external" href="https://github.com/python-pillow/pillow-scripts/blob/main/Scripts/pilfont.py">pilfont.py</a>
+from <a class="reference external" href="https://pypi.org/project/pillow-scripts/">pillow-scripts</a> to convert BDF and
+PCF font descriptors (X window font formats) to this format.</p>
+<p>Starting with version 1.1.4, PIL can be configured to support TrueType and
+OpenType fonts (as well as other font formats supported by the FreeType
+library). For earlier versions, TrueType support is only available as part of
+the imToolkit package.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To protect against potential DOS attacks when using arbitrary strings as
+text input, Pillow will raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> if the number of characters
+is over a certain limit, <a class="reference internal" href="#PIL.ImageFont.MAX_STRING_LENGTH" title="PIL.ImageFont.MAX_STRING_LENGTH"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_STRING_LENGTH</span></code></a>.</p>
+<p>This threshold can be changed by setting
+<a class="reference internal" href="#PIL.ImageFont.MAX_STRING_LENGTH" title="PIL.ImageFont.MAX_STRING_LENGTH"><code class="xref py py-data docutils literal notranslate"><span class="pre">MAX_STRING_LENGTH</span></code></a>. It can be disabled by setting
+<code class="docutils literal notranslate"><span class="pre">ImageFont.MAX_STRING_LENGTH</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p>
+</div>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageFont</span><span class="p">,</span> <span class="n">ImageDraw</span>
+
+<span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+<span class="c1"># use a bitmap font</span>
+<span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;arial.pil&quot;</span><span class="p">)</span>
+
+<span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">)</span>
+
+<span class="c1"># use a truetype font</span>
+<span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="s2">&quot;arial.ttf&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="s2">&quot;world&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PIL.ImageFont.load">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.load" title="Link to this definition">¶</a></dt>
+<dd><p>Load a font file.  This function loads a font object from the given
+bitmap font file, and returns the corresponding font object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – Name of font file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A font object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>OSError</strong> – If the file could not be read.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PIL.ImageFont.load_path">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">load_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#load_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.load_path" title="Link to this definition">¶</a></dt>
+<dd><p>Load font file. Same as <a class="reference internal" href="#PIL.ImageFont.load" title="PIL.ImageFont.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a>, but searches for a
+bitmap font along the Python path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – Name of font file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A font object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>OSError</strong> – If the file could not be read.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PIL.ImageFont.truetype">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">truetype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#truetype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.truetype" title="Link to this definition">¶</a></dt>
+<dd><p>Load a TrueType or OpenType font from a file or file-like object,
+and create a font object.
+This function loads a font object from the given file or file-like
+object, and creates a font object for a font of the given size.</p>
+<p>Pillow uses FreeType to open font files. On Windows, be aware that FreeType
+will keep the file open as long as the FreeTypeFont object exists. Windows
+limits the number of files that can be open in C at once to 512, so if many
+fonts are opened simultaneously and that limit is approached, an
+<code class="docutils literal notranslate"><span class="pre">OSError</span></code> may be thrown, reporting that FreeType “cannot open resource”.
+A workaround would be to copy the file(s) into memory, and open that instead.</p>
+<p>This function requires the _imagingft service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>font</strong> – A filename or file-like object containing a TrueType font.
+If the file is not found in this filename, the loader may also
+search in other directories, such as the <code class="file docutils literal notranslate"><span class="pre">fonts/</span></code>
+directory on Windows or <code class="file docutils literal notranslate"><span class="pre">/Library/Fonts/</span></code>,
+<code class="file docutils literal notranslate"><span class="pre">/System/Library/Fonts/</span></code> and <code class="file docutils literal notranslate"><span class="pre">~/Library/Fonts/</span></code> on
+macOS.</p></li>
+<li><p><strong>size</strong> – The requested size, in pixels.</p></li>
+<li><p><strong>index</strong> – Which font face to load (default is first available face).</p></li>
+<li><p><strong>encoding</strong> – <p>Which font encoding to use (default is Unicode). Possible
+encodings include (see the FreeType documentation for more
+information):</p>
+<ul>
+<li><p>”unic” (Unicode)</p></li>
+<li><p>”symb” (Microsoft Symbol)</p></li>
+<li><p>”ADOB” (Adobe Standard)</p></li>
+<li><p>”ADBE” (Adobe Expert)</p></li>
+<li><p>”ADBC” (Adobe Custom)</p></li>
+<li><p>”armn” (Apple Roman)</p></li>
+<li><p>”sjis” (Shift JIS)</p></li>
+<li><p>”gb  “ (PRC)</p></li>
+<li><p>”big5”</p></li>
+<li><p>”wans” (Extended Wansung)</p></li>
+<li><p>”joha” (Johab)</p></li>
+<li><p>”lat1” (Latin-1)</p></li>
+</ul>
+<p>This specifies the character set to use. It does not alter the
+encoding of any text provided in subsequent operations.</p>
+</p></li>
+<li><p><strong>layout_engine</strong> – <p>Which layout engine to use, if available:
+<a class="reference internal" href="#PIL.ImageFont.Layout.BASIC" title="PIL.ImageFont.Layout.BASIC"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ImageFont.Layout.BASIC</span></code></a> or <a class="reference internal" href="#PIL.ImageFont.Layout.RAQM" title="PIL.ImageFont.Layout.RAQM"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ImageFont.Layout.RAQM</span></code></a>.
+If it is available, Raqm layout will be used by default.
+Otherwise, basic layout will be used.</p>
+<p>Raqm layout is recommended for all non-English text. If Raqm layout
+is not required, basic layout will have better performance.</p>
+<p>You can check support for Raqm layout using
+<a class="reference internal" href="features.html#PIL.features.check_feature" title="PIL.features.check_feature"><code class="xref py py-func docutils literal notranslate"><span class="pre">PIL.features.check_feature()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">feature=&quot;raqm&quot;</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A font object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>OSError</strong> – If the file could not be read.</p></li>
+<li><p><strong>ValueError</strong> – If the font size is not greater than zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PIL.ImageFont.load_default">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">load_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#load_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.load_default" title="Link to this definition">¶</a></dt>
+<dd><p>If FreeType support is available, load a version of Aileron Regular,
+<a class="reference external" href="https://dotcolon.net/font/aileron">https://dotcolon.net/font/aileron</a>, with a more limited character set.</p>
+<p>Otherwise, load a “better than nothing” font.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.4.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>size</strong> – <p>The font size of Aileron Regular.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 10.1.0.</span></p>
+</div>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A font object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFont.ImageFont">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">ImageFont</span></span><a class="reference internal" href="../_modules/PIL/ImageFont.html#ImageFont"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.ImageFont" title="Link to this definition">¶</a></dt>
+<dd><p>PIL font wrapper</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.ImageFont.getbbox">
+<span class="sig-name descname"><span class="pre">getbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#ImageFont.getbbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.ImageFont.getbbox" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bounding box (in pixels) of given text.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 9.2.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to render.</p></li>
+<li><p><strong>mode</strong> – Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(left,</span> <span class="pre">top,</span> <span class="pre">right,</span> <span class="pre">bottom)</span></code> bounding box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.ImageFont.getlength">
+<span class="sig-name descname"><span class="pre">getlength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#ImageFont.getlength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.ImageFont.getlength" title="Link to this definition">¶</a></dt>
+<dd><p>Returns length (in pixels) of given text.
+This is the amount by which following text should be offset.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 9.2.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.ImageFont.getmask">
+<span class="sig-name descname"><span class="pre">getmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#ImageFont.getmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.ImageFont.getmask" title="Link to this definition">¶</a></dt>
+<dd><p>Create a bitmap for the text.</p>
+<p>If the font uses antialiasing, the bitmap should have mode <code class="docutils literal notranslate"><span class="pre">L</span></code> and use a
+maximum value of 255. Otherwise, it should have mode <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to render.</p></li>
+<li><p><strong>mode</strong> – <p>Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.5.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An internal PIL storage memory instance as defined by the
+<a class="reference internal" href="internal_modules.html#module-PIL.Image.core" title="PIL.Image.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL.Image.core</span></code></a> interface module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">FreeTypeFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BinaryIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PIL.ImageFont.Layout" title="PIL.ImageFont.Layout"><span class="pre">Layout</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont" title="Link to this definition">¶</a></dt>
+<dd><p>FreeType font wrapper (requires _imagingft service)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.font_variant">
+<span class="sig-name descname"><span class="pre">font_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.font_variant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.font_variant" title="Link to this definition">¶</a></dt>
+<dd><p>Create a copy of this FreeTypeFont object,
+using any specified arguments to override the settings.</p>
+<p>Parameters are identical to the parameters used to initialize this
+object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A FreeTypeFont object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.get_variation_axes">
+<span class="sig-name descname"><span class="pre">get_variation_axes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.get_variation_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.get_variation_axes" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of the axes in a variation font.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the font is not a variation font.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.get_variation_names">
+<span class="sig-name descname"><span class="pre">get_variation_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.get_variation_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.get_variation_names" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of the named styles in a variation font.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the font is not a variation font.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getbbox">
+<span class="sig-name descname"><span class="pre">getbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getbbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getbbox" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bounding box (in pixels) of given text relative to given anchor
+when rendered in font with provided direction, features, and language.</p>
+<p>Use <a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getlength" title="PIL.ImageFont.FreeTypeFont.getlength"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getlength()</span></code></a> to get the offset of following text with
+1/64 pixel precision. The bounding box includes extra margins for
+some fonts, e.g. italics or accents.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to render.</p></li>
+<li><p><strong>mode</strong> – Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p></li>
+<li><p><strong>direction</strong> – Direction of the text. It can be ‘rtl’ (right to
+left), ‘ltr’ (left to right) or ‘ttb’ (top to bottom).
+Requires libraqm.</p></li>
+<li><p><strong>features</strong> – A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example ‘dlig’ or ‘ss01’, but can be also
+used to turn off default font features for
+example ‘-liga’ to disable ligatures or ‘-kern’
+to disable kerning.  To get all supported
+features, see
+<a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</a>
+Requires libraqm.</p></li>
+<li><p><strong>language</strong> – Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>
+Requires libraqm.</p></li>
+<li><p><strong>stroke_width</strong> – The width of the text stroke.</p></li>
+<li><p><strong>anchor</strong> – The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(left,</span> <span class="pre">top,</span> <span class="pre">right,</span> <span class="pre">bottom)</span></code> bounding box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getlength">
+<span class="sig-name descname"><span class="pre">getlength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getlength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getlength" title="Link to this definition">¶</a></dt>
+<dd><p>Returns length (in pixels with 1/64 precision) of given text when rendered
+in font with provided direction, features, and language.</p>
+<p>This is the amount by which following text should be offset.
+Text bounding box may extend past the length in some fonts,
+e.g. when using italics or accents.</p>
+<p>The result is returned as a float; it is a whole number if using basic layout.</p>
+<p>Note that the sum of two lengths may not equal the length of a concatenated
+string due to kerning. If you need to adjust for kerning, include the following
+character and subtract its length.</p>
+<p>For example, instead of</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">)</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># not adjusted for kerning</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">)</span>  <span class="c1"># may fail</span>
+</pre></div>
+</div>
+<p>use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;HelloW&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">)</span>  <span class="c1"># adjusted for kerning</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">)</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># adjusted for kerning</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">font</span><span class="o">.</span><span class="n">getlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+<p>or disable kerning with (requires libraqm)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hello</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">hello</span> <span class="o">+</span> <span class="n">world</span>  <span class="c1"># kerning is disabled, no need to adjust</span>
+<span class="k">assert</span> <span class="n">hello_world</span> <span class="o">==</span> <span class="n">draw</span><span class="o">.</span><span class="n">textlength</span><span class="p">(</span><span class="s2">&quot;HelloWorld&quot;</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-kern&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to measure.</p></li>
+<li><p><strong>mode</strong> – Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p></li>
+<li><p><strong>direction</strong> – Direction of the text. It can be ‘rtl’ (right to
+left), ‘ltr’ (left to right) or ‘ttb’ (top to bottom).
+Requires libraqm.</p></li>
+<li><p><strong>features</strong> – A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example ‘dlig’ or ‘ss01’, but can be also
+used to turn off default font features for
+example ‘-liga’ to disable ligatures or ‘-kern’
+to disable kerning.  To get all supported
+features, see
+<a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</a>
+Requires libraqm.</p></li>
+<li><p><strong>language</strong> – <p>Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>
+Requires libraqm.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either width for horizontal text, or height for vertical text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getmask">
+<span class="sig-name descname"><span class="pre">getmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getmask" title="Link to this definition">¶</a></dt>
+<dd><p>Create a bitmap for the text.</p>
+<p>If the font uses antialiasing, the bitmap should have mode <code class="docutils literal notranslate"><span class="pre">L</span></code> and use a
+maximum value of 255. If the font has embedded color data, the bitmap
+should have mode <code class="docutils literal notranslate"><span class="pre">RGBA</span></code>. Otherwise, it should have mode <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to render.</p></li>
+<li><p><strong>mode</strong> – <p>Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.5.</span></p>
+</div>
+</p></li>
+<li><p><strong>direction</strong> – <p>Direction of the text. It can be ‘rtl’ (right to
+left), ‘ltr’ (left to right) or ‘ttb’ (top to bottom).
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>features</strong> – <p>A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example ‘dlig’ or ‘ss01’, but can be also
+used to turn off default font features for
+example ‘-liga’ to disable ligatures or ‘-kern’
+to disable kerning.  To get all supported
+features, see
+<a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</a>
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>language</strong> – <p>Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_width</strong> – <p>The width of the text stroke.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>anchor</strong> – <p>The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</div></blockquote>
+</p></li>
+<li><p><strong>ink</strong> – <p>Foreground ink for rendering in RGBA mode.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>start</strong> – <p>Tuple of horizontal and vertical offset, as text may render
+differently when starting at fractional coordinates.</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">New in version 9.4.0.</span></p>
+</div>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An internal PIL storage memory instance as defined by the
+<a class="reference internal" href="internal_modules.html#module-PIL.Image.core" title="PIL.Image.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL.Image.core</span></code></a> interface module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getmask2">
+<span class="sig-name descname"><span class="pre">getmask2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getmask2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getmask2" title="Link to this definition">¶</a></dt>
+<dd><p>Create a bitmap for the text.</p>
+<p>If the font uses antialiasing, the bitmap should have mode <code class="docutils literal notranslate"><span class="pre">L</span></code> and use a
+maximum value of 255. If the font has embedded color data, the bitmap
+should have mode <code class="docutils literal notranslate"><span class="pre">RGBA</span></code>. Otherwise, it should have mode <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to render.</p></li>
+<li><p><strong>mode</strong> – <p>Used by some graphics drivers to indicate what mode the
+driver prefers; if empty, the renderer may return either
+mode. Note that the mode is always a string, to simplify
+C-level implementations.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.5.</span></p>
+</div>
+</p></li>
+<li><p><strong>direction</strong> – <p>Direction of the text. It can be ‘rtl’ (right to
+left), ‘ltr’ (left to right) or ‘ttb’ (top to bottom).
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>features</strong> – <p>A list of OpenType font features to be used during text
+layout. This is usually used to turn on optional
+font features that are not enabled by default,
+for example ‘dlig’ or ‘ss01’, but can be also
+used to turn off default font features for
+example ‘-liga’ to disable ligatures or ‘-kern’
+to disable kerning.  To get all supported
+features, see
+<a class="reference external" href="https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist">https://learn.microsoft.com/en-us/typography/opentype/spec/featurelist</a>
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>language</strong> – <p>Language of the text. Different languages may use
+different glyph shapes or ligatures. This parameter tells
+the font which language the text is in, and to apply the
+correct substitutions as appropriate, if available.
+It should be a <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">BCP 47 language code</a>
+Requires libraqm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>stroke_width</strong> – <p>The width of the text stroke.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 6.2.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>anchor</strong> – <p>The text anchor alignment. Determines the relative location of
+the anchor to the text. The default alignment is top left,
+specifically <code class="docutils literal notranslate"><span class="pre">la</span></code> for horizontal text and <code class="docutils literal notranslate"><span class="pre">lt</span></code> for
+vertical text. See <a class="reference internal" href="../handbook/text-anchors.html#text-anchors"><span class="std std-ref">Text anchors</span></a> for details.</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</div></blockquote>
+</p></li>
+<li><p><strong>ink</strong> – <p>Foreground ink for rendering in RGBA mode.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 8.0.0.</span></p>
+</div>
+</p></li>
+<li><p><strong>start</strong> – <p>Tuple of horizontal and vertical offset, as text may render
+differently when starting at fractional coordinates.</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">New in version 9.4.0.</span></p>
+</div>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of an internal PIL storage memory instance as defined by the
+<a class="reference internal" href="internal_modules.html#module-PIL.Image.core" title="PIL.Image.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PIL.Image.core</span></code></a> interface module, and the text offset, the
+gap between the starting coordinate and the first marking</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getmetrics">
+<span class="sig-name descname"><span class="pre">getmetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getmetrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getmetrics" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of the font ascent (the distance from the baseline to
+the highest outline point) and descent (the distance from the
+baseline to the lowest outline point, a negative value)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.getname">
+<span class="sig-name descname"><span class="pre">getname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.getname"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.getname" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of the font family (e.g. Helvetica) and the font style
+(e.g. Bold)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.set_variation_by_axes">
+<span class="sig-name descname"><span class="pre">set_variation_by_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.set_variation_by_axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.set_variation_by_axes" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>axes</strong> – A list of values for each axis.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the font is not a variation font.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.FreeTypeFont.set_variation_by_name">
+<span class="sig-name descname"><span class="pre">set_variation_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#FreeTypeFont.set_variation_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.FreeTypeFont.set_variation_by_name" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the style.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the font is not a variation font.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFont.TransposedFont">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">TransposedFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">font</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#TransposedFont"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.TransposedFont" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper for writing rotated or mirrored text</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.TransposedFont.getbbox">
+<span class="sig-name descname"><span class="pre">getbbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#TransposedFont.getbbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.TransposedFont.getbbox" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.TransposedFont.getlength">
+<span class="sig-name descname"><span class="pre">getlength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#TransposedFont.getlength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.TransposedFont.getlength" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImageFont.TransposedFont.getmask">
+<span class="sig-name descname"><span class="pre">getmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PIL/ImageFont.html#TransposedFont.getmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.TransposedFont.getmask" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImageFont.Layout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">Layout</span></span><a class="reference internal" href="../_modules/PIL/ImageFont.html#Layout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PIL.ImageFont.Layout" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageFont.Layout.BASIC">
+<span class="sig-name descname"><span class="pre">BASIC</span></span><a class="headerlink" href="#PIL.ImageFont.Layout.BASIC" title="Link to this definition">¶</a></dt>
+<dd><p>Use basic text layout for TrueType font.
+Advanced features such as text direction are not supported.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PIL.ImageFont.Layout.RAQM">
+<span class="sig-name descname"><span class="pre">RAQM</span></span><a class="headerlink" href="#PIL.ImageFont.Layout.RAQM" title="Link to this definition">¶</a></dt>
+<dd><p>Use Raqm text layout for TrueType font.
+Advanced features are supported.</p>
+<p>Requires Raqm, you can check support using
+<a class="reference internal" href="features.html#PIL.features.check_feature" title="PIL.features.check_feature"><code class="xref py py-func docutils literal notranslate"><span class="pre">PIL.features.check_feature()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">feature=&quot;raqm&quot;</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PIL.ImageFont.MAX_STRING_LENGTH">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImageFont.</span></span><span class="sig-name descname"><span class="pre">MAX_STRING_LENGTH</span></span><a class="headerlink" href="#PIL.ImageFont.MAX_STRING_LENGTH" title="Link to this definition">¶</a></dt>
+<dd><p>Set to 1,000,000, to protect against potential DOS attacks. Pillow will
+raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> if the number of characters is over this limit. The
+check can be disabled by setting <code class="docutils literal notranslate"><span class="pre">ImageFont.MAX_STRING_LENGTH</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code> Module</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.load_path"><code class="docutils literal notranslate"><span class="pre">load_path()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.truetype"><code class="docutils literal notranslate"><span class="pre">truetype()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.load_default"><code class="docutils literal notranslate"><span class="pre">load_default()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#methods">Methods</a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.ImageFont"><code class="docutils literal notranslate"><span class="pre">ImageFont</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.ImageFont.getbbox"><code class="docutils literal notranslate"><span class="pre">ImageFont.getbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.ImageFont.getlength"><code class="docutils literal notranslate"><span class="pre">ImageFont.getlength()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.ImageFont.getmask"><code class="docutils literal notranslate"><span class="pre">ImageFont.getmask()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.font_variant"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.font_variant()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.get_variation_axes"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.get_variation_axes()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.get_variation_names"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.get_variation_names()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getbbox"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getlength"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getlength()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getmask"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getmask()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getmask2"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getmask2()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getmetrics"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getmetrics()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.getname"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.getname()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.set_variation_by_axes"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.set_variation_by_axes()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.FreeTypeFont.set_variation_by_name"><code class="docutils literal notranslate"><span class="pre">FreeTypeFont.set_variation_by_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFont.TransposedFont"><code class="docutils literal notranslate"><span class="pre">TransposedFont</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.TransposedFont.getbbox"><code class="docutils literal notranslate"><span class="pre">TransposedFont.getbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.TransposedFont.getlength"><code class="docutils literal notranslate"><span class="pre">TransposedFont.getlength()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.TransposedFont.getmask"><code class="docutils literal notranslate"><span class="pre">TransposedFont.getmask()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#constants">Constants</a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.Layout"><code class="docutils literal notranslate"><span class="pre">Layout</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImageFont.Layout.BASIC"><code class="docutils literal notranslate"><span class="pre">Layout.BASIC</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImageFont.Layout.RAQM"><code class="docutils literal notranslate"><span class="pre">Layout.RAQM</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PIL.ImageFont.MAX_STRING_LENGTH"><code class="docutils literal notranslate"><span class="pre">MAX_STRING_LENGTH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImageFilter.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFilter</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ImageGrab.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageGrab</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImageFont.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageGrab.html" title="ImageGrab Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImageFilter.html" title="ImageFilter Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageFont</span></code> Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

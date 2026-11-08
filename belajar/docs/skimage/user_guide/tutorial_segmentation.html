@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>11.1. Image Segmentation &#8212; skimage 0.22.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css?v=c4c5097c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=4340df76" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="../_static/documentation_options.js?v=25b4b00c"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/design-tabs.js?v=70e5c12e"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="11.2. How to parallelize loops" href="tutorial_parallelization.html" />
+    <link rel="prev" title="11. Tutorials" href="tutorials.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">skimage</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/api.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../release_notes/index.html">
+  Release notes
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../development/index.html">
+  Development
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../about/index.html">
+  About
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/scikit-image/scikit-image" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/scikit-image/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
+   1. Installing scikit-image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="getting_started.html">
+   3. Getting started
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="numpy_images.html">
+   4. A crash course on NumPy for images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   5. Image data types and what they mean
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="plugins.html">
+   6. I/O Plugin Infrastructure
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="video.html">
+   7. Handling Video Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="visualization.html">
+   8. Data visualization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="transforming_image_data.html">
+   9. Image adjustment: transforming image content
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="geometrical_transform.html">
+   10. Geometrical transformations of images
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="tutorials.html">
+   11. Tutorials
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     11.1. Image Segmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tutorial_parallelization.html">
+     11.2. How to parallelize loops
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="getting_help.html">
+   12. Getting help on using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     skimage
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other resources
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="glossary.html">
+   Glossary
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#edge-based-segmentation">
+   11.1.1. Edge-based segmentation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#region-based-segmentation">
+   11.1.2. Region-based segmentation
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="image-segmentation">
+<h1><span class="section-number">11.1. </span>Image Segmentation<a class="headerlink" href="#image-segmentation" title="Link to this heading">¶</a></h1>
+<p>Image segmentation is the task of labeling the pixels of objects of
+interest in an image.</p>
+<p>In this tutorial, we will see how to segment objects from a background.
+We use the image from <a class="reference internal" href="../api/skimage.data.html#skimage.data.coins" title="skimage.data.coins"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.data.coins()</span></code></a>. This image shows
+several coins outlined against a darker background. The segmentation of
+the coins cannot be done directly from the histogram of gray values,
+because the background shares enough gray levels with the coins that a
+thresholding segmentation is not sufficient.</p>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_001.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_001.png" /></a>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skimage.exposure</span> <span class="kn">import</span> <span class="n">histogram</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coins</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">coins</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="p">,</span> <span class="n">hist_centers</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">exposure</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Simply thresholding the image leads either to missing significant parts
+of the coins, or to merging parts of the background with the
+coins. This is due to the inhomogeneous lighting of the image.</p>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_002.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_002.png" /></a>
+<p>A first idea is to take advantage of the local contrast, that is, to
+use the gradients rather than the gray values.</p>
+<section id="edge-based-segmentation">
+<h2><span class="section-number">11.1.1. </span>Edge-based segmentation<a class="headerlink" href="#edge-based-segmentation" title="Link to this heading">¶</a></h2>
+<p>Let us first try to detect edges that enclose the coins. For edge
+detection, we use the <a class="reference external" href="https://en.wikipedia.org/wiki/Canny_edge_detector">Canny detector</a> of <a class="reference internal" href="../api/skimage.feature.html#skimage.feature.canny" title="skimage.feature.canny"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.feature.canny()</span></code></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">edges</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">feature</span><span class="o">.</span><span class="n">canny</span><span class="p">(</span><span class="n">coins</span> <span class="o">/</span> <span class="mf">255.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As the background is very smooth, almost all edges are found at the
+boundary of the coins, or inside the coins.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fill_coins</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">binary_fill_holes</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_003.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_003.png" /></a>
+<p>Now that we have contours that delineate the outer boundary of the coins,
+we fill the inner part of the coins using the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.ndimage.binary_fill_holes()</span></code> function, which uses mathematical morphology
+to fill the holes.</p>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_004.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_004.png" /></a>
+<p>Most coins are well segmented out of the background. Small objects from
+the background can be easily removed using the <code class="docutils literal notranslate"><span class="pre">ndi.label</span></code>
+function to remove objects smaller than a small threshold.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">label_objects</span><span class="p">,</span> <span class="n">nb_labels</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ndimage</span><span class="o">..</span><span class="n">label</span><span class="p">(</span><span class="n">fill_coins</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">label_objects</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask_sizes</span> <span class="o">=</span> <span class="n">sizes</span> <span class="o">&gt;</span> <span class="mi">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coins_cleaned</span> <span class="o">=</span> <span class="n">mask_sizes</span><span class="p">[</span><span class="n">label_objects</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>However, the segmentation is not very satisfying, since one of the coins
+has not been segmented correctly at all. The reason is that the contour
+that we got from the Canny detector was not completely closed, therefore
+the filling function did not fill the inner part of the coin.</p>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_005.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_005.png" /></a>
+<p>Therefore, this segmentation method is not very robust: if we miss a
+single pixel of the contour of the object, we will not be able to fill
+it. Of course, we could try to dilate the contours in order to
+close them. However, it is preferable to try a more robust method.</p>
+</section>
+<section id="region-based-segmentation">
+<h2><span class="section-number">11.1.2. </span>Region-based segmentation<a class="headerlink" href="#region-based-segmentation" title="Link to this heading">¶</a></h2>
+<p>Let us first determine markers of the coins and the background. These
+markers are pixels that we can label unambiguously as either object or
+background. Here, the markers are found at the two extreme parts of the
+histogram of gray values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span><span class="p">[</span><span class="n">coins</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span><span class="p">[</span><span class="n">coins</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>We will use these markers in a watershed segmentation. The name watershed
+comes from an analogy with hydrology. The <a class="reference external" href="https://en.wikipedia.org/wiki/Watershed_%28image_processing%29">watershed transform</a> floods
+an image of elevation starting from markers, in order to determine the catchment
+basins of these markers. Watershed lines separate these catchment basins,
+and correspond to the desired segmentation.</p>
+<p>The choice of the elevation map is critical for good segmentation.
+Here, the amplitude of the gradient provides a good elevation map. We
+use the Sobel operator for computing the amplitude of the gradient:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">elevation_map</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">sobel</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>From the 3-D surface plot shown below, we see that high barriers effectively
+separate the coins from the background.</p>
+<img alt="../_images/elevation_map.jpg" class="align-center" src="../_images/elevation_map.jpg" />
+<p>and here is the corresponding 2-D plot:</p>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_006.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_006.png" /></a>
+<p>The next step is to find markers of the background and the coins based on the
+extreme parts of the histogram of gray values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span><span class="p">[</span><span class="n">coins</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">markers</span><span class="p">[</span><span class="n">coins</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_007.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_007.png" /></a>
+<p>Let us now compute the watershed transform:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segmentation</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">segmentation</span><span class="o">.</span><span class="n">watershed</span><span class="p">(</span><span class="n">elevation_map</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_008.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_008.png" /></a>
+<p>With this method, the result is satisfying for all coins. Even if the
+markers for the background were not well distributed, the barriers in the
+elevation map were high enough for these markers to flood the entire
+background.</p>
+<p>We remove a few small holes with mathematical morphology:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">segmentation</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">binary_fill_holes</span><span class="p">(</span><span class="n">segmentation</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now label all the coins one by one using <code class="docutils literal notranslate"><span class="pre">ndi.label</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">labeled_coins</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">segmentation</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/applications/plot_coins_segmentation.html"><img alt="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_009.png" class="align-center" src="auto_examples/applications/images/sphx_glr_plot_coins_segmentation_009.png" /></a>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2013-2024, the scikit-image team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

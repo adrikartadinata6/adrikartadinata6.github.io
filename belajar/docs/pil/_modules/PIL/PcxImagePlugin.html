@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIL.PcxImagePlugin &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../../_static/copybutton.js?v=71494f10"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" accesskey="U">PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.PcxImagePlugin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PIL.PcxImagePlugin</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># The Python Imaging Library.</span>
+<span class="c1"># $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># PCX file handling</span>
+<span class="c1">#</span>
+<span class="c1"># This format was originally used by ZSoft&#39;s popular PaintBrush</span>
+<span class="c1"># program for the IBM PC.  It is also supported by many MS-DOS and</span>
+<span class="c1"># Windows applications, including the Windows PaintBrush program in</span>
+<span class="c1"># Windows 3.</span>
+<span class="c1">#</span>
+<span class="c1"># history:</span>
+<span class="c1"># 1995-09-01 fl   Created</span>
+<span class="c1"># 1996-05-20 fl   Fixed RGB support</span>
+<span class="c1"># 1997-01-03 fl   Fixed 2-bit and 4-bit support</span>
+<span class="c1"># 1999-02-03 fl   Fixed 8-bit support (broken in 1.0b1)</span>
+<span class="c1"># 1999-02-07 fl   Added write support</span>
+<span class="c1"># 2002-06-09 fl   Made 2-bit and 4-bit support a bit more robust</span>
+<span class="c1"># 2002-07-30 fl   Seek from to current position, not beginning of file</span>
+<span class="c1"># 2003-06-03 fl   Extract DPI settings (info[&quot;dpi&quot;])</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 1997-2003 by Secret Labs AB.</span>
+<span class="c1"># Copyright (c) 1995-2003 by Fredrik Lundh.</span>
+<span class="c1">#</span>
+<span class="c1"># See the README file for information on usage and redistribution.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageFile</span><span class="p">,</span> <span class="n">ImagePalette</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">i16le</span> <span class="k">as</span> <span class="n">i16</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">o8</span>
+<span class="kn">from</span> <span class="nn">._binary</span> <span class="kn">import</span> <span class="n">o16le</span> <span class="k">as</span> <span class="n">o16</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_accept</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+
+<span class="c1">##</span>
+<span class="c1"># Image plugin for Paintbrush images.</span>
+
+
+<div class="viewcode-block" id="PcxImageFile">
+<a class="viewcode-back" href="../../reference/plugins.html#PIL.PcxImagePlugin.PcxImageFile">[docs]</a>
+<span class="k">class</span> <span class="nc">PcxImageFile</span><span class="p">(</span><span class="n">ImageFile</span><span class="o">.</span><span class="n">ImageFile</span><span class="p">):</span>
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;PCX&quot;</span>
+    <span class="n">format_description</span> <span class="o">=</span> <span class="s2">&quot;Paintbrush&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># header</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_accept</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;not a PCX file&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># image</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;bad PCX image size&quot;</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;BBox: </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">bbox</span><span class="p">)</span>
+
+        <span class="c1"># format</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bits</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">planes</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">65</span><span class="p">]</span>
+        <span class="n">provided_stride</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">66</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;PCX version </span><span class="si">%s</span><span class="s2">, bits </span><span class="si">%s</span><span class="s2">, planes </span><span class="si">%s</span><span class="s2">, stride </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">version</span><span class="p">,</span>
+            <span class="n">bits</span><span class="p">,</span>
+            <span class="n">planes</span><span class="p">,</span>
+            <span class="n">provided_stride</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">i16</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bits</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">planes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+
+        <span class="k">elif</span> <span class="n">bits</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">planes</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span>
+            <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;P;</span><span class="si">%d</span><span class="s2">L&quot;</span> <span class="o">%</span> <span class="n">planes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">ImagePalette</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">64</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">bits</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">planes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span>
+            <span class="c1"># FIXME: hey, this doesn&#39;t work with the incremental loader !!!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">769</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">769</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">769</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="c1"># check if the palette is linear grayscale</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="n">o8</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">mode</span> <span class="o">=</span> <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">ImagePalette</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">bits</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">planes</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span>
+            <span class="n">rawmode</span> <span class="o">=</span> <span class="s2">&quot;RGB;L&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;unknown PCX mode&quot;</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Don&#39;t trust the passed in stride.</span>
+        <span class="c1"># Calculate the approximate position for ourselves.</span>
+        <span class="c1"># CVE-2020-35653</span>
+        <span class="n">stride</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">bits</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+
+        <span class="c1"># While the specification states that this must be even,</span>
+        <span class="c1"># not all images follow this</span>
+        <span class="k">if</span> <span class="n">provided_stride</span> <span class="o">!=</span> <span class="n">stride</span><span class="p">:</span>
+            <span class="n">stride</span> <span class="o">+=</span> <span class="n">stride</span> <span class="o">%</span> <span class="mi">2</span>
+
+        <span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;size: </span><span class="si">%s</span><span class="s2">x</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;pcx&quot;</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">(),</span> <span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="n">planes</span> <span class="o">*</span> <span class="n">stride</span><span class="p">))]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># save PCX files</span>
+
+
+<span class="n">SAVE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># mode: (version, bits, planes, raw mode)</span>
+    <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;RGB&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;RGB;L&quot;</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">version</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">rawmode</span> <span class="o">=</span> <span class="n">SAVE</span><span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cannot save </span><span class="si">{</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s2"> images as PCX&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="c1"># bytes per plane</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">bits</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+    <span class="c1"># stride should be even</span>
+    <span class="n">stride</span> <span class="o">+=</span> <span class="n">stride</span> <span class="o">%</span> <span class="mi">2</span>
+    <span class="c1"># Stride needs to be kept in sync with the PcxEncode.c version.</span>
+    <span class="c1"># Ideally it should be passed in in the state, but the bytes value</span>
+    <span class="c1"># gets overwritten.</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">&quot;PcxImagePlugin._save: xwidth: </span><span class="si">%d</span><span class="s2">, bits: </span><span class="si">%d</span><span class="s2">, stride: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">bits</span><span class="p">,</span>
+        <span class="n">stride</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># under windows, we could determine the current screen size with</span>
+    <span class="c1"># &quot;Image.core.display_mode()[1]&quot;, but I think that&#39;s overkill...</span>
+
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="n">dpi</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span>
+
+    <span class="c1"># PCX header</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+        <span class="n">o8</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">dpi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">dpi</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xFF</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="n">o8</span><span class="p">(</span><span class="n">planes</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">screen</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="o">+</span> <span class="n">o16</span><span class="p">(</span><span class="n">screen</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">54</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">fp</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">==</span> <span class="mi">128</span>
+
+    <span class="n">ImageFile</span><span class="o">.</span><span class="n">_save</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;pcx&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">rawmode</span><span class="p">,</span> <span class="n">bits</span> <span class="o">*</span> <span class="n">planes</span><span class="p">))])</span>
+
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span>
+        <span class="c1"># colour palette</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">o8</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+        <span class="n">palette</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">getpalette</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+        <span class="n">palette</span> <span class="o">+=</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">768</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">palette</span><span class="p">))</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">palette</span><span class="p">)</span>  <span class="c1"># 768 bytes</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+        <span class="c1"># grayscale palette</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">o8</span><span class="p">(</span><span class="mi">12</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">o8</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># registry</span>
+
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_open</span><span class="p">(</span><span class="n">PcxImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">PcxImageFile</span><span class="p">,</span> <span class="n">_accept</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">register_save</span><span class="p">(</span><span class="n">PcxImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">_save</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_extension</span><span class="p">(</span><span class="n">PcxImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;.pcx&quot;</span><span class="p">)</span>
+
+<span class="n">Image</span><span class="o">.</span><span class="n">register_mime</span><span class="p">(</span><span class="n">PcxImageFile</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="s2">&quot;image/x-pcx&quot;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../PIL.html" >PIL</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PIL.PcxImagePlugin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

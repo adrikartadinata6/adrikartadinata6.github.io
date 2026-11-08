@@ -1,0 +1,1335 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The Bank: Examples of SimPy Simulation &#8212; SimPy 2.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Bank Tutorial part 2: More examples of SimPy Simulation" href="TheBank2.html" />
+    <link rel="prev" title="SimPy Tutorials" href="../SimPy_Tutorials.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="TheBank2.html" title="The Bank Tutorial part 2: More examples of SimPy Simulation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../SimPy_Tutorials.html" title="SimPy Tutorials"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../SimPy_Tutorials.html" accesskey="U">SimPy Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Bank: Examples of SimPy Simulation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-bank-examples-of-simpy-simulation">
+<h1>The Bank: Examples of SimPy Simulation<a class="headerlink" href="#the-bank-examples-of-simpy-simulation" title="Permalink to this headline">¶</a></h1>
+<section id="introduction">
+<span id="index-0"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://simpy.sourceforge.net/">SimPy</a> is used to develop a simple simulation of a bank with a
+number of tellers.  This Python package provides <em>Processes</em> to model
+active components such as messages, customers, trucks, and planes. It
+has three classes to model facilities where congestion might occur:
+<em>Resources</em> for ordinary queues, <em>Levels</em> for the supply of quantities
+of material, and <em>Stores</em> for collections of individual items. Only
+examples of <em>Resources</em> are described here. It also provides
+<em>Monitors</em> and <em>Tallys</em> to record data like queue lengths and delay
+times and to calculate simple averages.  It uses the standard Python
+random package to generate random numbers.</p>
+<p>Starting with SimPy 2.0 an object-oriented programmer’s interface was
+added to the package. It is quite compatible with the current
+procedural approach which is used in the models described here.</p>
+<p>SimPy can be obtained from: <a class="reference external" href="http://sourceforge.net/projects/simpy">http://sourceforge.net/projects/simpy</a>.
+The examples run with SimPy version 1.5 and later.  This tutorial is
+best read with the SimPy Manual or Cheatsheet at your side for
+reference.</p>
+<p>Before attempting to use SimPy you should be familiar with the <a class="reference external" href="http://www.Python.org">Python</a>
+language. In particular you should be able to use <em>classes</em>. Python is
+free and available for most machine types. You can find out more about
+it at the <a class="reference external" href="http://www.Python.org">Python web site</a>.  SimPy is compatible with Python version
+2.3 and later.</p>
+</section>
+<section id="a-single-customer">
+<h2>A  single Customer<a class="headerlink" href="#a-single-customer" title="Permalink to this headline">¶</a></h2>
+<p>In this tutorial we model a simple bank with customers arriving at
+random. We develop the model step-by-step, starting out simply, and
+producing a running program at each stage. The programs we develop are
+available without line numbers and ready to go, in the
+<code class="docutils literal notranslate"><span class="pre">bankprograms</span></code> directory. Please copy them, run them and improve
+them - and in the tradition of open-source software suggest your
+modifications to the SimPy users list. Object-orented versions of all
+the models are included in the bankprobrams_OO sub directory.</p>
+<p>A simulation should always be developed to answer a specific question;
+in these models we investigate how changing the number of bank servers
+or tellers might affect the waiting time for customers.</p>
+<section id="a-customer-arriving-at-a-fixed-time">
+<span id="index-1"></span><h3>A Customer arriving at a fixed time<a class="headerlink" href="#a-customer-arriving-at-a-fixed-time" title="Permalink to this headline">¶</a></h3>
+<p>We first model a single customer who arrives at the bank for a visit,
+looks around at the decor for a time and then leaves.  There is no
+queueing. First we will assume his arrival time and the time he spends
+in the bank are fixed.</p>
+<p>We define a <code class="docutils literal notranslate"><span class="pre">Customer</span></code> class derived from the SimPy <code class="docutils literal notranslate"><span class="pre">Process</span></code>
+class. We create a <code class="docutils literal notranslate"><span class="pre">Customer</span></code> object, <code class="docutils literal notranslate"><span class="pre">c</span></code> who arrives at the bank
+at simulation time <code class="docutils literal notranslate"><span class="pre">5.0</span></code> and leaves after a fixed time of <code class="docutils literal notranslate"><span class="pre">10.0</span></code>
+minutes.</p>
+<p>Examine the following listing which is a complete runnable Python
+script, except for the line numbers.  We use comments to divide the
+script up into sections. This makes for clarity later when the
+programs get more complicated. At line <a href="#id1"><span class="problematic" id="id2">:an:`1`</span></a> is a normal Python
+documentation string; <a href="#id3"><span class="problematic" id="id4">:an:`2`</span></a> imports the SimPy simulation code.</p>
+<p id="index-2">The <code class="docutils literal notranslate"><span class="pre">Customer</span></code> class definition at <a href="#id5"><span class="problematic" id="id6">:an:`3`</span></a> defines our customer class and has
+the required generator method (called <code class="docutils literal notranslate"><span class="pre">visit</span></code> <a href="#id7"><span class="problematic" id="id8">:an:`4`</span></a>) having a <code class="docutils literal notranslate"><span class="pre">yield</span></code>
+statement <a href="#id9"><span class="problematic" id="id10">:an:`6`</span></a>. Such a method is called a Process Execution Method (PEM) in
+SimPy.</p>
+<p>The customer’s <code class="docutils literal notranslate"><span class="pre">visit</span></code> PEM at <a href="#id11"><span class="problematic" id="id12">:an:`4`</span></a>, models his activities.  When he
+arrives (it will turn out to be a ‘he’ in this model), he will print out the
+simulation time, <code class="docutils literal notranslate"><span class="pre">now()</span></code>, and his name at <a href="#id13"><span class="problematic" id="id14">:an:`5`</span></a>.  The function <code class="docutils literal notranslate"><span class="pre">now()</span></code>
+can be used at any time in the simulation to find the current simulation time
+though it cannot be changed by the programmer. The customer’s name will be set
+when the customer is created later in the script at <a href="#id15"><span class="problematic" id="id16">:an:`10`</span></a>.</p>
+<p>He then stays in the bank for a fixed simulation time <code class="docutils literal notranslate"><span class="pre">timeInBank</span></code> <a href="#id17"><span class="problematic" id="id18">:an:`6`</span></a>.
+This is achieved by the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">hold,self,timeInBank</span></code> statement.  This is the
+first of the special simulation commands that <code class="docutils literal notranslate"><span class="pre">SimPy</span></code> offers.</p>
+<p>After a simulation time of <code class="docutils literal notranslate"><span class="pre">timeInBank</span></code>, the program’s execution
+returns to the line after the <code class="docutils literal notranslate"><span class="pre">yield</span></code> statement at <a href="#id19"><span class="problematic" id="id20">:an:`6`</span></a>. The
+customer then prints out the current simulation time and his
+name at <a href="#id21"><span class="problematic" id="id22">:an:`7`</span></a>. This completes the declaration of the <code class="docutils literal notranslate"><span class="pre">Customer</span></code> class.</p>
+<p>The call <code class="docutils literal notranslate"><span class="pre">initialize()</span></code> at <a href="#id23"><span class="problematic" id="id24">:an:`9`</span></a> sets up the simulation
+system ready to receive <code class="docutils literal notranslate"><span class="pre">activate</span></code> calls. At <a href="#id25"><span class="problematic" id="id26">:an:`10`</span></a>, we create
+a customer, <code class="docutils literal notranslate"><span class="pre">c</span></code>, with name <code class="docutils literal notranslate"><span class="pre">Klaus</span></code>. All SimPy Processes have a
+<code class="docutils literal notranslate"><span class="pre">name</span></code> attribute. We <code class="docutils literal notranslate"><span class="pre">activate</span></code> <code class="docutils literal notranslate"><span class="pre">Klaus</span></code> at <a href="#id27"><span class="problematic" id="id28">:an:`11`</span></a>
+specifying the object (<code class="docutils literal notranslate"><span class="pre">c</span></code>) to be activated, the call of the action
+routine (<code class="docutils literal notranslate"><span class="pre">c.visit(timeInBank</span> <span class="pre">=</span> <span class="pre">10.0)</span></code>) and that it is to be activated
+at time 5 (<code class="docutils literal notranslate"><span class="pre">at</span> <span class="pre">=</span> <span class="pre">5.0</span></code>). This will activate
+<code class="docutils literal notranslate"><span class="pre">Klaus</span></code> exactly <code class="docutils literal notranslate"><span class="pre">5</span></code> minutes after the current time, in this case
+after the start of the simulation at <code class="docutils literal notranslate"><span class="pre">0.0</span></code>. The call of an action
+routine such as <code class="docutils literal notranslate"><span class="pre">c.visit</span></code> can specify the values of arguments, here
+the <code class="docutils literal notranslate"><span class="pre">timeInBank</span></code>.</p>
+<p>Finally the call of <code class="docutils literal notranslate"><span class="pre">simulate(until=maxTime)</span></code> at <a href="#id29"><span class="problematic" id="id30">:an:`12`</span></a> will
+start the simulation. This will run until the simulation time is
+<code class="docutils literal notranslate"><span class="pre">maxTime</span></code> unless stopped beforehand either by the
+<code class="docutils literal notranslate"><span class="pre">stopSimulation()</span></code> command or by running out of events to execute
+(as will happen here). <code class="docutils literal notranslate"><span class="pre">maxTime</span></code> was set to <code class="docutils literal notranslate"><span class="pre">100.0</span></code> at <a href="#id31"><span class="problematic" id="id32">:an:`8`</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank01: The single non-random Customer &quot;&quot;&quot;</span>  <span class="c1"># (1)</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># (2)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">## Model components -----------------------------</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>  <span class="c1"># (3)</span>
+<span class="linenos"> 8</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, looks around and leaves &quot;&quot;&quot;</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="p">):</span>  <span class="c1"># (4)</span>
+<span class="linenos">11</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%2.1f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">  Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>  <span class="c1"># (5)</span>
+<span class="linenos">12</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>  <span class="c1"># (6)</span>
+<span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%2.1f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">  I must leave&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>  <span class="c1"># (7)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="c1">## Experiment data ------------------------------</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">100.0</span>     <span class="c1"># minutes (8)</span>
+<span class="linenos">18</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">10.0</span>   <span class="c1"># minutes</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># (9)</span>
+<span class="linenos">23</span><span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Klaus&quot;</span><span class="p">)</span>  <span class="c1"># (10)</span>
+<span class="linenos">24</span><span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>  <span class="c1"># (11)</span>
+<span class="linenos">25</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>  <span class="c1"># (12)</span>
+</pre></div>
+</div>
+<p>The short trace printed out by the <code class="docutils literal notranslate"><span class="pre">print</span></code> statements shows the
+result. The program finishes at simulation time <code class="docutils literal notranslate"><span class="pre">15.0</span></code> because there are
+no further events to be executed. At the end of the <code class="docutils literal notranslate"><span class="pre">visit</span></code> routine,
+the customer has no more actions and no other objects or customers are
+active.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">5.0</span> <span class="n">Klaus</span>  <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="mf">15.0</span> <span class="n">Klaus</span>  <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+</section>
+<section id="a-customer-arriving-at-random">
+<span id="index-3"></span><h3>A Customer arriving at random<a class="headerlink" href="#a-customer-arriving-at-random" title="Permalink to this headline">¶</a></h3>
+<p>Now we extend the model to allow our customer to arrive at a random
+simulated time though we will keep the time in the bank at 10.0, as
+before.</p>
+<p>The change occurs in line <a href="#id33"><span class="problematic" id="id34">:an:`1`</span></a> of the program and in lines <a href="#id35"><span class="problematic" id="id36">:an:`2`</span></a>,
+<a href="#id37"><span class="problematic" id="id38">:an:`3`</span></a>, and <a href="#id39"><span class="problematic" id="id40">:an:`4`</span></a>. In line <a href="#id41"><span class="problematic" id="id42">:an:`1`</span></a> we import from the standard
+Python <code class="docutils literal notranslate"><span class="pre">random</span></code> module to give us <code class="docutils literal notranslate"><span class="pre">expovariate</span></code> to generate the
+random time of arrival. We also import the <code class="docutils literal notranslate"><span class="pre">seed</span></code> function to
+initialize the random number stream to allow control of the random
+numbers.  In line <a href="#id43"><span class="problematic" id="id44">:an:`2`</span></a> we provide an initial seed of <code class="docutils literal notranslate"><span class="pre">99999</span></code>. An
+exponential random variate, <code class="docutils literal notranslate"><span class="pre">t</span></code>, is generated in line <a href="#id45"><span class="problematic" id="id46">:an:`3`</span></a>. Note
+that the Python Random module’s <code class="docutils literal notranslate"><span class="pre">expovariate</span></code> function uses the
+average rate (that is, <code class="docutils literal notranslate"><span class="pre">1.0/mean</span></code>) as the argument. The generated
+random variate, <code class="docutils literal notranslate"><span class="pre">t</span></code>, is used in line <a href="#id47"><span class="problematic" id="id48">:an:`4`</span></a> as the <code class="docutils literal notranslate"><span class="pre">at</span></code> argument
+to the <code class="docutils literal notranslate"><span class="pre">activate</span></code> call.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank05: The single Random Customer &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>       <span class="c1"># (1)</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Customer arrives at a random time,</span>
+<span class="linenos">10</span><span class="sd">        looks around and then leaves &quot;&quot;&quot;</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="p">):</span>
+<span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">14</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>
+<span class="linenos">15</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> I must leave&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">100.0</span>    <span class="c1"># minutes</span>
+<span class="linenos">20</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="linenos">21</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="n">seed</span><span class="p">(</span><span class="mi">99999</span><span class="p">)</span>                   <span class="c1"># (2)</span>
+<span class="linenos">24</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">25</span><span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Klaus&quot;</span><span class="p">)</span>
+<span class="linenos">26</span><span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>      <span class="c1"># (3)</span>
+<span class="linenos">27</span><span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># (4)</span>
+<span class="linenos">28</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result is shown below. The customer now arrives at about
+0.64195, (or 10.58092 if you are not using Python 3). Changing the seed
+value would change that time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">0.641954</span> <span class="n">Klaus</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="mf">10.641954</span> <span class="n">Klaus</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p>The display looks pretty untidy. In the next example I will try and
+make it tidier.</p>
+<p>If you are not using Python 3, you output may differ.
+The output for Python 2 is given in Appendix A.</p>
+</section>
+</section>
+<section id="more-customers">
+<span id="index-4"></span><h2>More Customers<a class="headerlink" href="#more-customers" title="Permalink to this headline">¶</a></h2>
+<p>Our simulation does little so far.  To consider a simulation with
+several customers we return to the simple deterministic model and add
+more <code class="docutils literal notranslate"><span class="pre">Customers</span></code>.</p>
+<p>The program is almost as easy as the first example (<a class="reference internal" href="#a-customer-arriving-at-a-fixed-time">A Customer
+arriving at a fixed time</a>). The main change is in lines
+<a href="#id49"><span class="problematic" id="id50">:an:`4`</span></a> to <a href="#id51"><span class="problematic" id="id52">:an:`5`</span></a> where we create, name, and activate three
+customers. We also increase the maximum simulation time to <code class="docutils literal notranslate"><span class="pre">400</span></code>
+(line <a href="#id53"><span class="problematic" id="id54">:an:`3`</span></a> and referred to in line <a href="#id55"><span class="problematic" id="id56">:an:`6`</span></a>). Observe that we need
+only one definition of the <code class="docutils literal notranslate"><span class="pre">Customer</span></code> class and create several
+objects of that class. These will act quite independently in this
+model.</p>
+<p>Each customer stays for a different <code class="docutils literal notranslate"><span class="pre">timeinbank</span></code> so, instead of
+setting a common value for this we set it for each customer. The
+customers are started at different times (using <code class="docutils literal notranslate"><span class="pre">at=</span></code>). <code class="docutils literal notranslate"><span class="pre">Tony's</span></code>
+activation time occurs before <code class="docutils literal notranslate"><span class="pre">Klaus's</span></code>, so <code class="docutils literal notranslate"><span class="pre">Tony</span></code> will arrive
+first even though his activation statement appears later in the
+script.</p>
+<p>As promised, the print statements have been changed to use Python
+string formatting (lines <a href="#id57"><span class="problematic" id="id58">:an:`1`</span></a> and <a href="#id59"><span class="problematic" id="id60">:an:`2`</span></a>). The statements look
+complicated but the output is much nicer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank02: More Customers &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 8</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, looks around and leaves &quot;&quot;&quot;</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="p">):</span>
+<span class="linenos">11</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>     <span class="c1"># (1)</span>
+<span class="linenos">12</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>
+<span class="linenos">13</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: I must leave&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>  <span class="c1"># (2)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>  <span class="c1"># minutes                      # (3)</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="n">c1</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Klaus&quot;</span><span class="p">)</span>                      <span class="c1"># (4)</span>
+<span class="linenos">24</span><span class="n">activate</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c1</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="linenos">25</span><span class="n">c2</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tony&quot;</span><span class="p">)</span>
+<span class="linenos">26</span><span class="n">activate</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">c2</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">7.0</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="linenos">27</span><span class="n">c3</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Evelyn&quot;</span><span class="p">)</span>
+<span class="linenos">28</span><span class="n">activate</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="n">c3</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">20.0</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">12.0</span><span class="p">)</span>   <span class="c1"># (5)</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>                          <span class="c1"># (6)</span>
+</pre></div>
+</div>
+<p>The trace produced by the program is shown below.  Again the
+simulation finishes before the <code class="docutils literal notranslate"><span class="pre">400.0</span></code> specified in the <code class="docutils literal notranslate"><span class="pre">simulate</span></code>
+call as it has run out of events.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span> <span class="mf">2.0000</span> <span class="n">Tony</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">2</span> <span class="mf">5.0000</span> <span class="n">Klaus</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">3</span> <span class="mf">9.0000</span> <span class="n">Tony</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">4</span><span class="mf">12.0000</span> <span class="n">Evelyn</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">5</span><span class="mf">15.0000</span> <span class="n">Klaus</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">6</span><span class="mf">32.0000</span> <span class="n">Evelyn</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<section id="many-customers">
+<span id="index-5"></span><h3>Many Customers<a class="headerlink" href="#many-customers" title="Permalink to this headline">¶</a></h3>
+<p>Another change will allow us to have more customers. As it is
+tedious to give a specially chosen name to each one, we will
+call them <code class="docutils literal notranslate"><span class="pre">Customer00,</span> <span class="pre">Customer01,...</span></code> and use a separate
+<code class="docutils literal notranslate"><span class="pre">Source</span></code> class to create and activate them. To make things clearer
+we do not use the random numbers in this model.</p>
+<span class="target" id="index-6"></span><p>The following listing shows the new program. Lines <a href="#id61"><span class="problematic" id="id62">:an:`1`</span></a> to <a href="#id63"><span class="problematic" id="id64">:an:`4`</span></a>
+define a <code class="docutils literal notranslate"><span class="pre">Source</span></code> class. Its PEM, here called <code class="docutils literal notranslate"><span class="pre">generate</span></code>, is
+defined in lines <a href="#id65"><span class="problematic" id="id66">:an:`2`</span></a> to <a href="#id67"><span class="problematic" id="id68">:an:`4`</span></a>.  This PEM has a couple of arguments:
+the <code class="docutils literal notranslate"><span class="pre">number</span></code> of customers to be generated and the Time Between
+Arrivals, <code class="docutils literal notranslate"><span class="pre">TBA</span></code>. It consists of a loop that creates a sequence
+of numbered <code class="docutils literal notranslate"><span class="pre">Customers</span></code> from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">(number-1)</span></code>, inclusive. We
+create a customer and give it a name in line <a href="#id69"><span class="problematic" id="id70">:an:`3`</span></a>. It is
+then activated at the current simulation time (the final argument of
+the <code class="docutils literal notranslate"><span class="pre">activate</span></code> statement is missing so that the default value of
+<code class="docutils literal notranslate"><span class="pre">now()</span></code> is used as the time). We also specify how long the customer
+is to stay in the bank. To keep it simple, all customers stay
+exactly <code class="docutils literal notranslate"><span class="pre">12</span></code> minutes.  After each new customer is activated, the
+<code class="docutils literal notranslate"><span class="pre">Source</span></code> holds for a fixed time (<code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">hold,self,TBA</span></code>)
+before creating the next one (line <a href="#id71"><span class="problematic" id="id72">:an:`4`</span></a>).</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Source</span></code>, <code class="docutils literal notranslate"><span class="pre">s</span></code>, is created in line <a href="#id73"><span class="problematic" id="id74">:an:`5`</span></a> and activated at line
+<a href="#id75"><span class="problematic" id="id76">:an:`6`</span></a> where the number of customers to be generated is set to
+<code class="docutils literal notranslate"><span class="pre">maxNumber</span> <span class="pre">=</span> <span class="pre">5</span></code> and the interval between customers to <code class="docutils literal notranslate"><span class="pre">ARRint</span> <span class="pre">=</span>
+<span class="pre">10.0</span></code>. Once started at time <code class="docutils literal notranslate"><span class="pre">0.0</span></code> it creates customers at intervals
+and each customer then operates independently of the others:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank03: Many non-random Customers &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>                               <span class="c1"># (1)</span>
+<span class="linenos"> 8</span>    <span class="sd">&quot;&quot;&quot; Source generates customers regularly &quot;&quot;&quot;</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">TBA</span><span class="p">):</span>                 <span class="c1"># (2)</span>
+<span class="linenos">11</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">12</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>  <span class="c1"># (3)</span>
+<span class="linenos">13</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">12.0</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">TBA</span>                    <span class="c1"># (4)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">18</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, looks around and leaves &quot;&quot;&quot;</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="p">):</span>
+<span class="linenos">21</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">22</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>
+<span class="linenos">23</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: I must leave&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="linenos">28</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>  <span class="c1"># minutes</span>
+<span class="linenos">29</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>    <span class="c1"># time between arrivals, minutes</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">34</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">()</span>                                         <span class="c1"># (5)</span>
+<span class="linenos">35</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span>             <span class="c1"># (6)</span>
+<span class="linenos">36</span>                      <span class="n">TBA</span><span class="o">=</span><span class="n">ARRint</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="linenos">37</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span><span class="mf">10.0000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 3</span><span class="mf">12.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 4</span><span class="mf">20.0000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 5</span><span class="mf">22.0000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 6</span><span class="mf">30.0000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 7</span><span class="mf">32.0000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 8</span><span class="mf">40.0000</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 9</span><span class="mf">42.0000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">10</span><span class="mf">52.0000</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+</section>
+<section id="many-random-customers">
+<h3>Many Random Customers<a class="headerlink" href="#many-random-customers" title="Permalink to this headline">¶</a></h3>
+<p id="index-7">We now extend this model to allow arrivals at random. In simulation this
+is usually interpreted as meaning that the times between customer
+arrivals are distributed as exponential random variates. There is
+little change in our program, we use a <code class="docutils literal notranslate"><span class="pre">Source</span></code> object, as before.</p>
+<p>The exponential random variate is generated in line <a href="#id77"><span class="problematic" id="id78">:an:`1`</span></a> with
+<code class="docutils literal notranslate"><span class="pre">meanTBA</span></code> as the mean Time Between Arrivals and used in line
+<a href="#id79"><span class="problematic" id="id80">:an:`2`</span></a>. Note that this parameter is not exactly intuitive. As already
+mentioned, the Python <code class="docutils literal notranslate"><span class="pre">expovariate</span></code> method uses the <em>rate</em> of
+arrivals as the parameter not the average interval between them. The
+exponential delay between two arrivals gives pseudo-random
+arrivals. In this model the first customer arrives at time <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">seed</span></code> method is called to initialize the random number stream
+in the <code class="docutils literal notranslate"><span class="pre">model</span></code> routine (line <a href="#id81"><span class="problematic" id="id82">:an:`3`</span></a>).  It is possible to leave this
+call out but if we wish to do serious comparisons of systems, we must
+have control over the random variates and therefore control over the
+seeds. Then we can run identical models with different seeds or
+different models with identical seeds.  We provide the seeds as
+control parameters of the run. Here a seed is assigned in line <a href="#id83"><span class="problematic" id="id84">:an:`3`</span></a>
+but it is clear it could have been read in or manually entered on an
+input form.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank06: Many Random Customers &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers at random &quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">meanTBA</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">12.0</span><span class="p">))</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">meanTBA</span><span class="p">)</span>                <span class="c1"># (1)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>                         <span class="c1"># (2)</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, looks around and leaves &quot;&quot;&quot;</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">24</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>
+<span class="linenos">25</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: I must leave&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="linenos">30</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>  <span class="c1"># minutes</span>
+<span class="linenos">31</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>    <span class="c1"># mean arrival interval, minutes</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="n">seed</span><span class="p">(</span><span class="mi">99999</span><span class="p">)</span>                                             <span class="c1"># (3)</span>
+<span class="linenos">36</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">37</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">38</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span>
+<span class="linenos">39</span>                      <span class="n">meanTBA</span><span class="o">=</span><span class="n">ARRint</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="linenos">40</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>with the following output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span> <span class="mf">1.2839</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 3</span> <span class="mf">4.9842</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 4</span><span class="mf">12.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 5</span><span class="mf">13.2839</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 6</span><span class="mf">16.9842</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 7</span><span class="mf">35.5432</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 8</span><span class="mf">47.5432</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 9</span><span class="mf">48.9918</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">10</span><span class="mf">60.9918</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="a-service-counter">
+<span id="index-8"></span><h2>A Service counter<a class="headerlink" href="#a-service-counter" title="Permalink to this headline">¶</a></h2>
+<p>So far, the model has been more like an art gallery, the customers
+entering, looking around, and leaving. Now they are going to require
+service from the bank clerk. We extend the model to include a service
+counter which will be modelled as an object of SimPy’s <code class="docutils literal notranslate"><span class="pre">Resource</span></code>
+class with a single resource unit.  The actions of a <code class="docutils literal notranslate"><span class="pre">Resource</span></code> are
+simple: a customer <code class="docutils literal notranslate"><span class="pre">requests</span></code> a unit of the resource (a clerk). If
+one is free he gets service (and removes the unit). If there is no
+free clerk the customer joins the queue (managed by the resource
+object) until it is their turn to be served. As each customer
+completes service and <code class="docutils literal notranslate"><span class="pre">releases</span></code> the unit, the clerk can start
+serving the next in line.</p>
+<section id="one-service-counter">
+<span id="index-9"></span><h3>One Service counter<a class="headerlink" href="#one-service-counter" title="Permalink to this headline">¶</a></h3>
+<p>The service counter is created as a <code class="docutils literal notranslate"><span class="pre">Resource</span></code> (<code class="docutils literal notranslate"><span class="pre">k</span></code>) in
+line <a href="#id85"><span class="problematic" id="id86">:an:`8`</span></a>. This is provided as an argument to the <code class="docutils literal notranslate"><span class="pre">Source</span></code> (line <a href="#id87"><span class="problematic" id="id88">:an:`9`</span></a>)
+which, in turn, provides it to each customer it creates and activates
+(line <a href="#id89"><span class="problematic" id="id90">:an:`1`</span></a>).</p>
+<p>The actions involving the service counter, <code class="docutils literal notranslate"><span class="pre">k</span></code>, in the customer’s
+PEM are:</p>
+<ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">request</span></code> statement in line <a href="#id91"><span class="problematic" id="id92">:an:`3`</span></a>. If the server is
+free then the customer can start service immediately and the code
+moves on to line  <a href="#id93"><span class="problematic" id="id94">:an:`4`</span></a>. If the server is busy, the customer is
+automatically queued by the  Resource. When it eventually comes
+available the PEM moves on to line <a href="#id95"><span class="problematic" id="id96">:an:`4`</span></a>.</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">hold</span></code> statement in line  <a href="#id97"><span class="problematic" id="id98">:an:`5`</span></a> where the operation of
+the service counter is modelled. Here the service time is a fixed
+<code class="docutils literal notranslate"><span class="pre">timeInBank</span></code>.  During this period the customer is being served.</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">release</span></code> statement in line  <a href="#id99"><span class="problematic" id="id100">:an:`6`</span></a>. The current
+customer completes service and the service counter becomes available
+for any remaining customers in the queue.</p></li>
+</ul>
+<p>Observe that the service counter is used with the pattern (<code class="docutils literal notranslate"><span class="pre">yield</span>
+<span class="pre">request..</span></code>; <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">hold..</span></code>; <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">release..</span></code>).</p>
+<p>To show the effect of the service counter on the activities of the
+customers, I have added line <a href="#id101"><span class="problematic" id="id102">:an:`2`</span></a> to record when the customer
+arrived and line <a href="#id103"><span class="problematic" id="id104">:an:`4`</span></a> to record the time between arrival in the
+bank and starting service. Line <a href="#id105"><span class="problematic" id="id106">:an:`4`</span></a> is <em>after</em> the <code class="docutils literal notranslate"><span class="pre">yield</span>
+<span class="pre">request</span></code> command and will be reached only when the request is
+satisfied. It is <em>before</em> the <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">hold</span></code> that corresponds to the
+start of service. The variable <code class="docutils literal notranslate"><span class="pre">wait</span></code> will record how long the
+customer waited and will be 0 if he received service at once. This
+technique of saving the arrival time in a variable is common. So the
+<code class="docutils literal notranslate"><span class="pre">print</span></code> statement also prints out how long the customer waited in
+the bank before starting service.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank07: One Counter,random arrivals &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly &quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">meanTBA</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">timeInBank</span><span class="o">=</span><span class="mf">12.0</span><span class="p">,</span>
+<span class="linenos">15</span>                                 <span class="n">res</span><span class="o">=</span><span class="n">resource</span><span class="p">))</span>       <span class="c1"># (1)</span>
+<span class="linenos">16</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">meanTBA</span><span class="p">)</span>
+<span class="linenos">17</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">21</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and  leaves &quot;&quot;&quot;</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+<span class="linenos">24</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>                                <span class="c1"># (2)  arrival time</span>
+<span class="linenos">25</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.3f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">res</span>                      <span class="c1"># (3)</span>
+<span class="linenos">28</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>                         <span class="c1"># (4)  waiting time</span>
+<span class="linenos">29</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.3f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Waited </span><span class="si">%6.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wait</span><span class="p">))</span>
+<span class="linenos">30</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">timeInBank</span>                  <span class="c1"># (5)</span>
+<span class="linenos">31</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">res</span>                      <span class="c1"># (6)</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.3f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Finished&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>                                         <span class="c1"># (7)</span>
+<span class="linenos">38</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>   <span class="c1"># minutes</span>
+<span class="linenos">39</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>     <span class="c1"># mean, minutes</span>
+<span class="linenos">40</span><span class="n">k</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span> <span class="n">unitName</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">)</span>        <span class="c1"># (8)</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">43</span><span class="n">seed</span><span class="p">(</span><span class="mi">99999</span><span class="p">)</span>
+<span class="linenos">44</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">45</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">46</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span>
+<span class="linenos">47</span>                      <span class="n">meanTBA</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># (9)</span>
+<span class="linenos">48</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Examining the trace we see that the first, and last, customers get instant
+service but the others have to wait. We still only have five customers
+(line <a href="#id107"><span class="problematic" id="id108">:an:`4`</span></a>) so we cannot draw general conclusions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>   <span class="mf">0.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span>   <span class="mf">0.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span>   <span class="mf">1.284</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 4</span>   <span class="mf">4.984</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 5</span>  <span class="mf">12.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 6</span>  <span class="mf">12.000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">10.716</span>
+<span class="linenos"> 7</span>  <span class="mf">24.000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 8</span>  <span class="mf">24.000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">19.016</span>
+<span class="linenos"> 9</span>  <span class="mf">35.543</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">10</span>  <span class="mf">36.000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">11</span>  <span class="mf">36.000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.457</span>
+<span class="linenos">12</span>  <span class="mf">48.000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">13</span>  <span class="mf">48.992</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">14</span>  <span class="mf">48.992</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">15</span>  <span class="mf">60.992</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>
+</pre></div>
+</div>
+<span class="target" id="index-10"></span></section>
+<section id="a-server-with-a-random-service-time">
+<h3>A server with a random service time<a class="headerlink" href="#a-server-with-a-random-service-time" title="Permalink to this headline">¶</a></h3>
+<p>This is a simple change to the model in that we retain the single
+service counter but make the customer service time a random
+variable. As is traditional in the study of simple queues we first
+assume an exponential service time and set the mean to <code class="docutils literal notranslate"><span class="pre">timeInBank</span></code>.</p>
+<p>The service time random variable, <code class="docutils literal notranslate"><span class="pre">tib</span></code>, is generated in line
+<a href="#id109"><span class="problematic" id="id110">:an:`1`</span></a> and used in line  <a href="#id111"><span class="problematic" id="id112">:an:`2`</span></a>. The argument to be used in the call
+of <code class="docutils literal notranslate"><span class="pre">expovariate</span></code> is not the mean of the distribution,
+<code class="docutils literal notranslate"><span class="pre">timeInBank</span></code>, but is the rate <code class="docutils literal notranslate"><span class="pre">1/timeInBank</span></code>.</p>
+<p>We have also collected together a number of constants by defining a
+number of appropriate variables and giving them values. These are in
+lines  <a href="#id113"><span class="problematic" id="id114">:an:`3`</span></a> to  <a href="#id115"><span class="problematic" id="id116">:an:`4`</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank08: A counter with a random service time &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly &quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">meanTBA</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">resource</span><span class="p">))</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">meanTBA</span><span class="p">)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and leaves &quot;&quot;&quot;</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+<span class="linenos">24</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am     &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">25</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">26</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>
+<span class="linenos">27</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Waited </span><span class="si">%6.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wait</span><span class="p">))</span>
+<span class="linenos">28</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">timeInBank</span><span class="p">)</span>              <span class="c1"># (1)</span>
+<span class="linenos">29</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tib</span>                          <span class="c1"># (2)</span>
+<span class="linenos">30</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">31</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Finished      &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>                          <span class="c1"># (3)</span>
+<span class="linenos">36</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>    <span class="c1"># minutes</span>
+<span class="linenos">37</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">12.0</span>  <span class="c1"># mean, minutes</span>
+<span class="linenos">38</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>      <span class="c1"># mean, minutes</span>
+<span class="linenos">39</span><span class="n">theseed</span> <span class="o">=</span> <span class="mi">99999</span>                         <span class="c1"># (4)</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="n">seed</span><span class="p">(</span><span class="n">theseed</span><span class="p">)</span>
+<span class="linenos">44</span><span class="n">k</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span> <span class="n">unitName</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">)</span>
+<span class="linenos">45</span>
+<span class="linenos">46</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">47</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">48</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span> <span class="n">meanTBA</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span>
+<span class="linenos">49</span>                        <span class="n">resource</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="linenos">50</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 2</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span>  <span class="mf">1.2839</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 4</span>  <span class="mf">4.4403</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 5</span>  <span class="mf">4.4403</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">3.156</span>
+<span class="linenos"> 6</span> <span class="mf">20.5786</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 7</span> <span class="mf">31.8430</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 8</span> <span class="mf">31.8430</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 9</span> <span class="mf">34.5594</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">10</span> <span class="mf">36.2308</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">11</span> <span class="mf">36.2308</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">12</span> <span class="mf">41.4313</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">13</span> <span class="mf">67.1315</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">14</span> <span class="mf">67.1315</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">25.700</span>
+<span class="linenos">15</span> <span class="mf">87.9241</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>      
+</pre></div>
+</div>
+<p>This model with random arrivals and exponential service times is an
+example of an M/M/1 queue and could rather easily be solved
+analytically to calculate the steady-state mean waiting time and other
+operating characteristics. (But not so easily solved for its transient
+behavior.)</p>
+</section>
+</section>
+<section id="several-service-counters">
+<h2>Several Service Counters<a class="headerlink" href="#several-service-counters" title="Permalink to this headline">¶</a></h2>
+<p>When we introduce several counters we must decide on a queue
+discipline. Are customers going to make one queue or are they going to
+form separate queues in front of each counter? Then there are
+complications - will they be allowed to switch lines (jockey)? We
+first consider a single queue with several counters and later consider
+separate isolated queues. We will not look at jockeying.</p>
+<section id="several-counters-but-a-single-queue">
+<span id="index-11"></span><h3>Several Counters but a Single Queue<a class="headerlink" href="#several-counters-but-a-single-queue" title="Permalink to this headline">¶</a></h3>
+<p>Here we model a bank whose customers arrive randomly and are to be
+served at a group of counters, taking a random time for service, where
+we assume that waiting customers form a single first-in first-out
+queue.</p>
+<p>The <em>only</em> difference between this model and the single-server model
+is in line <a href="#id117"><span class="problematic" id="id118">:an:`1`</span></a>. We have provided two counters by increasing the
+capacity of the <code class="docutils literal notranslate"><span class="pre">counter</span></code> resource to 2. These <em>units</em> of the
+resource correspond to the two counters. Because both clerks cannot be
+called <code class="docutils literal notranslate"><span class="pre">Karen</span></code>, we have used a general name of <code class="docutils literal notranslate"><span class="pre">Clerk</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank09: Several Counters but a Single Queue &quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly &quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">meanTBA</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">resource</span><span class="p">))</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">meanTBA</span><span class="p">)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and leaves &quot;&quot;&quot;</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+<span class="linenos">24</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am     &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">25</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">26</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>
+<span class="linenos">27</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Waited </span><span class="si">%6.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wait</span><span class="p">))</span>
+<span class="linenos">28</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">timeInBank</span><span class="p">)</span>
+<span class="linenos">29</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tib</span>
+<span class="linenos">30</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">31</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%8.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Finished      &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="linenos">36</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>    <span class="c1"># minutes</span>
+<span class="linenos">37</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">12.0</span>  <span class="c1"># mean, minutes</span>
+<span class="linenos">38</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>      <span class="c1"># mean, minutes</span>
+<span class="linenos">39</span><span class="n">theseed</span> <span class="o">=</span> <span class="mi">99999</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="n">seed</span><span class="p">(</span><span class="n">theseed</span><span class="p">)</span>
+<span class="linenos">44</span><span class="n">k</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span> <span class="n">unitName</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">)</span>   <span class="c1"># (1)</span>
+<span class="linenos">45</span>
+<span class="linenos">46</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">47</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">48</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span> <span class="n">meanTBA</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span>
+<span class="linenos">49</span>                         <span class="n">resource</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="linenos">50</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The waiting times in this model are very different from those for the
+single service counter. For example, none of the customers had to
+wait. But, again, we have observed too few customers to draw general
+conclusions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 2</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span>  <span class="mf">1.2839</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 4</span>  <span class="mf">1.2839</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 5</span>  <span class="mf">4.4403</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 6</span> <span class="mf">17.4222</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 7</span> <span class="mf">31.8430</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 8</span> <span class="mf">31.8430</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 9</span> <span class="mf">34.5594</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">10</span> <span class="mf">36.2308</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">11</span> <span class="mf">36.2308</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">12</span> <span class="mf">41.4313</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">13</span> <span class="mf">41.4313</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">14</span> <span class="mf">62.2239</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">15</span> <span class="mf">67.1315</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>      
+</pre></div>
+</div>
+</section>
+<section id="several-counters-with-individual-queues">
+<span id="index-12"></span><h3>Several Counters with individual queues<a class="headerlink" href="#several-counters-with-individual-queues" title="Permalink to this headline">¶</a></h3>
+<p>Each counter now has its own queue.  The programming is more
+complicated because the customer has to decide which one to
+join. The obvious technique is to make each counter a separate
+resource and it is useful to make a list of resource objects (line
+<a href="#id119"><span class="problematic" id="id120">:an:`7`</span></a>).</p>
+<p>In practice, a customer will join the shortest queue.  So we define
+a Python function, <code class="docutils literal notranslate"><span class="pre">NoInSystem(R)</span></code> (lines <a href="#id121"><span class="problematic" id="id122">:an:`1`</span></a> to <a href="#id123"><span class="problematic" id="id124">:an:`2`</span></a>) to
+return the sum of the number waiting and the number being served for
+a particular counter, <code class="docutils literal notranslate"><span class="pre">R</span></code>. This function is used in line <a href="#id125"><span class="problematic" id="id126">:an:`3`</span></a> to
+list the numbers at each counter. It is then easy to find which
+counter the arriving customer should join. We have also modified the
+trace printout, line <a href="#id127"><span class="problematic" id="id128">:an:`4`</span></a> to display the state of the system when
+the customer arrives. We choose the shortest queue in lines
+<a href="#id129"><span class="problematic" id="id130">:an:`5`</span></a> to <a href="#id131"><span class="problematic" id="id132">:an:`6`</span></a> (using the variable <code class="docutils literal notranslate"><span class="pre">choice</span></code>).</p>
+<p>The rest of the program is the same as before.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank10: Several Counters with individual queues&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly&quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">counters</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">counters</span><span class="p">))</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">interval</span><span class="p">)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">def</span> <span class="nf">NoInSystem</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>                                      <span class="c1"># (1)</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Total number of customers in the resource R&quot;&quot;&quot;</span>
+<span class="linenos">21</span>    <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">waitQ</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">activeQ</span><span class="p">))</span>              <span class="c1"># (2)</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">25</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, chooses the shortest queue</span>
+<span class="linenos">26</span><span class="sd">        is served and leaves</span>
+<span class="linenos">27</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counters</span><span class="p">):</span>
+<span class="linenos">30</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+<span class="linenos">31</span>        <span class="n">Qlength</span> <span class="o">=</span> <span class="p">[</span><span class="n">NoInSystem</span><span class="p">(</span><span class="n">counters</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nc</span><span class="p">)]</span>   <span class="c1"># (3)</span>
+<span class="linenos">32</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Here I am. </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Qlength</span><span class="p">))</span>  <span class="c1"># (4)</span>
+<span class="linenos">33</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nc</span><span class="p">):</span>                                      <span class="c1"># (5)</span>
+<span class="linenos">34</span>            <span class="k">if</span> <span class="n">Qlength</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">Qlength</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">Qlength</span><span class="p">):</span>
+<span class="linenos">35</span>                <span class="n">choice</span> <span class="o">=</span> <span class="n">i</span>    <span class="c1"># the index of the shortest line</span>
+<span class="linenos">36</span>                <span class="k">break</span>                                            <span class="c1"># (6)</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">counters</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+<span class="linenos">39</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>
+<span class="linenos">40</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Waited </span><span class="si">%6.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wait</span><span class="p">))</span>
+<span class="linenos">41</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">timeInBank</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tib</span>
+<span class="linenos">43</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">counters</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%7.4f</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: Finished&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">now</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="linenos">50</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">400.0</span>    <span class="c1"># minutes</span>
+<span class="linenos">51</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">12.0</span>  <span class="c1"># mean, minutes</span>
+<span class="linenos">52</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>   <span class="c1"># mean, minutes</span>
+<span class="linenos">53</span><span class="n">Nc</span> <span class="o">=</span> <span class="mi">2</span>          <span class="c1"># number of counters</span>
+<span class="linenos">54</span><span class="n">theseed</span> <span class="o">=</span> <span class="mi">787878</span>
+<span class="linenos">55</span>
+<span class="linenos">56</span><span class="c1">## Model/Experiment ------------------------------</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span><span class="n">seed</span><span class="p">(</span><span class="n">theseed</span><span class="p">)</span>
+<span class="linenos">59</span><span class="n">kk</span> <span class="o">=</span> <span class="p">[</span><span class="n">Resource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Clerk0&quot;</span><span class="p">),</span> <span class="n">Resource</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Clerk1&quot;</span><span class="p">)]</span>          <span class="c1"># (7)</span>
+<span class="linenos">60</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">61</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">62</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span>
+<span class="linenos">63</span>                      <span class="n">counters</span><span class="o">=</span><span class="n">kk</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="linenos">64</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The results show how the customers choose the counter with the
+smallest number. Unlucky <code class="docutils literal notranslate"><span class="pre">Customer03</span></code> who joins the wrong queue has
+to wait until <code class="docutils literal notranslate"><span class="pre">Customer01</span></code> finishes before his service can be
+started. There are, however, too few arrivals in these runs, limited
+as they are to five customers, to draw any general conclusions about
+the relative efficiencies of the two systems.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 2</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span> <span class="mf">9.7519</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 4</span><span class="mf">12.0829</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 5</span><span class="mf">12.0829</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 6</span><span class="mf">25.9167</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 7</span><span class="mf">25.9167</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 8</span><span class="mf">38.2349</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="linenos"> 9</span><span class="mf">40.4032</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="linenos">10</span><span class="mf">43.0677</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">11</span><span class="mf">43.0677</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">2.664</span>
+<span class="linenos">12</span><span class="mf">44.0242</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">13</span><span class="mf">44.0242</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">5.789</span>
+<span class="linenos">14</span><span class="mf">60.1271</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">15</span><span class="mf">70.2500</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="monitors-and-gathering-statistics">
+<span id="index-13"></span><h2>Monitors and Gathering Statistics<a class="headerlink" href="#monitors-and-gathering-statistics" title="Permalink to this headline">¶</a></h2>
+<p>The traces of output that have been displayed so far are valuable for
+checking that the simulation is operating correctly but would become
+too much if we simulate a whole day. We do need to get results from
+our simulation to answer the original questions. What, then, is the
+best way to summarize the results?</p>
+<p>One way is to analyze the traces elsewhere, piping the trace output,
+or a modified version of it, into a <em>real</em> statistical program such as
+<em>R</em> for statistical analysis, or into a file for later examination by
+a spreadsheet. We do not have space to examine this thoroughly here.
+Another way of presenting the results is to provide graphical
+output.</p>
+<p>SimPy offers an easy way to gather a few simple statistics such as
+averages: the <code class="docutils literal notranslate"><span class="pre">Monitor</span></code> and <code class="docutils literal notranslate"><span class="pre">Tally</span></code> classes. The <code class="docutils literal notranslate"><span class="pre">Monitor</span></code>
+records the values of chosen variables as time series (but see the
+comments in <a class="reference internal" href="#final-remarks">Final Remarks</a>).</p>
+<section id="the-bank-with-a-monitor">
+<span id="index-14"></span><h3>The Bank with a Monitor<a class="headerlink" href="#the-bank-with-a-monitor" title="Permalink to this headline">¶</a></h3>
+<p>We now demonstrate a <code class="docutils literal notranslate"><span class="pre">Monitor</span></code> that records the average waiting
+times for our customers. We return to the system with random arrivals,
+random service times and a single queue and remove the old trace
+statements.  In practice, we would make the printouts controlled by a
+variable, say, <code class="docutils literal notranslate"><span class="pre">TRACE</span></code> which is set in the experimental data (or
+read in as a program option - but that is a different story). This
+would aid in debugging and would not complicate the data analysis. We
+will run the simulations for many more arrivals.</p>
+<p>A Monitor, <code class="docutils literal notranslate"><span class="pre">wM</span></code>, is created in line <a href="#id133"><span class="problematic" id="id134">:an:`2`</span></a>. It <code class="docutils literal notranslate"><span class="pre">observes</span></code> and
+records the waiting time mentioned in line <a href="#id135"><span class="problematic" id="id136">:an:`1`</span></a>.  We run
+<code class="docutils literal notranslate"><span class="pre">maxNumber=50</span></code> customers (in the call of <code class="docutils literal notranslate"><span class="pre">generate</span></code> in line
+<a href="#id137"><span class="problematic" id="id138">:an:`3`</span></a>) and have increased <code class="docutils literal notranslate"><span class="pre">maxTime</span></code> to <code class="docutils literal notranslate"><span class="pre">1000</span></code> minutes. Brief
+statistics are given by the Monitor methods <code class="docutils literal notranslate"><span class="pre">count()</span></code> and <code class="docutils literal notranslate"><span class="pre">mean()</span></code>
+in line <a href="#id139"><span class="problematic" id="id140">:an:`4`</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank11: The bank with a Monitor&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly&quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">resource</span><span class="p">))</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">interval</span><span class="p">)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and leaves &quot;&quot;&quot;</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+<span class="linenos">24</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">25</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>
+<span class="linenos">26</span>        <span class="n">wM</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">wait</span><span class="p">)</span>                    <span class="c1"># (1)</span>
+<span class="linenos">27</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">timeInBank</span><span class="p">)</span>
+<span class="linenos">28</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tib</span>
+<span class="linenos">29</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="linenos">34</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">1000.0</span>    <span class="c1"># minutes</span>
+<span class="linenos">35</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">12.0</span>   <span class="c1"># mean, minutes</span>
+<span class="linenos">36</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>    <span class="c1"># mean, minutes</span>
+<span class="linenos">37</span><span class="n">Nc</span> <span class="o">=</span> <span class="mi">2</span>           <span class="c1"># number of counters</span>
+<span class="linenos">38</span><span class="n">theseed</span> <span class="o">=</span> <span class="mi">99999</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="c1">## Model/Experiment   ----------------------</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="n">seed</span><span class="p">(</span><span class="n">theseed</span><span class="p">)</span>
+<span class="linenos">43</span><span class="n">k</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="n">Nc</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">)</span>
+<span class="linenos">44</span><span class="n">wM</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">()</span>                              <span class="c1"># (2)</span>
+<span class="linenos">45</span><span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">46</span><span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">47</span><span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span>
+<span class="linenos">48</span>                      <span class="n">resource</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># (3)</span>
+<span class="linenos">49</span><span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+<span class="linenos">50</span>
+<span class="linenos">51</span><span class="c1">## Result  ----------------------------------</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="n">result</span> <span class="o">=</span> <span class="n">wM</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="n">wM</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>              <span class="c1"># (4)</span>
+<span class="linenos">54</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average wait for </span><span class="si">%3d</span><span class="s2"> completions was </span><span class="si">%5.3f</span><span class="s2"> minutes.&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The average waiting time for 50 customers in this 2-counter system is
+more reliable (i.e., less subject to random simulation effects) than
+the times we measured before but it is still not sufficiently reliable
+for real-world decisions. We should also replicate the runs using
+different random number seeds. The result of this run (using Python 3.2) is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span> <span class="mf">8.941</span> <span class="n">minutes</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Result for Python 2.x is given in Appendix A.</p>
+</section>
+<section id="multiple-runs">
+<span id="index-15"></span><h3>Multiple runs<a class="headerlink" href="#multiple-runs" title="Permalink to this headline">¶</a></h3>
+<p>To get a number of independent measurements we must replicate the runs
+using different random number seeds. Each replication must be
+independent of previous ones so the Monitor and Resources must be
+redefined for each run. We can no longer allow them to be global
+objects as we have before.</p>
+<p>We will define a function, <code class="docutils literal notranslate"><span class="pre">model</span></code> with a parameter <code class="docutils literal notranslate"><span class="pre">runSeed</span></code> so
+that the random number seed can be different for different runs (lines
+<a href="#id141"><span class="problematic" id="id142">:an:`2`</span></a> to  <a href="#id143"><span class="problematic" id="id144">:an:`5`</span></a>). The contents of the function are the same as the
+<code class="docutils literal notranslate"><span class="pre">Model/Experiment</span></code> section in the previous program except for one
+vital change.</p>
+<p>This is required since the Monitor, <code class="docutils literal notranslate"><span class="pre">wM</span></code>, is defined inside the
+<code class="docutils literal notranslate"><span class="pre">model</span></code> function (line  <a href="#id145"><span class="problematic" id="id146">:an:`3`</span></a>). A customer can no longer refer to
+it. In the spirit of quality computer programming we will pass <code class="docutils literal notranslate"><span class="pre">wM</span></code>
+as a function argument. Unfortunately we have to do this in two steps,
+first to the <code class="docutils literal notranslate"><span class="pre">Source</span></code> (line  <a href="#id147"><span class="problematic" id="id148">:an:`4`</span></a>) and then from the <code class="docutils literal notranslate"><span class="pre">Source</span></code> to
+the <code class="docutils literal notranslate"><span class="pre">Customer</span></code> (line  <a href="#id149"><span class="problematic" id="id150">:an:`1`</span></a>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">model()</span></code> is run for four different random-number seeds to get a set
+of replications (lines  <a href="#id151"><span class="problematic" id="id152">:an:`6`</span></a> to  <a href="#id153"><span class="problematic" id="id154">:an:`7`</span></a>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="sd">&quot;&quot;&quot; bank12: Multiple runs of the bank with a Monitor&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">SimPy.Simulation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">expovariate</span><span class="p">,</span> <span class="n">seed</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">## Model components ------------------------</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="sd">&quot;&quot;&quot; Source generates customers randomly&quot;&quot;&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">mon</span><span class="p">):</span>
+<span class="linenos">12</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+<span class="linenos">13</span>            <span class="n">c</span> <span class="o">=</span> <span class="n">Customer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Customer</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="linenos">14</span>            <span class="n">activate</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">resource</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">mon</span><span class="p">))</span>       <span class="c1"># (1)</span>
+<span class="linenos">15</span>            <span class="n">t</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">interval</span><span class="p">)</span>
+<span class="linenos">16</span>            <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">t</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="n">Process</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="sd">&quot;&quot;&quot; Customer arrives, is served and leaves &quot;&quot;&quot;</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="n">arrive</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span>
+<span class="linenos">24</span>        <span class="k">yield</span> <span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">25</span>        <span class="n">wait</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">arrive</span>
+<span class="linenos">26</span>        <span class="n">M</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">wait</span><span class="p">)</span>
+<span class="linenos">27</span>        <span class="n">tib</span> <span class="o">=</span> <span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">timeInBank</span><span class="p">)</span>
+<span class="linenos">28</span>        <span class="k">yield</span> <span class="n">hold</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tib</span>
+<span class="linenos">29</span>        <span class="k">yield</span> <span class="n">release</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">b</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="c1">## Experiment data -------------------------</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">maxNumber</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="linenos">34</span><span class="n">maxTime</span> <span class="o">=</span> <span class="mf">2000.0</span>  <span class="c1"># minutes</span>
+<span class="linenos">35</span><span class="n">timeInBank</span> <span class="o">=</span> <span class="mf">12.0</span>   <span class="c1"># mean, minutes</span>
+<span class="linenos">36</span><span class="n">ARRint</span> <span class="o">=</span> <span class="mf">10.0</span>     <span class="c1"># mean, minutes</span>
+<span class="linenos">37</span><span class="n">Nc</span> <span class="o">=</span> <span class="mi">2</span>            <span class="c1"># number of counters</span>
+<span class="linenos">38</span><span class="n">theSeed</span> <span class="o">=</span> <span class="mi">393939</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="c1">## Model  ----------------------------------</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">runSeed</span><span class="o">=</span><span class="n">theSeed</span><span class="p">):</span>                       <span class="c1"># (2)</span>
+<span class="linenos">44</span>    <span class="n">seed</span><span class="p">(</span><span class="n">runSeed</span><span class="p">)</span>
+<span class="linenos">45</span>    <span class="n">k</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="n">Nc</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Clerk&quot;</span><span class="p">)</span>
+<span class="linenos">46</span>    <span class="n">wM</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">()</span>                                <span class="c1"># (3)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>    <span class="n">initialize</span><span class="p">()</span>
+<span class="linenos">49</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="s1">&#39;Source&#39;</span><span class="p">)</span>
+<span class="linenos">50</span>    <span class="n">activate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">maxNumber</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">ARRint</span><span class="p">,</span>
+<span class="linenos">51</span>                          <span class="n">resource</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">mon</span><span class="o">=</span><span class="n">wM</span><span class="p">),</span> <span class="n">at</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># (4)</span>
+<span class="linenos">52</span>    <span class="n">simulate</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">maxTime</span><span class="p">)</span>
+<span class="linenos">53</span>    <span class="k">return</span> <span class="p">(</span><span class="n">wM</span><span class="o">.</span><span class="n">count</span><span class="p">(),</span> <span class="n">wM</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>                 <span class="c1"># (5)</span>
+<span class="linenos">54</span>
+<span class="linenos">55</span><span class="c1">## Experiment/Result  ----------------------------------</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span><span class="n">theseeds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">393939</span><span class="p">,</span> <span class="mi">31555999</span><span class="p">,</span> <span class="mi">777999555</span><span class="p">,</span> <span class="mi">319999771</span><span class="p">]</span>  <span class="c1"># (6)</span>
+<span class="linenos">58</span><span class="k">for</span> <span class="n">Sd</span> <span class="ow">in</span> <span class="n">theseeds</span><span class="p">:</span>
+<span class="linenos">59</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">Sd</span><span class="p">)</span>
+<span class="linenos">60</span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Average wait for </span><span class="si">%3d</span><span class="s2"> completions was </span><span class="si">%6.2f</span><span class="s2"> minutes.&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>  <span class="c1"># (7)</span>
+</pre></div>
+</div>
+<p>The results show some variation. Remember, though, that the system is still
+only operating for 50 customers so the system may not be in
+steady-state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">3.66</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">2</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">2.62</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">3</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">8.97</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">4</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">5.34</span> <span class="n">minutes</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="final-remarks">
+<span id="index-16"></span><h2>Final Remarks<a class="headerlink" href="#final-remarks" title="Permalink to this headline">¶</a></h2>
+<p>This introduction is too long and the examples are getting
+longer. There is much more to say about simulation with <em>SimPy</em> but no
+space. I finish with a list of topics for further study:</p>
+<ul class="simple">
+<li><p><strong>GUI input</strong>. Graphical input of simulation parameters could be an
+advantage in some cases. <em>SimPy</em> allows this and programs using
+these facilities have been developed (see, for example, program
+<code class="docutils literal notranslate"><span class="pre">MM1.py</span></code> in the examples in the <em>SimPy</em> distribution)</p></li>
+<li><p><strong>Graphical Output</strong>. Similarly, graphical output of results can
+also be of value, not least in debugging simulation programs and
+checking for steady-state conditions. SimPlot is useful here.</p></li>
+<li><p><strong>Statistical Output</strong>. The <code class="docutils literal notranslate"><span class="pre">Monitor</span></code> class is useful in
+presenting results but more powerful methods of analysis are often
+needed. One solution is to output a trace and read that into a
+large-scale statistical system such as <em>R</em>.</p></li>
+<li><p><strong>Priorities and Reneging in queues</strong>. <em>SimPy</em> allows processes to
+request units of resources under a priority queue discipline
+(preemptive or not). It also allows processes to renege from a queue.</p></li>
+<li><p><strong>Other forms of Resource Facilities</strong>. <em>SimPy</em> has two other
+resource structures: <code class="docutils literal notranslate"><span class="pre">Levels</span></code> to hold bulk commodities, and
+<code class="docutils literal notranslate"><span class="pre">Stores</span></code>   to contain an inventory of different object types.</p></li>
+<li><p><strong>Advanced synchronization/scheduling commands</strong>. <em>SimPy</em> allows
+process synchronization by events and signals.</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>I thank Klaus Muller, Bob Helmbold, Mukhlis Matti and other developers
+and users of SimPy for improving this document by sending their
+comments. I would be grateful for further suggestions or
+corrections. Please send them to: <em>vignaux</em> at
+<em>users.sourceforge.net</em>.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Python website: <a class="reference external" href="http://www.Python.org">http://www.Python.org</a></p></li>
+<li><p>SimPy website: <a class="reference external" href="http://sourceforge.net/projects/simpy">http://sourceforge.net/projects/simpy</a></p></li>
+</ul>
+</section>
+<section id="appendix-a">
+<h2>Appendix A<a class="headerlink" href="#appendix-a" title="Permalink to this headline">¶</a></h2>
+<p>With Python 3 the definition of expovariate changed. In some cases
+this was back ported to some distributions of Python 2.7.
+Because of this the output for the bank programs varies. This section
+just contains the older output.</p>
+<p><strong>A Customer arriving at a fixed time</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">5.0</span> <span class="n">Klaus</span>  <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="mf">15.0</span> <span class="n">Klaus</span>  <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p><strong>A Customer arriving at random</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mf">10.580923</span> <span class="n">Klaus</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="mf">20.580923</span> <span class="n">Klaus</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p><strong>More Customers</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span> <span class="mf">2.0000</span> <span class="n">Tony</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">2</span> <span class="mf">5.0000</span> <span class="n">Klaus</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">3</span> <span class="mf">9.0000</span> <span class="n">Tony</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">4</span><span class="mf">12.0000</span> <span class="n">Evelyn</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">5</span><span class="mf">15.0000</span> <span class="n">Klaus</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">6</span><span class="mf">32.0000</span> <span class="n">Evelyn</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p><strong>Many Customers</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span><span class="mf">10.0000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 3</span><span class="mf">12.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 4</span><span class="mf">20.0000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 5</span><span class="mf">22.0000</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 6</span><span class="mf">30.0000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 7</span><span class="mf">32.0000</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 8</span><span class="mf">40.0000</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 9</span><span class="mf">42.0000</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">10</span><span class="mf">52.0000</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p><strong>Many Random Customers</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span><span class="mf">12.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 3</span><span class="mf">21.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 4</span><span class="mf">32.8968</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 5</span><span class="mf">33.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 6</span><span class="mf">33.3790</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 7</span><span class="mf">36.3979</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 8</span><span class="mf">44.8968</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos"> 9</span><span class="mf">45.3790</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+<span class="linenos">10</span><span class="mf">48.3979</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">I</span> <span class="n">must</span> <span class="n">leave</span>
+</pre></div>
+</div>
+<p><strong>One Service Counter</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>   <span class="mf">0.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 2</span>   <span class="mf">0.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span>  <span class="mf">12.000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 4</span>  <span class="mf">21.162</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 5</span>  <span class="mf">21.162</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 6</span>  <span class="mf">32.897</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos"> 7</span>  <span class="mf">33.162</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 8</span>  <span class="mf">33.162</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.265</span>
+<span class="linenos"> 9</span>  <span class="mf">33.379</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">10</span>  <span class="mf">36.398</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>
+<span class="linenos">11</span>  <span class="mf">45.162</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">12</span>  <span class="mf">45.162</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">11.783</span>
+<span class="linenos">13</span>  <span class="mf">57.162</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">14</span>  <span class="mf">57.162</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">20.764</span>
+<span class="linenos">15</span>  <span class="mf">69.162</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>
+</pre></div>
+</div>
+<p><strong>A server with a random service time</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 2</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span> <span class="mf">14.0819</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 4</span> <span class="mf">21.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 5</span> <span class="mf">21.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 6</span> <span class="mf">21.6441</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 7</span> <span class="mf">24.7845</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 8</span> <span class="mf">24.7845</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">3.140</span>
+<span class="linenos"> 9</span> <span class="mf">31.9954</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">10</span> <span class="mf">41.0215</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">11</span> <span class="mf">43.9441</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">12</span> <span class="mf">43.9441</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span> <span class="mf">11.949</span>
+<span class="linenos">13</span> <span class="mf">49.9552</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">14</span> <span class="mf">49.9552</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">8.934</span>
+<span class="linenos">15</span> <span class="mf">52.2900</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>      
+</pre></div>
+</div>
+<p><strong>Several Counters but a Single Queue</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 2</span>  <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span> <span class="mf">14.0819</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 4</span> <span class="mf">21.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 5</span> <span class="mf">21.1618</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 6</span> <span class="mf">21.6441</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos"> 7</span> <span class="mf">21.6441</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 8</span> <span class="mf">24.7845</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos"> 9</span> <span class="mf">31.9954</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">10</span> <span class="mf">31.9954</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">11</span> <span class="mf">32.9459</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">12</span> <span class="mf">40.8037</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>      
+<span class="linenos">13</span> <span class="mf">41.0215</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span>     
+<span class="linenos">14</span> <span class="mf">41.0215</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">15</span> <span class="mf">43.3562</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>      
+</pre></div>
+</div>
+<p><strong>Several Counters with individual queues</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 2</span> <span class="mf">0.0000</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 3</span> <span class="mf">3.5483</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 4</span> <span class="mf">3.5483</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 5</span> <span class="mf">4.4169</span> <span class="n">Customer01</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 6</span> <span class="mf">6.4349</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 7</span> <span class="mf">6.4349</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos"> 8</span> <span class="mf">7.0368</span> <span class="n">Customer00</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos"> 9</span> <span class="mf">9.7200</span> <span class="n">Customer02</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">10</span> <span class="mf">9.8846</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos">11</span> <span class="mf">9.8846</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">12</span><span class="mf">19.8340</span> <span class="n">Customer03</span><span class="p">:</span> <span class="n">Finished</span>
+<span class="linenos">13</span><span class="mf">26.2357</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Here</span> <span class="n">I</span> <span class="n">am</span><span class="o">.</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="linenos">14</span><span class="mf">26.2357</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Waited</span>  <span class="mf">0.000</span>
+<span class="linenos">15</span><span class="mf">29.8709</span> <span class="n">Customer04</span><span class="p">:</span> <span class="n">Finished</span>
+</pre></div>
+</div>
+<p><strong>The Bank with a Monitor</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span> <span class="mf">3.430</span> <span class="n">minutes</span><span class="o">.</span>
+</pre></div>
+</div>
+<p><strong>Multiple runs</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">2.75</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">2</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">6.01</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">3</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">5.53</span> <span class="n">minutes</span><span class="o">.</span>
+<span class="linenos">4</span><span class="n">Average</span> <span class="n">wait</span> <span class="k">for</span>  <span class="mi">50</span> <span class="n">completions</span> <span class="n">was</span>   <span class="mf">3.76</span> <span class="n">minutes</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sm_SimPy_Logo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The Bank: Examples of SimPy Simulation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#a-single-customer">A  single Customer</a><ul>
+<li><a class="reference internal" href="#a-customer-arriving-at-a-fixed-time">A Customer arriving at a fixed time</a></li>
+<li><a class="reference internal" href="#a-customer-arriving-at-random">A Customer arriving at random</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#more-customers">More Customers</a><ul>
+<li><a class="reference internal" href="#many-customers">Many Customers</a></li>
+<li><a class="reference internal" href="#many-random-customers">Many Random Customers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-service-counter">A Service counter</a><ul>
+<li><a class="reference internal" href="#one-service-counter">One Service counter</a></li>
+<li><a class="reference internal" href="#a-server-with-a-random-service-time">A server with a random service time</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#several-service-counters">Several Service Counters</a><ul>
+<li><a class="reference internal" href="#several-counters-but-a-single-queue">Several Counters but a Single Queue</a></li>
+<li><a class="reference internal" href="#several-counters-with-individual-queues">Several Counters with individual queues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monitors-and-gathering-statistics">Monitors and Gathering Statistics</a><ul>
+<li><a class="reference internal" href="#the-bank-with-a-monitor">The Bank with a Monitor</a></li>
+<li><a class="reference internal" href="#multiple-runs">Multiple runs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#final-remarks">Final Remarks</a></li>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#appendix-a">Appendix A</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../SimPy_Tutorials.html"
+                          title="previous chapter">SimPy Tutorials</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="TheBank2.html"
+                          title="next chapter">The Bank Tutorial part 2: More  examples of SimPy Simulation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tutorials/TheBank.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="TheBank2.html" title="The Bank Tutorial part 2: More examples of SimPy Simulation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../SimPy_Tutorials.html" title="SimPy Tutorials"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">SimPy 2.3.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../SimPy_Tutorials.html" >SimPy Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Bank: Examples of SimPy Simulation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2002-2022, Klaus Müller, Tony Vignaux, Ontje Lünsdorf, Stefan Scherfke.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

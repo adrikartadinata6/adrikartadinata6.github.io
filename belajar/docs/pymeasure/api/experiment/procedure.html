@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Procedure class &mdash; PyMeasure 0.9.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Parameter classes" href="parameters.html" />
+    <link rel="prev" title="Listener class" href="listeners.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> PyMeasure
+          </a>
+              <div class="version">
+                0.9.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Learning PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">pymeasure.adapters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">pymeasure.experiment</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="experiment.html">Experiment class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="listeners.html">Listener class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Procedure class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure"><code class="docutils literal notranslate"><span class="pre">Procedure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.check_parameters"><code class="docutils literal notranslate"><span class="pre">Procedure.check_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.execute"><code class="docutils literal notranslate"><span class="pre">Procedure.execute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.gen_measurement"><code class="docutils literal notranslate"><span class="pre">Procedure.gen_measurement()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.parameter_objects"><code class="docutils literal notranslate"><span class="pre">Procedure.parameter_objects()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.parameter_values"><code class="docutils literal notranslate"><span class="pre">Procedure.parameter_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.parameters_are_set"><code class="docutils literal notranslate"><span class="pre">Procedure.parameters_are_set()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.refresh_parameters"><code class="docutils literal notranslate"><span class="pre">Procedure.refresh_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.set_parameters"><code class="docutils literal notranslate"><span class="pre">Procedure.set_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.shutdown"><code class="docutils literal notranslate"><span class="pre">Procedure.shutdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.Procedure.startup"><code class="docutils literal notranslate"><span class="pre">Procedure.startup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.experiment.procedure.UnknownProcedure"><code class="docutils literal notranslate"><span class="pre">UnknownProcedure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.experiment.procedure.UnknownProcedure.startup"><code class="docutils literal notranslate"><span class="pre">UnknownProcedure.startup()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameter classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.html">Worker class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="results.html">Results class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../display/index.html">pymeasure.display</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../instruments/index.html">pymeasure.instruments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting involved</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/reporting_errors.html">Reporting an error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/adding_instruments.html">Adding instruments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/coding_standards.html">Coding Standards</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyMeasure</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">pymeasure.experiment</a></li>
+      <li class="breadcrumb-item active">Procedure class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/experiment/procedure.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymeasure.experiment.procedure">
+<span id="procedure-class"></span><h1>Procedure class<a class="headerlink" href="#module-pymeasure.experiment.procedure" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.experiment.procedure.</span></span><span class="sig-name descname"><span class="pre">Procedure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides the base class of a procedure to organize the experiment
+execution. Procedures should be run by Workers to ensure that
+asynchronous execution is properly managed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">procedure</span> <span class="o">=</span> <span class="n">Procedure</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">(</span><span class="n">procedure</span><span class="p">,</span> <span class="n">data_filename</span><span class="p">)</span>
+<span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Inheriting classes should define the startup, execute, and shutdown
+methods as needed. The shutdown method is called even with a
+software exception or abort event during the execute method.</p>
+<p>If keyword arguments are provided, they are added to the object as
+attributes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.check_parameters">
+<span class="sig-name descname"><span class="pre">check_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.check_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises an exception if any parameter is missing before calling
+the associated function. Ensures that each value can be set and
+got, which should cast it into the right format. Used as a decorator
+&#64;check_parameters on the startup method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preforms the commands needed for the measurement itself. During
+execution the shutdown method will always be run following this method.
+This includes when Exceptions are raised.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.gen_measurement">
+<span class="sig-name descname"><span class="pre">gen_measurement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.gen_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create MEASURE and DATA_COLUMNS variables for get_datapoint method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.parameter_objects">
+<span class="sig-name descname"><span class="pre">parameter_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.parameter_objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary of all the Parameter objects and grabs any
+current values that are not in the default definitions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.parameter_values">
+<span class="sig-name descname"><span class="pre">parameter_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.parameter_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary of all the Parameter values and grabs any
+current values that are not in the default definitions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.parameters_are_set">
+<span class="sig-name descname"><span class="pre">parameters_are_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.parameters_are_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if all parameters are set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.refresh_parameters">
+<span class="sig-name descname"><span class="pre">refresh_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.refresh_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enforces that all the parameters are re-cast and updated in the meta
+dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a dictionary of parameters and raises an exception if additional
+parameters are present if except_missing is True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the commands necessary to shut down the instruments
+and leave them in a safe state. This method is always run at the end.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.Procedure.startup">
+<span class="sig-name descname"><span class="pre">startup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.Procedure.startup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the commands needed at the start-up of the measurement</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.UnknownProcedure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.experiment.procedure.</span></span><span class="sig-name descname"><span class="pre">UnknownProcedure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.UnknownProcedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the case when a <a class="reference internal" href="#pymeasure.experiment.procedure.Procedure" title="pymeasure.experiment.procedure.Procedure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Procedure</span></code></a> object can not be imported
+during loading in the <a class="reference internal" href="results.html#pymeasure.experiment.results.Results" title="pymeasure.experiment.results.Results"><code class="xref py py-class docutils literal notranslate"><span class="pre">Results</span></code></a> class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.experiment.procedure.UnknownProcedure.startup">
+<span class="sig-name descname"><span class="pre">startup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.experiment.procedure.UnknownProcedure.startup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the commands needed at the start-up of the measurement</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="listeners.html" class="btn btn-neutral float-left" title="Listener class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parameters.html" class="btn btn-neutral float-right" title="Parameter classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2013-2022, PyMeasure Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manager classes &mdash; PyMeasure 0.9.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Plotter class" href="plotter.html" />
+    <link rel="prev" title="Log classes" href="log.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> PyMeasure
+          </a>
+              <div class="version">
+                0.9.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Learning PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API References</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">pymeasure.adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment/index.html">pymeasure.experiment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">pymeasure.display</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="browser.html">Browser classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="curves.html">Curves classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inputs.html">Inputs classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="listeners.html">Listeners classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="log.html">Log classes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Manager classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.ExperimentQueue"><code class="docutils literal notranslate"><span class="pre">ExperimentQueue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ExperimentQueue.has_next"><code class="docutils literal notranslate"><span class="pre">ExperimentQueue.has_next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ExperimentQueue.next"><code class="docutils literal notranslate"><span class="pre">ExperimentQueue.next()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.ImageExperiment"><code class="docutils literal notranslate"><span class="pre">ImageExperiment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.ImageExperimentQueue"><code class="docutils literal notranslate"><span class="pre">ImageExperimentQueue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.ImageManager"><code class="docutils literal notranslate"><span class="pre">ImageManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.abort_returned"><code class="docutils literal notranslate"><span class="pre">ImageManager.abort_returned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.aborted"><code class="docutils literal notranslate"><span class="pre">ImageManager.aborted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.failed"><code class="docutils literal notranslate"><span class="pre">ImageManager.failed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.finished"><code class="docutils literal notranslate"><span class="pre">ImageManager.finished</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.load"><code class="docutils literal notranslate"><span class="pre">ImageManager.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.log"><code class="docutils literal notranslate"><span class="pre">ImageManager.log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.queued"><code class="docutils literal notranslate"><span class="pre">ImageManager.queued</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.remove"><code class="docutils literal notranslate"><span class="pre">ImageManager.remove()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.ImageManager.running"><code class="docutils literal notranslate"><span class="pre">ImageManager.running</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pymeasure.display.manager.Manager"><code class="docutils literal notranslate"><span class="pre">Manager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.abort"><code class="docutils literal notranslate"><span class="pre">Manager.abort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.abort_returned"><code class="docutils literal notranslate"><span class="pre">Manager.abort_returned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.aborted"><code class="docutils literal notranslate"><span class="pre">Manager.aborted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.clear"><code class="docutils literal notranslate"><span class="pre">Manager.clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.failed"><code class="docutils literal notranslate"><span class="pre">Manager.failed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.finished"><code class="docutils literal notranslate"><span class="pre">Manager.finished</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.is_running"><code class="docutils literal notranslate"><span class="pre">Manager.is_running()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.load"><code class="docutils literal notranslate"><span class="pre">Manager.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.log"><code class="docutils literal notranslate"><span class="pre">Manager.log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.next"><code class="docutils literal notranslate"><span class="pre">Manager.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.queue"><code class="docutils literal notranslate"><span class="pre">Manager.queue()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.queued"><code class="docutils literal notranslate"><span class="pre">Manager.queued</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.remove"><code class="docutils literal notranslate"><span class="pre">Manager.remove()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.resume"><code class="docutils literal notranslate"><span class="pre">Manager.resume()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pymeasure.display.manager.Manager.running"><code class="docutils literal notranslate"><span class="pre">Manager.running</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plotter.html">Plotter class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Qt.html">Qt classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thread.html">Thread classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="widgets.html">Widget classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html">Windows classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../instruments/index.html">pymeasure.instruments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting involved</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/reporting_errors.html">Reporting an error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/adding_instruments.html">Adding instruments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/coding_standards.html">Coding Standards</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About PyMeasure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../about/authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyMeasure</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">pymeasure.display</a></li>
+      <li class="breadcrumb-item active">Manager classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/display/manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymeasure.display.manager">
+<span id="manager-classes"></span><h1>Manager classes<a class="headerlink" href="#module-pymeasure.display.manager" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>The Experiment class helps group the <a class="reference internal" href="../experiment/procedure.html#pymeasure.experiment.procedure.Procedure" title="pymeasure.experiment.procedure.Procedure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Procedure</span></code></a>,
+<a class="reference internal" href="../experiment/results.html#pymeasure.experiment.results.Results" title="pymeasure.experiment.results.Results"><code class="xref py py-class docutils literal notranslate"><span class="pre">Results</span></code></a>, and their display functionality. Its function
+is only a convenient container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> – <a class="reference internal" href="../experiment/results.html#pymeasure.experiment.results.Results" title="pymeasure.experiment.results.Results"><code class="xref py py-class docutils literal notranslate"><span class="pre">Results</span></code></a> object</p></li>
+<li><p><strong>curve</strong> – <a class="reference internal" href="curves.html#pymeasure.display.curves.ResultsCurve" title="pymeasure.display.curves.ResultsCurve"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResultsCurve</span></code></a> object</p></li>
+<li><p><strong>browser_item</strong> – <a class="reference internal" href="browser.html#pymeasure.display.browser.BrowserItem" title="pymeasure.display.browser.BrowserItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrowserItem</span></code></a> object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ExperimentQueue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">ExperimentQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ExperimentQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Represents a Queue of Experiments and allows queries to
+be easily preformed</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ExperimentQueue.has_next">
+<span class="sig-name descname"><span class="pre">has_next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ExperimentQueue.has_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if another item is on the queue</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ExperimentQueue.next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ExperimentQueue.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the next experiment on the queue</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageExperiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">ImageExperiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ImageExperiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.display.manager.Experiment" title="pymeasure.display.manager.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a></p>
+<p>Adds saving of the experiments image to <a class="reference internal" href="#pymeasure.display.manager.Experiment" title="pymeasure.display.manager.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a>. Needed to 
+make image features work</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageExperimentQueue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">ImageExperimentQueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ImageExperimentQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.display.manager.ExperimentQueue" title="pymeasure.display.manager.ExperimentQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExperimentQueue</span></code></a></p>
+<p>Overwrites needed features from <a class="reference internal" href="#pymeasure.display.manager.ExperimentQueue" title="pymeasure.display.manager.ExperimentQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExperimentQueue</span></code></a> to make image 
+features work</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">ImageManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ImageManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pymeasure.display.manager.Manager" title="pymeasure.display.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a></p>
+<p>Overwrites needed features from <a class="reference internal" href="#pymeasure.display.manager.Manager" title="pymeasure.display.manager.Manager"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manager</span></code></a> to make image features
+work</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.abort_returned">
+<span class="sig-name descname"><span class="pre">abort_returned</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.abort_returned" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.aborted">
+<span class="sig-name descname"><span class="pre">aborted</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.aborted" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.failed">
+<span class="sig-name descname"><span class="pre">failed</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.finished">
+<span class="sig-name descname"><span class="pre">finished</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a previously executed Experiment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.log">
+<span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.queued">
+<span class="sig-name descname"><span class="pre">queued</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.queued" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an Experiment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.ImageManager.running">
+<span class="sig-name descname"><span class="pre">running</span></span><a class="headerlink" href="#pymeasure.display.manager.ImageManager.running" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymeasure.display.manager.</span></span><span class="sig-name descname"><span class="pre">Manager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Controls the execution of <a class="reference internal" href="#pymeasure.display.manager.Experiment" title="pymeasure.display.manager.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a> classes by implementing
+a queue system in which Experiments are added, removed, executed, or
+aborted. When instantiated, the Manager is linked to a <a class="reference internal" href="browser.html#pymeasure.display.browser.Browser" title="pymeasure.display.browser.Browser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Browser</span></code></a>
+and a PyQtGraph <cite>PlotItem</cite> within the user interface, which are updated
+in accordance with the execution status of the Experiments.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.abort">
+<span class="sig-name descname"><span class="pre">abort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.abort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aborts the currently running Experiment, but raises an exception if
+there is no running experiment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.abort_returned">
+<span class="sig-name descname"><span class="pre">abort_returned</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.abort_returned" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.aborted">
+<span class="sig-name descname"><span class="pre">aborted</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.aborted" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all Experiments</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.failed">
+<span class="sig-name descname"><span class="pre">failed</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.finished">
+<span class="sig-name descname"><span class="pre">finished</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.is_running">
+<span class="sig-name descname"><span class="pre">is_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if a procedure is currently running</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a previously executed Experiment</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.log">
+<span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates the start of the next experiment in the queue as long
+as no other experiments are currently running and there is a procedure
+in the queue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.queue">
+<span class="sig-name descname"><span class="pre">queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an experiment to the queue.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.queued">
+<span class="sig-name descname"><span class="pre">queued</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.queued" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an Experiment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.resume">
+<span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymeasure.display.manager.Manager.resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume processing of the queue.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pymeasure.display.manager.Manager.running">
+<span class="sig-name descname"><span class="pre">running</span></span><a class="headerlink" href="#pymeasure.display.manager.Manager.running" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="log.html" class="btn btn-neutral float-left" title="Log classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plotter.html" class="btn btn-neutral float-right" title="Plotter class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2013-2022, PyMeasure Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

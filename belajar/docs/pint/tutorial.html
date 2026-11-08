@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Tutorial &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Defining Quantities" href="defining-quantities.html" />
+    <link rel="prev" title="Installation" href="getting.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="defining-quantities.html" title="Defining Quantities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading">¶</a></h1>
+<p>Follow the steps below and learn how to use Pint to track physical quantities
+and perform unit conversions in Python.</p>
+<section id="initializing-a-registry">
+<h2>Initializing a Registry<a class="headerlink" href="#initializing-a-registry" title="Permalink to this heading">¶</a></h2>
+<p>Before using Pint, initialize a <a class="reference internal" href="developers_reference.html#pint.registry.UnitRegistry" title="pint.registry.UnitRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnitRegistry()</span></code></a>
+object. The <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code> stores the unit definitions, their relationships,
+and handles conversions between units.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If no parameters are given to the constructor, the <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code> is populated
+with the <a class="reference external" href="https://github.com/hgrecco/pint/blob/master/pint/default_en.txt">default list of units</a> and prefixes.</p>
+</section>
+<section id="defining-a-quantity">
+<h2>Defining a Quantity<a class="headerlink" href="#defining-a-quantity" title="Permalink to this heading">¶</a></h2>
+<p>Once you’ve initialized your <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code>, you can define quantities easily:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span> <span class="o">=</span> <span class="mf">24.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span>
+<span class="go">&lt;Quantity(24.0, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+<span class="go">24.0 meter</span>
+</pre></div>
+</div>
+<p>As you can see, <code class="docutils literal notranslate"><span class="pre">distance</span></code> here is a <a class="reference internal" href="developers_reference.html#pint.quantity.Quantity" title="pint.quantity.Quantity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quantity()</span></code></a>
+object that represents a physical quantity. Quantities can be queried for their
+magnitude, units, and dimensionality:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span><span class="o">.</span><span class="n">magnitude</span>
+<span class="go">24.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span><span class="o">.</span><span class="n">units</span>
+<span class="go">&lt;Unit(&#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">)</span>
+<span class="go">[length]</span>
+</pre></div>
+</div>
+<p>and can correctly handle many mathematical operations, including with other
+<a class="reference internal" href="developers_reference.html#pint.quantity.Quantity" title="pint.quantity.Quantity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quantity()</span></code></a> objects:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">time</span> <span class="o">=</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="go">8.0 second</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">/</span> <span class="n">time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span>
+<span class="go">&lt;Quantity(3.0, &#39;meter / second&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+<span class="go">3.0 meter / second</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">speed</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">)</span>
+<span class="go">[length] / [time]</span>
+</pre></div>
+</div>
+<p>Notice the built-in parser recognizes prefixed and pluralized units even though
+they are not in the definition list:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">distance</span> <span class="o">=</span> <span class="mi">42</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">kilometers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+<span class="go">42 kilometer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">))</span>
+<span class="go">42000.0 meter</span>
+</pre></div>
+</div>
+<p>Pint will complain if you try to use a unit which is not in the registry:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span> <span class="o">=</span> <span class="mi">23</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">snail_speed</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">UndefinedUnitError</span>: <span class="n">&#39;snail_speed&#39; is not defined in the unit registry</span>
+</pre></div>
+</div>
+<p>You can add your own units to the existing registry, or build your own list.
+See the page on <a class="reference internal" href="defining.html#defining"><span class="std std-ref">Defining units</span></a> for more information on that.</p>
+<p>See <a class="reference internal" href="#string-parsing">String parsing</a> and <a class="reference internal" href="defining-quantities.html"><span class="doc">Defining Quantities</span></a> for more ways of defining
+a <code class="docutils literal notranslate"><span class="pre">Quantity()</span></code> object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Quantity()</span></code> objects also work well with NumPy arrays, which you can
+read about in the section on <a class="reference internal" href="numpy.html"><span class="doc">NumPy support</span></a>.</p>
+</section>
+<section id="converting-to-different-units">
+<h2>Converting to different units<a class="headerlink" href="#converting-to-different-units" title="Permalink to this heading">¶</a></h2>
+<p>As the underlying <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code> knows the relationships between
+different units, you can convert a <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> to the units of your choice using
+the <code class="docutils literal notranslate"><span class="pre">to()</span></code> method, which accepts a string or a <a class="reference internal" href="developers_reference.html#pint.unit.Unit" title="pint.unit.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit()</span></code></a> object:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;inch/minute&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(7086.61417, &#39;inch / minute&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">inch</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span>
+<span class="go">&lt;Unit(&#39;inch / minute&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">inch</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
+<span class="go">&lt;Quantity(7086.61417, &#39;inch / minute&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>This method returns a new object leaving the original intact as can be seen by:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+<span class="go">3.0 meter / second</span>
+</pre></div>
+</div>
+<p>If you want to convert in-place (i.e. without creating another object), you can
+use the <code class="docutils literal notranslate"><span class="pre">ito()</span></code> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span><span class="o">.</span><span class="n">ito</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">inch</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span>
+<span class="go">&lt;Quantity(7086.61417, &#39;inch / minute&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+<span class="go">7086.6141... inch / minute</span>
+</pre></div>
+</div>
+<p>Pint will complain if you ask it to perform a conversion it doesn’t know
+how to do:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">speed</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">joule</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">DimensionalityError</span>: <span class="n">Cannot convert from &#39;inch / minute&#39; ([length] / [time]) to &#39;joule&#39; ([length] ** 2 * [mass] / [time] ** 2)</span>
+</pre></div>
+</div>
+<p>See the section on <a class="reference internal" href="contexts.html"><span class="doc">Contexts</span></a> for information about expanding Pint’s
+automatic conversion capabilities for your application.</p>
+</section>
+<section id="simplifying-units">
+<h2>Simplifying units<a class="headerlink" href="#simplifying-units" title="Permalink to this heading">¶</a></h2>
+<p>Sometimes, the magnitude of the quantity will be very large or very small.
+The method <code class="docutils literal notranslate"><span class="pre">to_compact()</span></code> can adjust the units to make a quantity more
+human-readable:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wavelength</span> <span class="o">=</span> <span class="mi">1550</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frequency</span> <span class="o">=</span> <span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">speed_of_light</span> <span class="o">/</span> <span class="n">wavelength</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+<span class="go">193414489032258.03 hertz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">frequency</span><span class="o">.</span><span class="n">to_compact</span><span class="p">())</span>
+<span class="go">193.414489032... terahertz</span>
+</pre></div>
+</div>
+<p>There are also methods <code class="docutils literal notranslate"><span class="pre">to_base_units()</span></code> and <code class="docutils literal notranslate"><span class="pre">ito_base_units()</span></code> which automatically
+convert to the reference units with the correct dimensionality:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">height</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">foot</span> <span class="o">+</span> <span class="mf">9.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">inch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+<span class="go">5.75 foot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">height</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
+<span class="go">1.752... meter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+<span class="go">5.75 foot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">height</span><span class="o">.</span><span class="n">ito_base_units</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+<span class="go">1.752... meter</span>
+</pre></div>
+</div>
+<p>There are also methods <code class="docutils literal notranslate"><span class="pre">to_reduced_units()</span></code> and <code class="docutils literal notranslate"><span class="pre">ito_reduced_units()</span></code> which perform
+a simplified dimensional reduction, combining units with the same dimensionality
+but otherwise keeping your unit definitions intact.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">density</span> <span class="o">=</span> <span class="mf">1.4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">gram</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">cm</span><span class="o">**</span><span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">volume</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">ureg</span><span class="o">.</span><span class="n">cc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mass</span> <span class="o">=</span> <span class="n">density</span><span class="o">*</span><span class="n">volume</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span>
+<span class="go">14.0 cubic_centimeter * gram / centimeter ** 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass</span><span class="o">.</span><span class="n">to_reduced_units</span><span class="p">())</span>
+<span class="go">14.0 gram</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span>
+<span class="go">14.0 cubic_centimeter * gram / centimeter ** 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mass</span><span class="o">.</span><span class="n">ito_reduced_units</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span>
+<span class="go">14.0 gram</span>
+</pre></div>
+</div>
+<p>If you want pint to automatically perform dimensional reduction when producing
+new quantities, the <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code> class accepts a parameter <code class="docutils literal notranslate"><span class="pre">auto_reduce_dimensions</span></code>.
+Dimensional reduction can be slow, so auto-reducing is disabled by default.</p>
+</section>
+<section id="string-parsing">
+<h2>String parsing<a class="headerlink" href="#string-parsing" title="Permalink to this heading">¶</a></h2>
+<p>Pint includes powerful string parsing for identifying magnitudes and units. In
+many cases, units can be defined as strings:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mf">2.54</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;centimeter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or using the <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> constructor:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">2.54</span><span class="p">,</span> <span class="s1">&#39;centimeter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Numbers are also parsed, so you can use an expression:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;2.54 * centimeter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;2.54 * centimeter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or leave out the <cite>*</cite> altogether:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;2.54cm&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>This enables you to build a simple unit converter in 3 lines:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user_input</span> <span class="o">=</span> <span class="s1">&#39;2.54 * centimeter to inch&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">user_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; to &#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+<span class="go">&lt;Quantity(1.0, &#39;inch&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Strings containing values can be parsed using the <code class="docutils literal notranslate"><span class="pre">ureg.parse_pattern()</span></code> function.
+A <code class="docutils literal notranslate"><span class="pre">format</span></code>-like string with the units defined in it is used as the pattern:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_string</span> <span class="o">=</span> <span class="s1">&#39;10 feet 10 inches&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{feet}</span><span class="s1"> feet </span><span class="si">{inch}</span><span class="s1"> inches&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_pattern</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+<span class="go">[&lt;Quantity(10.0, &#39;foot&#39;)&gt;, &lt;Quantity(10.0, &#39;inch&#39;)&gt;]</span>
+</pre></div>
+</div>
+<p>To search for multiple matches, set the <code class="docutils literal notranslate"><span class="pre">many</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>. The following
+example also demonstrates how the parser is able to find matches in amongst filler characters:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_string</span> <span class="o">=</span> <span class="s1">&#39;10 feet - 20 feet ! 30 feet.&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{feet}</span><span class="s1"> feet&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_pattern</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[[&lt;Quantity(10.0, &#39;foot&#39;)&gt;], [&lt;Quantity(20.0, &#39;foot&#39;)&gt;], [&lt;Quantity(30.0, &#39;foot&#39;)&gt;]]</span>
+</pre></div>
+</div>
+<p>The full power of regex can also be employed when writing patterns:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">input_string</span> <span class="o">=</span> <span class="s2">&quot;10` - 20 feet ! 30 ft.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{feet}</span><span class="s2">(`| feet| ft)&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">parse_pattern</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[[&lt;Quantity(10.0, &#39;foot&#39;)&gt;], [&lt;Quantity(20.0, &#39;foot&#39;)&gt;], [&lt;Quantity(30.0, &#39;foot&#39;)&gt;]]</span>
+</pre></div>
+</div>
+<p><em>Note that the curly brackets (``{}``) are converted to a float-matching pattern by the parser.</em></p>
+<p>This function is useful for tasks such as bulk extraction of units from thousands
+of uniform strings or even very large texts with units dotted around in no particular pattern.</p>
+</section>
+<section id="string-formatting">
+<span id="sec-string-formatting"></span><h2>String formatting<a class="headerlink" href="#string-formatting" title="Permalink to this heading">¶</a></h2>
+<p>Pint’s physical quantities can be easily printed:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The standard string formatting code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The str is </span><span class="si">{!s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The str is 1.3 meter / second ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The standard representation formatting code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The repr is </span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The repr is &lt;Quantity(1.3, &#39;meter / second ** 2&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Accessing useful attributes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The magnitude is </span><span class="si">{0.magnitude}</span><span class="s1"> with units </span><span class="si">{0.units}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The magnitude is 1.3 with units meter / second ** 2</span>
+</pre></div>
+</div>
+<p>Pint supports float formatting for numpy arrays as well:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">1.2505</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">])</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># float formatting numpy arrays</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The array is </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The array is [-1.10 0.00 1.25 1.30] meter / second ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># scientific form formatting with unit pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The array is {:+.2E~P}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The array is [-1.10E+00 +1.00E-06 +1.25E+00 +1.30E+00] m/s²</span>
+</pre></div>
+</div>
+<p>Pint also supports <a class="reference external" href="https://www.python.org/dev/peps/pep-0498/">f-strings</a> from python&gt;=3.6 :</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The str is </span><span class="si">{</span><span class="n">accel</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">The str is 1.3 meter / second ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The str is </span><span class="si">{</span><span class="n">accel</span><span class="si">:</span><span class="s1">.3e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">The str is 1.300e+00 meter / second ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The str is </span><span class="si">{</span><span class="n">accel</span><span class="si">:</span><span class="s1">~</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">The str is 1.3 m / s ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The str is </span><span class="si">{</span><span class="n">accel</span><span class="si">:</span><span class="s1">~.3e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">The str is 1.300e+00 m / s ** 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The str is </span><span class="si">{</span><span class="n">accel</span><span class="si">:</span><span class="s1">~H</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>      <span class="c1"># HTML format (displays well in Jupyter)</span>
+<span class="go">The str is 1.3 m/s&lt;sup&gt;2&lt;/sup&gt;</span>
+</pre></div>
+</div>
+<p>But Pint also extends the standard formatting capabilities for unicode, LaTeX, and HTML
+representations:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Pretty print</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The pretty representation is {:P}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The pretty representation is 1.3 meter/second²&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># LaTeX print</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The LaTeX representation is {:L}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The LaTeX representation is 1.3\\ \\frac{\\mathrm{meter}}{\\mathrm{second}^{2}}&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># HTML print - good for Jupyter notebooks</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The HTML representation is {:H}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The HTML representation is 1.3 meter/second&lt;sup&gt;2&lt;/sup&gt;&#39;</span>
+</pre></div>
+</div>
+<p>If you want to use abbreviated unit names, prefix the specification with <cite>~</cite>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The str is {:~}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The str is 1.3 m / s ** 2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The pretty representation is {:~P}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The pretty representation is 1.3 m/s²&#39;</span>
+</pre></div>
+</div>
+<p>The same is true for LaTeX (<cite>L</cite>) and HTML (<cite>H</cite>) specs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The abbreviated unit is drawn from the unit registry where the 3rd item in the
+equivalence chain (ie 1 = 2 = <strong>3</strong>) will be returned when the prefix ‘~’ is
+used. The 1st item in the chain is the canonical name of the unit.</p>
+</div>
+<p>The formatting specs (ie ‘L’, ‘H’, ‘P’) can be used with Python string
+<a class="reference external" href="https://docs.python.org/3/library/string.html#format-specification-mini-language">formatting syntax</a> for custom float representations. For example, scientific
+notation:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;Scientific notation: {:.3e~L}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;Scientific notation: 1.300\\times 10^{0}\\ \\frac{\\mathrm{m}}{\\mathrm{s}^{2}}&#39;</span>
+</pre></div>
+</div>
+<p>Pint also supports the LaTeX <cite>siunitx</cite> package:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># siunitx Latex print</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The siunitx representation is {:Lx}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The siunitx representation is \SI[]{1.3}{\meter\per\second\squared}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">plus_minus</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The siunitx representation is {:Lx}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">))</span>
+<span class="go">The siunitx representation is \SI{1.30 +- 0.20}{\meter\per\second\squared}</span>
+</pre></div>
+</div>
+<p>Additionally, you can specify a default format specification:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The acceleration is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The acceleration is 1.3 meter / second ** 2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">default_format</span> <span class="o">=</span> <span class="s1">&#39;P&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;The acceleration is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;The acceleration is 1.3 meter/second²&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="localizing">
+<h2>Localizing<a class="headerlink" href="#localizing" title="Permalink to this heading">¶</a></h2>
+<p>If <a class="reference external" href="http://babel.pocoo.org/">Babel</a> is installed you can translate unit names to any language</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span><span class="o">.</span><span class="n">format_babel</span><span class="p">(</span><span class="n">locale</span><span class="o">=</span><span class="s1">&#39;fr_FR&#39;</span><span class="p">)</span>
+<span class="go">&#39;1.3 mètre par seconde²&#39;</span>
+</pre></div>
+</div>
+<p>You can also specify the format locale at the registry level either at creation:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">(</span><span class="n">fmt_locale</span><span class="o">=</span><span class="s1">&#39;fr_FR&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or later:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">set_fmt_locale</span><span class="p">(</span><span class="s1">&#39;fr_FR&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and by doing that, string formatting is now localized:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">accel</span> <span class="o">=</span> <span class="mf">1.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="s1">&#39;meter/second**2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;1.3 mètre par seconde²&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">accel</span>
+<span class="go">&#39;1.3 mètre par seconde²&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
+<span class="go">&#39;1.3 mètre par seconde²&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-pint-in-your-projects">
+<h2>Using Pint in your projects<a class="headerlink" href="#using-pint-in-your-projects" title="Permalink to this heading">¶</a></h2>
+<p>If you use Pint in multiple modules within your Python package, you normally
+want to avoid creating multiple instances of the unit registry.
+The best way to do this is by instantiating the registry in a single place. For
+example, you can add the following code to your package <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+</pre></div>
+</div>
+<p>Then in <code class="docutils literal notranslate"><span class="pre">yourmodule.py</span></code> the code would be</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">Q_</span>
+
+<span class="n">length</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="n">my_speed</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;m/s&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you are pickling and unpickling Quantities within your project, you should
+also define the registry as the application registry</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span><span class="p">,</span> <span class="n">set_application_registry</span>
+<span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="n">set_application_registry</span><span class="p">(</span><span class="n">ureg</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There are no global units in Pint. All units belong to a registry and
+you can have multiple registries instantiated at the same time. However, you
+are not supposed to operate between quantities that belong to different registries.
+Never do things like this:</p>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">UnitRegistry</span><span class="p">()</span><span class="o">.</span><span class="n">meter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">UnitRegistry</span><span class="p">()</span><span class="o">.</span><span class="n">meter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">+</span> <span class="n">q2</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Cannot operate with Quantity and Quantity of different registries.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">id</span><span class="p">(</span><span class="n">q1</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">q2</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#initializing-a-registry">Initializing a Registry</a></li>
+<li><a class="reference internal" href="#defining-a-quantity">Defining a Quantity</a></li>
+<li><a class="reference internal" href="#converting-to-different-units">Converting to different units</a></li>
+<li><a class="reference internal" href="#simplifying-units">Simplifying units</a></li>
+<li><a class="reference internal" href="#string-parsing">String parsing</a></li>
+<li><a class="reference internal" href="#string-formatting">String formatting</a></li>
+<li><a class="reference internal" href="#localizing">Localizing</a></li>
+<li><a class="reference internal" href="#using-pint-in-your-projects">Using Pint in your projects</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="getting.html" title="previous chapter">Installation</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="defining-quantities.html" title="next chapter">Defining Quantities</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Defining Quantities &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="String formatting" href="formatting.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="formatting.html" title="String formatting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Defining Quantities</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="defining-quantities">
+<h1>Defining Quantities<a class="headerlink" href="#defining-quantities" title="Permalink to this heading">¶</a></h1>
+<p>A quantity in Pint is the product of a unit and a magnitude.</p>
+<p>Pint supports several different ways of defining physical quantities, including
+a powerful string parsing system. These methods are largely interchangeable,
+though you may <strong>need</strong> to use the constructor form under certain circumstances
+(see <a class="reference internal" href="nonmult.html"><span class="doc">Temperature conversion</span></a> for an example of where the constructor form is required).</p>
+<section id="by-multiplication">
+<h2>By multiplication<a class="headerlink" href="#by-multiplication" title="Permalink to this heading">¶</a></h2>
+<p>If you’ve read the <a class="reference internal" href="tutorial.html#tutorial"><span class="std std-ref">Tutorial</span></a>, you’re already familiar with defining a
+quantity by multiplying a <code class="docutils literal notranslate"><span class="pre">Unit()</span></code> and a scalar:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pint</span> <span class="kn">import</span> <span class="n">UnitRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="go">&lt;Unit(&#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">30.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>This works to build up complex units as well:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="o">**</span><span class="mi">2</span>
+<span class="go">&lt;Quantity(9.8, &#39;meter / second ** 2&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-the-constructor">
+<h2>Using the constructor<a class="headerlink" href="#using-the-constructor" title="Permalink to this heading">¶</a></h2>
+<p>In some cases it is useful to define <a class="reference internal" href="developers_reference.html#pint.quantity.Quantity" title="pint.quantity.Quantity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Quantity()</span></code></a>
+objects using it’s class constructor. Using the constructor allows you to
+specify the units and magnitude separately.</p>
+<p>We typically abbreviate that constructor as <cite>Q_</cite> to make it’s usage less verbose:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">1.78</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="go">&lt;Quantity(1.78, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>As you can see below, the multiplication and constructor methods should produce
+the same results:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">==</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">9.8</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">&lt;Quantity(9.8, &#39;meter / second ** 2&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Quantity can be created with itself, if units is specified <code class="docutils literal notranslate"><span class="pre">pint</span></code> will try to convert it to the desired units.
+If not, pint will just copy the quantity.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">length</span> <span class="o">=</span> <span class="n">Q_</span><span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="s1">&#39;cm&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(3000.0, &#39;centimeter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-string-parsing">
+<h2>Using string parsing<a class="headerlink" href="#using-string-parsing" title="Permalink to this heading">¶</a></h2>
+<p>Pint includes a powerful parser for detecting magnitudes and units (with or
+without prefixes) in strings. Calling the <code class="docutils literal notranslate"><span class="pre">UnitRegistry()</span></code> directly
+invokes the parsing function:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mf">30.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;30.0 meters&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;3000cm&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meters&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>The parsing function is also available to the <code class="docutils literal notranslate"><span class="pre">Quantity()</span></code> constructor and
+the various <code class="docutils literal notranslate"><span class="pre">.to()</span></code> methods:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;30.0 meters&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;3000.0cm&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(30.0, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Or as a standalone method on the <code class="docutils literal notranslate"><span class="pre">UnitRegistry</span></code>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="mf">2.54</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">(</span><span class="s1">&#39;centimeter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;centimeter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>It is fairly good at detecting compound units:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;9.8 meters/second**2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span>
+<span class="go">&lt;Quantity(9.8, &#39;meter / second ** 2&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;furlongs/fortnight**2&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(7.12770743e+10, &#39;furlong / fortnight ** 2&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>And behaves well when given dimensionless quantities, which are parsed into
+their appropriate objects:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;2.54&#39;</span><span class="p">)</span>
+<span class="go">2.54</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ureg</span><span class="p">(</span><span class="s1">&#39;2.54&#39;</span><span class="p">))</span>
+<span class="go">&lt;class &#39;float&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;2.54&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(2.54, &#39;dimensionless&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;2.54&#39;</span><span class="p">))</span>
+<span class="go">&lt;class &#39;pint.quantity.build_quantity_class.&lt;locals&gt;.Quantity&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pint’s rule for parsing strings with a mixture of numbers and
+units is that <strong>units are treated with the same precedence as numbers</strong>.</p>
+</div>
+<p>For example, the units of</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;3 l / 100 km&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(0.03, &#39;kilometer * liter&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>may be unexpected at first but, are a consequence of applying this rule. Use
+brackets to get the expected result:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;3 l / (100 km)&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(0.03, &#39;liter / kilometer&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>Special strings for NaN (Not a Number) and inf(inity) are also handled in a case-insensitive fashion.
+Note that, as usual, NaN != NaN.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;inf m&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(inf, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;-INFINITY m&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(-inf, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;nan m&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(nan, &#39;meter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;NaN m&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(nan, &#39;meter&#39;)&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since version 0.7, Pint <strong>does not</strong> use <a class="reference external" href="http://docs.python.org/3/library/functions.html#eval">eval</a> under the hood.
+This change removes the <a class="reference external" href="http://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html">serious security problems</a> that the system is
+exposed to when parsing information from untrusted sources.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Defining Quantities</a><ul>
+<li><a class="reference internal" href="#by-multiplication">By multiplication</a></li>
+<li><a class="reference internal" href="#using-the-constructor">Using the constructor</a></li>
+<li><a class="reference internal" href="#using-string-parsing">Using string parsing</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="tutorial.html" title="previous chapter">Tutorial</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="formatting.html" title="next chapter">String formatting</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/defining-quantities.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

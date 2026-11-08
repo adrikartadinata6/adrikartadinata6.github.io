@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>10. Geometrical transformations of images &#8212; skimage 0.22.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css?v=c4c5097c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=4340df76" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script src="../_static/documentation_options.js?v=25b4b00c"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/design-tabs.js?v=70e5c12e"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="11. Tutorials" href="tutorials.html" />
+    <link rel="prev" title="9. Image adjustment: transforming image content" href="transforming_image_data.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">skimage</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  User guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/api.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../release_notes/index.html">
+  Release notes
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../development/index.html">
+  Development
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../about/index.html">
+  About
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/scikit-image/scikit-image" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://pypi.org/project/scikit-image/" rel="noopener" target="_blank" title="PyPI">
+            <span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="install.html">
+   1. Installing scikit-image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="getting_started.html">
+   3. Getting started
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="numpy_images.html">
+   4. A crash course on NumPy for images
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_types.html">
+   5. Image data types and what they mean
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="plugins.html">
+   6. I/O Plugin Infrastructure
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="video.html">
+   7. Handling Video Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="visualization.html">
+   8. Data visualization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="transforming_image_data.html">
+   9. Image adjustment: transforming image content
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   10. Geometrical transformations of images
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="tutorials.html">
+   11. Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tutorial_segmentation.html">
+     11.1. Image Segmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tutorial_parallelization.html">
+     11.2. How to parallelize loops
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="getting_help.html">
+   12. Getting help on using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     skimage
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Other resources
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="glossary.html">
+   Glossary
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cropping-resizing-and-rescaling-images">
+   10.1. Cropping, resizing and rescaling images
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#projective-transforms-homographies">
+   10.2. Projective transforms (homographies)
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="geometrical-transformations-of-images">
+<h1><span class="section-number">10. </span>Geometrical transformations of images<a class="headerlink" href="#geometrical-transformations-of-images" title="Link to this heading">¶</a></h1>
+<section id="cropping-resizing-and-rescaling-images">
+<h2><span class="section-number">10.1. </span>Cropping, resizing and rescaling images<a class="headerlink" href="#cropping-resizing-and-rescaling-images" title="Link to this heading">¶</a></h2>
+<p>Images being NumPy arrays (as described in the <a class="reference internal" href="numpy_images.html#numpy"><span class="std std-ref">A crash course on NumPy for images</span></a> section), cropping
+an image can be done with simple slicing operations. Below we crop a 100x100
+square corresponding to the top-left corner of the astronaut image. Note that
+this operation is done for all color channels (the color dimension is the last,
+third dimension):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">skimage</span> <span class="k">as</span> <span class="nn">ski</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astronaut</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">top_left</span> <span class="o">=</span> <span class="n">img</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span> <span class="p">:</span><span class="mi">100</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In order to change the shape of the image, <a class="reference internal" href="../api/skimage.color.html#module-skimage.color" title="skimage.color"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.color</span></code></a> provides several
+functions described in <span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_rescale.py</span>
+.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">data</span><span class="p">,</span> <span class="n">color</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">rescale</span><span class="p">,</span> <span class="n">resize</span><span class="p">,</span> <span class="n">downscale_local_mean</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">color</span><span class="o">.</span><span class="n">rgb2gray</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astronaut</span><span class="p">())</span>
+
+<span class="n">image_rescaled</span> <span class="o">=</span> <span class="n">rescale</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">anti_aliasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">image_resized</span> <span class="o">=</span> <span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">4</span><span class="p">),</span>
+                       <span class="n">anti_aliasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">image_downscaled</span> <span class="o">=</span> <span class="n">downscale_local_mean</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/transform/plot_rescale.html"><img alt="auto_examples/transform/images/sphx_glr_plot_rescale_001.png" class="align-center" src="auto_examples/transform/images/sphx_glr_plot_rescale_001.png" style="width: 80%;" /></a>
+</section>
+<section id="projective-transforms-homographies">
+<h2><span class="section-number">10.2. </span>Projective transforms (homographies)<a class="headerlink" href="#projective-transforms-homographies" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Homography">Homographies</a>
+are transformations of a Euclidean space that preserve the alignment of points.
+Specific cases of homographies correspond to the conservation of more
+properties, such as parallelism (affine transformation), shape (similar
+transformation) or distances (Euclidean transformation). The different types
+of homographies available in scikit-image are presented in
+<span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_transform_types.py</span>.</p>
+<p>Projective transformations can either be created using the explicit
+parameters (e.g. scale, shear, rotation and translation):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">skimage</span> <span class="k">as</span> <span class="nn">ski</span>
+
+<span class="n">tform</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">EuclideanTransform</span><span class="p">(</span>
+   <span class="n">rotation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">12.</span><span class="p">,</span>
+   <span class="n">translation</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+   <span class="p">)</span>
+</pre></div>
+</div>
+<p>or the full transformation matrix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">12</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">12</span><span class="p">),</span> <span class="mi">100</span><span class="p">],</span>
+                   <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">12</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">12</span><span class="p">),</span> <span class="o">-</span><span class="mi">20</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">tform</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">EuclideanTransform</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The transformation matrix of a transform is available as its <code class="docutils literal notranslate"><span class="pre">tform.params</span></code>
+attribute. Transformations can be composed by multiplying matrices with the
+<code class="docutils literal notranslate"><span class="pre">&#64;</span></code> matrix multiplication operator.</p>
+<p>Transformation matrices use
+<a class="reference external" href="https://en.wikipedia.org/wiki/Homogeneous_coordinates">Homogeneous coordinates</a>,
+which are the extension of Cartesian coordinates used in Euclidean geometry to
+the more general projective geometry. In particular, points at infinity can be
+represented with finite coordinates.</p>
+<p>Transformations can be applied to images using <a class="reference internal" href="../api/skimage.transform.html#skimage.transform.warp" title="skimage.transform.warp"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.transform.warp()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">img_as_float</span><span class="p">(</span><span class="n">ski</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">chelsea</span><span class="p">())</span>
+<span class="n">tf_img</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">warp</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">tform</span><span class="o">.</span><span class="n">inverse</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/transform/plot_transform_types.html"><img alt="auto_examples/transform/images/sphx_glr_plot_transform_types_001.png" class="align-center" src="auto_examples/transform/images/sphx_glr_plot_transform_types_001.png" style="width: 80%;" /></a>
+<p>The different transformations in <a class="reference internal" href="../api/skimage.transform.html#module-skimage.transform" title="skimage.transform"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.transform</span></code></a> have a <code class="docutils literal notranslate"><span class="pre">estimate</span></code>
+method in order to estimate the parameters of the transformation from two sets
+of points (the source and the destination), as explained in the
+<span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_geometric.py</span> tutorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">155</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">260</span><span class="p">,</span> <span class="mi">130</span><span class="p">],</span> <span class="p">[</span><span class="mi">360</span><span class="p">,</span> <span class="mi">95</span><span class="p">]])</span>
+
+<span class="n">tform3</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">ProjectiveTransform</span><span class="p">()</span>
+<span class="n">tform3</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+<span class="n">warped</span> <span class="o">=</span> <span class="n">ski</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">warp</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">tform3</span><span class="p">,</span> <span class="n">output_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="../auto_examples/transform/plot_geometric.html"><img alt="auto_examples/transform/images/sphx_glr_plot_geometric_002.png" class="align-center" src="auto_examples/transform/images/sphx_glr_plot_geometric_002.png" style="width: 80%;" /></a>
+<p>The <code class="docutils literal notranslate"><span class="pre">estimate</span></code> method uses least-squares optimization to minimize the distance
+between source and optimization.
+Source and destination points can be determined manually, or using the
+different methods for feature detection available in <a class="reference internal" href="../api/skimage.feature.html#module-skimage.feature" title="skimage.feature"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skimage.feature</span></code></a>,
+such as</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="xref std std-ref">sphx_glr_auto_examples_features_detection_plot_corner.py</span>,</p></li>
+<li><p><span class="xref std std-ref">sphx_glr_auto_examples_features_detection_plot_orb.py</span>,</p></li>
+<li><p><span class="xref std std-ref">sphx_glr_auto_examples_features_detection_plot_brief.py</span>,</p></li>
+<li><p>etc.</p></li>
+</ul>
+</div></blockquote>
+<p>and matching points using <a class="reference internal" href="../api/skimage.feature.html#skimage.feature.match_descriptors" title="skimage.feature.match_descriptors"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.feature.match_descriptors()</span></code></a> before
+estimating transformation parameters. However, spurious matches are often made,
+and it is advisable to use the RANSAC algorithm (instead of simple
+least-squares optimization) to improve the robustness to outliers, as explained
+in <span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_matching.py</span>.</p>
+<a class="reference external image-reference" href="../auto_examples/transform/plot_matching.html"><img alt="auto_examples/transform/images/sphx_glr_plot_matching_001.png" class="align-center" src="auto_examples/transform/images/sphx_glr_plot_matching_001.png" style="width: 80%;" /></a>
+<p>Examples showing applications of transformation estimation are</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>stereo matching
+<span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_fundamental_matrix.py</span> and</p></li>
+<li><p>image rectification <span class="xref std std-ref">sphx_glr_auto_examples_transform_plot_geometric.py</span></p></li>
+</ul>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">estimate</span></code> method is point-based, that is, it uses only a set of points
+from the source and destination images. For estimating translations (shifts),
+it is also possible to use a <em>full-field</em> method using all pixels, based on
+Fourier-space cross-correlation. This method is implemented by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.registration.register_translation()</span></code> and explained in the
+<span class="xref std std-ref">sphx_glr_auto_examples_registration_plot_register_translation.py</span>
+tutorial.</p>
+<a class="reference external image-reference" href="../auto_examples/registration/plot_register_translation.html"><img alt="auto_examples/registration/images/sphx_glr_plot_register_translation_001.png" class="align-center" src="auto_examples/registration/images/sphx_glr_plot_register_translation_001.png" style="width: 80%;" /></a>
+<p>The
+<span class="xref std std-ref">sphx_glr_auto_examples_registration_plot_register_rotation.py</span> tutorial
+explains a variant of this full-field method for estimating a rotation, by
+using first a log-polar transformation.</p>
+</section>
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2013-2024, the scikit-image team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Documentation > vl_demo_sift_vs_ubc</title>
+
+  <!-- Stylesheets -->
+  <link href="../../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="../../doc.html">Documentation</a></span><span class='separator'>></span><span class='page'><a href="vl_demo_sift_vs_ubc.html">vl_demo_sift_vs_ubc</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+<h1 id="id-6050">Source code for <code/>vl_demo_sift_vs_ubc.m</code></h1><p>This file is located in the <code/>toolbox/demo</code> folder in VLFeat package.</p>
+<div class="highlight"><pre><span></span><span class="c">% VL_DEMO_SIFT_VS_UBC Compare VLFeat SIFT with Lowe&#39;s original</span>
+
+<span class="c">% --------------------------------------------------------------------</span>
+<span class="c">%                            Load a figure and original SIFT keypoints</span>
+<span class="c">% --------------------------------------------------------------------</span>
+
+<span class="n">im</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="nb">fullfile</span><span class="p">(</span><span class="n">vl_root</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;box.pgm&#39;</span><span class="p">))</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">f1</span><span class="p">,</span><span class="n">d1</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_ubcread</span><span class="p">(</span><span class="nb">fullfile</span><span class="p">(</span><span class="n">vl_root</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;box.sift&#39;</span><span class="p">))</span><span class="w"> </span><span class="p">;</span>
+
+<span class="c">% --------------------------------------------------------------------</span>
+<span class="c">%                                    Compare with VLFeat SIFT detector</span>
+<span class="c">% --------------------------------------------------------------------</span>
+
+<span class="n">f2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_sift</span><span class="p">(</span><span class="n">im2single</span><span class="p">(</span><span class="n">im</span><span class="p">),</span><span class="w"> </span><span class="k">...</span>
+<span class="w">             </span><span class="s">&#39;firstoctave&#39;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">             </span><span class="s">&#39;peakthresh&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">.01</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">             </span><span class="s">&#39;edgethresh&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">             </span><span class="s">&#39;windowsize&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">             </span><span class="s">&#39;verbose&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">D</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">vl_alldist2</span><span class="p">(</span><span class="n">f1</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">,:),</span><span class="w"> </span><span class="n">f2</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">,:)))</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">d12</span><span class="p">,</span><span class="n">m12</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">D</span><span class="p">,[],</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">d21</span><span class="p">,</span><span class="n">m21</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">D</span><span class="p">,[],</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">matches</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">size</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">m21</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">m12</span><span class="o">&#39;</span><span class="p">,</span><span class="w">  </span><span class="mi">1</span><span class="p">:</span><span class="nb">size</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span><span class="w"> </span><span class="p">;</span>
+<span class="n">proxim</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="n">d12</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">d21</span><span class="p">]</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">histc</span><span class="p">(</span><span class="n">proxim</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="mf">.01</span><span class="w"> </span><span class="mf">.05</span><span class="w"> </span><span class="o">+</span><span class="n">inf</span><span class="p">])</span><span class="w"> </span><span class="p">;</span>
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">;</span>
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="k">end</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">clf</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">imagesc</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="nb">colormap</span><span class="p">(</span><span class="nb">gray</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">hold</span><span class="w"> </span><span class="s">on</span><span class="w"> </span><span class="p">;</span>
+<span class="n">vl_plotframe</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;linewidth&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;color&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;r&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">vl_plotframe</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;linewidth&#39;</span><span class="p">,</span><span class="w">  </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;color&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;b&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">axis</span><span class="w"> </span><span class="s">image</span><span class="w"> </span><span class="s">off</span><span class="w"> </span><span class="p">;</span>
+<span class="n">vl_demo_print</span><span class="p">(</span><span class="s">&#39;sift_vs_ubc_1&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">clf</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">pie</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">colormap</span><span class="p">(</span><span class="nb">hot</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">legend</span><span class="p">({</span><span class="s">&#39;0.01 pixels&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;0.05 pixels&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;others&#39;</span><span class="p">},</span><span class="w"> </span><span class="k">...</span>
+<span class="w">       </span><span class="s">&#39;location&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;northeastoutside&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">set</span><span class="p">(</span><span class="nb">findobj</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-property&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;fontsize&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;fontsize&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">vl_demo_print</span><span class="p">(</span><span class="s">&#39;sift_vs_ubc_2&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="c">% --------------------------------------------------------------------</span>
+<span class="c">%                                  Compare with VLFeat SIFT descriptor</span>
+<span class="c">% --------------------------------------------------------------------</span>
+
+<span class="p">[</span><span class="n">drop</span><span class="p">,</span><span class="n">d2</span><span class="p">]=</span><span class="n">vl_sift</span><span class="p">(</span><span class="n">im2single</span><span class="p">(</span><span class="n">im</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;frames&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">f1</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;firstoctave&#39;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">D</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="nb">double</span><span class="p">(</span><span class="n">vl_alldist2</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="w"> </span><span class="n">d2</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;l2&#39;</span><span class="p">)))</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">d12</span><span class="p">,</span><span class="n">m12</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">D</span><span class="p">,[],</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">d21</span><span class="p">,</span><span class="n">m21</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">D</span><span class="p">,[],</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">matches</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">size</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">m21</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">m12</span><span class="o">&#39;</span><span class="p">,</span><span class="w">  </span><span class="mi">1</span><span class="p">:</span><span class="nb">size</span><span class="p">(</span><span class="n">d2</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span><span class="w"> </span><span class="p">;</span>
+<span class="n">proxim</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="n">d12</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">d21</span><span class="p">]</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">meanDist</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">mean</span><span class="p">(</span><span class="n">D</span><span class="p">(:))</span><span class="w"> </span><span class="p">;</span>
+
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">histc</span><span class="p">(</span><span class="n">proxim</span><span class="p">,</span><span class="w"> </span><span class="n">meanDist</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="mf">.05</span><span class="w"> </span><span class="mf">.10</span><span class="w"> </span><span class="mf">.20</span><span class="w"> </span><span class="o">+</span><span class="n">inf</span><span class="p">])</span><span class="w"> </span><span class="p">;</span>
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">;</span>
+<span class="n">h</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="k">end</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+
+<span class="nb">figure</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="n">clf</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">pie</span><span class="p">(</span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">colormap</span><span class="p">(</span><span class="nb">hot</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">legend</span><span class="p">({</span><span class="s">&#39;5% differnce&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;10% difference&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;20% difference&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;others&#39;</span><span class="p">},</span><span class="w"> </span><span class="k">...</span>
+<span class="w">       </span><span class="s">&#39;location&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;northeastoutside&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="nb">set</span><span class="p">(</span><span class="nb">findobj</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;-property&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;fontsize&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;fontsize&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">vl_demo_print</span><span class="p">(</span><span class="s">&#39;sift_vs_ubc_3&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 

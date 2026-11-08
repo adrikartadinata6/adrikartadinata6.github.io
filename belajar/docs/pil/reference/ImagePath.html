@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ImagePath Module &#8212; Pillow (PIL Fork) 10.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=514cf933" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=8f9e6779" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=1a645143" />
+    
+    <script src="../_static/documentation_options.js?v=d0f31c56"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=66b4909c"></script>
+    <script src="../_static/copybutton.js?v=71494f10"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/js/activate_tab.js?v=f8fe9d20"></script>
+    
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ImageQt Module" href="ImageQt.html" />
+    <link rel="prev" title="ImagePalette Module" href="ImagePalette.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageQt.html" title="ImageQt Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ImagePalette.html" title="ImagePalette Module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePath</span></code> Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="imagepath-module">
+<span id="module-PIL.ImagePath"></span><h1><a class="reference internal" href="#module-PIL.ImagePath" title="PIL.ImagePath"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePath</span></code></a> Module<a class="headerlink" href="#imagepath-module" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-PIL.ImagePath" title="PIL.ImagePath"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePath</span></code></a> module is used to store and manipulate 2-dimensional
+vector data. Path objects can be passed to the methods on the
+<a class="reference internal" href="ImageDraw.html#module-PIL.ImageDraw" title="PIL.ImageDraw"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageDraw</span></code></a> module.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.</span></span><span class="sig-name descname"><span class="pre">Path</span></span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path" title="Link to this definition">¶</a></dt>
+<dd><p>A path object. The coordinate list can be any sequence object containing
+either 2-tuples [(x, y), …] or numeric values [x, y, …].</p>
+<p>You can also create a path object from another path object.</p>
+<p>In 1.1.6 and later, you can also pass in any object that implements
+Python’s buffer API. The buffer should provide read access, and contain C
+floats in machine byte order.</p>
+<p>The path object implements most parts of the Python sequence interface, and
+behaves like a list of (x, y) pairs. You can use len(), item access, and
+slicing as usual. However, the current version does not support slice
+assignment, or item and slice deletion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xy</strong> – A sequence. The sequence can contain 2-tuples [(x, y), …]
+or a flat list of numbers [x, y, …].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path.compact">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.Path.</span></span><span class="sig-name descname"><span class="pre">compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path.compact" title="Link to this definition">¶</a></dt>
+<dd><p>Compacts the path, by removing points that are close to each other. This
+method modifies the path in place, and returns the number of points left in
+the path.</p>
+<p><code class="docutils literal notranslate"><span class="pre">distance</span></code> is measured as <a class="reference external" href="https://en.wikipedia.org/wiki/Manhattan_distance">Manhattan distance</a> and defaults to two
+pixels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path.getbbox">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.Path.</span></span><span class="sig-name descname"><span class="pre">getbbox</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path.getbbox" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the bounding box of the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">(x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1)</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path.map">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.Path.</span></span><span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path.map" title="Link to this definition">¶</a></dt>
+<dd><p>Maps the path through a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path.tolist">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.Path.</span></span><span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path.tolist" title="Link to this definition">¶</a></dt>
+<dd><p>Converts the path to a Python list [(x, y), …].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flat</strong> – By default, this function returns a list of 2-tuples
+[(x, y), …].  If this argument is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it
+returns a flat list [x, y, …] instead.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of coordinates. See <code class="docutils literal notranslate"><span class="pre">flat</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PIL.ImagePath.PIL.ImagePath.Path.transform">
+<span class="sig-prename descclassname"><span class="pre">PIL.ImagePath.Path.</span></span><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PIL.ImagePath.PIL.ImagePath.Path.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Transforms the path in place, using an affine transform. The matrix is a
+6-tuple (a, b, c, d, e, f), and each point is mapped as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xOut</span> <span class="o">=</span> <span class="n">xIn</span> <span class="o">*</span> <span class="n">a</span> <span class="o">+</span> <span class="n">yIn</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span>
+<span class="n">yOut</span> <span class="o">=</span> <span class="n">xIn</span> <span class="o">*</span> <span class="n">d</span> <span class="o">+</span> <span class="n">yIn</span> <span class="o">*</span> <span class="n">e</span> <span class="o">+</span> <span class="n">f</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePath</span></code> Module</a><ul>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path</span></code></a><ul>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path.compact"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path.compact()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path.getbbox"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path.getbbox()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path.map"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path.map()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path.tolist"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path.tolist()</span></code></a></li>
+<li><a class="reference internal" href="#PIL.ImagePath.PIL.ImagePath.Path.transform"><code class="docutils literal notranslate"><span class="pre">PIL.ImagePath.Path.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="ImagePalette.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePalette</span></code> Module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ImageQt.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImageQt</span></code> Module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/ImagePath.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ImageQt.html" title="ImageQt Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ImagePalette.html" title="ImagePalette Module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Pillow (PIL Fork) 10.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">ImagePath</span></code> Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 1995-2024 Fredrik Lundh, 2010-2024 Jeffrey A. Clark (Alex) and contributors.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

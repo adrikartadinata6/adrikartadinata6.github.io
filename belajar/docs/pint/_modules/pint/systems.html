@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pint.systems &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pint 0.19.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pint.html" accesskey="U">pint</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pint.systems</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pint.systems</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pint.systems</span>
+<span class="sd">    ~~~~~~~~~~~~</span>
+
+<span class="sd">    Functions and classes related to system definitions and conversions.</span>
+
+<span class="sd">    :copyright: 2016 by Pint Authors, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">.babel_names</span> <span class="kn">import</span> <span class="n">_babel_systems</span>
+<span class="kn">from</span> <span class="nn">.compat</span> <span class="kn">import</span> <span class="n">babel_parse</span>
+<span class="kn">from</span> <span class="nn">.definitions</span> <span class="kn">import</span> <span class="n">Definition</span><span class="p">,</span> <span class="n">UnitDefinition</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">DefinitionSyntaxError</span><span class="p">,</span> <span class="n">RedefinitionError</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SharedRegistryObject</span><span class="p">,</span>
+    <span class="n">SourceIterator</span><span class="p">,</span>
+    <span class="n">getattr_maybe_raise</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">to_units_container</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="GroupDefinition"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.GroupDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">GroupDefinition</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Definition of a group.</span>
+
+<span class="sd">        @group &lt;name&gt; [using &lt;group 1&gt;, ..., &lt;group N&gt;]</span>
+<span class="sd">            &lt;definition 1&gt;</span>
+<span class="sd">            ...</span>
+<span class="sd">            &lt;definition N&gt;</span>
+<span class="sd">        @end</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        @group AvoirdupoisUS using Avoirdupois</span>
+<span class="sd">            US_hundredweight = hundredweight = US_cwt</span>
+<span class="sd">            US_ton = ton</span>
+<span class="sd">            US_force_ton = force_ton = _ = US_ton_force</span>
+<span class="sd">        @end</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Regex to match the header parts of a definition.</span>
+    <span class="n">_header_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;@group\s+(?P&lt;name&gt;\w+)\s*(using\s(?P&lt;used_groups&gt;.*))*&quot;</span><span class="p">)</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">units</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnitDefinition</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">using_group_names</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unit_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GroupDefinition.from_lines"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.GroupDefinition.from_lines">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Group object parsing an iterable of lines.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lines : list[str]</span>
+<span class="sd">            iterable</span>
+<span class="sd">        define_func : callable</span>
+<span class="sd">            Function to define a unit in the registry; it must accept a single string as</span>
+<span class="sd">            a parameter.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">SourceIterator</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">lineno</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_header_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid Group header syntax: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">)</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;used_groups&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">parent_group_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parent_group_names</span> <span class="o">=</span> <span class="p">()</span>
+
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">definition</span> <span class="o">=</span> <span class="n">Definition</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="n">non_int_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">UnitDefinition</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">DefinitionSyntaxError</span><span class="p">(</span>
+                    <span class="s2">&quot;Only UnitDefinition are valid inside _used_groups, not &quot;</span>
+                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">definition</span><span class="p">),</span>
+                    <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lineno</span><span class="p">,</span> <span class="n">definition</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">units</span><span class="p">),</span> <span class="n">parent_group_names</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Group"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group">[docs]</a><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">SharedRegistryObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A group is a set of units.</span>
+
+<span class="sd">    Units can be added directly or by including other groups.</span>
+
+<span class="sd">    Members are computed dynamically, that is if a unit is added to a group X</span>
+<span class="sd">    all groups that include X are affected.</span>
+
+<span class="sd">    The group belongs to one Registry.</span>
+
+<span class="sd">    See GroupDefinition for the definition file syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param name: Name of the group. If not given, a root Group will be created.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param groups: dictionary like object groups and system.</span>
+<span class="sd">                        The newly created group will be added after creation.</span>
+<span class="sd">        :type groups: dict[str | Group]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># The name of the group.</span>
+        <span class="c1">#: type: str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="c1">#: Names of the units in this group.</span>
+        <span class="c1">#: :type: set[str]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unit_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1">#: Names of the groups in this group.</span>
+        <span class="c1">#: :type: set[str]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1">#: Names of the groups in which this group is contained.</span>
+        <span class="c1">#: :type: set[str]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_by</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># Add this group to the group dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;root&quot;</span><span class="p">:</span>
+            <span class="c1"># All groups are added to root group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_groups</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1">#: A cache of the included units.</span>
+        <span class="c1">#: None indicates that the cache has been invalidated.</span>
+        <span class="c1">#: :type: frozenset[str] | None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Names of the units that are members of the group.</span>
+
+<span class="sd">        Calculated to include to all units in all included _used_groups.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unit_names</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_used_groups</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">|=</span> <span class="n">group</span><span class="o">.</span><span class="n">members</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span>
+
+<div class="viewcode-block" id="Group.invalidate_members"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.invalidate_members">[docs]</a>    <span class="k">def</span> <span class="nf">invalidate_members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invalidate computed members in this Group and all parent nodes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_used_by</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">iter_used_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pending</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="k">while</span> <span class="n">pending</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">pending</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">pending</span> <span class="o">|=</span> <span class="n">group</span><span class="o">.</span><span class="n">_used_groups</span>
+            <span class="k">yield</span> <span class="n">name</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">is_used_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_used_groups</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">group_name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Group.add_units"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.add_units">[docs]</a>    <span class="k">def</span> <span class="nf">add_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">unit_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add units to group.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">unit_name</span> <span class="ow">in</span> <span class="n">unit_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unit_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unit_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">non_inherited_unit_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unit_names</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Group.remove_units"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.remove_units">[docs]</a>    <span class="k">def</span> <span class="nf">remove_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">unit_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove units from group.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">unit_name</span> <span class="ow">in</span> <span class="n">unit_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unit_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">unit_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Group.add_groups"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.add_groups">[docs]</a>    <span class="k">def</span> <span class="nf">add_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">group_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add groups to group.&quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">:</span>
+
+            <span class="n">grp</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">grp</span><span class="o">.</span><span class="n">is_used_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cyclic relationship found between </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">group_name</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+            <span class="n">grp</span><span class="o">.</span><span class="n">_used_by</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Group.remove_groups"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.remove_groups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">group_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove groups from group.&quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+            <span class="n">grp</span><span class="o">.</span><span class="n">_used_by</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Group.from_lines"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.Group.from_lines">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">define_func</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Group</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Group object parsing an iterable of lines.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lines : list[str]</span>
+<span class="sd">            iterable</span>
+<span class="sd">        define_func : callable</span>
+<span class="sd">            Function to define a unit in the registry; it must accept a single string as</span>
+<span class="sd">            a parameter.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">group_definition</span> <span class="o">=</span> <span class="n">GroupDefinition</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">non_int_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_definition</span><span class="p">(</span><span class="n">group_definition</span><span class="p">,</span> <span class="n">define_func</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">group_definition</span><span class="p">:</span> <span class="n">GroupDefinition</span><span class="p">,</span> <span class="n">define_func</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Group</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">group_definition</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">define_func</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">RedefinitionError</span><span class="p">,</span> <span class="n">DefinitionSyntaxError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">lineno</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ex</span><span class="o">.</span><span class="n">lineno</span> <span class="o">=</span> <span class="n">lineno</span>
+                <span class="k">raise</span> <span class="n">ex</span>
+
+        <span class="n">grp</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">group_definition</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">grp</span><span class="o">.</span><span class="n">add_units</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">group_definition</span><span class="o">.</span><span class="n">units</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">group_definition</span><span class="o">.</span><span class="n">using_group_names</span><span class="p">:</span>
+            <span class="n">grp</span><span class="o">.</span><span class="n">add_groups</span><span class="p">(</span><span class="o">*</span><span class="n">group_definition</span><span class="o">.</span><span class="n">using_group_names</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">getattr_maybe_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span></div>
+
+
+<div class="viewcode-block" id="SystemDefinition"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.SystemDefinition">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SystemDefinition</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Definition of a System:</span>
+
+<span class="sd">        @system &lt;name&gt; [using &lt;group 1&gt;, ..., &lt;group N&gt;]</span>
+<span class="sd">            &lt;rule 1&gt;</span>
+<span class="sd">            ...</span>
+<span class="sd">            &lt;rule N&gt;</span>
+<span class="sd">        @end</span>
+
+<span class="sd">    The syntax for the rule is:</span>
+
+<span class="sd">        new_unit_name : old_unit_name</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - old_unit_name: a root unit part which is going to be removed from the system.</span>
+<span class="sd">        - new_unit_name: a non root unit which is going to replace the old_unit.</span>
+
+<span class="sd">    If the new_unit_name and the old_unit_name, the later and the colon can be omitted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Regex to match the header parts of a context.</span>
+    <span class="n">_header_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;@system\s+(?P&lt;name&gt;\w+)\s*(using\s(?P&lt;used_groups&gt;.*))*&quot;</span><span class="p">)</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit_replacements</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">using_group_names</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">SourceIterator</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="n">lineno</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_header_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid System header syntax &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">header</span><span class="p">)</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()[</span><span class="s2">&quot;used_groups&quot;</span><span class="p">]</span>
+
+        <span class="c1"># If the systems has no group, it automatically uses the root group.</span>
+        <span class="k">if</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">group_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">group_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,)</span>
+
+        <span class="n">unit_replacements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># We would identify a</span>
+            <span class="c1">#  - old_unit: a root unit part which is going to be removed from the system.</span>
+            <span class="c1">#  - new_unit: a non root unit which is going to replace the old_unit.</span>
+
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="c1"># The syntax is new_unit:old_unit</span>
+
+                <span class="n">new_unit</span><span class="p">,</span> <span class="n">old_unit</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="n">new_unit</span><span class="p">,</span> <span class="n">old_unit</span> <span class="o">=</span> <span class="n">new_unit</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">old_unit</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="n">unit_replacements</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lineno</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The syntax is new_unit</span>
+                <span class="c1"># old_unit is inferred as the root unit with the same dimensionality.</span>
+                <span class="n">unit_replacements</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lineno</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">unit_replacements</span><span class="p">),</span> <span class="n">group_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="System"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.System">[docs]</a><span class="k">class</span> <span class="nc">System</span><span class="p">(</span><span class="n">SharedRegistryObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A system is a Group plus a set of base units.</span>
+
+<span class="sd">    Members are computed dynamically, that is if a unit is added to a group X</span>
+<span class="sd">    all groups that include X are affected.</span>
+
+<span class="sd">    The System belongs to one Registry.</span>
+
+<span class="sd">    See SystemDefinition for the definition file syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param name: Name of the group</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#: Name of the system</span>
+        <span class="c1">#: :type: str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="c1">#: Maps root unit names to a dict indicating the new unit and its exponent.</span>
+        <span class="c1">#: :type: dict[str, dict[str, number]]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_units</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1">#: Derived unit names.</span>
+        <span class="c1">#: :type: set(str)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">derived_units</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1">#: Names of the _used_groups in used by this system.</span>
+        <span class="c1">#: :type: set(str)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1">#: :type: frozenset | None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Add this system to the system dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">getattr_maybe_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">u</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span><span class="o">.</span><span class="n">_groups</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">|=</span> <span class="n">d</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">members</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not resolve </span><span class="si">{}</span><span class="s2"> in System </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">group_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span>
+
+<div class="viewcode-block" id="System.invalidate_members"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.System.invalidate_members">[docs]</a>    <span class="k">def</span> <span class="nf">invalidate_members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invalidate computed members in this Group and all parent nodes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_members</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="System.add_groups"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.System.add_groups">[docs]</a>    <span class="k">def</span> <span class="nf">add_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">group_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add groups to group.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">group_names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="System.remove_groups"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.System.remove_groups">[docs]</a>    <span class="k">def</span> <span class="nf">remove_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">group_names</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove groups from group.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_groups</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="n">group_names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalidate_members</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="System.format_babel"><a class="viewcode-back" href="../../developers_reference.html#pint.systems.System.format_babel">[docs]</a>    <span class="k">def</span> <span class="nf">format_babel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locale</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;translate the name of the system.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">locale</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">_babel_systems</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">_babel_systems</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">locale</span> <span class="o">=</span> <span class="n">babel_parse</span><span class="p">(</span><span class="n">locale</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">locale</span><span class="o">.</span><span class="n">measurement_systems</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">get_root_func</span><span class="p">,</span> <span class="n">non_int_type</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+        <span class="n">system_definition</span> <span class="o">=</span> <span class="n">SystemDefinition</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">get_root_func</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_definition</span><span class="p">(</span><span class="n">system_definition</span><span class="p">,</span> <span class="n">get_root_func</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">system_definition</span><span class="p">:</span> <span class="n">SystemDefinition</span><span class="p">,</span> <span class="n">get_root_func</span><span class="p">):</span>
+        <span class="n">base_unit_names</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">derived_unit_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">,</span> <span class="n">old_unit</span> <span class="ow">in</span> <span class="n">system_definition</span><span class="o">.</span><span class="n">unit_replacements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">old_unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">old_unit_dict</span> <span class="o">=</span> <span class="n">to_units_container</span><span class="p">(</span><span class="n">get_root_func</span><span class="p">(</span><span class="n">new_unit</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_unit_dict</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;The new base must be a root dimension if not discarded unit is specified.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="n">old_unit</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">old_unit_dict</span><span class="p">)</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+
+                <span class="n">base_unit_names</span><span class="p">[</span><span class="n">old_unit</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">new_unit</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">value</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The old unit MUST be a root unit, if not raise an error.</span>
+                <span class="k">if</span> <span class="n">old_unit</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_root_func</span><span class="p">(</span><span class="n">old_unit</span><span class="p">)[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;In `</span><span class="si">%s</span><span class="s2">`, the unit at the right of the `:` (</span><span class="si">%s</span><span class="s2">) must be a root unit.&quot;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">lineno</span><span class="p">,</span> <span class="n">old_unit</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Here we find new_unit expanded in terms of root_units</span>
+                <span class="n">new_unit_expanded</span> <span class="o">=</span> <span class="n">to_units_container</span><span class="p">(</span>
+                    <span class="n">get_root_func</span><span class="p">(</span><span class="n">new_unit</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_REGISTRY</span>
+                <span class="p">)</span>
+
+                <span class="c1"># We require that the old unit is present in the new_unit expanded</span>
+                <span class="k">if</span> <span class="n">old_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_unit_expanded</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Old unit must be a component of new unit&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Here we invert the equation, in other words</span>
+                <span class="c1"># we write old units in terms new unit and expansion</span>
+                <span class="n">new_unit_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">new_unit</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">value</span>
+                    <span class="k">for</span> <span class="n">new_unit</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new_unit_expanded</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">new_unit</span> <span class="o">!=</span> <span class="n">old_unit</span>
+                <span class="p">}</span>
+                <span class="n">new_unit_dict</span><span class="p">[</span><span class="n">new_unit</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">new_unit_expanded</span><span class="p">[</span><span class="n">old_unit</span><span class="p">]</span>
+
+                <span class="n">base_unit_names</span><span class="p">[</span><span class="n">old_unit</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_unit_dict</span>
+
+        <span class="n">system</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">system_definition</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">add_groups</span><span class="p">(</span><span class="o">*</span><span class="n">system_definition</span><span class="o">.</span><span class="n">using_group_names</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">base_units</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">base_unit_names</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">derived_units</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">derived_unit_names</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">system</span></div>
+
+
+<span class="k">class</span> <span class="nc">Lister</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">getattr_maybe_raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+
+<span class="n">_Group</span> <span class="o">=</span> <span class="n">Group</span>
+<span class="n">_System</span> <span class="o">=</span> <span class="n">System</span>
+
+
+<span class="k">def</span> <span class="nf">build_group_class</span><span class="p">(</span><span class="n">registry</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">_Group</span><span class="p">):</span>
+        <span class="n">_REGISTRY</span> <span class="o">=</span> <span class="n">registry</span>
+
+    <span class="k">return</span> <span class="n">Group</span>
+
+
+<span class="k">def</span> <span class="nf">build_system_class</span><span class="p">(</span><span class="n">registry</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">System</span><span class="p">(</span><span class="n">_System</span><span class="p">):</span>
+        <span class="n">_REGISTRY</span> <span class="o">=</span> <span class="n">registry</span>
+
+    <span class="k">return</span> <span class="n">System</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="../../index.html">
+  <img src="../../_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="../../index.html">Documentation overview</a></li>
+<li><a href="../index.html">Module code</a><li>
+</ul>
+<li><a href="../pint.html">pint</a><li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Optimizing Performance &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Different Unit Systems (and default units)" href="systems.html" />
+    <link rel="prev" title="Defining units" href="defining.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="systems.html" title="Different Unit Systems (and default units)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="defining.html" title="Defining units"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Optimizing Performance</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="optimizing-performance">
+<span id="performance"></span><h1>Optimizing Performance<a class="headerlink" href="#optimizing-performance" title="Permalink to this heading">¶</a></h1>
+<p>Pint can impose a significant performance overhead on computationally-intensive problems. The following are some suggestions for getting the best performance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Examples below are based on the IPython shell (which provides the handy %timeit extension), so they will not work in a standard Python interpreter.</p>
+</div>
+<section id="use-magnitudes-when-possible">
+<h2>Use magnitudes when possible<a class="headerlink" href="#use-magnitudes-when-possible" title="Permalink to this heading">¶</a></h2>
+<p>It’s significantly faster to perform mathematical operations on magnitudes (even though your’e still using pint to retrieve them from a quantity object).</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">In [1]: from pint import UnitRegistry</span>
+
+<span class="go">In [2]: ureg = UnitRegistry()</span>
+
+<span class="go">In [3]: q1 =ureg(&#39;1m&#39;)</span>
+
+<span class="go">In [5]: q2=ureg(&#39;2m&#39;)</span>
+
+<span class="go">In [6]: %timeit (q1-q2)</span>
+<span class="go">100000 loops, best of 3: 7.9 µs per loop</span>
+
+<span class="go">In [7]: %timeit (q1.magnitude-q2.magnitude)</span>
+<span class="go">1000000 loops, best of 3: 356 ns per loop</span>
+</pre></div>
+</div>
+<p>This is especially important when using pint Quantities in conjunction with an iterative solver, such as the <a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html">brentq method</a> from scipy:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">In [1]: from scipy.optimize import brentq</span>
+
+<span class="go">In [2]: def foobar_with_quantity(x):</span>
+<span class="go">            # find the value of x that equals q2</span>
+
+<span class="go">            # assign x the same units as q2</span>
+<span class="go">            qx = ureg(str(x)+str(q2.units))</span>
+
+<span class="go">            # compare the two quantities, then take their magnitude because</span>
+<span class="go">            # brentq requires a dimensionless return type</span>
+<span class="go">            return (qx - q2).magnitude</span>
+
+<span class="go">In [3]: def foobar_with_magnitude(x):</span>
+<span class="go">            # find the value of x that equals q2</span>
+
+<span class="go">            # don&#39;t bother converting x to a quantity, just compare it with q2&#39;s magnitude</span>
+<span class="go">            return x - q2.magnitude</span>
+
+<span class="go">In [4]: %timeit brentq(foobar_with_quantity,0,q2.magnitude)</span>
+<span class="go">1000 loops, best of 3: 310 µs per loop</span>
+
+<span class="go">In [5]: %timeit brentq(foobar_with_magnitude,0,q2.magnitude)</span>
+<span class="go">1000000 loops, best of 3: 1.63 µs per loop</span>
+</pre></div>
+</div>
+<p>Bear in mind that altering computations like this <strong>loses the benefits of automatic unit conversion</strong>, so use with care.</p>
+</section>
+<section id="a-safer-method-wrapping">
+<h2>A safer method: wrapping<a class="headerlink" href="#a-safer-method-wrapping" title="Permalink to this heading">¶</a></h2>
+<p>A better way to use magnitudes is to use pint’s wraps decorator (See <a class="reference internal" href="wrapping.html#wrapping"><span class="std std-ref">Wrapping and checking functions</span></a>). By decorating a function with wraps, you pass only the magnitude of an argument to the function body according to units you specify. As such this method is safer in that you are sure the magnitude is supplied in the correct units.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go">In [1]: import pint</span>
+
+<span class="go">In [2]: ureg = pint.UnitRegistry()</span>
+
+<span class="go">In [3]: import numpy as np</span>
+
+<span class="go">In [4]: def f(x, y):</span>
+<span class="go">              return (x - y) / (x + y) * np.log(x/y)</span>
+
+<span class="go">In [5]: @ureg.wraps(None, (&#39;meter&#39;, &#39;meter&#39;))</span>
+<span class="go">         def g(x, y):</span>
+<span class="go">             return (x - y) / (x + y) * np.log(x/y)</span>
+
+<span class="go">In [6]: a = 1 * ureg.meter</span>
+
+<span class="go">In [7]: b = 1 * ureg.centimeter</span>
+
+<span class="go">In [8]: %timeit f(a, b)</span>
+<span class="go">1000 loops, best of 3: 312 µs per loop</span>
+
+<span class="go">In [9]: %timeit g(a, b)</span>
+<span class="go">10000 loops, best of 3: 65.4 µs per loop</span>
+</pre></div>
+</div>
+</section>
+<section id="speed-up-registry-instantiation">
+<h2>Speed up registry instantiation<a class="headerlink" href="#speed-up-registry-instantiation" title="Permalink to this heading">¶</a></h2>
+<p>When the registry is instantiated, the definition file is parsed, loaded and
+some pre-calculations are made to speed-up certain common operations. This
+process can be time consuming for a large definition file such as the default one
+(and very comprehensive) provided with pint. This can have a significant impact
+in command line applications that create and drop registries.</p>
+<p>Since version 0.19, part of this process can be cached resulting in a 5x to 20x
+performance improvement for registry instantiation using an included version
+of <a class="reference external" href="https://github.com/hgrecco/flexcache/">flexcache</a>. This feature is experimental and therefore disabled by default,
+but might be enable in future versions.</p>
+<p>To enable this feature just use the <cite>cache_folder</cite> argument to provide
+(as a str or pathlib.Path) the location where the cache will be saved.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">(</span><span class="n">cache_folder</span><span class="o">=</span><span class="s2">&quot;/my/cache/folder&quot;</span><span class="p">)</span>  
+</pre></div>
+</div>
+<p>If you want to use the default cache folder provided by the OS, use <strong>:auto:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">(</span><span class="n">cache_folder</span><span class="o">=</span><span class="s2">&quot;:auto:&quot;</span><span class="p">)</span>  
+</pre></div>
+</div>
+<p>Pint use an included version of <a class="reference external" href="https://pypi.org/project/appdirs/">appdirs</a> to obtain the correct folder,
+for example in macOS is <cite>/Users/&lt;username&gt;/Library/Caches/pint</cite></p>
+<p>In any case, you can check the location of the cache folder.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">cache_folder</span>  
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cached files are stored in pickle format with a unique name
+generated from hashing the path of the original definition file. This
+hash also includes the platform (e.g. ‘Linux’), python implementation
+(e.g. ‘CPython’), python version, pint version and the <cite>non_int_type</cite>
+setting of the UnitRegistry to avoid mixing incompatible caches.
+If the definition file includes another (using the <cite>&#64;import</cite> directive),
+this latter file will be cached independently. Finally, when a
+definition file is loaded upon registry instantiation the RegistryCache
+is also cached. The cache is invalidated based on the content hash.
+Therefore, if you modify the text definition file a new cache file
+will be generated. Caching by content hash allows sharing the same cache
+across multiple environments that use the same python and pint versions.
+At any moment, you can delete the cache folder without any risk.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Optimizing Performance</a><ul>
+<li><a class="reference internal" href="#use-magnitudes-when-possible">Use magnitudes when possible</a></li>
+<li><a class="reference internal" href="#a-safer-method-wrapping">A safer method: wrapping</a></li>
+<li><a class="reference internal" href="#speed-up-registry-instantiation">Speed up registry instantiation</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="defining.html" title="previous chapter">Defining units</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="systems.html" title="next chapter">Different Unit Systems (and default units)</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/performance.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

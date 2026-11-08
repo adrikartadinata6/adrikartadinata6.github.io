@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>25. API - Exceptions &mdash; gpiozero 2.0.1 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=86f27845" />
+
+  
+  
+        <script src="_static/jquery.js?v=8dae8fb0"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f5cff4aa"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="26. Changelog" href="changelog.html" />
+    <link rel="prev" title="24. API - Pins" href="api_pins.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gpiozero
+          </a>
+              <div class="version">
+                2.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">1. Installing GPIO Zero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes.html">2. Basic Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_advanced.html">3. Advanced Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="remote_gpio.html">4. Configuring Remote GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes_remote_gpio.html">5. Remote GPIO Recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pi_zero_otg.html">6. Pi Zero USB OTG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_values.html">7. Source/Values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">8. Command-line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">9. Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compat.html">10. Backwards Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating_from_rpigpio.html">11. Migrating from RPi.GPIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">12. Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">13. Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_input.html">14. API - Input Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_output.html">15. API - Output Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_spi.html">16. API - SPI Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_boards.html">17. API - Boards and Accessories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_internal.html">18. API - Internal Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_generic.html">19. API - Generic Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tools.html">20. API - Device Source Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_fonts.html">21. API - Fonts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_tones.html">22. API - Tones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_info.html">23. API - Pi Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_pins.html">24. API - Pins</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">25. API - Exceptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#errors">25.1. Errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIOZeroError"><code class="docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.DeviceClosed"><code class="docutils literal notranslate"><span class="pre">DeviceClosed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.BadEventHandler"><code class="docutils literal notranslate"><span class="pre">BadEventHandler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.BadWaitTime"><code class="docutils literal notranslate"><span class="pre">BadWaitTime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.BadQueueLen"><code class="docutils literal notranslate"><span class="pre">BadQueueLen</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.BadPinFactory"><code class="docutils literal notranslate"><span class="pre">BadPinFactory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.ZombieThread"><code class="docutils literal notranslate"><span class="pre">ZombieThread</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.CompositeDeviceError"><code class="docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.CompositeDeviceBadName"><code class="docutils literal notranslate"><span class="pre">CompositeDeviceBadName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.CompositeDeviceBadOrder"><code class="docutils literal notranslate"><span class="pre">CompositeDeviceBadOrder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.CompositeDeviceBadDevice"><code class="docutils literal notranslate"><span class="pre">CompositeDeviceBadDevice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.EnergenieSocketMissing"><code class="docutils literal notranslate"><span class="pre">EnergenieSocketMissing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.EnergenieBadSocket"><code class="docutils literal notranslate"><span class="pre">EnergenieBadSocket</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIError"><code class="docutils literal notranslate"><span class="pre">SPIError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIBadArgs"><code class="docutils literal notranslate"><span class="pre">SPIBadArgs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIBadChannel"><code class="docutils literal notranslate"><span class="pre">SPIBadChannel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIFixedClockMode"><code class="docutils literal notranslate"><span class="pre">SPIFixedClockMode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIInvalidClockMode"><code class="docutils literal notranslate"><span class="pre">SPIInvalidClockMode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIFixedBitOrder"><code class="docutils literal notranslate"><span class="pre">SPIFixedBitOrder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIFixedSelect"><code class="docutils literal notranslate"><span class="pre">SPIFixedSelect</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIFixedWordSize"><code class="docutils literal notranslate"><span class="pre">SPIFixedWordSize</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIInvalidWordSize"><code class="docutils literal notranslate"><span class="pre">SPIInvalidWordSize</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIODeviceError"><code class="docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIODeviceClosed"><code class="docutils literal notranslate"><span class="pre">GPIODeviceClosed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIOPinInUse"><code class="docutils literal notranslate"><span class="pre">GPIOPinInUse</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIOPinMissing"><code class="docutils literal notranslate"><span class="pre">GPIOPinMissing</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.InputDeviceError"><code class="docutils literal notranslate"><span class="pre">InputDeviceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.OutputDeviceError"><code class="docutils literal notranslate"><span class="pre">OutputDeviceError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.OutputDeviceBadValue"><code class="docutils literal notranslate"><span class="pre">OutputDeviceBadValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinError"><code class="docutils literal notranslate"><span class="pre">PinError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidFunction"><code class="docutils literal notranslate"><span class="pre">PinInvalidFunction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidState"><code class="docutils literal notranslate"><span class="pre">PinInvalidState</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidPull"><code class="docutils literal notranslate"><span class="pre">PinInvalidPull</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidEdges"><code class="docutils literal notranslate"><span class="pre">PinInvalidEdges</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidBounce"><code class="docutils literal notranslate"><span class="pre">PinInvalidBounce</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinSetInput"><code class="docutils literal notranslate"><span class="pre">PinSetInput</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinFixedPull"><code class="docutils literal notranslate"><span class="pre">PinFixedPull</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinEdgeDetectUnsupported"><code class="docutils literal notranslate"><span class="pre">PinEdgeDetectUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinUnsupported"><code class="docutils literal notranslate"><span class="pre">PinUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinSPIUnsupported"><code class="docutils literal notranslate"><span class="pre">PinSPIUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinPWMError"><code class="docutils literal notranslate"><span class="pre">PinPWMError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinPWMUnsupported"><code class="docutils literal notranslate"><span class="pre">PinPWMUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinPWMFixedValue"><code class="docutils literal notranslate"><span class="pre">PinPWMFixedValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinUnknownPi"><code class="docutils literal notranslate"><span class="pre">PinUnknownPi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinMultiplePins"><code class="docutils literal notranslate"><span class="pre">PinMultiplePins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinNoPins"><code class="docutils literal notranslate"><span class="pre">PinNoPins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinInvalidPin"><code class="docutils literal notranslate"><span class="pre">PinInvalidPin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#warnings">25.2. Warnings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.GPIOZeroWarning"><code class="docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.DistanceSensorNoEcho"><code class="docutils literal notranslate"><span class="pre">DistanceSensorNoEcho</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPIWarning"><code class="docutils literal notranslate"><span class="pre">SPIWarning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.SPISoftwareFallback"><code class="docutils literal notranslate"><span class="pre">SPISoftwareFallback</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinWarning"><code class="docutils literal notranslate"><span class="pre">PinWarning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinFactoryFallback"><code class="docutils literal notranslate"><span class="pre">PinFactoryFallback</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.PinNonPhysical"><code class="docutils literal notranslate"><span class="pre">PinNonPhysical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.ThresholdOutOfRange"><code class="docutils literal notranslate"><span class="pre">ThresholdOutOfRange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpiozero.CallbackSetToNone"><code class="docutils literal notranslate"><span class="pre">CallbackSetToNone</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">26. Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">27. License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gpiozero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">25. </span>API - Exceptions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_exc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gpiozero.exc">
+<span id="api-exceptions"></span><h1><span class="section-number">25. </span>API - Exceptions<a class="headerlink" href="#module-gpiozero.exc" title="Link to this heading"></a></h1>
+<p>The following exceptions are defined by GPIO Zero. Please note that multiple
+inheritance is heavily used in the exception hierarchy to make testing for
+exceptions easier. For example, to capture any exception generated by GPIO
+Zero’s code:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">led</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">except</span> <span class="n">GPIOZeroError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;A GPIO Zero error occurred&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since all GPIO Zero’s exceptions descend from <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.GPIOZeroError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, this will
+work. However, certain specific errors have multiple parents. For example, in
+the case that an out of range value is passed to <a class="reference internal" href="api_output.html#gpiozero.OutputDevice.value" title="gpiozero.OutputDevice.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OutputDevice.value</span></code></a> you
+would expect a <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> to be raised. In fact, a
+<a class="reference internal" href="#gpiozero.OutputDeviceBadValue" title="gpiozero.OutputDeviceBadValue"><code class="xref py py-exc docutils literal notranslate"><span class="pre">OutputDeviceBadValue</span></code></a> error will be raised. However, note that this
+descends from both <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.GPIOZeroError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a> (indirectly) and from <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>
+so you can still do the obvious:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gpiozero</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">led</span> <span class="o">=</span> <span class="n">PWMLED</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">led</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Bad value specified&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="errors">
+<h2><span class="section-number">25.1. </span>Errors<a class="headerlink" href="#errors" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIOZeroError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIOZeroError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIOZeroError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIOZeroError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#Exception" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base class for all exceptions in GPIO Zero</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.DeviceClosed">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">DeviceClosed</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#DeviceClosed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DeviceClosed" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></p>
+<p>Error raised when an operation is attempted on a closed device</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.BadEventHandler">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">BadEventHandler</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#BadEventHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.BadEventHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an event handler with an incompatible prototype is specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.BadWaitTime">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">BadWaitTime</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#BadWaitTime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.BadWaitTime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid wait time is specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.BadQueueLen">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">BadQueueLen</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#BadQueueLen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.BadQueueLen" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when non-positive queue length is specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.BadPinFactory">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">BadPinFactory</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#BadPinFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.BadPinFactory" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ImportError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImportError</span></code></a></p>
+<p>Error raised when an unknown pin factory name is specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.ZombieThread">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">ZombieThread</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#ZombieThread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.ZombieThread" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Error raised when a thread fails to die within a given timeout</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.CompositeDeviceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CompositeDeviceError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#CompositeDeviceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CompositeDeviceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></p>
+<p>Base class for errors specific to the CompositeDevice hierarchy</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.CompositeDeviceBadName">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CompositeDeviceBadName</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#CompositeDeviceBadName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CompositeDeviceBadName" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.CompositeDeviceError" title="gpiozero.exc.CompositeDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when a composite device is constructed with a reserved name</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.CompositeDeviceBadOrder">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CompositeDeviceBadOrder</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#CompositeDeviceBadOrder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CompositeDeviceBadOrder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.CompositeDeviceError" title="gpiozero.exc.CompositeDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when a composite device is constructed with an incomplete order</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.CompositeDeviceBadDevice">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CompositeDeviceBadDevice</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#CompositeDeviceBadDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CompositeDeviceBadDevice" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.CompositeDeviceError" title="gpiozero.exc.CompositeDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when a composite device is constructed with an object that doesn’t inherit from <a class="reference internal" href="api_generic.html#gpiozero.Device" title="gpiozero.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.EnergenieSocketMissing">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">EnergenieSocketMissing</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#EnergenieSocketMissing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.EnergenieSocketMissing" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.CompositeDeviceError" title="gpiozero.exc.CompositeDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when socket number is not specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.EnergenieBadSocket">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">EnergenieBadSocket</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#EnergenieBadSocket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.EnergenieBadSocket" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.CompositeDeviceError" title="gpiozero.exc.CompositeDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid socket number is passed to <a class="reference internal" href="api_boards.html#gpiozero.Energenie" title="gpiozero.Energenie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Energenie</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></p>
+<p>Base class for errors related to the SPI implementation</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIBadArgs">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIBadArgs</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIBadArgs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIBadArgs" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when invalid arguments are given while constructing <a class="reference internal" href="api_spi.html#gpiozero.SPIDevice" title="gpiozero.SPIDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIDevice</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIBadChannel">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIBadChannel</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIBadChannel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIBadChannel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid channel is given to an <a class="reference internal" href="api_spi.html#gpiozero.AnalogInputDevice" title="gpiozero.AnalogInputDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalogInputDevice</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIFixedClockMode">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIFixedClockMode</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIFixedClockMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIFixedClockMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when the SPI clock mode cannot be changed</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIInvalidClockMode">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIInvalidClockMode</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIInvalidClockMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIInvalidClockMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid clock mode is given to an SPI implementation</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIFixedBitOrder">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIFixedBitOrder</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIFixedBitOrder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIFixedBitOrder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when the SPI bit-endianness cannot be changed</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIFixedSelect">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIFixedSelect</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIFixedSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIFixedSelect" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when the SPI select polarity cannot be changed</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIFixedWordSize">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIFixedWordSize</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIFixedWordSize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIFixedWordSize" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when the number of bits per word cannot be changed</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIInvalidWordSize">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIInvalidWordSize</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIInvalidWordSize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIInvalidWordSize" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIError" title="gpiozero.exc.SPIError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid (out of range) number of bits per word is specified</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIODeviceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIODeviceError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIODeviceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIODeviceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></p>
+<p>Base class for errors specific to the GPIODevice hierarchy</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIODeviceClosed">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIODeviceClosed</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIODeviceClosed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIODeviceClosed" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIODeviceError" title="gpiozero.exc.GPIODeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>, <a class="reference internal" href="#gpiozero.DeviceClosed" title="gpiozero.exc.DeviceClosed"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceClosed</span></code></a></p>
+<p>Deprecated descendent of <a class="reference internal" href="#gpiozero.DeviceClosed" title="gpiozero.DeviceClosed"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeviceClosed</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIOPinInUse">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIOPinInUse</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIOPinInUse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIOPinInUse" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIODeviceError" title="gpiozero.exc.GPIODeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a></p>
+<p>Error raised when attempting to use a pin already in use by another device</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIOPinMissing">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIOPinMissing</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIOPinMissing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIOPinMissing" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIODeviceError" title="gpiozero.exc.GPIODeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when a pin specification is not given</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.InputDeviceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">InputDeviceError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#InputDeviceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.InputDeviceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIODeviceError" title="gpiozero.exc.GPIODeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a></p>
+<p>Base class for errors specific to the InputDevice hierarchy</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.OutputDeviceError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">OutputDeviceError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#OutputDeviceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDeviceError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIODeviceError" title="gpiozero.exc.GPIODeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIODeviceError</span></code></a></p>
+<p>Base class for errors specified to the OutputDevice hierarchy</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.OutputDeviceBadValue">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">OutputDeviceBadValue</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#OutputDeviceBadValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.OutputDeviceBadValue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.OutputDeviceError" title="gpiozero.exc.OutputDeviceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputDeviceError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when <code class="docutils literal notranslate"><span class="pre">value</span></code> is set to an invalid value</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroError" title="gpiozero.exc.GPIOZeroError"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroError</span></code></a></p>
+<p>Base class for errors related to pin implementations</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidFunction">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidFunction</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidFunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidFunction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when attempting to change the function of a pin to an invalid value</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidState">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidState</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidState" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when attempting to assign an invalid state to a pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidPull">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidPull</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidPull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidPull" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when attempting to assign an invalid pull-up to a pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidEdges">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidEdges</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidEdges" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when attempting to assign an invalid edge detection to a pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidBounce">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidBounce</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidBounce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidBounce" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when attempting to assign an invalid bounce time to a pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinSetInput">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinSetInput</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinSetInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinSetInput" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when attempting to set a read-only pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinFixedPull">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinFixedPull</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinFixedPull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinFixedPull" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when attempting to set the pull of a pin with fixed pull-up</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinEdgeDetectUnsupported">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinEdgeDetectUnsupported</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinEdgeDetectUnsupported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinEdgeDetectUnsupported" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when attempting to use edge detection on unsupported pins</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinUnsupported">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinUnsupported</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinUnsupported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinUnsupported" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#NotImplementedError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a></p>
+<p>Error raised when attempting to obtain a pin interface on unsupported pins</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinSPIUnsupported">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinSPIUnsupported</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinSPIUnsupported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinSPIUnsupported" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#NotImplementedError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a></p>
+<p>Error raised when attempting to obtain an SPI interface on unsupported pins</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinPWMError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinPWMError</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinPWMError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinPWMError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a></p>
+<p>Base class for errors related to PWM implementations</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinPWMUnsupported">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinPWMUnsupported</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinPWMUnsupported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinPWMUnsupported" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinPWMError" title="gpiozero.exc.PinPWMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinPWMError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when attempting to activate PWM on unsupported pins</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinPWMFixedValue">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinPWMFixedValue</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinPWMFixedValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinPWMFixedValue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinPWMError" title="gpiozero.exc.PinPWMError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinPWMError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#AttributeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></a></p>
+<p>Error raised when attempting to initialize PWM on an input pin</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinUnknownPi">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinUnknownPi</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinUnknownPi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinUnknownPi" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Error raised when gpiozero doesn’t recognize a revision of the Pi</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinMultiplePins">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinMultiplePins</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinMultiplePins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinMultiplePins" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Error raised when multiple pins support the requested function</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinNoPins">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinNoPins</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinNoPins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinNoPins" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Error raised when no pins support the requested function</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinInvalidPin">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinInvalidPin</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinInvalidPin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinInvalidPin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinError" title="gpiozero.exc.PinError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinError</span></code></a>, <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#ValueError" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Error raised when an invalid pin specification is provided</p>
+</dd></dl>
+
+</section>
+<section id="warnings">
+<h2><span class="section-number">25.2. </span>Warnings<a class="headerlink" href="#warnings" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.GPIOZeroWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">GPIOZeroWarning</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#GPIOZeroWarning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.GPIOZeroWarning" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="/usr/share/doc/python3.12-doc/html/library/exceptions.html#Warning" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Warning</span></code></a></p>
+<p>Base class for all warnings in GPIO Zero</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.DistanceSensorNoEcho">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">DistanceSensorNoEcho</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#DistanceSensorNoEcho"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.DistanceSensorNoEcho" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroWarning" title="gpiozero.exc.GPIOZeroWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></p>
+<p>Warning raised when the distance sensor sees no echo at all</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPIWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPIWarning</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPIWarning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPIWarning" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroWarning" title="gpiozero.exc.GPIOZeroWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></p>
+<p>Base class for warnings related to the SPI implementation</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.SPISoftwareFallback">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">SPISoftwareFallback</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#SPISoftwareFallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.SPISoftwareFallback" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.SPIWarning" title="gpiozero.exc.SPIWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPIWarning</span></code></a></p>
+<p>Warning raised when falling back to the SPI software implementation</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinWarning</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinWarning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinWarning" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroWarning" title="gpiozero.exc.GPIOZeroWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></p>
+<p>Base class for warnings related to pin implementations</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinFactoryFallback">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinFactoryFallback</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinFactoryFallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinFactoryFallback" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinWarning" title="gpiozero.exc.PinWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinWarning</span></code></a></p>
+<p>Warning raised when a default pin factory fails to load and a fallback is tried</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.PinNonPhysical">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">PinNonPhysical</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#PinNonPhysical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.PinNonPhysical" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.PinWarning" title="gpiozero.exc.PinWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinWarning</span></code></a></p>
+<p>Warning raised when a non-physical pin is specified in a constructor</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.ThresholdOutOfRange">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">ThresholdOutOfRange</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#ThresholdOutOfRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.ThresholdOutOfRange" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroWarning" title="gpiozero.exc.GPIOZeroWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></p>
+<p>Warning raised when a threshold is out of range specified by min and max values</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="gpiozero.CallbackSetToNone">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gpiozero.</span></span><span class="sig-name descname"><span class="pre">CallbackSetToNone</span></span><a class="reference internal" href="_modules/gpiozero/exc.html#CallbackSetToNone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gpiozero.CallbackSetToNone" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gpiozero.GPIOZeroWarning" title="gpiozero.exc.GPIOZeroWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIOZeroWarning</span></code></a></p>
+<p>Warning raised when a callback is set to None when its previous value was None</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_pins.html" class="btn btn-neutral float-left" title="24. API - Pins" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="26. Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015-2024 Ben Nuttall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

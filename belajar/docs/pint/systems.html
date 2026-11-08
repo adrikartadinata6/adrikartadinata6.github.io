@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Different Unit Systems (and default units) &#8212; pint 0.19.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using Pint for currency conversions" href="currencies.html" />
+    <link rel="prev" title="Optimizing Performance" href="performance.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="currencies.html" title="Using Pint for currency conversions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="performance.html" title="Optimizing Performance"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pint 0.19.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Different Unit Systems (and default units)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="different-unit-systems-and-default-units">
+<span id="systems"></span><h1>Different Unit Systems (and default units)<a class="headerlink" href="#different-unit-systems-and-default-units" title="Permalink to this heading">¶</a></h1>
+<p>Pint Unit Registry has the concept of system, which is a group of units</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span> <span class="o">=</span> <span class="n">pint</span><span class="o">.</span><span class="n">UnitRegistry</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="s1">&#39;mks&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">default_system</span>
+<span class="go">&#39;mks&#39;</span>
+</pre></div>
+</div>
+<p>This has an effect in the base units. For example:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="mf">3600.</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">hour</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>
+<span class="go">&lt;Quantity(1.0, &#39;meter / second&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>But if you change to cgs:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">default_system</span> <span class="o">=</span> <span class="s1">&#39;cgs&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>
+<span class="go">&lt;Quantity(100.0, &#39;centimeter / second&#39;)&gt;</span>
+</pre></div>
+</div>
+<p>or more drastically to:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ureg</span><span class="o">.</span><span class="n">default_system</span> <span class="o">=</span> <span class="s1">&#39;imperial&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;</span><span class="si">{:.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
+<span class="go">&#39;1.094 yard / second&#39;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In versions previous to 0.7, <code class="docutils literal notranslate"><span class="pre">to_base_units()</span></code> returns quantities in the
+units of the definition files (which are called root units). For the definition file
+bundled with pint this is meter/gram/second. To get back this behaviour use <code class="docutils literal notranslate"><span class="pre">to_root_units()</span></code>,
+set <code class="docutils literal notranslate"><span class="pre">ureg.system</span> <span class="pre">=</span> <span class="pre">None</span></code></p>
+</div>
+<p>You can check which unit systems are available:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="p">)</span>
+<span class="go">[&#39;Planck&#39;, &#39;SI&#39;, &#39;US&#39;, &#39;atomic&#39;, &#39;cgs&#39;, &#39;imperial&#39;, &#39;mks&#39;]</span>
+</pre></div>
+</div>
+<p>Or which units are available within a particular system:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">imperial</span><span class="p">)</span>
+<span class="go">[&#39;UK_force_ton&#39;, &#39;UK_hundredweight&#39;, ... &#39;cubic_foot&#39;, &#39;cubic_inch&#39;, ... &#39;thou&#39;, &#39;ton&#39;, &#39;yard&#39;]</span>
+</pre></div>
+</div>
+<p>Notice that this give you the opportunity to choose within units with colliding names:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">imperial</span><span class="o">.</span><span class="n">pint</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;liter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(0.568261..., &#39;liter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">US</span><span class="o">.</span><span class="n">pint</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;liter&#39;</span><span class="p">)</span>
+<span class="go">&lt;Quantity(0.473176..., &#39;liter&#39;)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">US</span><span class="o">.</span><span class="n">pint</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">imperial</span><span class="o">.</span><span class="n">pint</span><span class="p">)</span>
+<span class="go">&lt;Quantity(0.832674..., &#39;imperial_pint&#39;)&gt;</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p><a href="index.html">
+  <img src="_images/logo-full.jpg" alt="Logo" style="width:80%;height:80%"/>
+</a></p>
+
+<h3>About Pint</h3>
+Units in Python.
+You are currently looking at the documentation of version 0.19.2.
+<h3>Other Formats</h3>
+<p>
+  You can download the documentation in other formats as well:
+</p>
+<ul>
+  <li><a href="https://media.readthedocs.org/pdf/pint/latest/pint.pdf">as PDF</a>
+  <li><a href="https://media.readthedocs.org/htmlzip/pint/latest/pint.zip">as zipped HTML</a>
+  <li><a href="https://media.readthedocs.org/epub/pint/latest/pint.epub">as ePub</a>
+</ul>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://pypi.python.org/pypi/Pint/">Pint @ PyPI</a></li>
+  <li><a href="https://github.com/hgrecco/pint">Code in GitHub</a></li>
+  <li><a href="https://github.com/hgrecco/pint/issues">Issue Tracker</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+<li><a href="index.html">Documentation overview</a></li>
+  <p>
+  <b>Previous</b><br/>
+  <a href="performance.html" title="previous chapter">Optimizing Performance</a>
+  </p>
+  <p>
+  <b>Next</b><br/>
+  <a href="currencies.html" title="next chapter">Using Pint for currency conversions</a>
+  </p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/systems.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <a href="http://github.com/hgrecco/pint"><img style="position: fixed; top: 0; right: 0; border: 0;"
+    src="" alt="Fork me on GitHub" /></a>
+  
+
+  <div class="footer">
+    &copy; Copyright 2023, Hernan E. Grecco. Pint 0.19.2.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

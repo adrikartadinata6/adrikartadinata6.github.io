@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Wavelet Packets &#8212; PyWavelets Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=601dbdee" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within PyWavelets Documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Continuous Wavelet Transform (CWT)" href="cwt.html" />
+    <link rel="prev" title="Inverse Stationary Wavelet Transform" href="iswt-inverse-stationary-wavelet-transform.html" />
+ 
+<meta name="description" content="PyWavelets is a scientific Python module for Wavelet Transform calculations."/>
+<meta name="keywords" content="PyWavelets, wavelets, Python, wavelet transform, discrete wavelet transform, dwt, idwt, swt, wavelet packets, stationary wavelet transform, pywt"/>
+<meta name="author" content="Filip Wasilewski"/>
+<meta name="Distribution" content="Global"/>
+<meta name="Robots" content="INDEX,FOLLOW"/>
+
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function () {
+            $("#toggle-edit-info").click(function (e) {
+                e.preventDefault();
+                $("#edit-info").toggle();
+            });
+        });
+    })(jQuery);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="cwt.html" title="Continuous Wavelet Transform (CWT)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="iswt-inverse-stationary-wavelet-transform.html" title="Inverse Stationary Wavelet Transform"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wavelet Packets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="ref-wp"></span><section id="wavelet-packets">
+<h1>Wavelet Packets<a class="headerlink" href="#wavelet-packets" title="Link to this heading">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.</span></p>
+</div>
+<p>Version <cite>0.2</cite> of PyWavelets includes many new features and improvements. One of such
+new feature is a two-dimensional wavelet packet transform structure that is
+almost completely sharing programming interface with the one-dimensional tree
+structure.</p>
+<p>In order to achieve this simplification, a new inheritance scheme was used
+in which a <a class="reference internal" href="#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a> base node class is a superclass for both
+<a class="reference internal" href="#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> and <a class="reference internal" href="#id3" title="pywt.Node2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node2D</span></code></a> node classes.</p>
+<p>The node classes are used as data wrappers and can be organized in trees (binary
+trees for 1D transform case and quad-trees for the 2D one). They are also
+superclasses to the <a class="reference internal" href="#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a> class and
+<a class="reference internal" href="#id7" title="pywt.WaveletPacket2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a> class that are used as the decomposition tree
+roots and contain a couple additional methods.</p>
+<p>The below diagram illustrates the inheritance tree:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a> - common interface for 1D and 2D nodes:</p>
+<ul>
+<li><p><a class="reference internal" href="#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> - data carrier node in a 1D decomposition tree</p>
+<ul>
+<li><p><a class="reference internal" href="#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a> - 1D decomposition tree root node</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id3" title="pywt.Node2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node2D</span></code></a> - data carrier node in a 2D decomposition tree</p>
+<ul>
+<li><p><a class="reference internal" href="#id7" title="pywt.WaveletPacket2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a> - 2D decomposition tree root node</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<section id="basenode-a-common-interface-of-waveletpacket-and-waveletpacket2d">
+<h2>BaseNode - a common interface of WaveletPacket and WaveletPacket2D<a class="headerlink" href="#basenode-a-common-interface-of-waveletpacket-and-waveletpacket2d" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pywt.BaseNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">BaseNode</span></span><a class="headerlink" href="#pywt.BaseNode" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pywt.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BaseNode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.Node" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pywt.WaveletPacket">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pywt.Node2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">Node2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BaseNode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.Node2D" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node2D</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The BaseNode is a base class for <a class="reference internal" href="#id0" title="pywt.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> and <a class="reference internal" href="#id3" title="pywt.Node2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node2D</span></code></a>.
+It should not be used directly unless creating a new transformation
+type. It is included here to document the common interface of 1D
+and 2D node an wavelet packet transform classes.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – parent node. If parent is <code class="docutils literal notranslate"><span class="pre">None</span></code> then the node is
+considered detached.</p></li>
+<li><p><strong>data</strong> – data associated with the node. 1D or 2D numeric array,
+depending on the transform type.</p></li>
+<li><p><strong>node_name</strong> – a name identifying the coefficients type.
+See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.node_name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node2D.node_name</span></code>
+for information on the accepted subnodes names.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.data" title="Link to this definition">¶</a></dt>
+<dd><p>Data associated with the node. 1D or 2D numeric array (depends on the
+transform type).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.parent" title="Link to this definition">¶</a></dt>
+<dd><p>Parent node. Used in tree navigation. <code class="docutils literal notranslate"><span class="pre">None</span></code> for root node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.wavelet">
+<span class="sig-name descname"><span class="pre">wavelet</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.wavelet" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> used for decomposition and reconstruction. Inherited
+from parent node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.mode" title="Link to this definition">¶</a></dt>
+<dd><p>Signal extension <a class="reference internal" href="signal-extension-modes.html#ref-modes"><span class="std std-ref">mode</span></a> for the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code> (<code class="xref py py-func docutils literal notranslate"><span class="pre">dwt2()</span></code>)
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code> (<code class="xref py py-func docutils literal notranslate"><span class="pre">idwt2()</span></code>) decomposition and reconstruction
+functions. Inherited from parent node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.level">
+<span class="sig-name descname"><span class="pre">level</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.level" title="Link to this definition">¶</a></dt>
+<dd><p>Decomposition level of the current node. <code class="docutils literal notranslate"><span class="pre">0</span></code> for root (original data),
+<code class="docutils literal notranslate"><span class="pre">1</span></code> for the first decomposition level, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.path" title="Link to this definition">¶</a></dt>
+<dd><p>Path string defining position of the node in the decomposition tree.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.node_name">
+<span class="sig-name descname"><span class="pre">node_name</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.node_name" title="Link to this definition">¶</a></dt>
+<dd><p>Node name describing <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> coefficients type of the
+current subnode.</p>
+<p>See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.node_name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node2D.node_name</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.maxlevel">
+<span class="sig-name descname"><span class="pre">maxlevel</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.maxlevel" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum allowed level of decomposition. Evaluated from parent or child
+nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.is_empty" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> attribute is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.has_any_subnode">
+<span class="sig-name descname"><span class="pre">has_any_subnode</span></span><a class="headerlink" href="#pywt.WaveletPacket2D.has_any_subnode" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if node has any subnodes (is not a leaf node).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.decompose">
+<span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.decompose" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Discrete Wavelet Transform on the <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> and
+returns transform coefficients.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.reconstruct">
+<span class="sig-name descname"><span class="pre">reconstruct</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">update=False</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.reconstruct" title="Link to this definition">¶</a></dt>
+<dd><p>Performs Inverse Discrete Wavelet Transform on subnodes coefficients and
+returns reconstructed data for the current level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>update</strong> – If set, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> attribute will be
+updated with the reconstructed value.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Descends to subnodes and recursively
+calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">reconstruct()</span></code> on them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.get_subnode">
+<span class="sig-name descname"><span class="pre">get_subnode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">decompose=True</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.get_subnode" title="Link to this definition">¶</a></dt>
+<dd><p>Returns subnode or None (see <em>decomposition</em> flag description).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>part</strong> – Subnode name</p></li>
+<li><p><strong>decompose</strong> – If True and subnode does not exist, it will be created
+using coefficients from the DWT decomposition of the
+current node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Used to access nodes in the decomposition tree by string <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – Path string composed from valid node names. See
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.node_name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node2D.node_name</span></code> for node
+naming convention.</p>
+</dd>
+</dl>
+<p>Similar to <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_subnode()</span></code> method with <cite>decompose=True</cite>, but
+can access nodes on any level in the decomposition tree.</p>
+<p>If node does not exist yet, it will be created by decomposition of its
+parent node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.__setitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Used to set node or node’s data in the decomposition tree. Nodes are
+identified by string <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path string composed from valid node names.
+See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.node_name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node2D.node_name</span></code> for
+node naming convention.</p></li>
+<li><p><strong>data</strong> – numeric array or <a class="reference internal" href="#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a> subclass.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.__delitem__">
+<span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.__delitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Used to delete node from the decomposition tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – Path string composed from valid node names.
+See <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node.node_name</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Node2D.node_name</span></code> for
+node naming convention.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.get_leaf_nodes">
+<span class="sig-name descname"><span class="pre">get_leaf_nodes</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">decompose=False</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.get_leaf_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Traverses through the decomposition tree and collects leaf nodes (nodes
+without any subnodes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>decompose</strong> – If <code class="docutils literal notranslate"><span class="pre">decompose</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the method will try to
+decompose the tree up to the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">maximum</span> <span class="pre">level</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">args=()</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">kwargs={}</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">decompose=True</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.walk" title="Link to this definition">¶</a></dt>
+<dd><p>Traverses the decomposition tree and calls <code class="docutils literal notranslate"><span class="pre">func(node,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>
+on every node. If <cite>func</cite> returns <code class="docutils literal notranslate"><span class="pre">True</span></code>, descending to subnodes will
+continue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – <p>callable accepting <a class="reference internal" href="#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a> as the first param and
+optional positional and keyword arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>decompose</strong> – If <code class="docutils literal notranslate"><span class="pre">decompose</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), the method will
+also try to decompose the tree up to the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">maximum</span> <span class="pre">level</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Args<span class="colon">:</span></dt>
+<dd class="field-even"><p>arguments to pass to the <code class="docutils literal notranslate"><span class="pre">func</span></code></p>
+</dd>
+<dt class="field-odd">Kwargs<span class="colon">:</span></dt>
+<dd class="field-odd"><p>keyword arguments to pass to the <code class="docutils literal notranslate"><span class="pre">func</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.walk_depth">
+<span class="sig-name descname"><span class="pre">walk_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">args=()</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">kwargs={}</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">decompose=False</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.walk_depth" title="Link to this definition">¶</a></dt>
+<dd><p>Similar to <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> but traverses the tree in depth-first
+order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – <p>callable accepting <a class="reference internal" href="#pywt.BaseNode" title="pywt.BaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseNode</span></code></a> as the first param and
+optional positional and keyword arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>decompose</strong> – If <code class="docutils literal notranslate"><span class="pre">decompose</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the method will also try
+to decompose the tree up to the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">maximum</span> <span class="pre">level</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Args<span class="colon">:</span></dt>
+<dd class="field-even"><p>arguments to pass to the <code class="docutils literal notranslate"><span class="pre">func</span></code></p>
+</dd>
+<dt class="field-odd">Kwargs<span class="colon">:</span></dt>
+<dd class="field-odd"><p>keyword arguments to pass to the <code class="docutils literal notranslate"><span class="pre">func</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="waveletpacket-and-waveletpacket-tree-node">
+<h2>WaveletPacket and WaveletPacket tree Node<a class="headerlink" href="#waveletpacket-and-waveletpacket-tree-node" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BaseNode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="pywt.WaveletPacket.node_name">
+<span class="sig-name descname"><span class="pre">node_name</span></span><a class="headerlink" href="#pywt.WaveletPacket.node_name" title="Link to this definition">¶</a></dt>
+<dd><p>Node name describing <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> coefficients type of the
+current subnode.</p>
+<dl class="simple">
+<dt>For <a class="reference internal" href="#id2" title="pywt.WaveletPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a> case it is just as in <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code>:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code> - approximation coefficients</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code> - details coefficients</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket.decompose">
+<span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket.decompose" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code> for 1D Discrete Wavelet Transform output coefficients.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">mode='symmetric'</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxlevel=None</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data associated with the node. 1D numeric array.</p></li>
+<li><p><strong>wavelet</strong> – Wavelet to use in the transform. This can be a name of the wavelet from the <code class="xref py py-func docutils literal notranslate"><span class="pre">wavelist()</span></code> list or a <a class="reference internal" href="wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object instance.</p></li>
+<li><p><strong>mode</strong> – Signal extension <a class="reference internal" href="signal-extension-modes.html#ref-modes"><span class="std std-ref">mode</span></a> for the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code>
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code> decomposition and reconstruction functions.</p></li>
+<li><p><strong>maxlevel</strong> – Maximum allowed level of decomposition. If not specified
+it will be calculated based on the <code class="docutils literal notranslate"><span class="pre">wavelet</span></code> and
+<code class="docutils literal notranslate"><span class="pre">data</span></code> length using <code class="xref py py-func docutils literal notranslate"><span class="pre">pywt.dwt_max_level()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket.get_level">
+<span class="sig-name descname"><span class="pre">get_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">order=&quot;natural&quot;</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">decompose=True</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket.get_level" title="Link to this definition">¶</a></dt>
+<dd><p>Collects nodes from the given level of decomposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> – Specifies decomposition <code class="docutils literal notranslate"><span class="pre">level</span></code> from which the nodes will
+be collected.</p></li>
+<li><p><strong>order</strong> – Specifies nodes order - natural (<code class="docutils literal notranslate"><span class="pre">natural</span></code>) or frequency
+(<code class="docutils literal notranslate"><span class="pre">freq</span></code>).</p></li>
+<li><p><strong>decompose</strong> – If set then the method will try to decompose the data up
+to the specified <code class="docutils literal notranslate"><span class="pre">level</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If nodes at the given level are missing (i.e. the tree is partially
+decomposed) and the <code class="docutils literal notranslate"><span class="pre">decompose</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, only existing nodes
+will be returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="waveletpacket2d-and-waveletpacket2d-tree-node2d">
+<h2>WaveletPacket2D and WaveletPacket2D tree Node2D<a class="headerlink" href="#waveletpacket2d-and-waveletpacket2d-tree-node2d" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">Node2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BaseNode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node2D</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">node_name</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>For <a class="reference internal" href="#id7" title="pywt.WaveletPacket2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a> case it is just as in <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt2()</span></code>:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code> - approximation coefficients (<cite>LL</cite>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> - horizontal detail coefficients (<cite>LH</cite>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code> - vertical detail coefficients (<cite>HL</cite>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code> - diagonal detail coefficients (<cite>HH</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">dwt2()</span></code> for 2D Discrete Wavelet Transform output coefficients.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">expand_2d_path(self,</span> <span class="pre">path):</span></span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pywt.</span></span><span class="sig-name descname"><span class="pre">WaveletPacket2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Node2D</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">mode='symmetric'</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxlevel=None</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data associated with the node. 2D numeric array.</p></li>
+<li><p><strong>wavelet</strong> – Wavelet to use in the transform. This can be a name of the wavelet from the <code class="xref py py-func docutils literal notranslate"><span class="pre">wavelist()</span></code> list or a <a class="reference internal" href="wavelets.html#pywt.Wavelet" title="pywt.Wavelet"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wavelet</span></code></a> object instance.</p></li>
+<li><p><strong>mode</strong> – Signal extension <a class="reference internal" href="signal-extension-modes.html#ref-modes"><span class="std std-ref">mode</span></a> for the <code class="xref py py-func docutils literal notranslate"><span class="pre">dwt()</span></code>
+and <code class="xref py py-func docutils literal notranslate"><span class="pre">idwt()</span></code> decomposition and reconstruction functions.</p></li>
+<li><p><strong>maxlevel</strong> – Maximum allowed level of decomposition. If not specified
+it will be calculated based on the <code class="docutils literal notranslate"><span class="pre">wavelet</span></code> and
+<code class="docutils literal notranslate"><span class="pre">data</span></code> length using <code class="xref py py-func docutils literal notranslate"><span class="pre">pywt.dwt_max_level()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pywt.WaveletPacket2D.get_level">
+<span class="sig-name descname"><span class="pre">get_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">order=&quot;natural&quot;</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">decompose=True</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#pywt.WaveletPacket2D.get_level" title="Link to this definition">¶</a></dt>
+<dd><p>Collects nodes from the given level of decomposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> – Specifies decomposition <code class="docutils literal notranslate"><span class="pre">level</span></code> from which the nodes will
+be collected.</p></li>
+<li><p><strong>order</strong> – Specifies nodes order - natural (<code class="docutils literal notranslate"><span class="pre">natural</span></code>) or frequency
+(<code class="docutils literal notranslate"><span class="pre">freq</span></code>).</p></li>
+<li><p><strong>decompose</strong> – If set then the method will try to decompose the data up
+to the specified <code class="docutils literal notranslate"><span class="pre">level</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If nodes at the given level are missing (i.e. the tree is partially
+decomposed) and the <code class="docutils literal notranslate"><span class="pre">decompose</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, only existing nodes
+will be returned.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Wavelet Packets</a><ul>
+<li><a class="reference internal" href="#basenode-a-common-interface-of-waveletpacket-and-waveletpacket2d">BaseNode - a common interface of WaveletPacket and WaveletPacket2D</a><ul>
+<li><a class="reference internal" href="#pywt.BaseNode"><code class="docutils literal notranslate"><span class="pre">BaseNode</span></code></a></li>
+<li><a class="reference internal" href="#pywt.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket"><code class="docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a></li>
+<li><a class="reference internal" href="#pywt.Node2D"><code class="docutils literal notranslate"><span class="pre">Node2D</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a><ul>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.__init__"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.data"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.data</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.parent"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.parent</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.wavelet"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.wavelet</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.mode"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.mode</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.level"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.level</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.path"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.path</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.node_name"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.node_name</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.maxlevel"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.maxlevel</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.is_empty"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.is_empty</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.has_any_subnode"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.has_any_subnode</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.decompose"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.decompose()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.reconstruct"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.reconstruct()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.get_subnode"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.get_subnode()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.__getitem__"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.__setitem__"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.__delitem__"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.get_leaf_nodes"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.get_leaf_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.walk"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.walk()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.walk_depth"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.walk_depth()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#waveletpacket-and-waveletpacket-tree-node">WaveletPacket and WaveletPacket tree Node</a><ul>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a></li>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a><ul>
+<li><a class="reference internal" href="#pywt.WaveletPacket.node_name"><code class="docutils literal notranslate"><span class="pre">WaveletPacket.node_name</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket.decompose"><code class="docutils literal notranslate"><span class="pre">WaveletPacket.decompose()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">WaveletPacket</span></code></a><ul>
+<li><a class="reference internal" href="#pywt.WaveletPacket.__init__"><code class="docutils literal notranslate"><span class="pre">WaveletPacket.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket.get_level"><code class="docutils literal notranslate"><span class="pre">WaveletPacket.get_level()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#waveletpacket2d-and-waveletpacket2d-tree-node2d">WaveletPacket2D and WaveletPacket2D tree Node2D</a><ul>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Node2D</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a><ul>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.node_name</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.decompose()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D</span></code></a><ul>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#pywt.WaveletPacket2D.get_level"><code class="docutils literal notranslate"><span class="pre">WaveletPacket2D.get_level()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="iswt-inverse-stationary-wavelet-transform.html"
+                          title="previous chapter">Inverse Stationary Wavelet Transform</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="cwt.html"
+                          title="next chapter">Continuous Wavelet Transform (CWT)</a></p>
+  </div><div>
+<h3>Quick links</h3>
+<ul>
+<li><a href="https://github.com/PyWavelets/pywt"><img src="../_static/github.png" height="16" width="16" alt="" /> Fork on Github</a></li>
+<li><a href="http://groups.google.com/group/pywavelets"><img src="../_static/comments.png" height="16" width="16" alt="" /> Discussion Group</a></li>
+<li><a href="http://wavelets.pybytes.com/"><img src="../_static/wave.png" height="16" width="16" alt="" /> Explore Wavelets</a></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+<div id="edit-instructions">
+    <h3>Edit this document</h3>
+    <p>
+        <a href="#" id="toggle-edit-info">
+        <img src="../_static/page_edit.png" height="16" width="16" alt="" />
+        The source code of this file is hosted on GitHub. Everyone can
+        update and fix errors in this document with few clicks -
+        no downloads needed.
+        </a>
+    </p>
+    <ol id="edit-info" style="display: none;">
+        <li>
+            Go to
+            <i><a href="https://github.com/PyWavelets/pywt/blob/master/doc/source/ref/wavelet-packets.rst" target="_blank">
+                Wavelet Packets
+            </a></i> on GitHub.
+        </li>
+        <li>
+            Press <b>Edit this file</b> button.
+        </li>
+        <li>
+            Edit file contents using GitHub's text editor in your web browser
+        </li>
+        <li>
+            Fill in the <b>Commit message</b> text box at the end of the page
+            telling <i>why</i> you did the changes.
+            Press <b>Propose file change</b> button next to it when done.
+        </li>
+        <li>
+            On <i>Send a pull request</i> page you don't need to fill in text
+            anymore. Just press <b>Send pull request</b> button.
+        </li>
+        <li>
+            Your changes are now queued for review under project's
+            <a href="https://github.com/PyWavelets/pywt/pulls" target="_blank">Pull requests</a> tab
+            on Github.
+        </li>
+    </ol>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="cwt.html" title="Continuous Wavelet Transform (CWT)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="iswt-inverse-stationary-wavelet-transform.html" title="Inverse Stationary Wavelet Transform"
+             >previous</a> |</li>
+    <li><a href="../index.html">Home &#187;</a></li>
+          <li class="nav-item nav-item-1"><a href="index.html" >API Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Wavelet Packets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2006-2024, The PyWavelets Developers.
+      Last updated on Apr 10, 2024.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </body>
+</html>

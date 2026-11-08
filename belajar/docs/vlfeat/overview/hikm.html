@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+ <head>
+  <!-- IE Standards Mode -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+
+  <!-- Favicon -->
+  <link rel="icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+  <link rel="shortcut icon" href="../images/vl_blue.ico" type="image/x-icon"></link>
+
+  <!-- Page title -->
+  <title>VLFeat - Tutorials > Hierarchical integer k-means</title>
+
+  <!-- Stylesheets -->
+  <link href="../vlfeat.css" rel="stylesheet" type="text/css"></link>
+  <link href="../pygmentize.css" rel="stylesheet" type="text/css"></link>
+  <style>
+    /* fixes a conflict between Pygmentize and MathJax */
+    .MathJax .mo, .MathJax .mi {color: inherit ! important}
+  </style>
+  
+
+  <!-- Scripts-->
+  
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+      processEscapes: true,
+    },
+    TeX: {
+      Macros: {
+        balpha: '\\boldsymbol{\\alpha}',
+        bc: '\\mathbf{c}',
+        be: '\\mathbf{e}',
+        bg: '\\mathbf{g}',
+        bq: '\\mathbf{q}',
+        bu: '\\mathbf{u}',
+        bv: '\\mathbf{v}',
+        bw: '\\mathbf{w}',
+        bx: '\\mathbf{x}',
+        by: '\\mathbf{y}',
+        bz: '\\mathbf{z}',
+        bsigma: '\\mathbf{\\sigma}',
+        sign: '\\operatorname{sign}',
+        diag: '\\operatorname{diag}',
+        real: '\\mathbb{R}',
+      },
+      equationNumbers: { autoNumber: 'AMS' }
+      }
+    });
+  </script>
+  <script type="text/javascript" src="file:/usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ </head>
+
+ <!-- Body Start -->
+ <body>
+  <div id="headbanner-section">
+    <div id="headbanner">
+      <span class='page'><a href="tut.html">Tutorials</a></span><span class='separator'>></span><span class='page'><a href="hikm.html">Hierarchical integer k-means</a></span>
+    </div>
+  </div>
+  <div id="content-section">
+    <div id="content-wrapper">
+      <div id="content">
+        
+    
+
+<div class='toc'>
+<h3>Table of Contents</h3><ul><li class="level1"><a href="#tut.hikm.usage">Usage</a></li>
+<li class="level1"><a href="#tut.hikm.tree">Tree structure</a></li>
+<li class="level1"><a href="#tut.hikm.elkan">Elkan</a></li>
+</ul>
+</div><!-- Table of contents -->
+
+
+<p><b>VLFeat</b> offers a hierarchical version of integer k-means, which
+recursively applies <code/><a href=../matlab/vl_ikmeans.html>vl_ikmeans</a></code> to compute finer and finer
+partitions. For more details see
+<a href="../api/hikmeans_8h.html">Hierarchical Integer
+  k-means API reference</a> and the <a href="ikm.html">Integer
+  k-means tutorial</a>.
+</p>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.hikm.usage">Usage</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>First, we generate some random data to cluster in <code/>[0,255]^2</code>:</p>
+
+<div class="highlight"><pre><span></span><span class="n">data</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="nb">uint8</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">datat</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="nb">uint8</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">100000</span><span class="p">)</span><span class="o">*</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p>To cluster this data, we simply use <code/><a href=../matlab/vl_hikmeans.html>vl_hikmeans</a></code>:</p>
+
+<div class="highlight"><pre><span></span><span class="n">K</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">;</span>
+<span class="n">nleaves</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">;</span>
+<span class="p">[</span><span class="n">tree</span><span class="p">,</span><span class="n">A</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_hikmeans</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">K</span><span class="p">,</span><span class="n">nleaves</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<p>Here <code/>nleaves</code> is the desired number of leaf
+clusters. The algorithm terminates when there are at least
+<code/>nleaves</code> nodes, creating a tree with <code/>depth =
+  floor(log(K nleaves))</code></p>
+
+<p>To assign labels to the new data, we use <code/><a href=../matlab/vl_hikmeanspush.html>vl_hikmeanspush</a></code>:</p>
+
+<div class="highlight"><pre><span></span><span class="n">AT</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="n">vl_hikmeanspush</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span><span class="n">datat</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</pre></div>
+
+
+<div class="figure">
+<image src="../demo/hikmeans-tree.jpg"></image>
+<image src="../demo/hikmeans-clusters.jpg"></image>
+<div class="caption">
+<span class="content">
+<b>Hierarchical integer K-means.</b>  Left: A depiction of the
+recursive clusters. Each node is a cluster center. The root note is
+not depicted (its center would be the mean of the dataset).  Right:
+Clusters are represented as different colors (here are more than 100
+clusters, but only three colors are used).
+</span>
+</div>
+</div>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.hikm.tree">Tree structure</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>The output <code/>tree</code> is a MATLAB structure representing the tree of
+clusters:</p>
+
+<div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="w"> </span><span class="n">tree</span>
+<span class="n">tree</span><span class="w"> </span><span class="p">=</span>
+
+<span class="w">          </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="n">depth</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">    </span><span class="n">centers</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>2<span class="n">x3</span><span class="w"> </span><span class="nb">int32</span><span class="p">]</span>
+<span class="w">        </span><span class="n">sub</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>1<span class="n">x3</span><span class="w"> </span><span class="nb">struct</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The field <code/>centers</code> is the matrix of the cluster centers at the
+root node.  If the depth of the tree is larger than 1, then the field
+<code/>sub</code> is a structure array with one entry for each cluster. Each
+element is in turn a tree:</p>
+
+<div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="n">sub</span>
+<span class="nb">ans</span><span class="w"> </span><span class="p">=</span>
+
+<span class="n">1x3</span><span class="w"> </span><span class="s">struct</span><span class="w"> </span><span class="s">array</span><span class="w"> </span><span class="s">with</span><span class="w"> </span><span class="s">fields:</span>
+<span class="w">    </span><span class="n">centers</span>
+<span class="w">    </span><span class="n">sub</span>
+</pre></div>
+
+
+<p>with a field <code/>centers</code> for its clusters and a field
+<code/>sub</code> for its children. When there are no children, this
+field is equal to the empty matrix</p>
+
+<div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">ans</span><span class="w"> </span><span class="p">=</span>
+
+<span class="w">    </span><span class="n">centers</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>2<span class="n">x3</span><span class="w"> </span><span class="nb">int32</span><span class="p">]</span>
+<span class="w">        </span><span class="n">sub</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+</pre></div>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<h1 id="tut.hikm.elkan">Elkan</h1>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<p>VLFeat supports two different implementations of k-means. While they
+produce identical output, the Elkan method is sometimes faster.
+The <code/>method</code> parameters controls which method is used. Consider the case when <code/>K=10</code> and our data is now 128 dimensional (e.g. SIFT descriptors):</p>
+
+<div class="highlight"><pre><span></span><span class="n">K</span><span class="p">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">nleaves</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span>
+<span class="n">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">uint8</span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">255</span><span class="p">);</span>
+<span class="nb">tic</span><span class="p">;</span>
+<span class="p">[</span><span class="n">tree</span><span class="p">,</span><span class="n">A</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_hikmeans</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">K</span><span class="p">,</span><span class="n">nleaves</span><span class="p">,</span><span class="s">&#39;method&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;lloyd&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="c">% default</span>
+<span class="n">t_lloyd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">toc</span>
+<span class="nb">tic</span><span class="p">;</span>
+<span class="p">[</span><span class="n">tree</span><span class="p">,</span><span class="n">A</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">vl_hikmeans</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">K</span><span class="p">,</span><span class="n">nleaves</span><span class="p">,</span><span class="s">&#39;method&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;elkan&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+<span class="n">t_elkan</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">toc</span>
+
+<span class="n">t_lloyd</span><span class="w"> </span><span class="p">=</span>
+
+<span class="w">    </span><span class="mf">8.0743</span>
+
+<span class="n">t_elkan</span><span class="w"> </span><span class="p">=</span>
+
+<span class="w">    </span><span class="mf">3.0427</span>
+</pre></div>
+
+
+
+  
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div> <!-- content-section -->
+  <div id="footer-section">
+    <div id="footer">
+       2007-14,18 The VLFeat Authors
+    </div> <!-- footer -->
+  </div> <!-- footer section -->
+ </body>
+ <!-- Body ends -->
+</html>
+ 
