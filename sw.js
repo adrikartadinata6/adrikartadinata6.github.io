@@ -1,6 +1,6 @@
 /* Offline + fast repeat visits. Pages and assets are cached as they are used; the core pages are cached on first visit.
    Bump VERSION after you change site files so visitors get the new version. */
-const VERSION = "2026-11-08.3";
+const VERSION = "2026-11-09.1";
 const SHELL = "adri-shell-" + VERSION, RUNTIME = "adri-runtime-" + VERSION;
 const CORE = [
   "./", "index.html", "about.html", "skills.html", "education.html", "projects.html", "experience.html", "certificates.html", "contact.html", "jurnal.html", "404.html",
